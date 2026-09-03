@@ -4,7 +4,9 @@ Instructions for AI agents working with the Gredja project.
 
 ## Rules
 
-Project rules are stored in `Rules/` — each rule set in a separate markdown file.
+Project rules are also available as a skill: `/gredja-rules` (`.claude/skills/gredja-rules/SKILL.md`).
+
+Detailed rule files are stored in `Rules/` — each rule set in a separate markdown file:
 Refer to the corresponding rule file when working with an entity.
 
 - `Rules/models.md` — model building rules (Model/Request, properties, naming)
