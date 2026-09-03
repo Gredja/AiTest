@@ -13,6 +13,7 @@
 
 ## Commits
 
+- Только по требованию пользователя
 - English language
 - Format: **action + object** (e.g. "Add git rules", "Fix product tests")
 - Спрашивать коммит-месседж у пользователя
