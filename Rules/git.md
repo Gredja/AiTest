@@ -13,7 +13,9 @@
 
 ## Commits
 
-Before every commit — ask the user for the commit message.
+- English language
+- Format: **action + object** (e.g. "Add git rules", "Fix product tests")
+- Спрашивать коммит-месседж у пользователя
 
 ## Pull Requests
 
