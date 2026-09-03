@@ -30,6 +30,14 @@ $env:PATH = "C:\Users\User\.local\bin;$env:PATH"
 graphify . --code-only --force
 ```
 
+## Session Start Hook (mandatory)
+
+**Before doing ANYTHING else at the start of every session, read BOTH memory files:**
+1. `C:\Users\User\.local\share\mimocode\memory\projects\global\MEMORY.md`
+2. `C:\Users\User\.local\share\mimocode\memory\projects\gredja\MEMORY.md`
+
+This is not optional. Even if the user's first message seems unrelated — read memory first, then respond.
+
 ## Memory Navigation
 
 To access saved data:
@@ -40,8 +48,8 @@ To access saved data:
 - `actor({ operation: "status", actor_id: "<id>" })` — agent status
 
 **Read project memory first:**
-- `~/.local/share/mimocode/memory/projects/global/MEMORY.md` — global rules, conventions, architecture decisions
-- `~/.local/share/mimocode/memory/projects/gredja/MEMORY.md` — Gredja-specific context, rules, roadmap, curriculum progress
+- `C:\Users\User\.local\share\mimocode\memory\projects\global\MEMORY.md` — global rules, conventions, architecture decisions
+- `C:\Users\User\.local\share\mimocode\memory\projects\gredja\MEMORY.md` — Gredja-specific context, rules, roadmap, curriculum progress
 
 ## Memory Structure
 
