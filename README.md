@@ -1,96 +1,32 @@
 # Gredja
 
-Тестовое приложение для изучения AI-Native SDLC. Проект для автоматизации тестирования API (FakeStoreAPI) и UI (Playwright).
+Test application for learning AI-Native SDLC. Project for API (FakeStoreAPI) and UI (Playwright) test automation.
 
-## Структура решения
-
-```
-Gredja/
-├── Gredja.slnx
-├── README.md
-├── AGENTS.md
-├── .graphifyignore
-├── Prompts/
-│   └── prompts.md
-├── graphify-out/
-│   ├── graph.json
-│   ├── model-dependencies.html
-│   └── manifest.json
-├── Core/
-│   ├── Core.csproj
-│   ├── Helpers/
-│   │   └── RequestHelper.cs
-│   └── Models/
-│       ├── Generic/
-│       │   └── IdNameModel.cs
-│       ├── ProductModel.cs
-│       ├── ProductRequest.cs
-│       ├── RatingModel.cs
-│       ├── CartModel.cs
-│       ├── CartRequest.cs
-│       ├── CartProductModel.cs
-│       ├── UserModel.cs
-│       ├── UserRequest.cs
-│       ├── AuthRequest.cs
-│       ├── UserNameModel.cs
-│       ├── AddressModel.cs
-│       └── GeolocationModel.cs
-├── Api/
-│   └── Api.csproj
-└── Ui/
-    └── Ui.csproj
-```
-
-## Технологии
+## Technologies
 
 - .NET 10.0
 - NUnit 4.6.1
-- RestSharp 114.0.0 (API-тесты)
-- Microsoft.Playwright 1.62.0 (UI-тесты)
+- RestSharp 114.0.0 (API tests)
+- Microsoft.Playwright 1.62.0 (UI tests)
 - Graphify 0.9.53 (knowledge graph)
 
-## API под тестирование
+## API Under Test
 
 FakeStoreAPI — https://fakestoreapi.com
 
-Ресурсы:
-- Products — товары (GET, POST, PUT, DELETE)
-- Carts — корзины
-- Users — пользователи
-- Auth — аутентификация (JWT)
+Resources:
+- Products — products (GET, POST, PUT, DELETE)
+- Carts — carts
+- Users — users
+- Auth — authentication (JWT)
 
-## Конвенции
-
-- Классы моделей: суффикс `Model` (response), `Request` (request)
-- Один класс = один файл
-- Свойства без инициализаций, nullable типы
-- Фреймворк тестов: NUnit
-- Проекты без префикса: `Core`, `Api`, `Ui`
-
-## Запуск тестов
+## Running Tests
 
 ```bash
 dotnet test Api/Api.csproj
 dotnet test Ui/Ui.csproj
 ```
 
-## Knowledge Graph
+## Deadline
 
-Graphify построен в режиме `--code-only` (без LLM):
-
-```bash
-# Обновить граф после изменений
-$env:PATH = "C:\Users\User\.local\bin;$env:PATH"
-graphify . --code-only --force
-
-# Запросы к графу
-graphify query "show all models"
-graphify path "ProductModel" "RatingModel"
-graphify explain "UserModel"
-```
-
-Визуализация зависимостей моделей: `graphify-out/model-dependencies.html`
-
-## Сроки
-
-Дедлайн: 31.12.2026
+2026-12-31

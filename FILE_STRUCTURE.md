@@ -14,8 +14,7 @@ Gredja/
 ├── FILE_STRUCTURE.md
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
-├── .graphifyignore
-├── Gredja.slnx
+└── .graphifyignore
 ```
 
 ## Core/
@@ -65,6 +64,7 @@ Ui/
 ```
 Rules/
 ├── assertions.md                 # FluentAssertions patterns
+├── code.md                       # general code writing rules
 ├── comments.md                   # when to comment code
 ├── config.md                     # endpoints, configuration
 ├── git.md                        # remote, commits, secrets

@@ -29,16 +29,13 @@ How to decide for value types: check the actual JSON response from the API. If t
 
 ## Naming
 
-- One class = one file
-- File name matches class name exactly
-- No abbreviations in class names
 - Model suffix for responses, Request suffix for requests
+- No abbreviations in class names
 
 ## Namespaces
 
 - Regular models: `Core.Models`
 - Reusable generics: `Core.Models.Generic`
-- File-scoped namespace (`namespace Core.Models;`)
 
 ## Generic models
 

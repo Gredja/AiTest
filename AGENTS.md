@@ -1,77 +1,55 @@
 # AGENTS.md — Gredja
 
-Инструкции для AI-агентов, работающих с проектом Gredja.
+Instructions for AI agents working with the Gredja project.
 
-## Проект
+## Rules
 
-Gredja — .NET 10.0 решение для автоматизации тестирования. Три проекта:
-- **Core** — общая логика (модели, хелперы, конфигурация)
-- **Api** — API-тесты против FakeStoreAPI (NUnit + RestSharp + FluentAssertions)
-- **Ui** — UI-тесты через Playwright (NUnit + Microsoft.Playwright)
+Project rules are stored in `Rules/` — each rule set in a separate markdown file.
+Refer to the corresponding rule file when working with an entity.
 
-## Правила
+- `Rules/models.md` — model building rules (Model/Request, properties, naming)
+- `Rules/comments.md` — when comments are needed in code
+- `Rules/assertions.md` — FluentAssertions, key patterns
+- `Rules/code.md` — general code writing rules (naming, types, file structure)
+- `Rules/git.md` — remote, commits, secrets
+- `Rules/workflow.md` — plan → approval → changes → report
+- `Rules/config.md` — endpoints, configuration
 
-Правила проекта хранятся в `Rules/` — каждое правило в отдельном файле markdown.
-При работе с сущностью обращаться к соответствующему файлу правил.
-
-- `Rules/models.md` — правила построения моделей (Model/Request, свойства, именование)
-- `Rules/comments.md` — когда нужны комментарии в коде
-- `Rules/assertions.md` — FluentAssertions, ключевые паттерны
-- `Rules/git.md` — remote, коммиты, секреты
-- `Rules/workflow.md` — план → апрув → изменения → отчёт
-- `Rules/config.md` — endpoints, конфигурация
-
-## Структура файлов
-
-```
-Gredja/
-├── Gredja.slnx
-├── AGENTS.md
-├── Rules/
-├── Prompts/
-├── Core/
-│   ├── Config/
-│   │   └── Endpoints.cs
-│   ├── Helpers/
-│   └── Models/
-├── Api/
-│   └── Tests/
-└── Ui/
-```
+File structure: see `FILE_STRUCTURE.md`.
 
 ## Knowledge Graph
 
-Граф знаний проекта: `graphify-out/graph.json`
-Визуализация: `graphify-out/model-dependencies.html`
+Project knowledge graph: `graphify-out/graph.json`
+Visualization: `graphify-out/model-dependencies.html`
 
-Обновление графа:
+Update the graph:
 ```bash
 $env:PATH = "C:\Users\User\.local\bin;$env:PATH"
 graphify . --code-only --force
 ```
 
-## Навигация по памяти
+## Memory Navigation
 
-Для доступа к сохранённым данным используй:
+To access saved data:
 
-- `memory({ operation: "search", query: "<ключевое слово>" })` — поиск по памяти проекта
-- `Read(file_path="<путь>")` — чтение конкретного файла
-- `task({ operation: "list" })` — список активных задач
-- `actor({ operation: "status", actor_id: "<id>" })` — статус агента
+- `memory({ operation: "search", query: "<keyword>" })` — search project memory
+- `Read(file_path="<path>")` — read a specific file
+- `task({ operation: "list" })` — list active tasks
+- `actor({ operation: "status", actor_id: "<id>" })` — agent status
 
-## Структура памяти
+## Memory Structure
 
 ```
 ~/.local/share/mimocode/memory/
-├── projects/global/MEMORY.md    — правила, конвенции, архитектурные решения
-├── sessions/<sid>/checkpoint.md — текущее состояние сессии
-└── sessions/<sid>/notes.md      — заметки и наблюдения
+├── projects/global/MEMORY.md    — rules, conventions, architecture decisions
+├── sessions/<sid>/checkpoint.md — current session state
+└── sessions/<sid>/notes.md      — notes and observations
 ```
 
-## Команды Graphify
+## Graphify Commands
 
 ```bash
-graphify query "show all models"           # запрос к графу
-graphify path "ProductModel" "RatingModel" # путь между нодами
-graphify explain "UserModel"               # объяснить ноду
+graphify query "show all models"           # query the graph
+graphify path "ProductModel" "RatingModel" # path between nodes
+graphify explain "UserModel"               # explain a node
 ```
