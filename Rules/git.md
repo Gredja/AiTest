@@ -3,11 +3,11 @@
 ## Remote
 
 - Repo: https://github.com/Gredja/AiTest.git
-- Branch: `master`
+- Branch: `main`
 
 ## Branches
 
-- `master` — стабильная ветка, не трогаем напрямую
+- `main` — стабильная ветка, не трогаем напрямую
 - Все изменения делаем в `features/...` ветках
 - Формат: `features/<topic>`
 
@@ -19,7 +19,7 @@
 
 ## Pull Requests
 
-PR из `features/...` в `master` — только после ревью и апрува.
+PR из `features/...` в `main` — только после ревью и апрува.
 
 ## Secrets
 
