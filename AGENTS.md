@@ -39,6 +39,8 @@ To access saved data:
 - `task({ operation: "list" })` — list active tasks
 - `actor({ operation: "status", actor_id: "<id>" })` — agent status
 
+**Read project memory first:** `~/.local/share/mimocode/memory/projects/global/MEMORY.md` — contains rules, conventions, and architecture decisions for this project.
+
 ## Memory Structure
 
 ```
