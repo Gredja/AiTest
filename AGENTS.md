@@ -17,6 +17,8 @@ Gredja — .NET 10.0 решение для автоматизации тести
 - `Rules/models.md` — правила построения моделей (Model/Request, свойства, именование)
 - `Rules/comments.md` — когда нужны комментарии в коде
 - `Rules/assertions.md` — FluentAssertions, ключевые паттерны
+- `Rules/git.md` — remote, коммиты, секреты
+- `Rules/workflow.md` — план → апрув → изменения → отчёт
 
 Краткие правила:
 - **Reference-типы** (string, object, List): без `?`, без инициализации

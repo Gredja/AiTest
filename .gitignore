@@ -23,3 +23,7 @@ TestResults/
 ## User-specific
 appsettings.Development.json
 launchSettings.json
+
+## Secrets
+.credentials
+.env
