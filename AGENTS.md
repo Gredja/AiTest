@@ -19,74 +19,25 @@ Gredja — .NET 10.0 решение для автоматизации тести
 - `Rules/assertions.md` — FluentAssertions, ключевые паттерны
 - `Rules/git.md` — remote, коммиты, секреты
 - `Rules/workflow.md` — план → апрув → изменения → отчёт
-
-Краткие правила:
-- **Reference-типы** (string, object, List): без `?`, без инициализации
-- **Value-типы** (int, decimal, double, DateTime): проверяем JSON — если поле может быть 0/null, добавляем `?`
-- Фреймворк: NUnit (не xUnit)
-- Проекты без префикса: `Core`, `Api`, `Ui`
+- `Rules/config.md` — endpoints, конфигурация
 
 ## Структура файлов
 
 ```
 Gredja/
 ├── Gredja.slnx
-├── README.md
 ├── AGENTS.md
-├── .graphifyignore
 ├── Rules/
-│   ├── models.md
-│   └── comments.md
 ├── Prompts/
-│   └── prompts.md
-├── graphify-out/
-│   ├── graph.json
-│   ├── model-dependencies.html
-│   └── manifest.json
 ├── Core/
-│   ├── Core.csproj
+│   ├── Config/
+│   │   └── Endpoints.cs
 │   ├── Helpers/
-│   │   └── RequestHelper.cs
 │   └── Models/
-│       ├── Generic/
-│       │   └── IdNameModel.cs
-│       ├── ProductModel.cs
-│       ├── ProductRequest.cs
-│       ├── RatingModel.cs
-│       ├── CartModel.cs
-│       ├── CartRequest.cs
-│       ├── CartProductModel.cs
-│       ├── UserModel.cs
-│       ├── UserRequest.cs
-│       ├── AuthRequest.cs
-│       ├── UserNameModel.cs
-│       ├── AddressModel.cs
-│       └── GeolocationModel.cs
 ├── Api/
-│   └── Api.csproj
+│   └── Tests/
 └── Ui/
-    └── Ui.csproj
 ```
-
-## API для тестирования
-
-FakeStoreAPI — https://fakestoreapi.com
-- GET /products — список товаров
-- GET /products/{id} — товар по ID
-- POST /products — создать товар
-- PUT /products/{id} — обновить товар
-- DELETE /products/{id} — удалить товар
-- GET /carts — корзины
-- GET /users — пользователи
-- POST /auth/login — аутентификация (JWT)
-
-## Правила работы
-
-1. Все изменения через апрув пользователя
-2. После изменения структуры проекта — обновить Graphify
-3. Промпты сохранять в `Prompts/prompts.md`
-4. Проверять сборку после каждого изменения: `dotnet build Gredja.slnx`
-5. **Тесты на неуществующий ID:** 0 и -1 — безопасны (всегда невалидны). Для проверки "not found" — динамически: GET все → maxId → maxId + 1. Никогда статический 999 (может существовать если API вырастет).
 
 ## Knowledge Graph
 
