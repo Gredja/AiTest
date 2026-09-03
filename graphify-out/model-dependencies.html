@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Gredja — Model Dependencies</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #1e1e1e; color: #d4d4d4; padding: 40px; }
+        h1 { color: #569cd6; margin-bottom: 30px; }
+        .mermaid { background: #252526; padding: 30px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Gredja — Model Dependencies</h1>
+    <pre class="mermaid">
+graph TD
+    subgraph Generic["Generic"]
+        IdNameModel["IdNameModel&lt;T&gt;"]
+    end
+
+    subgraph Product["Product"]
+        ProductModel["ProductModel"]
+        RatingModel["RatingModel"]
+        ProductRequest["ProductRequest"]
+    end
+
+    subgraph Cart["Cart"]
+        CartModel["CartModel"]
+        CartProductModel["CartProductModel"]
+        CartRequest["CartRequest"]
+    end
+
+    subgraph User["User"]
+        UserModel["UserModel"]
+        UserNameModel["UserNameModel"]
+        AddressModel["AddressModel"]
+        GeolocationModel["GeolocationModel"]
+        UserRequest["UserRequest"]
+        AuthRequest["AuthRequest"]
+    end
+
+    ProductModel -->|Rating| RatingModel
+    CartModel -->|Products| CartProductModel
+    CartRequest -->|Products| CartProductModel
+    UserModel -->|Name| UserNameModel
+    UserModel -->|Address| AddressModel
+    UserRequest -->|Name| UserNameModel
+    UserRequest -->|Address| AddressModel
+    AddressModel -->|Geolocation| GeolocationModel
+
+    style Generic fill:#4ec9b0,stroke:#333,color:#000
+    style Product fill:#dcdcaa,stroke:#333,color:#000
+    style Cart fill:#ce9178,stroke:#333,color:#000
+    style User fill:#569cd6,stroke:#333,color:#000
+    </pre>
+    <script>mermaid.initialize({ theme: 'dark' });</script>
+</body>
+</html>

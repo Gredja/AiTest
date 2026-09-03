@@ -1,0 +1,2717 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "id": "core_models_productmodel_core_models_productmodel",
+      "label": "ProductModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "productmodel",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_ratingmodel_core_models_ratingmodel",
+      "label": "RatingModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "ratingmodel",
+      "source_file": "Core/Models/RatingModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_helpers_requesthelper_core_helpers_requesthelper",
+      "label": "RequestHelper",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 10,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Helpers",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "requesthelper",
+      "source_file": "Core/Helpers/RequestHelper.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_usermodel_core_models_usermodel",
+      "label": "UserModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "usermodel",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_usernamemodel_core_models_usernamemodel",
+      "label": "UserNameModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "usernamemodel",
+      "source_file": "Core/Models/UserNameModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_addressmodel_core_models_addressmodel",
+      "label": "AddressModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "addressmodel",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_geolocationmodel_core_models_geolocationmodel",
+      "label": "GeolocationModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "geolocationmodel",
+      "source_file": "Core/Models/GeolocationModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_cartproductmodel_core_models_cartproductmodel",
+      "label": "CartProductModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "cartproductmodel",
+      "source_file": "Core/Models/CartProductModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_cartrequest_core_models_cartrequest",
+      "label": "CartRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "cartrequest",
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_cartmodel_core_models_cartmodel",
+      "label": "CartModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 5,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "cartmodel",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_userrequest_core_models_userrequest",
+      "label": "UserRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "userrequest",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_authrequest_core_models_authrequest",
+      "label": "AuthRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 7,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "authrequest",
+      "source_file": "Core/Models/AuthRequest.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_productrequest_core_models_productrequest",
+      "label": "ProductRequest",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 8,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "productrequest",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "core_models_generic_idnamemodel_core_models_generic_idnamemodel",
+      "label": "IdNameModel",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 9,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models.Generic",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "idnamemodel",
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L3"
+    },
+    {
+      "id": "api_api",
+      "label": "Api",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "api",
+      "source_file": "Api/Api.csproj",
+      "source_location": null
+    },
+    {
+      "id": "api_api_csproj_nuget_coverlet_collector",
+      "label": "coverlet.collector (10.0.1)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "coverlet.collector (10.0.1)",
+      "source_file": "Api/Api.csproj",
+      "source_location": null
+    },
+    {
+      "id": "api_api_csproj_nuget_microsoft_net_test_sdk",
+      "label": "Microsoft.NET.Test.Sdk (18.9.0)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "microsoft.net.test.sdk (18.9.0)",
+      "source_file": "Api/Api.csproj",
+      "source_location": null
+    },
+    {
+      "id": "api_api_csproj_nuget_nunit",
+      "label": "NUnit (4.6.1)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "nunit (4.6.1)",
+      "source_file": "Api/Api.csproj",
+      "source_location": null
+    },
+    {
+      "id": "api_api_csproj_nuget_nunit3testadapter",
+      "label": "NUnit3TestAdapter (6.3.0)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "nunit3testadapter (6.3.0)",
+      "source_file": "Api/Api.csproj",
+      "source_location": null
+    },
+    {
+      "id": "core_core",
+      "label": "Core",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "core",
+      "source_file": "Core/Core.csproj",
+      "source_location": null
+    },
+    {
+      "id": "gredja",
+      "label": "Gredja.slnx",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "gredja.slnx",
+      "source_file": "Gredja.slnx",
+      "source_location": null
+    },
+    {
+      "id": "nuget_microsoft_playwright",
+      "label": "Microsoft.Playwright (1.62.0)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "microsoft.playwright (1.62.0)",
+      "source_file": "Ui/Ui.csproj",
+      "source_location": null
+    },
+    {
+      "id": "nuget_restsharp",
+      "label": "RestSharp (114.0.0)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "restsharp (114.0.0)",
+      "source_file": "Api/Api.csproj",
+      "source_location": null
+    },
+    {
+      "id": "ui_ui",
+      "label": "Ui",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "ui",
+      "source_file": "Ui/Ui.csproj",
+      "source_location": null
+    },
+    {
+      "id": "ui_ui_csproj_nuget_coverlet_collector",
+      "label": "coverlet.collector (10.0.1)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "coverlet.collector (10.0.1)",
+      "source_file": "Ui/Ui.csproj",
+      "source_location": null
+    },
+    {
+      "id": "ui_ui_csproj_nuget_microsoft_net_test_sdk",
+      "label": "Microsoft.NET.Test.Sdk (18.9.0)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "microsoft.net.test.sdk (18.9.0)",
+      "source_file": "Ui/Ui.csproj",
+      "source_location": null
+    },
+    {
+      "id": "ui_ui_csproj_nuget_nunit",
+      "label": "NUnit (4.6.1)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "nunit (4.6.1)",
+      "source_file": "Ui/Ui.csproj",
+      "source_location": null
+    },
+    {
+      "id": "ui_ui_csproj_nuget_nunit3testadapter",
+      "label": "NUnit3TestAdapter (6.3.0)",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "code",
+      "norm_label": "nunit3testadapter (6.3.0)",
+      "source_file": "Ui/Ui.csproj",
+      "source_location": null
+    },
+    {
+      "id": "ui_ui_csproj_framework_net10_0",
+      "label": "net10.0",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "concept",
+      "norm_label": "net10.0",
+      "source_file": "Ui/Ui.csproj",
+      "source_location": null
+    },
+    {
+      "id": "ui_ui_csproj_sdk_microsoft_net_sdk",
+      "label": "Microsoft.NET.Sdk",
+      "_origin": "ast",
+      "community": 0,
+      "file_type": "concept",
+      "norm_label": "microsoft.net.sdk",
+      "source_file": "Ui/Ui.csproj",
+      "source_location": null
+    },
+    {
+      "id": "core_models_productmodel_core_models_productmodel_category",
+      "label": "Category",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "category",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L9"
+    },
+    {
+      "id": "core_models_productmodel_core_models_productmodel_description",
+      "label": "Description",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "description",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L8"
+    },
+    {
+      "id": "core_models_productmodel_core_models_productmodel_id",
+      "label": "Id",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "id",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_productmodel_core_models_productmodel_image",
+      "label": "Image",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "image",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L10"
+    },
+    {
+      "id": "core_models_productmodel_core_models_productmodel_price",
+      "label": "Price",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "price",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L7"
+    },
+    {
+      "id": "core_models_productmodel_core_models_productmodel_rating",
+      "label": "Rating",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "rating",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L11"
+    },
+    {
+      "id": "core_models_productmodel_core_models_productmodel_title",
+      "label": "Title",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "title",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_ratingmodel",
+      "label": "RatingModel.cs",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "norm_label": "ratingmodel.cs",
+      "source_file": "Core/Models/RatingModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_ratingmodel_core_models_ratingmodel_count",
+      "label": "Count",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "count",
+      "source_file": "Core/Models/RatingModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_ratingmodel_core_models_ratingmodel_rate",
+      "label": "Rate",
+      "_origin": "ast",
+      "community": 1,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "rate",
+      "source_file": "Core/Models/RatingModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_helpers_requesthelper",
+      "label": "RequestHelper.cs",
+      "_origin": "ast",
+      "community": 10,
+      "file_type": "code",
+      "norm_label": "requesthelper.cs",
+      "source_file": "Core/Helpers/RequestHelper.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "csharp_namespace:87820f6fce3bca44",
+      "label": "Core.Helpers",
+      "_origin": "ast",
+      "community": 10,
+      "file_type": "code",
+      "metadata": {
+        "kind": "csharp_namespace",
+        "namespace": "Core.Helpers"
+      },
+      "norm_label": "core.helpers",
+      "source_file": "Core/Helpers/RequestHelper.cs",
+      "source_location": "L1",
+      "type": "namespace"
+    },
+    {
+      "id": "core_models_usermodel_core_models_usermodel_address",
+      "label": "Address",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "address",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L10"
+    },
+    {
+      "id": "core_models_usermodel_core_models_usermodel_email",
+      "label": "Email",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "email",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_usermodel_core_models_usermodel_id",
+      "label": "Id",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "id",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_usermodel_core_models_usermodel_name",
+      "label": "Name",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "name",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L9"
+    },
+    {
+      "id": "core_models_usermodel_core_models_usermodel_password",
+      "label": "Password",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "password",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L8"
+    },
+    {
+      "id": "core_models_usermodel_core_models_usermodel_phone",
+      "label": "Phone",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "phone",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L11"
+    },
+    {
+      "id": "core_models_usermodel_core_models_usermodel_username",
+      "label": "Username",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "username",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L7"
+    },
+    {
+      "id": "core_models_usernamemodel",
+      "label": "UserNameModel.cs",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "norm_label": "usernamemodel.cs",
+      "source_file": "Core/Models/UserNameModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_usernamemodel_core_models_usernamemodel_firstname",
+      "label": "Firstname",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "firstname",
+      "source_file": "Core/Models/UserNameModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_usernamemodel_core_models_usernamemodel_lastname",
+      "label": "Lastname",
+      "_origin": "ast",
+      "community": 2,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "lastname",
+      "source_file": "Core/Models/UserNameModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_addressmodel",
+      "label": "AddressModel.cs",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "norm_label": "addressmodel.cs",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_addressmodel_core_models_addressmodel_city",
+      "label": "City",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "city",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_addressmodel_core_models_addressmodel_geolocation",
+      "label": "Geolocation",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "geolocation",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_addressmodel_core_models_addressmodel_number",
+      "label": "Number",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "number",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L8"
+    },
+    {
+      "id": "core_models_addressmodel_core_models_addressmodel_street",
+      "label": "Street",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "street",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L7"
+    },
+    {
+      "id": "core_models_addressmodel_core_models_addressmodel_zipcode",
+      "label": "Zipcode",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "zipcode",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L9"
+    },
+    {
+      "id": "core_models_geolocationmodel",
+      "label": "GeolocationModel.cs",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "norm_label": "geolocationmodel.cs",
+      "source_file": "Core/Models/GeolocationModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_geolocationmodel_core_models_geolocationmodel_lat",
+      "label": "Lat",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "lat",
+      "source_file": "Core/Models/GeolocationModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_geolocationmodel_core_models_geolocationmodel_long",
+      "label": "Long",
+      "_origin": "ast",
+      "community": 3,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "long",
+      "source_file": "Core/Models/GeolocationModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_cartproductmodel",
+      "label": "CartProductModel.cs",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "norm_label": "cartproductmodel.cs",
+      "source_file": "Core/Models/CartProductModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_cartproductmodel_core_models_cartproductmodel_productid",
+      "label": "ProductId",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "productid",
+      "source_file": "Core/Models/CartProductModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_cartproductmodel_core_models_cartproductmodel_quantity",
+      "label": "Quantity",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "quantity",
+      "source_file": "Core/Models/CartProductModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_cartrequest",
+      "label": "CartRequest.cs",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "norm_label": "cartrequest.cs",
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_cartrequest_core_models_cartrequest_date",
+      "label": "Date",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "date",
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_cartrequest_core_models_cartrequest_products",
+      "label": "Products",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "products",
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L7"
+    },
+    {
+      "id": "core_models_cartrequest_core_models_cartrequest_userid",
+      "label": "UserId",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "userid",
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_cartrequest_cs_datetime",
+      "label": "DateTime",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "norm_label": "datetime",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "core_models_cartrequest_cs_list",
+      "label": "List",
+      "_origin": "ast",
+      "community": 4,
+      "file_type": "code",
+      "norm_label": "list",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "core_models_cartmodel",
+      "label": "CartModel.cs",
+      "_origin": "ast",
+      "community": 5,
+      "file_type": "code",
+      "norm_label": "cartmodel.cs",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_cartmodel_core_models_cartmodel_date",
+      "label": "Date",
+      "_origin": "ast",
+      "community": 5,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "date",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L7"
+    },
+    {
+      "id": "core_models_cartmodel_core_models_cartmodel_id",
+      "label": "Id",
+      "_origin": "ast",
+      "community": 5,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "id",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_cartmodel_core_models_cartmodel_products",
+      "label": "Products",
+      "_origin": "ast",
+      "community": 5,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "products",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L8"
+    },
+    {
+      "id": "core_models_cartmodel_core_models_cartmodel_userid",
+      "label": "UserId",
+      "_origin": "ast",
+      "community": 5,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "userid",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_cartmodel_cs_datetime",
+      "label": "DateTime",
+      "_origin": "ast",
+      "community": 5,
+      "file_type": "code",
+      "norm_label": "datetime",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "core_models_cartmodel_cs_list",
+      "label": "List",
+      "_origin": "ast",
+      "community": 5,
+      "file_type": "code",
+      "norm_label": "list",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "core_models_userrequest",
+      "label": "UserRequest.cs",
+      "_origin": "ast",
+      "community": 6,
+      "file_type": "code",
+      "norm_label": "userrequest.cs",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_userrequest_core_models_userrequest_address",
+      "label": "Address",
+      "_origin": "ast",
+      "community": 6,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "address",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L9"
+    },
+    {
+      "id": "core_models_userrequest_core_models_userrequest_email",
+      "label": "Email",
+      "_origin": "ast",
+      "community": 6,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "email",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_userrequest_core_models_userrequest_name",
+      "label": "Name",
+      "_origin": "ast",
+      "community": 6,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "name",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L8"
+    },
+    {
+      "id": "core_models_userrequest_core_models_userrequest_password",
+      "label": "Password",
+      "_origin": "ast",
+      "community": 6,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "password",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L7"
+    },
+    {
+      "id": "core_models_userrequest_core_models_userrequest_phone",
+      "label": "Phone",
+      "_origin": "ast",
+      "community": 6,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "phone",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L10"
+    },
+    {
+      "id": "core_models_userrequest_core_models_userrequest_username",
+      "label": "Username",
+      "_origin": "ast",
+      "community": 6,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "username",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_authrequest",
+      "label": "AuthRequest.cs",
+      "_origin": "ast",
+      "community": 7,
+      "file_type": "code",
+      "norm_label": "authrequest.cs",
+      "source_file": "Core/Models/AuthRequest.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_authrequest_core_models_authrequest_password",
+      "label": "Password",
+      "_origin": "ast",
+      "community": 7,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "password",
+      "source_file": "Core/Models/AuthRequest.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_authrequest_core_models_authrequest_username",
+      "label": "Username",
+      "_origin": "ast",
+      "community": 7,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "username",
+      "source_file": "Core/Models/AuthRequest.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_productmodel",
+      "label": "ProductModel.cs",
+      "_origin": "ast",
+      "community": 7,
+      "file_type": "code",
+      "norm_label": "productmodel.cs",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_usermodel",
+      "label": "UserModel.cs",
+      "_origin": "ast",
+      "community": 7,
+      "file_type": "code",
+      "norm_label": "usermodel.cs",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "csharp_namespace:6dd7503f0bbf2b75",
+      "label": "Core.Models",
+      "_origin": "ast",
+      "community": 7,
+      "file_type": "code",
+      "metadata": {
+        "kind": "csharp_namespace",
+        "namespace": "Core.Models"
+      },
+      "norm_label": "core.models",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L1",
+      "type": "namespace"
+    },
+    {
+      "id": "core_models_productrequest",
+      "label": "ProductRequest.cs",
+      "_origin": "ast",
+      "community": 8,
+      "file_type": "code",
+      "norm_label": "productrequest.cs",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_productrequest_core_models_productrequest_category",
+      "label": "Category",
+      "_origin": "ast",
+      "community": 8,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "category",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L8"
+    },
+    {
+      "id": "core_models_productrequest_core_models_productrequest_description",
+      "label": "Description",
+      "_origin": "ast",
+      "community": 8,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "description",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L7"
+    },
+    {
+      "id": "core_models_productrequest_core_models_productrequest_image",
+      "label": "Image",
+      "_origin": "ast",
+      "community": 8,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "image",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L9"
+    },
+    {
+      "id": "core_models_productrequest_core_models_productrequest_price",
+      "label": "Price",
+      "_origin": "ast",
+      "community": 8,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "price",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "core_models_productrequest_core_models_productrequest_title",
+      "label": "Title",
+      "_origin": "ast",
+      "community": 8,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "title",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_generic_idnamemodel",
+      "label": "IdNameModel.cs",
+      "_origin": "ast",
+      "community": 9,
+      "file_type": "code",
+      "norm_label": "idnamemodel.cs",
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L1"
+    },
+    {
+      "id": "core_models_generic_idnamemodel_core_models_generic_idnamemodel_id",
+      "label": "Id",
+      "_origin": "ast",
+      "community": 9,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models.Generic",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "id",
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L5"
+    },
+    {
+      "id": "core_models_generic_idnamemodel_core_models_generic_idnamemodel_name",
+      "label": "Name",
+      "_origin": "ast",
+      "community": 9,
+      "file_type": "code",
+      "metadata": {
+        "namespace": "Core.Models.Generic",
+        "scope_chain": [
+          "s0"
+        ]
+      },
+      "norm_label": "name",
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L6"
+    },
+    {
+      "id": "csharp_namespace:a184fa1bc77823c1",
+      "label": "Core.Models.Generic",
+      "_origin": "ast",
+      "community": 9,
+      "file_type": "code",
+      "metadata": {
+        "kind": "csharp_namespace",
+        "namespace": "Core.Models.Generic"
+      },
+      "norm_label": "core.models.generic",
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L1",
+      "type": "namespace"
+    }
+  ],
+  "links": [
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_addressmodel_core_models_addressmodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "AddressModel"
+      },
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest_core_models_userrequest",
+      "target": "core_models_addressmodel_core_models_addressmodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "AddressModel"
+      },
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel_core_models_cartmodel",
+      "target": "core_models_cartmodel_cs_datetime",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "DateTime"
+      },
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartrequest_core_models_cartrequest",
+      "target": "core_models_cartrequest_cs_datetime",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "DateTime"
+      },
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_addressmodel_core_models_addressmodel",
+      "target": "core_models_geolocationmodel_core_models_geolocationmodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "GeolocationModel"
+      },
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel_core_models_cartmodel",
+      "target": "core_models_cartmodel_cs_list",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "List"
+      },
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartrequest_core_models_cartrequest",
+      "target": "core_models_cartrequest_cs_list",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "List"
+      },
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel_core_models_productmodel",
+      "target": "core_models_ratingmodel_core_models_ratingmodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "RatingModel"
+      },
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_usernamemodel_core_models_usernamemodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "UserNameModel"
+      },
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest_core_models_userrequest",
+      "target": "core_models_usernamemodel_core_models_usernamemodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "metadata": {
+        "ref_token": "UserNameModel"
+      },
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_addressmodel_core_models_addressmodel",
+      "target": "core_models_addressmodel_core_models_addressmodel_geolocation",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_addressmodel_core_models_addressmodel",
+      "target": "core_models_addressmodel_core_models_addressmodel_city",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_addressmodel_core_models_addressmodel",
+      "target": "core_models_addressmodel_core_models_addressmodel_street",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_addressmodel_core_models_addressmodel",
+      "target": "core_models_addressmodel_core_models_addressmodel_number",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_addressmodel_core_models_addressmodel",
+      "target": "core_models_addressmodel_core_models_addressmodel_zipcode",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_authrequest_core_models_authrequest",
+      "target": "core_models_authrequest_core_models_authrequest_username",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/AuthRequest.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_authrequest_core_models_authrequest",
+      "target": "core_models_authrequest_core_models_authrequest_password",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/AuthRequest.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel_core_models_cartmodel",
+      "target": "core_models_cartmodel_core_models_cartmodel_id",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel_core_models_cartmodel",
+      "target": "core_models_cartmodel_core_models_cartmodel_userid",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel_core_models_cartmodel",
+      "target": "core_models_cartmodel_core_models_cartmodel_date",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel_core_models_cartmodel",
+      "target": "core_models_cartmodel_core_models_cartmodel_products",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartproductmodel_core_models_cartproductmodel",
+      "target": "core_models_cartproductmodel_core_models_cartproductmodel_productid",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartProductModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartproductmodel_core_models_cartproductmodel",
+      "target": "core_models_cartproductmodel_core_models_cartproductmodel_quantity",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartProductModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartrequest_core_models_cartrequest",
+      "target": "core_models_cartrequest_core_models_cartrequest_userid",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartrequest_core_models_cartrequest",
+      "target": "core_models_cartrequest_core_models_cartrequest_date",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartrequest_core_models_cartrequest",
+      "target": "core_models_cartrequest_core_models_cartrequest_products",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_generic_idnamemodel_core_models_generic_idnamemodel",
+      "target": "core_models_generic_idnamemodel_core_models_generic_idnamemodel_id",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_generic_idnamemodel_core_models_generic_idnamemodel",
+      "target": "core_models_generic_idnamemodel_core_models_generic_idnamemodel_name",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_geolocationmodel_core_models_geolocationmodel",
+      "target": "core_models_geolocationmodel_core_models_geolocationmodel_lat",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/GeolocationModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_geolocationmodel_core_models_geolocationmodel",
+      "target": "core_models_geolocationmodel_core_models_geolocationmodel_long",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/GeolocationModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel_core_models_productmodel",
+      "target": "core_models_productmodel_core_models_productmodel_image",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel_core_models_productmodel",
+      "target": "core_models_productmodel_core_models_productmodel_rating",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel_core_models_productmodel",
+      "target": "core_models_productmodel_core_models_productmodel_id",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel_core_models_productmodel",
+      "target": "core_models_productmodel_core_models_productmodel_title",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel_core_models_productmodel",
+      "target": "core_models_productmodel_core_models_productmodel_price",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel_core_models_productmodel",
+      "target": "core_models_productmodel_core_models_productmodel_description",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel_core_models_productmodel",
+      "target": "core_models_productmodel_core_models_productmodel_category",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productrequest_core_models_productrequest",
+      "target": "core_models_productrequest_core_models_productrequest_title",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productrequest_core_models_productrequest",
+      "target": "core_models_productrequest_core_models_productrequest_price",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productrequest_core_models_productrequest",
+      "target": "core_models_productrequest_core_models_productrequest_description",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productrequest_core_models_productrequest",
+      "target": "core_models_productrequest_core_models_productrequest_category",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productrequest_core_models_productrequest",
+      "target": "core_models_productrequest_core_models_productrequest_image",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_ratingmodel_core_models_ratingmodel",
+      "target": "core_models_ratingmodel_core_models_ratingmodel_rate",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/RatingModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_ratingmodel_core_models_ratingmodel",
+      "target": "core_models_ratingmodel_core_models_ratingmodel_count",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/RatingModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_usermodel_core_models_usermodel_address",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_usermodel_core_models_usermodel_phone",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_usermodel_core_models_usermodel_id",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_usermodel_core_models_usermodel_email",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_usermodel_core_models_usermodel_username",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_usermodel_core_models_usermodel_password",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel_core_models_usermodel",
+      "target": "core_models_usermodel_core_models_usermodel_name",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usernamemodel_core_models_usernamemodel",
+      "target": "core_models_usernamemodel_core_models_usernamemodel_firstname",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserNameModel.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usernamemodel_core_models_usernamemodel",
+      "target": "core_models_usernamemodel_core_models_usernamemodel_lastname",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserNameModel.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest_core_models_userrequest",
+      "target": "core_models_userrequest_core_models_userrequest_phone",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L10",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest_core_models_userrequest",
+      "target": "core_models_userrequest_core_models_userrequest_email",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L5",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest_core_models_userrequest",
+      "target": "core_models_userrequest_core_models_userrequest_username",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest_core_models_userrequest",
+      "target": "core_models_userrequest_core_models_userrequest_password",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest_core_models_userrequest",
+      "target": "core_models_userrequest_core_models_userrequest_name",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest_core_models_userrequest",
+      "target": "core_models_userrequest_core_models_userrequest_address",
+      "relation": "defines",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "field",
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel_core_models_cartmodel",
+      "target": "core_models_cartproductmodel_core_models_cartproductmodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "metadata": {
+        "ref_token": "CartProductModel"
+      },
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartrequest_core_models_cartrequest",
+      "target": "core_models_cartproductmodel_core_models_cartproductmodel",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "metadata": {
+        "ref_token": "CartProductModel"
+      },
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "core_helpers_requesthelper",
+      "target": "csharp_namespace:87820f6fce3bca44",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Helpers/RequestHelper.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_helpers_requesthelper",
+      "target": "core_helpers_requesthelper_core_helpers_requesthelper",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Helpers/RequestHelper.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_addressmodel",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_addressmodel",
+      "target": "core_models_addressmodel_core_models_addressmodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/AddressModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_authrequest",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/AuthRequest.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_authrequest",
+      "target": "core_models_authrequest_core_models_authrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/AuthRequest.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartmodel",
+      "target": "core_models_cartmodel_core_models_cartmodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/CartModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartproductmodel",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/CartProductModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartproductmodel",
+      "target": "core_models_cartproductmodel_core_models_cartproductmodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/CartProductModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartrequest",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_cartrequest",
+      "target": "core_models_cartrequest_core_models_cartrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/CartRequest.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_generic_idnamemodel",
+      "target": "csharp_namespace:a184fa1bc77823c1",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_generic_idnamemodel",
+      "target": "core_models_generic_idnamemodel_core_models_generic_idnamemodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/Generic/IdNameModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_geolocationmodel",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/GeolocationModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_geolocationmodel",
+      "target": "core_models_geolocationmodel_core_models_geolocationmodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/GeolocationModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productmodel",
+      "target": "core_models_productmodel_core_models_productmodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/ProductModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productrequest",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_productrequest",
+      "target": "core_models_productrequest_core_models_productrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/ProductRequest.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_ratingmodel",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/RatingModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_ratingmodel",
+      "target": "core_models_ratingmodel_core_models_ratingmodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/RatingModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usermodel",
+      "target": "core_models_usermodel_core_models_usermodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/UserModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usernamemodel",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/UserNameModel.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_usernamemodel",
+      "target": "core_models_usernamemodel_core_models_usernamemodel",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/UserNameModel.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest",
+      "target": "csharp_namespace:6dd7503f0bbf2b75",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "core_models_userrequest",
+      "target": "core_models_userrequest_core_models_userrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Models/UserRequest.cs",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "gredja",
+      "target": "api_api",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Gredja.slnx",
+      "weight": 1.0
+    },
+    {
+      "source": "gredja",
+      "target": "core_core",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Gredja.slnx",
+      "weight": 1.0
+    },
+    {
+      "source": "gredja",
+      "target": "ui_ui",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Gredja.slnx",
+      "weight": 1.0
+    },
+    {
+      "source": "api_api",
+      "target": "api_api_csproj_nuget_coverlet_collector",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Api/Api.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "api_api",
+      "target": "api_api_csproj_nuget_microsoft_net_test_sdk",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Api/Api.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "api_api",
+      "target": "api_api_csproj_nuget_nunit",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Api/Api.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "api_api",
+      "target": "api_api_csproj_nuget_nunit3testadapter",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Api/Api.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "api_api",
+      "target": "core_core",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Api/Api.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "api_api",
+      "target": "nuget_restsharp",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Api/Api.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "ui_ui",
+      "target": "core_core",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Ui/Ui.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "ui_ui",
+      "target": "nuget_microsoft_playwright",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Ui/Ui.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "ui_ui",
+      "target": "ui_ui_csproj_nuget_coverlet_collector",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Ui/Ui.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "ui_ui",
+      "target": "ui_ui_csproj_nuget_microsoft_net_test_sdk",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Ui/Ui.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "ui_ui",
+      "target": "ui_ui_csproj_nuget_nunit",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Ui/Ui.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "ui_ui",
+      "target": "ui_ui_csproj_nuget_nunit3testadapter",
+      "relation": "imports",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Ui/Ui.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "api_api",
+      "target": "ui_ui_csproj_framework_net10_0",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Api/Api.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "api_api",
+      "target": "ui_ui_csproj_sdk_microsoft_net_sdk",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Api/Api.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "core_core",
+      "target": "ui_ui_csproj_framework_net10_0",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Core.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "core_core",
+      "target": "ui_ui_csproj_sdk_microsoft_net_sdk",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Core/Core.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "ui_ui",
+      "target": "ui_ui_csproj_framework_net10_0",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Ui/Ui.csproj",
+      "weight": 1.0
+    },
+    {
+      "source": "ui_ui",
+      "target": "ui_ui_csproj_sdk_microsoft_net_sdk",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "Ui/Ui.csproj",
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": []
+}
