@@ -39,13 +39,16 @@ To access saved data:
 - `task({ operation: "list" })` — list active tasks
 - `actor({ operation: "status", actor_id: "<id>" })` — agent status
 
-**Read project memory first:** `~/.local/share/mimocode/memory/projects/global/MEMORY.md` — contains rules, conventions, and architecture decisions for this project.
+**Read project memory first:**
+- `~/.local/share/mimocode/memory/projects/global/MEMORY.md` — global rules, conventions, architecture decisions
+- `~/.local/share/mimocode/memory/projects/gredja/MEMORY.md` — Gredja-specific context, rules, roadmap, curriculum progress
 
 ## Memory Structure
 
 ```
 ~/.local/share/mimocode/memory/
 ├── projects/global/MEMORY.md    — rules, conventions, architecture decisions
+├── projects/gredja/MEMORY.md    — project-specific context, rules, roadmap, curriculum progress
 ├── sessions/<sid>/checkpoint.md — current session state
 └── sessions/<sid>/notes.md      — notes and observations
 ```
