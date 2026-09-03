@@ -12,6 +12,7 @@ Gredja/
 ├── README.md
 ├── TestPlan.md
 ├── FILE_STRUCTURE.md
+├── token-budget.md               # token budgets per workflow
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
 └── .graphifyignore
