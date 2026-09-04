@@ -33,7 +33,9 @@ public static class AssertHelper
             {
                 value.Should().NotBeNull($"{prop.Name} is marked [RequiredField]");
                 if (value is string str)
+                {
                     str.Should().NotBeNullOrWhiteSpace($"{prop.Name} is marked [RequiredField]");
+                }
             }
 
             if (prop.GetCustomAttribute<PositiveIdAttribute>() != null)
