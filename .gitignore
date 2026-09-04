@@ -27,3 +27,6 @@ launchSettings.json
 ## Secrets
 .credentials
 .env
+
+## Graphify cache (generated)
+graphify-out/cache/
