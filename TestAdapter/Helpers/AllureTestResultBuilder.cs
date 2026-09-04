@@ -82,11 +82,24 @@ internal static class AllureTestResultBuilder
 
     private static List<Dictionary<string, string>> BuildLabels(string? testClassName)
     {
+        var projectName = ExtractProjectName(testClassName);
+
         return new List<Dictionary<string, string>>
         {
             new() { ["name"] = "framework", ["value"] = "nunit" },
             new() { ["name"] = "host", ["value"] = Environment.MachineName },
-            new() { ["name"] = "package", ["value"] = testClassName ?? "Tests" }
+            new() { ["name"] = "package", ["value"] = testClassName ?? "Tests" },
+            new() { ["name"] = "parentSuite", ["value"] = projectName },
+            new() { ["name"] = "suite", ["value"] = testClassName ?? "Tests" }
         };
+    }
+
+    private static string ExtractProjectName(string? namespaceName)
+    {
+        if (string.IsNullOrEmpty(namespaceName))
+            return "Tests";
+
+        var parts = namespaceName.Split('.');
+        return parts.Length > 0 ? parts[0] : "Tests";
     }
 }
