@@ -61,7 +61,8 @@ Core/
 Api/
 ├── Api.csproj
 └── Tests/
-    └── ProductApiTests.cs
+    ├── GetAllProductsTests.cs       # GET /products — 11 tests
+    └── GetProductByIdTests.cs       # GET /products/{id} — 11 tests (8 active + 3 Ignore)
 ```
 
 ## Ui/
