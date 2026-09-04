@@ -3,23 +3,24 @@
 ## Remote
 
 - Repo: https://github.com/Gredja/AiTest.git
-- Branch: `master`
+- Branch: `main`
 
 ## Branches
 
-- `master` — стабильная ветка, не трогаем напрямую
-- Все изменения делаем в `features/...` ветках
-- Формат: `features/<topic>`
+- `main` — stable branch, do not touch directly
+- All changes go into `features/...` branches
+- Format: `features/<topic>`
 
 ## Commits
 
+- Only on user request
 - English language
 - Format: **action + object** (e.g. "Add git rules", "Fix product tests")
-- Спрашивать коммит-месседж у пользователя
+- Ask the user for the commit message (propose one based on style)
 
 ## Pull Requests
 
-PR из `features/...` в `master` — только после ревью и апрува.
+PRs from `features/...` into `main` — only after review and approval.
 
 ## Secrets
 
