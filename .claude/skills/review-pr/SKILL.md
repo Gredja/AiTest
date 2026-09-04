@@ -5,17 +5,53 @@ Automated code review for Gredja pull requests. Checks against project rules + g
 ## Usage
 
 ```
-/review-pr <PR-number-or-URL>
+/review-pr <PR-number>
 ```
 
-Example: `/review-pr 15` or `/review-pr https://github.com/Gredja/AiTest/pull/15`
+Example: `/review-pr 15`
 
-## What it does
+## Prerequisites
 
-1. Fetches PR diff via `gh pr diff <number>`
-2. Reviews changes against checklist below
-3. Posts review comment via `gh pr review <number>`
-4. Reports summary to user
+- GitHub PAT with `repo` scope in `.env` as `GITHUB_PAT=github_pat_...`
+- PowerShell (Invoke-RestMethod)
+
+## How it works
+
+### Step 1: Fetch PR metadata
+
+```powershell
+$token = (Get-Content ".env" | Select-String "GITHUB_PAT=(.*)" ).Matches[0].Groups[1].Value
+$headers = @{ "Authorization" = "token $token"; "Accept" = "application/vnd.github.v3+json" }
+$pr = Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/pulls/<NUMBER>" -Headers $headers
+```
+
+### Step 2: Fetch changed files + patches
+
+```powershell
+$files = Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/pulls/<NUMBER>/files" -Headers $headers
+# Each file has: filename, status, additions, deletions, patch
+```
+
+### Step 3: Read current versions of changed files
+
+```powershell
+# For each file with status "modified" or "added":
+$content = Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/contents/<PATH>?ref=<HEAD_SHA>" -Headers $headers
+$decoded = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($content.content))
+```
+
+### Step 4: Review against checklist (below)
+
+Analyze each changed file against the review checklist.
+
+### Step 5: Post review comment
+
+```powershell
+$body = @{
+    body = "<review markdown>"
+} | ConvertTo-Json
+Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/issues/<NUMBER>/comments" -Method Post -Headers $headers -Body $body
+```
 
 ## Review checklist
 
@@ -46,14 +82,14 @@ Example: `/review-pr 15` or `/review-pr https://github.com/Gredja/AiTest/pull/15
 
 ## Output format
 
-Post a PR review with:
+Post a PR review comment with:
 - **Summary:** 1-2 sentence overview of changes
 - **Verdict:** APPROVE / REQUEST_CHANGES / COMMENT
-- **Issues:** Numbered list with file:line references and severity (🔴 blocking / 🟡 suggestion / 🟢 nit)
+- **Issues:** Numbered list with file:line references and severity (blocking / suggestion / nit)
 - **Positives:** What was done well (brief)
 
 ## Severity levels
 
-- 🔴 **blocking** — Must fix before merge (security, rule violation, broken code)
-- 🟡 **suggestion** — Should consider (code quality, naming, best practices)
-- 🟢 **nit** — Optional improvement (style, minor cleanup)
+- **blocking** — Must fix before merge (security, rule violation, broken code)
+- **suggestion** — Should consider (code quality, naming, best practices)
+- **nit** — Optional improvement (style, minor cleanup)
