@@ -13,6 +13,7 @@ Gredja/
 ├── TestPlan.md
 ├── FILE_STRUCTURE.md
 ├── token-budget.md               # token budgets per workflow
+├── allureConfig.json             # Allure Report configuration
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
 ├── .graphifyignore
@@ -27,6 +28,9 @@ Gredja/
     │   └── read-memory.ts        # auto-loads project memory into session
     └── scripts/
         └── gh-pr-create.ps1      # wrapper for gh pr create
+
+Scripts/
+└── allure-report.ps1             # run tests + generate Allure report
 ```
 
 ## Core/
@@ -71,6 +75,19 @@ Api/
 └── Tests/
     ├── GetAllProductsTests.cs       # GET /products — 11 tests
     └── GetProductByIdTests.cs       # GET /products/{id} — 11 tests (8 active + 3 Ignore)
+```
+
+## TestAdapter/
+
+```
+TestAdapter/
+├── TestAdapter.csproj
+└── Helpers/
+    ├── AllureHelper.cs             # Shared utilities (FindProjectRoot, GetResultsDir)
+    ├── AllureGlobalSetup.cs        # [SetUpFixture] — captures [Ignore] tests as skipped
+    ├── AllureJsonWriter.cs         # JSON file writer for Allure results
+    ├── AllureNUnitAttribute.cs     # Custom Allure adapter for NUnit 4.x (ITestAction)
+    └── AllureTestResultBuilder.cs  # Builds Allure JSON dictionaries
 ```
 
 ## Ui/

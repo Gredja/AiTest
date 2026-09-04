@@ -2,15 +2,16 @@ using NUnit.Framework;
 using RestSharp;
 using Core.Models;
 using Core.Config;
-using Api.Helpers;
 using Core.Helpers;
 using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
+using TestAdapter;
 
 namespace Api.Tests;
 
 [TestFixture]
+[AllureNUnit]
 public class GetProductByIdTests
 {
     private RestClient _client = null!;

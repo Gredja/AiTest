@@ -7,10 +7,12 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using FluentAssertions;
+using TestAdapter;
 
 namespace Api.Tests;
 
 [TestFixture]
+[AllureNUnit]
 public class GetAllProductsTests
 {
     private RestClient _client = null!;
