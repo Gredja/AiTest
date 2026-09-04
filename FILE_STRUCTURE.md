@@ -95,7 +95,9 @@ Rules/
 
 ```
 Prompts/
-└── prompts.md
+├── prompts.md
+└── templates/
+    └── api-test-generation.md    # Reusable prompt template for endpoint test generation
 
 graphify-out/
 ├── graph.json
