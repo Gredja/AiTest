@@ -41,7 +41,8 @@ Core/
 ├── Config/
 │   └── Endpoints.cs              # BaseUrl + all endpoint constants
 ├── Helpers/
-│   └── AssertHelper.cs           # Generic assertions (ShouldBeOk, ShouldHaveValidFields<T>)
+│   ├── AssertHelper.cs           # Generic assertions (ShouldBeOk, ShouldHaveValidFields<T>)
+│   └── RequestHelper.cs          # HTTP request wrapper (Get, RestClient init) — WIP
 ├── Models/
 │   ├── Generic/
 │   │   └── IdNameModel.cs
@@ -54,6 +55,7 @@ Core/
 │   ├── ProductModel.cs
 │   ├── ProductRequest.cs
 │   ├── RatingModel.cs
+│   ├── RequestDictionaryModel.cs
 │   ├── UserModel.cs
 │   ├── UserNameModel.cs
 │   └── UserRequest.cs
