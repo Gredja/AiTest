@@ -2,7 +2,8 @@ using NUnit.Framework;
 using RestSharp;
 using Core.Models;
 using Core.Config;
-using System.Net;
+using Api.Helpers;
+using Core.Helpers;
 using System.Diagnostics;
 using FluentAssertions;
 
@@ -32,7 +33,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.ShouldHaveStatusCode(System.Net.HttpStatusCode.OK);
     }
 
     [Test]
@@ -42,7 +43,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.Data.Should().NotBeNull();
+        response.ShouldHaveStatusCode(System.Net.HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
 
@@ -63,7 +64,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.Data.Should().OnlyContain(p => p.Id > 0);
+        response.Data!.ShouldAllHaveValidProducts();
     }
 
     [Test]
@@ -73,8 +74,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.Data.Should().OnlyContain(p =>
-            !string.IsNullOrWhiteSpace(p.Title));
+        response.Data!.ShouldAllHaveValidProducts();
     }
 
     [Test]
@@ -84,7 +84,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.Data.Should().OnlyContain(p => p.Price >= 0);
+        response.Data!.ShouldAllHaveValidProducts();
     }
 
     [Test]
@@ -94,8 +94,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.Data.Should().OnlyContain(p =>
-            !string.IsNullOrWhiteSpace(p.Description));
+        response.Data!.ShouldAllHaveValidProducts();
     }
 
     [Test]
@@ -105,8 +104,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.Data.Should().OnlyContain(p =>
-            !string.IsNullOrWhiteSpace(p.Category));
+        response.Data!.ShouldAllHaveValidProducts();
     }
 
     [Test]
@@ -116,9 +114,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.Data.Should().OnlyContain(p =>
-            !string.IsNullOrWhiteSpace(p.Image) &&
-            p.Image.StartsWith("http"));
+        response.Data!.ShouldAllHaveValidProducts();
     }
 
     [Test]
@@ -128,10 +124,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = _client.Execute<List<ProductModel>>(request);
 
-        response.Data.Should().OnlyContain(p =>
-            p.Rating != null &&
-            p.Rating.Rate >= 0 && p.Rating.Rate <= 5 &&
-            p.Rating.Count >= 0);
+        response.Data!.ShouldAllHaveValidProducts();
     }
 
     [Test]

@@ -2,6 +2,8 @@ using NUnit.Framework;
 using RestSharp;
 using Core.Models;
 using Core.Config;
+using Api.Helpers;
+using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 
@@ -33,7 +35,7 @@ public class GetProductByIdTests
 
         var response = _client.Execute<ProductModel>(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
@@ -45,8 +47,7 @@ public class GetProductByIdTests
 
         var response = _client.Execute<ProductModel>(request);
 
-        response.Data.Should().NotBeNull();
-        response.Data!.Id.Should().BeGreaterThan(0);
+        response.ShouldBeOk();
     }
 
     [Test]
@@ -58,14 +59,7 @@ public class GetProductByIdTests
 
         var response = _client.Execute<ProductModel>(request);
 
-        var product = response.Data!;
-        product.Id.Should().BeGreaterThan(0);
-        product.Title.Should().NotBeNullOrWhiteSpace();
-        product.Price.Should().BeGreaterThanOrEqualTo(0);
-        product.Description.Should().NotBeNull();
-        product.Category.Should().NotBeNullOrWhiteSpace();
-        product.Image.Should().NotBeNullOrWhiteSpace();
-        product.Rating.Should().NotBeNull();
+        response.Data!.ShouldHaveValidFields();
     }
 
     [Test]
@@ -146,7 +140,7 @@ public class GetProductByIdTests
 
         var response = _client.Execute<ProductModel>(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Test]
@@ -159,7 +153,7 @@ public class GetProductByIdTests
 
         var response = _client.Execute<ProductModel>(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Test]
@@ -172,6 +166,6 @@ public class GetProductByIdTests
 
         var response = _client.Execute<ProductModel>(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

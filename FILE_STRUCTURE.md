@@ -34,10 +34,14 @@ Gredja/
 ```
 Core/
 ├── Core.csproj
+├── Attributes/
+│   ├── PositiveIdAttribute.cs
+│   ├── RequiredFieldAttribute.cs
+│   └── ValueRangeAttribute.cs
 ├── Config/
 │   └── Endpoints.cs              # BaseUrl + all endpoint constants
 ├── Helpers/
-│   └── RequestHelper.cs
+│   └── AssertHelper.cs           # Generic assertions (ShouldBeOk, ShouldHaveValidFields<T>)
 ├── Models/
 │   ├── Generic/
 │   │   └── IdNameModel.cs
@@ -60,6 +64,8 @@ Core/
 ```
 Api/
 ├── Api.csproj
+├── Helpers/
+│   └── ProductAssertHelper.cs    # Product-specific assertions
 └── Tests/
     ├── GetAllProductsTests.cs       # GET /products — 11 tests
     └── GetProductByIdTests.cs       # GET /products/{id} — 11 tests (8 active + 3 Ignore)
