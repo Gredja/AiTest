@@ -5,6 +5,7 @@ using Core.Config;
 using Api.Helpers;
 using Core.Helpers;
 using System.Net;
+using System.Threading.Tasks;
 using FluentAssertions;
 
 namespace Api.Tests;
@@ -28,97 +29,97 @@ public class GetProductByIdTests
 
     [Test]
     [Description("2.1 Get product by ID = 1 — status code 200")]
-    public void GetProductById_ValidId_ReturnsOk()
+    public async Task GetProductById_ValidId_ReturnsOk()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", 1);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
     [Description("2.2 Response body is not empty")]
-    public void GetProductById_ValidId_ReturnsNonEmptyBody()
+    public async Task GetProductById_ValidId_ReturnsNonEmptyBody()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", 1);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.ShouldBeOk();
     }
 
     [Test]
     [Description("2.3 Response has all expected fields")]
-    public void GetProductById_ValidId_HasAllExpectedFields()
+    public async Task GetProductById_ValidId_HasAllExpectedFields()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", 1);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.Data!.ShouldHaveValidFields();
     }
 
     [Test]
     [Description("2.4 `id` in response matches requested ID")]
-    public void GetProductById_ValidId_IdMatchesRequested()
+    public async Task GetProductById_ValidId_IdMatchesRequested()
     {
         var requestedId = 1;
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", requestedId);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.Data!.Id.Should().Be(requestedId);
     }
 
     [Test]
     [Description("2.5 `title` is string, not empty")]
-    public void GetProductById_ValidId_HasTitle()
+    public async Task GetProductById_ValidId_HasTitle()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", 1);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.Data!.Title.Should().NotBeNullOrWhiteSpace();
     }
 
     [Test]
     [Description("2.6 `price` is number, >= 0")]
-    public void GetProductById_ValidId_HasPrice()
+    public async Task GetProductById_ValidId_HasPrice()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", 1);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.Data!.Price.Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Test]
     [Description("2.7 `category` is string, not empty")]
-    public void GetProductById_ValidId_HasCategory()
+    public async Task GetProductById_ValidId_HasCategory()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", 1);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.Data!.Category.Should().NotBeNullOrWhiteSpace();
     }
 
     [Test]
     [Description("2.8 `rating.rate` is number, 0-5")]
-    public void GetProductById_ValidId_HasRating()
+    public async Task GetProductById_ValidId_HasRating()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", 1);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.Data!.Rating.Should().NotBeNull();
         response.Data.Rating.Rate.Should().BeInRange(0, 5);
@@ -128,17 +129,17 @@ public class GetProductByIdTests
     [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for non-existent IDs")]
     [Description("2.9 Get product by non-existent ID (maxId + 1) — status code 404")]
-    public void GetProductById_NonExistentId_ReturnsNotFound()
+    public async Task GetProductById_NonExistentId_ReturnsNotFound()
     {
         var getAllRequest = new RestRequest(Endpoints.Products, Method.Get);
-        var allProducts = _client.Execute<List<ProductModel>>(getAllRequest);
+        var allProducts = await _client.ExecuteAsync<List<ProductModel>>(getAllRequest);
         var maxId = allProducts.Data!.Max(p => p.Id);
         var nonExistentId = maxId + 1;
 
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", nonExistentId);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -146,12 +147,12 @@ public class GetProductByIdTests
     [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for ID=0")]
     [Description("2.10 Get product by ID = 0 — status code 404")]
-    public void GetProductById_ZeroId_ReturnsNotFound()
+    public async Task GetProductById_ZeroId_ReturnsNotFound()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", 0);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -159,12 +160,12 @@ public class GetProductByIdTests
     [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for negative IDs")]
     [Description("2.11 Get product by negative ID (-1) — status code 404")]
-    public void GetProductById_NegativeId_ReturnsNotFound()
+    public async Task GetProductById_NegativeId_ReturnsNotFound()
     {
         var request = new RestRequest(Endpoints.ProductsById, Method.Get);
         request.AddUrlSegment("id", -1);
 
-        var response = _client.Execute<ProductModel>(request);
+        var response = await _client.ExecuteAsync<ProductModel>(request);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

@@ -28,6 +28,12 @@
 - Max ~30 lines; extract helper if longer
 - Max 3-4 parameters; use object/record for more
 
+## Async
+
+- All API requests must be asynchronous: use `async Task<...>` methods with `await`
+- Synchronous RestSharp methods (`Execute`, `Execute<T>`) are not allowed — use `ExecuteAsync`, `ExecuteAsync<T>`
+- Test methods returning `Task` must be `async Task`, not `void`
+
 ## General
 
 - No magic numbers or strings — extract to constants
