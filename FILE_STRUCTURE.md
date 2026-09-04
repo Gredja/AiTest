@@ -15,7 +15,18 @@ Gredja/
 ├── token-budget.md               # token budgets per workflow
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
-└── .graphifyignore
+├── .graphifyignore
+├── .claude/                      # AI agent configuration
+│   └── skills/
+│       ├── gredja-rules/
+│       │   └── SKILL.md          # entry point for project rules (overview + links)
+│       └── review-pr/
+│           └── SKILL.md          # PR review skill (GitHub API based)
+└── .mimocode/                    # MiMoCode hooks and scripts
+    ├── hooks/
+    │   └── read-memory.ts        # auto-loads project memory into session
+    └── scripts/
+        └── gh-pr-create.ps1      # wrapper for gh pr create
 ```
 
 ## Core/
