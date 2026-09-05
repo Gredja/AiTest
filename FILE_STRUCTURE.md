@@ -10,6 +10,8 @@ Gredja/
 ├── Directory.Build.props
 ├── AGENTS.md
 ├── README.md
+├── PLAN.md
+├── TODO.md
 ├── TestPlan.md
 ├── FILE_STRUCTURE.md
 ├── token-budget.md               # token budgets per workflow
