@@ -46,7 +46,6 @@ Stop-Process -Name "java" -Force -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 1
 Start-Process allure -ArgumentList "open",$ReportDir,"--port","9090" -WindowStyle Hidden
 Start-Sleep -Seconds 3
-Start-Process "http://localhost:9090"
 Write-Host "Report opened at http://localhost:9090" -ForegroundColor Green
 
 Write-Host "=== Done ===" -ForegroundColor Cyan

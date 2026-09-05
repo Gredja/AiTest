@@ -1,28 +1,28 @@
 # TODO
 
-> Вызов: напиши "Список" — агент откроет этот документ.
+> Trigger: type "Список" — agent opens this document.
 
-## Статусы
+## Statuses
 
-| Статус | Значение |
-|--------|----------|
-| `[ ]` | В списке (не начато) |
-| `[~]` | В работе |
-| `[x]` | Готово |
-| `[-]` | Отменено |
+| Status | Meaning |
+|--------|---------|
+| `[ ]` | Planned (not started) |
+| `[~]` | In progress |
+| `[x]` | Done |
+| `[-]` | Cancelled |
 
 ---
 
-## Задачи
+## Tasks
 
-| # | Задача | Статус |
-|---|--------|--------|
-| 1 | Доработать RequestHelper | `[ ]` |
-| 2 | Прикрутить ReportPortal | `[ ]` |
-| 3 | Покрыть тестами еще 1 эндпоинт | `[ ]` |
+| # | Task | Status |
+|---|------|--------|
+| 1 | Improve RequestHelper | `[ ]` |
+| 2 | Integrate ReportPortal | `[ ]` |
+| 3 | Cover 1 more endpoint with tests | `[ ]` |
 
 ---
 
 ## Notes
 
-_Сюда вносятся заметки, зависимости, дедлайны._
+_Notes, dependencies, deadlines go here._

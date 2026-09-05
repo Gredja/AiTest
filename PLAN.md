@@ -1,31 +1,32 @@
 # PLAN
 
-> Вызов: напиши "План" — агент откроет этот документ.
+> Trigger: type "План" — agent opens this document.
 
-## Статусы
+## Statuses
 
-| Статус | Значение |
-|--------|----------|
-| `[ ]` | В плане (не начато) |
-| `[~]` | В работе |
-| `[x]` | Готово |
-| `[-]` | Отменено |
+| Status | Meaning |
+|--------|---------|
+| `[ ]` | Planned (not started) |
+| `[~]` | In progress |
+| `[x]` | Done |
+| `[-]` | Cancelled |
 
 ---
 
 ## Roadmap
 
-| # | Задача | Статус |
-|---|--------|--------|
-| 1 | Project structure (File structure, .csproj) | `[x]` |
-| 2 | Test plan (GET /products + GET /products/{id}, 22 tests) | `[x]` |
-| 3 | Test generation prompt | `[x]` |
+| # | Task | Status |
+|---|------|--------|
+| 1 | Project structure (File structure, .csproj) | `[~]` |
+| 2 | Test plan (GET /products + GET /products/{id}, 22 tests) | `[~]` |
+| 3 | Test generation prompt | `[~]` |
 | 4 | Generate and review tests (22 tests, 19 pass + 3 Ignore) | `[x]` |
-| 5 | Metrics (pass rate + coverage infrastructure) | `[-]` |
+| 5 | Metrics (pass rate + coverage infrastructure) | `[~]` |
 | 6 | Git setup & branching (master→main, features/*) | `[x]` |
+| 7 | Cover another service with tests (service TBD) | `[ ]` |
 
 ---
 
 ## Notes
 
-_Сюда вносятся заметки, идеи, зависимости между задачами._
+- **Task #7** — architecture plan for adding a new service: `MEMORY.md` → "Architecture decisions" → "New service in single solution"
