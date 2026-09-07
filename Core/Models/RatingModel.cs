@@ -1,7 +1,9 @@
+using Core.Attributes;
+
 namespace Core.Models;
 
 public class RatingModel
 {
-    public double Rate { get; set; }
-    public int Count { get; set; }
+    [ValueRange(0, 5)] public double Rate { get; set; }
+    [ValueRange(0)] public int Count { get; set; }
 }

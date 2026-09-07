@@ -26,10 +26,19 @@
 
 - Keep methods short and focused — one responsibility
 - Max ~30 lines; extract helper if longer
-- Max 3-4 parameters; use object/record for more
+- Max 5 parameters; use object/record for more
+
+## Async
+
+- All API requests must be asynchronous: use `async Task<...>` methods with `await`
+- Synchronous RestSharp methods (`Execute`, `Execute<T>`) are not allowed — use `ExecuteAsync`, `ExecuteAsync<T>`
+- Test methods returning `Task` must be `async Task`, not `void`
 
 ## General
 
+- No access modifier = `private` (e.g. `static RestClient` → `private static RestClient`)
+- Empty line before `return`
+- Simplify when possible: `var x = new T(); return x;` → `return new T();`
 - No magic numbers or strings — extract to constants
 - No nested ternaries — use `if`/`switch`
 - Don't catch exceptions silently — either handle or let propagate
