@@ -67,6 +67,7 @@ Detailed rule files in `Rules/` — read the relevant file before working on the
 
 ### Workflow
 Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию.
+- После завершения plan mode — удалять `.mimocode/plans/*.md` (не коммитить планы)
 
 ## Key Decisions
 - 0 и -1 — безопасные static IDs (всегда невалидные)

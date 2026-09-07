@@ -55,3 +55,16 @@ Example: `ProductModel` has `RatingModel Rating` — not inline anonymous type.
 - Don't add validation attributes (validation is in tests, not in models)
 - Don't add methods or logic — models are pure data containers
 - Don't use `init` — use `{ get; set; }` for all properties
+
+## Attributes
+
+Place attributes on a separate line above the property, not on the same line:
+
+```csharp
+// Correct
+[RequiredField]
+public string Title { get; set; }
+
+// Wrong
+[RequiredField] public string Title { get; set; }
+```
