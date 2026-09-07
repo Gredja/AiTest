@@ -29,6 +29,12 @@ if (-not $SkipTests) {
     Write-Host "[1/3] Skipping tests (used -SkipTests)" -ForegroundColor DarkGray
 }
 
+# Step 1b: Copy categories
+$CategoriesSource = Join-Path $PSScriptRoot "allure-categories.json"
+if (Test-Path $CategoriesSource) {
+    Copy-Item $CategoriesSource -Destination (Join-Path $ResultsDir "categories.json") -Force
+}
+
 # Step 2: Generate report
 Write-Host "[2/3] Generating Allure report..." -ForegroundColor Yellow
 if (-not (Test-Path $ResultsDir) -or (Get-ChildItem $ResultsDir).Count -eq 0) {
