@@ -142,4 +142,15 @@ public class GetAllProductsTests
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(5000);
     }
+
+    [Test]
+    [Description("1.12 Returns exactly 20 products")]
+    public async Task GetAllProducts_ReturnsExpectedCount()
+    {
+        var request = new RestRequest(Endpoints.Products, Method.Get);
+        var response = await _client.ExecuteAsync<List<ProductModel>>(request);
+
+        response.ShouldHaveStatusCode(System.Net.HttpStatusCode.OK);
+        response.Data.Should().HaveCount(Endpoints.ExpectedProductCount);
+    }
 }

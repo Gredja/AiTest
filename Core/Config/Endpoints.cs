@@ -3,6 +3,7 @@ namespace Core.Config;
 public static class Endpoints
 {
     public const string BaseUrl = "https://fakestoreapi.com";
+    public const int ExpectedProductCount = 20;
 
     public const string Products = "/products";
     public const string ProductsById = "/products/{id}";
