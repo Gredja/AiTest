@@ -1,3 +1,6 @@
+using System.Reflection;
+using NUnit.Framework;
+
 namespace TestAdapter.Helpers;
 
 internal static class AllureHelper
@@ -20,5 +23,13 @@ internal static class AllureHelper
         var resultsDir = Path.Combine(projectDir, "allure-results");
         Directory.CreateDirectory(resultsDir);
         return resultsDir;
+    }
+
+    public static string? GetDescription(MethodInfo method)
+    {
+        var attrs = method.GetCustomAttributes(typeof(DescriptionAttribute), false);
+        if (attrs.Length > 0)
+            return attrs[0].GetType().GetProperty("Description")?.GetValue(attrs[0]) as string;
+        return null;
     }
 }

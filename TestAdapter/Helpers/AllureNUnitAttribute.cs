@@ -48,13 +48,16 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static void WriteSkippedResult(ITest test, string uuid, long now)
     {
         var description = GetDescription(test);
-        var testResult = AllureTestResultBuilder.BuildTestResult(
-            uuid, test.FullName, test.Name,
-            startMs: now, stopMs: now,
-            status: "skipped",
-            statusMessage: "Ignored by [Ignore] attribute",
-            description: description,
-            testClassName: test.ClassName);
+        var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
+            Uuid: uuid,
+            FullName: test.FullName,
+            Name: test.Name,
+            StartMs: now,
+            StopMs: now,
+            Status: "skipped",
+            StatusMessage: "Ignored by [Ignore] attribute",
+            Description: description,
+            TestClassName: test.ClassName));
 
         AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
         AddToContainer(test, uuid);
@@ -69,14 +72,17 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         var status = MapTestStatus(result.Outcome.Status);
         var description = GetDescription(test);
 
-        var testResult = AllureTestResultBuilder.BuildTestResult(
-            uuid, test.FullName, test.Name,
-            startMs: now - elapsed, stopMs: now,
-            status: status,
-            statusMessage: status == "failed" ? result.Message : null,
-            statusTrace: status == "failed" ? result.StackTrace : null,
-            description: description,
-            testClassName: test.ClassName);
+        var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
+            Uuid: uuid,
+            FullName: test.FullName,
+            Name: test.Name,
+            StartMs: now - elapsed,
+            StopMs: now,
+            Status: status,
+            StatusMessage: status == "failed" ? result.Message : null,
+            StatusTrace: status == "failed" ? result.StackTrace : null,
+            Description: description,
+            TestClassName: test.ClassName));
 
         AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
         AddToContainer(test, uuid);
@@ -93,11 +99,17 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static void AddToContainer(ITest test, string uuid)
     {
         var containerUuid = EnsureContainer(test);
-        if (Containers.TryGetValue(containerUuid, out var info) && !info.Children.Contains(uuid))
+        if (Containers.TryGetValue(containerUuid, out var info))
         {
-            info.Children.Add(uuid);
-            var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, info.Children);
-            AllureJsonWriter.WriteContainerFile(ResultsDir, containerUuid, container);
+            lock (info.Children)
+            {
+                if (!info.Children.Contains(uuid))
+                {
+                    info.Children.Add(uuid);
+                    var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, info.Children.ToList());
+                    AllureJsonWriter.WriteContainerFile(ResultsDir, containerUuid, container);
+                }
+            }
         }
     }
 
@@ -112,34 +124,33 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             {
                 Uuid = containerUuid,
                 Name = className,
-                Children = new List<string>()
+                Children = new ConcurrentBag<string>()
             };
         }
 
         return containerUuid;
     }
 
+    private const int GuidByteLength = 16;
+
     private static string GetDeterministicUuid(string input)
     {
         using var sha = System.Security.Cryptography.SHA256.Create();
         var hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
-        return new Guid(hash[..16]).ToString();
+        return new Guid(hash[..GuidByteLength]).ToString();
     }
 
     private static string? GetDescription(ITest test)
     {
         if (test.Method?.MethodInfo == null) return null;
-        var attrs = test.Method.MethodInfo.GetCustomAttributes(typeof(NUnit.Framework.DescriptionAttribute), false);
-        if (attrs.Length > 0)
-            return attrs[0].GetType().GetProperty("Description")?.GetValue(attrs[0]) as string;
-        return null;
+        return AllureHelper.GetDescription(test.Method.MethodInfo);
     }
 
     private class ContainerInfo
     {
         public string Uuid { get; set; } = "";
         public string Name { get; set; } = "";
-        public List<string> Children { get; set; } = new();
+        public ConcurrentBag<string> Children { get; set; } = new();
     }
 
     internal record StartedTest(ITest Test, string Uuid, long StartTicks);

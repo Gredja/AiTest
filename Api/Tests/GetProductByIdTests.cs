@@ -12,30 +12,19 @@ namespace Api.Tests;
 
 [TestFixture]
 [AllureNUnit]
-public class GetProductByIdTests
+public class GetProductByIdTests : RequestHelper
 {
-    private RestClient _client = null!;
-
-    [SetUp]
-    public void Setup()
-    {
-        _client = new RestClient(Endpoints.BaseUrl);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _client?.Dispose();
-    }
-
     [Test]
     [Description("2.1 Get product by ID = 1 — status code 200")]
     public async Task GetProductById_ValidId_ReturnsOk()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", 1);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = Endpoints.TestProductId }
+            });
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -44,10 +33,13 @@ public class GetProductByIdTests
     [Description("2.2 Response body is not empty")]
     public async Task GetProductById_ValidId_ReturnsNonEmptyBody()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", 1);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = Endpoints.TestProductId }
+            });
 
         response.ShouldBeOk();
     }
@@ -56,10 +48,13 @@ public class GetProductByIdTests
     [Description("2.3 Response has all expected fields")]
     public async Task GetProductById_ValidId_HasAllExpectedFields()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", 1);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = Endpoints.TestProductId }
+            });
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -68,23 +63,28 @@ public class GetProductByIdTests
     [Description("2.4 `id` in response matches requested ID")]
     public async Task GetProductById_ValidId_IdMatchesRequested()
     {
-        var requestedId = 1;
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", requestedId);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = Endpoints.TestProductId }
+            });
 
-        var response = await _client.ExecuteAsync<ProductModel>(request);
-
-        response.Data!.Id.Should().Be(requestedId);
+        response.Data!.Id.Should().Be(Endpoints.TestProductId);
     }
 
     [Test]
     [Description("2.5 `title` is string, not empty")]
     public async Task GetProductById_ValidId_HasTitle()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", 1);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = Endpoints.TestProductId }
+            });
 
         response.Data!.Title.Should().NotBeNullOrWhiteSpace();
     }
@@ -93,10 +93,13 @@ public class GetProductByIdTests
     [Description("2.6 `price` is number, >= 0")]
     public async Task GetProductById_ValidId_HasPrice()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", 1);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = Endpoints.TestProductId }
+            });
 
         response.Data!.Price.Should().BeGreaterThanOrEqualTo(0);
     }
@@ -105,10 +108,13 @@ public class GetProductByIdTests
     [Description("2.7 `category` is string, not empty")]
     public async Task GetProductById_ValidId_HasCategory()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", 1);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = Endpoints.TestProductId }
+            });
 
         response.Data!.Category.Should().NotBeNullOrWhiteSpace();
     }
@@ -117,10 +123,13 @@ public class GetProductByIdTests
     [Description("2.8 `rating.rate` is number, 0-5")]
     public async Task GetProductById_ValidId_HasRating()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", 1);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = Endpoints.TestProductId }
+            });
 
         response.Data!.Rating.Should().NotBeNull();
         response.Data.Rating.Rate.Should().BeInRange(0, 5);
@@ -132,15 +141,17 @@ public class GetProductByIdTests
     [Description("2.9 Get product by non-existent ID (maxId + 1) — status code 404")]
     public async Task GetProductById_NonExistentId_ReturnsNotFound()
     {
-        var getAllRequest = new RestRequest(Endpoints.Products, Method.Get);
-        var allProducts = await _client.ExecuteAsync<List<ProductModel>>(getAllRequest);
+        var allProducts = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
         var maxId = allProducts.Data!.Max(p => p.Id);
         var nonExistentId = maxId + 1;
 
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", nonExistentId);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = nonExistentId }
+            });
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -150,10 +161,13 @@ public class GetProductByIdTests
     [Description("2.10 Get product by ID = 0 — status code 404")]
     public async Task GetProductById_ZeroId_ReturnsNotFound()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", 0);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = 0 }
+            });
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -163,10 +177,13 @@ public class GetProductByIdTests
     [Description("2.11 Get product by negative ID (-1) — status code 404")]
     public async Task GetProductById_NegativeId_ReturnsNotFound()
     {
-        var request = new RestRequest(Endpoints.ProductsById, Method.Get);
-        request.AddUrlSegment("id", -1);
-
-        var response = await _client.ExecuteAsync<ProductModel>(request);
+        var response = await Get<ProductModel>(
+            Endpoints.ProductsById,
+            Method.Get,
+            new List<RequestDictionaryModel>
+            {
+                new RequestDictionaryModel { Type = "UrlSegment", Key = "id", Value = -1 }
+            });
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

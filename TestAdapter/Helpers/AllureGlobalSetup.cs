@@ -48,23 +48,23 @@ public class AllureGlobalSetup
         var uuid = Guid.NewGuid().ToString();
         var description = GetDescription(method);
 
-        var testResult = AllureTestResultBuilder.BuildTestResult(
-            uuid, fullName, method.Name,
-            startMs: now, stopMs: now,
-            status: "skipped",
-            statusMessage: ignoreAttr.Reason ?? "Ignored by [Ignore] attribute",
-            description: description,
-            testClassName: type.Namespace);
+        var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
+            Uuid: uuid,
+            FullName: fullName,
+            Name: method.Name,
+            StartMs: now,
+            StopMs: now,
+            Status: "skipped",
+            StatusMessage: ignoreAttr.Reason ?? "Ignored by [Ignore] attribute",
+            Description: description,
+            TestClassName: type.Namespace));
 
         AllureJsonWriter.WriteResultFile(resultsDir, testResult);
     }
 
     private static string? GetDescription(MethodInfo method)
     {
-        var attrs = method.GetCustomAttributes(typeof(DescriptionAttribute), false);
-        if (attrs.Length > 0)
-            return attrs[0].GetType().GetProperty("Description")?.GetValue(attrs[0]) as string;
-        return null;
+        return AllureHelper.GetDescription(method);
     }
 
     private static List<Assembly> GetTestAssemblies()

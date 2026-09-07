@@ -1,26 +1,28 @@
 namespace TestAdapter.Helpers;
 
+internal record TestResultParams(
+    string Uuid,
+    string FullName,
+    string Name,
+    long StartMs,
+    long StopMs,
+    string Status,
+    string? StatusMessage = null,
+    string? StatusTrace = null,
+    string? Description = null,
+    string? TestClassName = null);
+
 internal static class AllureTestResultBuilder
 {
-    public static Dictionary<string, object> BuildTestResult(
-        string uuid,
-        string fullName,
-        string name,
-        long startMs,
-        long stopMs,
-        string status,
-        string? statusMessage = null,
-        string? statusTrace = null,
-        string? description = null,
-        string? testClassName = null)
+    public static Dictionary<string, object> BuildTestResult(TestResultParams p)
     {
-        var result = CreateBaseResult(uuid, fullName, name, startMs, stopMs, status, testClassName);
+        var result = CreateBaseResult(p.Uuid, p.FullName, p.Name, p.StartMs, p.StopMs, p.Status, p.TestClassName);
 
-        if (statusMessage != null)
-            result["statusDetails"] = BuildStatusDetails(statusMessage, statusTrace);
+        if (p.StatusMessage != null)
+            result["statusDetails"] = BuildStatusDetails(p.StatusMessage, p.StatusTrace);
 
-        if (description != null)
-            result["description"] = description;
+        if (p.Description != null)
+            result["description"] = p.Description;
 
         return result;
     }

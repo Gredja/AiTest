@@ -43,23 +43,37 @@ Working dir: {working_dir}
    - Run `dotnet format --verify-no-changes`. If fails: run `dotnet format`, then re-verify.
    - Run `dotnet test --verbosity quiet`. If fails: report the failure and STOP. Do not commit.
 
-2. Stage:
+2. Code review (before staging):
+   - Run `git diff` to see all unstaged changes
+   - Read `Rules/code.md`, `Rules/models.md`, `Rules/comments.md`, `Rules/assertions.md` for full project rules
+   - Review each changed file against ALL project rules, including:
+     * Naming, types, file layout, methods, async, general (from code.md)
+     * Models: suffixes, properties, no constructors/logic (from models.md)
+     * Assertions: FluentAssertions only (from assertions.md)
+     * Comments: default = no comments (from comments.md)
+     * No magic numbers — extract to constants
+     * Config: Endpoints in `Core/Config/Endpoints.cs`, never hardcoded in tests
+   - If blocking issues found: report them and STOP. Do not commit.
+   - If only suggestions/nits: report them but proceed with commit.
+
+3. Stage:
    - Run `git add -A`
    - Run `git diff --cached --stat` to confirm
 
-3. Commit:
+4. Commit:
    - Run `git commit -m "{message}"`
 
-4. Push:
+5. Push:
    - If branch is `main` — do NOT push. Report that push was skipped.
    - Otherwise: run `git push -u origin HEAD`
 
-5. Report:
+6. Report:
    - Branch name
    - Commit hash (from git log -1 --format="%H")
    - Files changed
    - Commit message
    - Push status (pushed / skipped)
+   - Review findings (if any)
 ```
 
 ## Step 4: Deliver result (main agent)
@@ -71,6 +85,7 @@ Report the subagent's output to the user.
 ## Rules
 
 - Never skip safety gate
+- Never skip code review
 - Never commit without user approval (gathered in Step 1-2 before spawning)
 - Never push to `main` without explicit confirmation
 - Commits: English only, format: action + object

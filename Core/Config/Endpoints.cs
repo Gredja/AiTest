@@ -4,6 +4,8 @@ public static class Endpoints
 {
     public const string BaseUrl = "https://fakestoreapi.com";
     public const int ExpectedProductCount = 20;
+    public const int MaxResponseTimeMs = 5000;
+    public const int TestProductId = 1;
 
     public const string Products = "/products";
     public const string ProductsById = "/products/{id}";
