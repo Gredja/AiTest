@@ -10,13 +10,14 @@ public record TestResultParams(
     string? StatusMessage = null,
     string? StatusTrace = null,
     string? Description = null,
-    string? TestClassName = null);
+    string? TestClassName = null,
+    List<string>? Categories = null);
 
 public static class AllureTestResultBuilder
 {
     public static Dictionary<string, object> BuildTestResult(TestResultParams p)
     {
-        var result = CreateBaseResult(p.Uuid, p.FullName, p.Name, p.StartMs, p.StopMs, p.Status, p.TestClassName);
+        var result = CreateBaseResult(p.Uuid, p.FullName, p.Name, p.StartMs, p.StopMs, p.Status, p.TestClassName, p.Categories);
 
         if (p.StatusMessage != null)
             result["statusDetails"] = BuildStatusDetails(p.StatusMessage, p.StatusTrace);
@@ -45,7 +46,7 @@ public static class AllureTestResultBuilder
 
     private static Dictionary<string, object> CreateBaseResult(
         string uuid, string fullName, string name,
-        long startMs, long stopMs, string status, string? testClassName)
+        long startMs, long stopMs, string status, string? testClassName, List<string>? categories)
     {
         return new Dictionary<string, object>
         {
@@ -56,7 +57,7 @@ public static class AllureTestResultBuilder
             ["fullName"] = fullName,
             ["time"] = BuildTime(startMs, stopMs),
             ["status"] = status,
-            ["labels"] = BuildLabels(testClassName),
+            ["labels"] = BuildLabels(testClassName, categories),
             ["links"] = new List<object>(),
             ["steps"] = new List<object>(),
             ["attachments"] = new List<object>()
@@ -82,11 +83,11 @@ public static class AllureTestResultBuilder
         };
     }
 
-    private static List<Dictionary<string, string>> BuildLabels(string? testClassName)
+    private static List<Dictionary<string, string>> BuildLabels(string? testClassName, List<string>? categories)
     {
         var projectName = ExtractProjectName(testClassName);
 
-        return new List<Dictionary<string, string>>
+        var labels = new List<Dictionary<string, string>>
         {
             new() { ["name"] = "framework", ["value"] = "nunit" },
             new() { ["name"] = "host", ["value"] = Environment.MachineName },
@@ -94,6 +95,16 @@ public static class AllureTestResultBuilder
             new() { ["name"] = "parentSuite", ["value"] = projectName },
             new() { ["name"] = "suite", ["value"] = testClassName ?? "Tests" }
         };
+
+        if (categories != null)
+        {
+            foreach (var category in categories)
+            {
+                labels.Add(new() { ["name"] = "tag", ["value"] = category });
+            }
+        }
+
+        return labels;
     }
 
     private static string ExtractProjectName(string? namespaceName)

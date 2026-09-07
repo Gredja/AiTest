@@ -35,3 +35,6 @@ testsettings.json
 
 ## Graphify cache (generated)
 graphify-out/cache/
+
+## MiMoCode plans
+.mimocode/plans/

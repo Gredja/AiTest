@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using RestSharp;
 using Core.Models;
 using Core.Config;
@@ -15,6 +16,8 @@ namespace Api.Tests;
 public class GetAllUsersTests : RequestHelper
 {
     [Test]
+    [Category("Smoke")]
+    [Category("Fast")]
     [Description("3.1 Status code is 200")]
     public async Task GetAllUsers_ReturnsOk()
     {
@@ -24,6 +27,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
+    [Category("Fast")]
     [Description("3.2 Response body is not empty")]
     public async Task GetAllUsers_ReturnsNonEmptyList()
     {
@@ -34,6 +39,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("3.3 Content-Type is application/json")]
     public async Task GetAllUsers_ContentTypeIsJson()
     {
@@ -43,6 +50,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("3.4 Each item has `id` (integer)")]
     public async Task GetAllUsers_EachItemHasId()
     {
@@ -52,6 +61,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("3.5 Each item has `email` (string, not empty)")]
     public async Task GetAllUsers_EachItemHasEmail()
     {
@@ -61,6 +72,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("3.6 Each item has `username` (string, not empty)")]
     public async Task GetAllUsers_EachItemHasUsername()
     {
@@ -70,6 +83,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("3.7 Each item has `name` (object with firstname, lastname)")]
     public async Task GetAllUsers_EachItemHasName()
     {
@@ -79,6 +94,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("3.8 Each item has `phone` (string, not empty)")]
     public async Task GetAllUsers_EachItemHasPhone()
     {
@@ -88,6 +105,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("3.9 Each item has `address` (object with city, street, zipcode)")]
     public async Task GetAllUsers_EachItemHasAddress()
     {
@@ -97,6 +116,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Performance")]
+    [Category("Slow")]
     [Description("3.10 Response time < 5 seconds")]
     public async Task GetAllUsers_ResponseTimeIsAcceptable()
     {
@@ -108,6 +129,8 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("3.11 Returns exactly 10 users")]
     public async Task GetAllUsers_ReturnsExpectedCount()
     {

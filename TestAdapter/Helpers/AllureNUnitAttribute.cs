@@ -46,6 +46,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static void WriteSkippedResult(ITest test, string uuid, long now)
     {
         var description = GetDescription(test);
+        var categories = GetCategories(test);
         var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
             Uuid: uuid,
             FullName: test.FullName,
@@ -55,7 +56,8 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             Status: "skipped",
             StatusMessage: "Ignored by [Ignore] attribute",
             Description: description,
-            TestClassName: test.ClassName));
+            TestClassName: test.ClassName,
+            Categories: categories));
 
         AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
         AddToContainer(test, uuid);
@@ -69,6 +71,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
         var status = MapTestStatus(result.Outcome.Status);
         var description = GetDescription(test);
+        var categories = GetCategories(test);
 
         var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
             Uuid: uuid,
@@ -80,7 +83,8 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             StatusMessage: status == "failed" ? result.Message : null,
             StatusTrace: status == "failed" ? result.StackTrace : null,
             Description: description,
-            TestClassName: test.ClassName));
+            TestClassName: test.ClassName,
+            Categories: categories));
 
         AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
         AddToContainer(test, uuid);
@@ -145,6 +149,18 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             return null;
         }
         return AllureHelper.GetDescription(test.Method.MethodInfo);
+    }
+
+    private static List<string> GetCategories(ITest test)
+    {
+        if (test.Method?.MethodInfo == null)
+            return [];
+
+        var attributes = test.Method.MethodInfo.GetCustomAttributes(typeof(NUnit.Framework.CategoryAttribute), true);
+        return attributes
+            .OfType<NUnit.Framework.CategoryAttribute>()
+            .Select(a => a.Name)
+            .ToList();
     }
 
     private class ContainerInfo

@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using RestSharp;
 using Core.Models;
 using Core.Config;
@@ -19,6 +20,8 @@ public class LoginTests : RequestHelper
     };
 
     [Test]
+    [Category("Smoke")]
+    [Category("Fast")]
     [Description("5.1 Login with valid credentials — status code 201")]
     public async Task Login_ValidCredentials_ReturnsCreated()
     {
@@ -30,6 +33,8 @@ public class LoginTests : RequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
+    [Category("Fast")]
     [Description("5.2 Login response contains token")]
     public async Task Login_ValidCredentials_ReturnsToken()
     {
@@ -41,6 +46,8 @@ public class LoginTests : RequestHelper
     }
 
     [Test]
+    [Category("Negative")]
+    [Category("Fast")]
     [Description("5.3 Login with invalid username — status code 401")]
     public async Task Login_InvalidUsername_ReturnsUnauthorized()
     {
@@ -58,6 +65,8 @@ public class LoginTests : RequestHelper
     }
 
     [Test]
+    [Category("Negative")]
+    [Category("Fast")]
     [Description("5.4 Login with invalid password — status code 401")]
     public async Task Login_InvalidPassword_ReturnsUnauthorized()
     {
@@ -75,6 +84,8 @@ public class LoginTests : RequestHelper
     }
 
     [Test]
+    [Category("Negative")]
+    [Category("Fast")]
     [Description("5.5 Login with empty body — status code 400")]
     public async Task Login_EmptyBody_ReturnsBadRequest()
     {
@@ -88,10 +99,12 @@ public class LoginTests : RequestHelper
             Endpoints.Login,
             request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }
 
     [Test]
+    [Category("EdgeCase")]
+    [Category("Slow")]
     [Description("5.6 Login with null username — status code 400")]
     public async Task Login_NullUsername_ReturnsBadRequest()
     {
@@ -105,10 +118,12 @@ public class LoginTests : RequestHelper
             Endpoints.Login,
             request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }
 
     [Test]
+    [Category("EdgeCase")]
+    [Category("Slow")]
     [Description("5.7 Login with null password — status code 400")]
     public async Task Login_NullPassword_ReturnsBadRequest()
     {
@@ -122,10 +137,12 @@ public class LoginTests : RequestHelper
             Endpoints.Login,
             request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }
 
     [Test]
+    [Category("Performance")]
+    [Category("Slow")]
     [Description("5.8 Response time < 5 seconds")]
     public async Task Login_ResponseTimeIsAcceptable()
     {

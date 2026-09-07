@@ -120,6 +120,8 @@ namespace Api.Tests;
 public class GetAll{Endpoint}Tests : RequestHelper
 {
     [Test]
+    [Category("Smoke")]
+    [Category("Fast")]
     [Description("X.1 Status code is 200")]
     public async Task GetAll{Endpoint}_ReturnsOk()
     {
@@ -128,20 +130,28 @@ public class GetAll{Endpoint}Tests : RequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
+    [Category("Fast")]
     [Description("X.2 Response body is not empty")]
     public async Task GetAll{Endpoint}_ReturnsNonEmptyList() { /* ... */ }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("X.3 Content-Type is application/json")]
     public async Task GetAll{Endpoint}_ContentTypeIsJson() { /* ... */ }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("X.4 Each item has `id` (integer)")]
     public async Task GetAll{Endpoint}_EachItemHasId() { /* ... */ }
 
     // One test per field: email, username, name, phone, address, etc.
 
     [Test]
+    [Category("Performance")]
+    [Category("Slow")]
     [Description("X.N Response time < 5 seconds")]
     public async Task GetAll{Endpoint}_ResponseTimeIsAcceptable()
     {
@@ -152,6 +162,8 @@ public class GetAll{Endpoint}Tests : RequestHelper
     }
 
     [Test]
+    [Category("Validation")]
+    [Category("Fast")]
     [Description("X.N+1 Returns expected count")]
     public async Task GetAll{Endpoint}_ReturnsExpectedCount()
     {
