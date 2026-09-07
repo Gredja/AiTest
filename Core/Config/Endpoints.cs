@@ -7,6 +7,8 @@ public static class Endpoints
 
     public const string Products = "/products";
     public const string ProductsById = "/products/{id}";
+    public const string ProductsCategories = "/products/categories";
+    public const string ProductsByCategory = "/products/category/{category}";
 
     public const string Carts = "/carts";
     public const string CartsById = "/carts/{id}";
