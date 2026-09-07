@@ -11,6 +11,9 @@ namespace Api.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[AllureEpic("API")]
+[AllureFeature("Products")]
+[AllureStory("Get Product By ID")]
 public class GetProductByIdTests : RequestHelper
 {
     private static List<RequestDictionaryModel> ProductIdParam(int id) =>

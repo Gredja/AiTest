@@ -1,3 +1,4 @@
+using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
@@ -161,6 +162,26 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             .OfType<NUnit.Framework.CategoryAttribute>()
             .Select(a => a.Name)
             .ToList();
+    }
+
+    private static string? GetBddAttribute<T>(ITest test, Func<T, string> selector) where T : Attribute
+    {
+        if (test.Method?.MethodInfo == null)
+            return null;
+
+        var attr = test.Method.MethodInfo.GetCustomAttribute<T>();
+        if (attr != null)
+            return selector(attr);
+
+        var classType = test.Method.MethodInfo.DeclaringType;
+        if (classType != null)
+        {
+            attr = classType.GetCustomAttribute<T>();
+            if (attr != null)
+                return selector(attr);
+        }
+
+        return null;
     }
 
     private class ContainerInfo

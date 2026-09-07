@@ -13,6 +13,9 @@ namespace Api.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[AllureEpic("API")]
+[AllureFeature("Users")]
+[AllureStory("Get All Users")]
 public class GetAllUsersTests : RequestHelper
 {
     [Test]

@@ -11,6 +11,9 @@ namespace Api.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[AllureEpic("API")]
+[AllureFeature("Carts")]
+[AllureStory("Get Cart By ID")]
 public class GetCartByIdTests : RequestHelper
 {
     private static List<RequestDictionaryModel> CartIdParam(int id) =>

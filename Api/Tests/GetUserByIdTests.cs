@@ -11,6 +11,9 @@ namespace Api.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[AllureEpic("API")]
+[AllureFeature("Users")]
+[AllureStory("Get User By ID")]
 public class GetUserByIdTests : RequestHelper
 {
     private static List<RequestDictionaryModel> UserIdParam(int id) =>

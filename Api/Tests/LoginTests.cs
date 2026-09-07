@@ -11,6 +11,9 @@ namespace Api.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[AllureEpic("API")]
+[AllureFeature("Auth")]
+[AllureStory("Login")]
 public class LoginTests : RequestHelper
 {
     private static readonly LoginRequest ValidCredentials = new()

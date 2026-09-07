@@ -43,6 +43,12 @@ if (-not (Test-Path $ResultsDir) -or (Get-ChildItem $ResultsDir).Count -eq 0) {
 }
 allure generate $ResultsDir -o $ReportDir --clean
 
+# Step 2b: Override behaviors.json with NUnit categories
+$BehaviorsScript = Join-Path $PSScriptRoot "generate-behaviors.ps1"
+if (Test-Path $BehaviorsScript) {
+    & $BehaviorsScript -ResultsDir $ResultsDir -ReportDataDir (Join-Path $ReportDir "data")
+}
+
 # Step 3: Serve report and open in browser
 Write-Host "[3/3] Starting Allure server on port 9090..." -ForegroundColor Yellow
 Stop-Process -Name "java" -Force -ErrorAction SilentlyContinue

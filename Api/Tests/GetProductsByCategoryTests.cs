@@ -13,6 +13,9 @@ namespace Api.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[AllureEpic("API")]
+[AllureFeature("Products")]
+[AllureStory("Get Products By Category")]
 public class GetProductsByCategoryTests : RequestHelper
 {
     private static List<RequestDictionaryModel> CategoryParam(string category) =>

@@ -11,6 +11,9 @@ namespace Api.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[AllureEpic("API")]
+[AllureFeature("Products")]
+[AllureStory("Get Product Categories")]
 public class GetProductCategoriesTests : RequestHelper
 {
     [Test]
