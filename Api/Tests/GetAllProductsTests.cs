@@ -2,148 +2,129 @@ using NUnit.Framework;
 using RestSharp;
 using Core.Models;
 using Core.Config;
-using System.Net;
+using Api.Helpers;
+using Core.Helpers;
 using System.Diagnostics;
+using System.Net;
+using System.Threading.Tasks;
 using FluentAssertions;
+using TestAdapter;
 
 namespace Api.Tests;
 
 [TestFixture]
-public class GetAllProductsTests
+[AllureNUnit]
+public class GetAllProductsTests : RequestHelper
 {
-    private RestClient _client = null!;
-
-    [SetUp]
-    public void Setup()
-    {
-        _client = new RestClient(Endpoints.BaseUrl);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        _client?.Dispose();
-    }
-
     [Test]
     [Description("1.1 Status code is 200")]
-    public void GetAllProducts_ReturnsOk()
+    public async Task GetAllProducts_ReturnsOk()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
     [Description("1.2 Response body is not empty")]
-    public void GetAllProducts_ReturnsNonEmptyList()
+    public async Task GetAllProducts_ReturnsNonEmptyList()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().NotBeNull();
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
 
     [Test]
     [Description("1.3 Response is a JSON array")]
-    public void GetAllProducts_ResponseIsJsonArray()
+    public async Task GetAllProducts_ResponseIsJsonArray()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
         response.Data.Should().BeOfType<List<ProductModel>>();
     }
 
     [Test]
     [Description("1.4 Each item has `id` (integer)")]
-    public void GetAllProducts_EachItemHasId()
+    public async Task GetAllProducts_EachItemHasId()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().OnlyContain(p => p.Id > 0);
+        response.Data!.ShouldAllHaveValidId();
     }
 
     [Test]
     [Description("1.5 Each item has `title` (string, not empty)")]
-    public void GetAllProducts_EachItemHasTitle()
+    public async Task GetAllProducts_EachItemHasTitle()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().OnlyContain(p =>
-            !string.IsNullOrWhiteSpace(p.Title));
+        response.Data!.ShouldAllHaveValidTitle();
     }
 
     [Test]
     [Description("1.6 Each item has `price` (number, >= 0)")]
-    public void GetAllProducts_EachItemHasPrice()
+    public async Task GetAllProducts_EachItemHasPrice()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().OnlyContain(p => p.Price >= 0);
+        response.Data!.ShouldAllHaveValidPrice();
     }
 
     [Test]
     [Description("1.7 Each item has `description` (string)")]
-    public void GetAllProducts_EachItemHasDescription()
+    public async Task GetAllProducts_EachItemHasDescription()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().OnlyContain(p =>
-            !string.IsNullOrWhiteSpace(p.Description));
+        response.Data!.ShouldAllHaveValidDescription();
     }
 
     [Test]
     [Description("1.8 Each item has `category` (string, not empty)")]
-    public void GetAllProducts_EachItemHasCategory()
+    public async Task GetAllProducts_EachItemHasCategory()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().OnlyContain(p =>
-            !string.IsNullOrWhiteSpace(p.Category));
+        response.Data!.ShouldAllHaveValidCategory();
     }
 
     [Test]
     [Description("1.9 Each item has `image` (string, valid URL)")]
-    public void GetAllProducts_EachItemHasImage()
+    public async Task GetAllProducts_EachItemHasImage()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().OnlyContain(p =>
-            !string.IsNullOrWhiteSpace(p.Image) &&
-            p.Image.StartsWith("http"));
+        response.Data!.ShouldAllHaveValidImage();
     }
 
     [Test]
     [Description("1.10 Each item has `rating` (object with `rate` 0-5, `count` >= 0)")]
-    public void GetAllProducts_EachItemHasRating()
+    public async Task GetAllProducts_EachItemHasRating()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().OnlyContain(p =>
-            p.Rating != null &&
-            p.Rating.Rate >= 0 && p.Rating.Rate <= 5 &&
-            p.Rating.Count >= 0);
+        response.Data!.ShouldAllHaveValidRating();
     }
 
     [Test]
     [Description("1.11 Response time < 5 seconds")]
-    public void GetAllProducts_ResponseTimeIsAcceptable()
+    public async Task GetAllProducts_ResponseTimeIsAcceptable()
     {
-        var request = new RestRequest(Endpoints.Products, Method.Get);
         var stopwatch = Stopwatch.StartNew();
-
-        var response = _client.Execute<List<ProductModel>>(request);
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(5000);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(Endpoints.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Description("1.12 Returns exactly 20 products")]
+    public async Task GetAllProducts_ReturnsExpectedCount()
+    {
+        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().HaveCount(Endpoints.ExpectedProductCount);
     }
 }

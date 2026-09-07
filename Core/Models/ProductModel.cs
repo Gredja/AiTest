@@ -1,12 +1,14 @@
+using Core.Attributes;
+
 namespace Core.Models;
 
 public class ProductModel
 {
-    public int Id { get; set; }
-    public string Title { get; set; }
-    public decimal Price { get; set; }
-    public string Description { get; set; }
-    public string Category { get; set; }
-    public string Image { get; set; }
-    public RatingModel Rating { get; set; }
+    [PositiveId] public int Id { get; set; }
+    [RequiredField] public string Title { get; set; }
+    [ValueRange(0)] public decimal Price { get; set; }
+    [RequiredField] public string Description { get; set; }
+    [RequiredField] public string Category { get; set; }
+    [RequiredField] public string Image { get; set; }
+    [RequiredField] public RatingModel Rating { get; set; }
 }

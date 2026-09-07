@@ -1,3 +1,8 @@
+---
+name: gredja-rules
+description: Use when the user asks about Gredja project rules, coding standards, or conventions. Entry point for all Gredja project rules.
+---
+
 # Skill: Gredja Rules
 
 Entry point for all Gredja project rules. Overview + pointers to detailed rule files.

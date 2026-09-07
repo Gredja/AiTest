@@ -16,6 +16,10 @@ obj/
 ## Build
 TestResults/
 
+## Allure
+allure-results/
+allure-report/
+
 ## NuGet
 *.nupkg
 *.snupkg
