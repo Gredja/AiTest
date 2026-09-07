@@ -3,22 +3,20 @@ namespace Core.Config;
 public static class Endpoints
 {
     public const string BaseUrl = "https://fakestoreapi.com";
+    public const int ExpectedProductCount = 20;
+    public const int MaxResponseTimeMs = 5000;
+    public const int TestProductId = 1;
 
-    // Products
     public const string Products = "/products";
-    /// <summary>Template — use AddUrlSegment("id", value)</summary>
     public const string ProductsById = "/products/{id}";
+    public const string ProductsCategories = "/products/categories";
+    public const string ProductsByCategory = "/products/category/{category}";
 
-    // Carts
     public const string Carts = "/carts";
-    /// <summary>Template — use AddUrlSegment("id", value)</summary>
     public const string CartsById = "/carts/{id}";
 
-    // Users
     public const string Users = "/users";
-    /// <summary>Template — use AddUrlSegment("id", value)</summary>
     public const string UsersById = "/users/{id}";
 
-    // Auth
     public const string Login = "/auth/login";
 }
