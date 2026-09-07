@@ -17,4 +17,6 @@ public static class Endpoints
     public const string UsersById = "/users/{id}";
 
     public const string Login = "/auth/login";
+
+    public const string ProductsSort = "/products?sort={sort}";
 }
