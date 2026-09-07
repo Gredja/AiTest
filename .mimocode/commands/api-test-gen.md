@@ -1,5 +1,5 @@
 ---
-description: Generate API tests for a FakeStoreAPI endpoint
+description: Use when the user wants to generate API tests for a FakeStoreAPI endpoint
 argument-hint: [endpoint name, e.g. "products", "users", "carts"]
 ---
 

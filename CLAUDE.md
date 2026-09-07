@@ -11,8 +11,9 @@ FakeStoreAPI, 20 товаров (IDs 1-20).
 - `Core/Config/Endpoints.cs` — URL и пути эндпоинтов
 - `Prompts/` — шаблоны промптов
 - `Rules/` — полные правила (здесь — краткая сводка)
-- `.claude/commands/pr.md` — команда `/pr` для создания PR
-- `.claude/skills/api-test-gen.md` — скилл `/api-test-gen` для генерации API-тестов
+- `.mimocode/commands/pr.md` — команда `/pr` для создания PR
+- `.mimocode/commands/commit.md` — команда `/commit` для создания коммита
+- `.mimocode/skills/api-test-gen.md` — скилл `/api-test-gen` для генерации API-тестов
 
 ## Rules
 
