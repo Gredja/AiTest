@@ -5,7 +5,7 @@ description: Use when the user says "commit", "/commit", or wants to commit chan
 
 # Commit Agent for Gredja
 
-Orchestrate a commit via a subagent. The main agent gathers inputs; the subagent executes.
+Orchestrate a commit via a subagent. The main agent gathers inputs; the subagent executes in the background.
 
 ## Step 1: Status check (main agent)
 
@@ -28,7 +28,7 @@ Show proposed message and ask for approval.
 
 ## Step 3: Spawn subagent (main agent)
 
-Once user confirmed AND commit message approved, spawn a `general` subagent with this prompt:
+Once user confirmed AND commit message approved, spawn a `general` subagent in the background. Do NOT wait for it — it runs asynchronously and the result arrives as a notification.
 
 ```
 You are a commit subagent for Gredja. Execute the following steps precisely. Do NOT ask the user anything — all inputs are provided below.
@@ -76,9 +76,11 @@ Working dir: {working_dir}
    - Review findings (if any)
 ```
 
+After spawning, tell the user: "Субагент запущен, результат прилетит как нотификация. Можете продолжать." Then continue the conversation normally.
+
 ## Step 4: Deliver result (main agent)
 
-Report the subagent's output to the user.
+When the notification arrives from the subagent, show the report to the user.
 
 ---
 

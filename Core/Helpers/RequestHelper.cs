@@ -15,7 +15,6 @@ public class RequestHelper
         List<string> multiFilesPath = null,
         List<RequestDictionaryModel> additionalParams = null)
     {
-        var start = DateTime.Now;
         var client = InitializationRestClient(url);
         var request = new RestRequest(endpoint, method)
         {
@@ -35,7 +34,6 @@ public class RequestHelper
         Method method,
         List<RequestDictionaryModel> additionalParams = null)
     {
-        var start = DateTime.Now;
         var client = InitializationRestClient(Endpoints.BaseUrl);
         var request = new RestRequest(endpoint, method)
         {

@@ -11,7 +11,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 {
     private static readonly string ResultsDir;
     private static readonly ConcurrentDictionary<string, ContainerInfo> Containers = new();
-    internal static readonly ConcurrentDictionary<string, StartedTest> StartedTests = new();
+
     private long _startTicks;
     private string _testUuid = null!;
 
@@ -24,12 +24,10 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     {
         _startTicks = Environment.TickCount64;
         _testUuid = Guid.NewGuid().ToString();
-        StartedTests[test.FullName] = new StartedTest(test, _testUuid, _startTicks);
     }
 
     public void AfterTest(ITest test)
     {
-        StartedTests.TryRemove(test.FullName, out _);
         WriteTestResult(test, _testUuid, _startTicks);
     }
 
@@ -152,6 +150,4 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         public string Name { get; set; } = "";
         public ConcurrentBag<string> Children { get; set; } = new();
     }
-
-    internal record StartedTest(ITest Test, string Uuid, long StartTicks);
 }
