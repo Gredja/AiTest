@@ -5,9 +5,9 @@ description: Use when the user says "commit", "/commit", or wants to commit chan
 
 # Commit Agent for Gredja
 
-Follow this flow precisely. Do not skip steps.
+Orchestrate a commit via a subagent. The main agent gathers inputs; the subagent executes.
 
-## Step 1: Status check
+## Step 1: Status check (main agent)
 
 Run `git status` and `git diff --stat`. Show:
 - Current branch
@@ -18,65 +18,60 @@ If working tree is clean — report and stop.
 
 Ask for confirmation to proceed.
 
-## Step 2: Safety gate (HARD RULE — no exceptions)
+## Step 2: Gather commit message (main agent)
 
-Both checks MUST pass:
+If the user provided a commit message — use it.
 
-```
-dotnet format --verify-no-changes
-```
-If fails: run `dotnet format`, then re-verify.
-
-```
-dotnet test --verbosity quiet
-```
-If fails: show the failure, ask user to fix. Do NOT proceed with failing tests.
-
-## Step 3: Stage
-
-```
-git add -A
-```
-
-Show staged diff summary (`git diff --cached --stat`).
-
-## Step 4: Commit message
-
-If the user provided a message — use it.
-
-Otherwise, analyze staged changes and propose a message: **action + object** (e.g. "Add product API tests", "Fix model nullable properties").
+Otherwise, analyze the staged changes and propose a message: **action + object** (e.g. "Add product API tests", "Fix model nullable properties").
 
 Show proposed message and ask for approval.
 
-## Step 5: Commit
+## Step 3: Spawn subagent (main agent)
+
+Once user confirmed AND commit message approved, spawn a `general` subagent with this prompt:
 
 ```
-git commit -m "<message>"
+You are a commit subagent for Gredja. Execute the following steps precisely. Do NOT ask the user anything — all inputs are provided below.
+
+Branch: {branch}
+Commit message: {message}
+Working dir: {working_dir}
+
+## Steps
+
+1. Safety gate (HARD RULE — no exceptions):
+   - Run `dotnet format --verify-no-changes`. If fails: run `dotnet format`, then re-verify.
+   - Run `dotnet test --verbosity quiet`. If fails: report the failure and STOP. Do not commit.
+
+2. Stage:
+   - Run `git add -A`
+   - Run `git diff --cached --stat` to confirm
+
+3. Commit:
+   - Run `git commit -m "{message}"`
+
+4. Push:
+   - If branch is `main` — do NOT push. Report that push was skipped.
+   - Otherwise: run `git push -u origin HEAD`
+
+5. Report:
+   - Branch name
+   - Commit hash (from git log -1 --format="%H")
+   - Files changed
+   - Commit message
+   - Push status (pushed / skipped)
 ```
 
-## Step 6: Push
+## Step 4: Deliver result (main agent)
 
-If on `main` — warn and ask confirmation first.
-
-```
-git push -u origin HEAD
-```
-
-## Step 7: Report
-
-Show:
-- Branch name
-- Commit hash
-- Files changed
-- Commit message
-- Push status
+Report the subagent's output to the user.
 
 ---
 
 ## Rules
 
 - Never skip safety gate
-- Never commit without user approval
+- Never commit without user approval (gathered in Step 1-2 before spawning)
 - Never push to `main` without explicit confirmation
 - Commits: English only, format: action + object
 - Never commit `.env` or tokens
