@@ -6,12 +6,13 @@ namespace Core.Helpers;
 
 public class RequestHelper
 {
+    private static readonly RestClient Client = CreateClient();
+
     public async Task<RestResponse<T>> Get<T>(
         string endpoint,
         Method method,
         List<RequestDictionaryModel> additionalParams = null)
     {
-        var client = InitializationRestClient(Endpoints.BaseUrl);
         var request = new RestRequest(endpoint, method)
         {
             RequestFormat = DataFormat.Json
@@ -24,7 +25,7 @@ public class RequestHelper
             AddParams(request, additionalParams);
         }
 
-        return await client.ExecuteAsync<T>(request);
+        return await Client.ExecuteAsync<T>(request);
     }
 
     public async Task<RestResponse<TResponse>> Post<TRequest, TResponse>(
@@ -33,7 +34,6 @@ public class RequestHelper
         List<RequestDictionaryModel> additionalParams = null)
         where TRequest : class
     {
-        var client = InitializationRestClient(Endpoints.BaseUrl);
         var request = new RestRequest(endpoint, Method.Post)
         {
             RequestFormat = DataFormat.Json
@@ -47,7 +47,7 @@ public class RequestHelper
             AddParams(request, additionalParams);
         }
 
-        return await client.ExecuteAsync<TResponse>(request);
+        return await Client.ExecuteAsync<TResponse>(request);
     }
 
     public async Task<RestResponse<TResponse>> Put<TRequest, TResponse>(
@@ -56,7 +56,6 @@ public class RequestHelper
         List<RequestDictionaryModel> additionalParams = null)
         where TRequest : class
     {
-        var client = InitializationRestClient(Endpoints.BaseUrl);
         var request = new RestRequest(endpoint, Method.Put)
         {
             RequestFormat = DataFormat.Json
@@ -70,7 +69,7 @@ public class RequestHelper
             AddParams(request, additionalParams);
         }
 
-        return await client.ExecuteAsync<TResponse>(request);
+        return await Client.ExecuteAsync<TResponse>(request);
     }
 
     public async Task<RestResponse<TResponse>> Patch<TRequest, TResponse>(
@@ -79,7 +78,6 @@ public class RequestHelper
         List<RequestDictionaryModel> additionalParams = null)
         where TRequest : class
     {
-        var client = InitializationRestClient(Endpoints.BaseUrl);
         var request = new RestRequest(endpoint, Method.Patch)
         {
             RequestFormat = DataFormat.Json
@@ -93,14 +91,13 @@ public class RequestHelper
             AddParams(request, additionalParams);
         }
 
-        return await client.ExecuteAsync<TResponse>(request);
+        return await Client.ExecuteAsync<TResponse>(request);
     }
 
     public async Task<RestResponse<T>> Delete<T>(
         string endpoint,
         List<RequestDictionaryModel> additionalParams = null)
     {
-        var client = InitializationRestClient(Endpoints.BaseUrl);
         var request = new RestRequest(endpoint, Method.Delete)
         {
             RequestFormat = DataFormat.Json
@@ -113,7 +110,7 @@ public class RequestHelper
             AddParams(request, additionalParams);
         }
 
-        return await client.ExecuteAsync<T>(request);
+        return await Client.ExecuteAsync<T>(request);
     }
 
     public static RestRequest AddDefaultHeaders(RestRequest request)
@@ -145,9 +142,9 @@ public class RequestHelper
         return request;
     }
 
-    private static RestClient InitializationRestClient(string url)
+    private static RestClient CreateClient()
     {
-        var options = new RestClientOptions(url)
+        var options = new RestClientOptions(Endpoints.BaseUrl)
         {
             RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
         };

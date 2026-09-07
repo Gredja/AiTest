@@ -13,7 +13,7 @@ public static class UserAssertHelper
         response.Data!.ShouldHaveValidFields();
     }
 
-    public static void ShouldAllHaveValidId(this List<UserModel> users)
+    public static void ShouldAllHaveValidUserIds(this List<UserModel> users)
     {
         users.Should().OnlyContain(u => u.Id > 0, "all users must have positive Id");
     }
@@ -54,7 +54,7 @@ public static class UserAssertHelper
 
     public static void ShouldAllHaveValidUsers(this List<UserModel> users)
     {
-        users.ShouldAllHaveValidId();
+        users.ShouldAllHaveValidUserIds();
         users.ShouldAllHaveValidEmail();
         users.ShouldAllHaveValidUsername();
         users.ShouldAllHaveValidName();

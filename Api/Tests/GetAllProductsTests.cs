@@ -35,12 +35,12 @@ public class GetAllProductsTests : RequestHelper
     }
 
     [Test]
-    [Description("1.3 Response is a JSON array")]
-    public async Task GetAllProducts_ResponseIsJsonArray()
+    [Description("1.3 Content-Type is application/json")]
+    public async Task GetAllProducts_ContentTypeIsJson()
     {
         var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data.Should().BeOfType<List<ProductModel>>();
+        response.ContentType.Should().Contain("application/json");
     }
 
     [Test]
@@ -49,7 +49,7 @@ public class GetAllProductsTests : RequestHelper
     {
         var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
 
-        response.Data!.ShouldAllHaveValidId();
+        response.Data!.ShouldAllHaveValidProductIds();
     }
 
     [Test]

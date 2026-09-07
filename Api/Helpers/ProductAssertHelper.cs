@@ -13,7 +13,7 @@ public static class ProductAssertHelper
         response.Data!.ShouldHaveValidFields();
     }
 
-    public static void ShouldAllHaveValidId(this List<ProductModel> products)
+    public static void ShouldAllHaveValidProductIds(this List<ProductModel> products)
     {
         products.Should().OnlyContain(p => p.Id > 0, "all products must have positive Id");
     }
@@ -53,7 +53,7 @@ public static class ProductAssertHelper
 
     public static void ShouldAllHaveValidProducts(this List<ProductModel> products)
     {
-        products.ShouldAllHaveValidId();
+        products.ShouldAllHaveValidProductIds();
         products.ShouldAllHaveValidTitle();
         products.ShouldAllHaveValidPrice();
         products.ShouldAllHaveValidDescription();

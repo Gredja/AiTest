@@ -49,7 +49,7 @@ public class GetAllUsersTests : RequestHelper
     {
         var response = await Get<List<UserModel>>(Endpoints.Users, Method.Get);
 
-        response.Data!.ShouldAllHaveValidId();
+        response.Data!.ShouldAllHaveValidUserIds();
     }
 
     [Test]

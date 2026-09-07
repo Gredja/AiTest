@@ -26,15 +26,6 @@ public class GetUserByIdTests : RequestHelper
     }
 
     [Test]
-    [Description("4.2 Response body is not empty")]
-    public async Task GetUserById_ValidId_ReturnsNonEmptyBody()
-    {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(Endpoints.TestUserId));
-
-        response.ShouldBeOk();
-    }
-
-    [Test]
     [Description("4.3 Response has all expected fields")]
     public async Task GetUserById_ValidId_HasAllExpectedFields()
     {
