@@ -10,7 +10,7 @@ namespace TestAdapter;
 public class AllureNUnitAttribute : Attribute, ITestAction
 {
     private static readonly string ResultsDir;
-    private static readonly Dictionary<string, ContainerInfo> Containers = new();
+    private static readonly ConcurrentDictionary<string, ContainerInfo> Containers = new();
     internal static readonly ConcurrentDictionary<string, StartedTest> StartedTests = new();
     private long _startTicks;
     private string _testUuid = null!;

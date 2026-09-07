@@ -13,7 +13,7 @@ FakeStoreAPI, 20 товаров (IDs 1-20).
 - `Rules/` — полные правила (здесь — краткая сводка)
 - `.mimocode/commands/pr.md` — команда `/pr` для создания PR
 - `.mimocode/commands/commit.md` — команда `/commit` для создания коммита
-- `.mimocode/skills/api-test-gen.md` — скилл `/api-test-gen` для генерации API-тестов
+- `.mimocode/skills/api-test-gen/SKILL.md` — скилл `/api-test-gen` для генерации API-тестов
 
 ## Rules
 

@@ -67,7 +67,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = await _client.ExecuteAsync<List<ProductModel>>(request);
 
-        response.Data!.ShouldAllHaveValidProducts();
+        response.Data!.ShouldAllHaveValidId();
     }
 
     [Test]
@@ -77,7 +77,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = await _client.ExecuteAsync<List<ProductModel>>(request);
 
-        response.Data!.ShouldAllHaveValidProducts();
+        response.Data!.ShouldAllHaveValidTitle();
     }
 
     [Test]
@@ -87,7 +87,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = await _client.ExecuteAsync<List<ProductModel>>(request);
 
-        response.Data!.ShouldAllHaveValidProducts();
+        response.Data!.ShouldAllHaveValidPrice();
     }
 
     [Test]
@@ -97,7 +97,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = await _client.ExecuteAsync<List<ProductModel>>(request);
 
-        response.Data!.ShouldAllHaveValidProducts();
+        response.Data!.ShouldAllHaveValidDescription();
     }
 
     [Test]
@@ -107,7 +107,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = await _client.ExecuteAsync<List<ProductModel>>(request);
 
-        response.Data!.ShouldAllHaveValidProducts();
+        response.Data!.ShouldAllHaveValidCategory();
     }
 
     [Test]
@@ -117,7 +117,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = await _client.ExecuteAsync<List<ProductModel>>(request);
 
-        response.Data!.ShouldAllHaveValidProducts();
+        response.Data!.ShouldAllHaveValidImage();
     }
 
     [Test]
@@ -127,7 +127,7 @@ public class GetAllProductsTests
         var request = new RestRequest(Endpoints.Products, Method.Get);
         var response = await _client.ExecuteAsync<List<ProductModel>>(request);
 
-        response.Data!.ShouldAllHaveValidProducts();
+        response.Data!.ShouldAllHaveValidRating();
     }
 
     [Test]
