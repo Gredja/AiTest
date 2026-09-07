@@ -63,7 +63,7 @@ Detailed rule files in `Rules/` — read the relevant file before working on the
 - Изменения в `features/<topic>` ветках
 - Коммиты: только по запросу, английский, формат: action + object
 - Никогда не коммитить `.env` или токены
-- **Перед коммитом:** `dotnet format --verify-no-changes` + `dotnet test` — оба должны пройти
+- **Перед коммитом:** `dotnet format --verify-no-changes` + Allure report (`./Scripts/allure-report.ps1`) — тесты должны пройти
 
 ### Workflow
 Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию.

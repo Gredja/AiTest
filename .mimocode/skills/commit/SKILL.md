@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Use when the user says "commit", "/commit", or wants to commit changes. Creates a commit with safety checks (dotnet format + dotnet test) and pushes.
+description: Use when the user says "commit", "/commit", or wants to commit changes. Creates a commit with safety checks (format + Allure report) and pushes. Allure report generates before commit — if tests fail, commit is blocked.
 ---
 
 # Commit Agent for Gredja
@@ -39,9 +39,8 @@ Working dir: {working_dir}
 
 ## Steps
 
-1. Safety gate (HARD RULE — no exceptions):
+1. Safety gate — format check:
    - Run `dotnet format --verify-no-changes`. If fails: run `dotnet format`, then re-verify.
-   - Run `dotnet test --verbosity quiet`. If fails: report the failure and STOP. Do not commit.
 
 2. Code review (before staging):
    - Run `git diff` to see all unstaged changes
@@ -54,26 +53,32 @@ Working dir: {working_dir}
      * No magic numbers — extract to constants
      * Config: Endpoints in `Core/Config/Endpoints.cs`, never hardcoded in tests
    - If blocking issues found: report them and STOP. Do not commit.
-   - If only suggestions/nits: report them but proceed with commit.
+   - If only suggestions/nits: report them but proceed.
 
-3. Stage:
+3. Allure report (HARD RULE — replaces dotnet test):
+   - Run `powershell -File "./Scripts/allure-report.ps1"` to run tests with Allure results
+   - Wait for completion (report opens at http://localhost:9090)
+   - If ANY tests fail: report the failures and STOP. Do not commit.
+
+4. Stage:
    - Run `git add -A`
    - Run `git diff --cached --stat` to confirm
 
-4. Commit:
+5. Commit:
    - Run `git commit -m "{message}"`
 
-5. Push:
+6. Push:
    - If branch is `main` — do NOT push. Report that push was skipped.
    - Otherwise: run `git push -u origin HEAD`
 
-6. Report:
+7. Report:
    - Branch name
    - Commit hash (from git log -1 --format="%H")
    - Files changed
    - Commit message
    - Push status (pushed / skipped)
    - Review findings (if any)
+   - Allure report URL: http://localhost:9090
 ```
 
 After spawning, tell the user: "Субагент запущен, результат прилетит как нотификация. Можете продолжать." Then continue the conversation normally.
@@ -86,7 +91,8 @@ When the notification arrives from the subagent, show the report to the user.
 
 ## Rules
 
-- Never skip safety gate
+- Never skip safety gate (format check + Allure report)
+- Allure report runs tests — if any fail, STOP. Do not commit.
 - Never skip code review
 - Never commit without user approval (gathered in Step 1-2 before spawning)
 - Never push to `main` without explicit confirmation
