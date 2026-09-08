@@ -29,15 +29,18 @@ Working dir: {working_dir}
 1. Safety gate:
    - Run `dotnet format --verify-no-changes`. If fails: run `dotnet format`, then re-verify.
 
-2. Run all tests:
+2. Clean stale results:
+   - Run `Remove-Item -Recurse -Force allure-results -ErrorAction SilentlyContinue`
+
+3. Run all tests:
    - Run `dotnet test --verbosity minimal`
    - Capture output: passed/failed/skipped counts
 
-3. Generate Allure report:
+4. Generate Allure report:
    - Run `./Scripts/allure-report.ps1 -SkipTests`
    - Wait for completion
 
-4. Report:
+5. Report:
    - Branch name
    - Test results: passed / failed / skipped counts
    - Failed test details (name + error) if any

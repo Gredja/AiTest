@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace TestAdapter.Helpers;
 
-internal static class AllureHelper
+public static class AllureHelper
 {
     public static string FindProjectRoot()
     {
@@ -11,7 +11,9 @@ internal static class AllureHelper
         while (dir != null)
         {
             if (File.Exists(Path.Combine(dir, "Gredja.slnx")) || Directory.GetFiles(dir, "*.sln").Length > 0)
+            {
                 return dir;
+            }
             dir = Directory.GetParent(dir)?.FullName;
         }
         return AppContext.BaseDirectory;
@@ -29,7 +31,9 @@ internal static class AllureHelper
     {
         var attrs = method.GetCustomAttributes(typeof(DescriptionAttribute), false);
         if (attrs.Length > 0)
+        {
             return attrs[0].GetType().GetProperty("Description")?.GetValue(attrs[0]) as string;
+        }
         return null;
     }
 }

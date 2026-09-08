@@ -50,9 +50,14 @@ public static class AssertHelper
                 value.Should().NotBeNull($"{prop.Name} is marked [ValueRange]");
                 var doubleValue = Convert.ToDouble(value);
                 if (range.Min != double.MinValue)
+                {
                     doubleValue.Should().BeGreaterThanOrEqualTo(range.Min, $"{prop.Name} min is {range.Min}");
+                }
+
                 if (range.Max != double.MaxValue)
+                {
                     doubleValue.Should().BeLessThanOrEqualTo(range.Max, $"{prop.Name} max is {range.Max}");
+                }
             }
         }
     }

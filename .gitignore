@@ -17,8 +17,8 @@ obj/
 TestResults/
 
 ## Allure
-allure-results/
 allure-report/
+allure-results/
 
 ## NuGet
 *.nupkg
@@ -31,6 +31,10 @@ launchSettings.json
 ## Secrets
 .credentials
 .env
+testsettings.json
 
 ## Graphify cache (generated)
 graphify-out/cache/
+
+## MiMoCode plans
+.mimocode/plans/

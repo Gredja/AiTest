@@ -1,3 +1,4 @@
+using System.Reflection;
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
@@ -46,6 +47,10 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static void WriteSkippedResult(ITest test, string uuid, long now)
     {
         var description = GetDescription(test);
+        var categories = GetCategories(test);
+        var epic = GetBddAttribute<AllureEpicAttribute>(test, a => a.Epic);
+        var feature = GetBddAttribute<AllureFeatureAttribute>(test, a => a.Feature);
+        var story = GetBddAttribute<AllureStoryAttribute>(test, a => a.Story);
         var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
             Uuid: uuid,
             FullName: test.FullName,
@@ -55,7 +60,11 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             Status: "skipped",
             StatusMessage: "Ignored by [Ignore] attribute",
             Description: description,
-            TestClassName: test.ClassName));
+            TestClassName: test.ClassName,
+            Categories: categories,
+            Epic: epic,
+            Feature: feature,
+            Story: story));
 
         AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
         AddToContainer(test, uuid);
@@ -69,6 +78,10 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
         var status = MapTestStatus(result.Outcome.Status);
         var description = GetDescription(test);
+        var categories = GetCategories(test);
+        var epic = GetBddAttribute<AllureEpicAttribute>(test, a => a.Epic);
+        var feature = GetBddAttribute<AllureFeatureAttribute>(test, a => a.Feature);
+        var story = GetBddAttribute<AllureStoryAttribute>(test, a => a.Story);
 
         var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
             Uuid: uuid,
@@ -80,7 +93,11 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             StatusMessage: status == "failed" ? result.Message : null,
             StatusTrace: status == "failed" ? result.StackTrace : null,
             Description: description,
-            TestClassName: test.ClassName));
+            TestClassName: test.ClassName,
+            Categories: categories,
+            Epic: epic,
+            Feature: feature,
+            Story: story));
 
         AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
         AddToContainer(test, uuid);
@@ -122,7 +139,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             {
                 Uuid = containerUuid,
                 Name = className,
-                Children = new ConcurrentBag<string>()
+                Children = new List<string>()
             };
         }
 
@@ -140,14 +157,49 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
     private static string? GetDescription(ITest test)
     {
-        if (test.Method?.MethodInfo == null) return null;
+        if (test.Method?.MethodInfo == null)
+        {
+            return null;
+        }
         return AllureHelper.GetDescription(test.Method.MethodInfo);
+    }
+
+    private static List<string> GetCategories(ITest test)
+    {
+        if (test.Method?.MethodInfo == null)
+            return [];
+
+        var attributes = test.Method.MethodInfo.GetCustomAttributes(typeof(NUnit.Framework.CategoryAttribute), true);
+        return attributes
+            .OfType<NUnit.Framework.CategoryAttribute>()
+            .Select(a => a.Name)
+            .ToList();
+    }
+
+    private static string? GetBddAttribute<T>(ITest test, Func<T, string> selector) where T : Attribute
+    {
+        if (test.Method?.MethodInfo == null)
+            return null;
+
+        var attr = test.Method.MethodInfo.GetCustomAttribute<T>();
+        if (attr != null)
+            return selector(attr);
+
+        var classType = test.Method.MethodInfo.DeclaringType;
+        if (classType != null)
+        {
+            attr = classType.GetCustomAttribute<T>();
+            if (attr != null)
+                return selector(attr);
+        }
+
+        return null;
     }
 
     private class ContainerInfo
     {
         public string Uuid { get; set; } = "";
         public string Name { get; set; } = "";
-        public ConcurrentBag<string> Children { get; set; } = new();
+        public List<string> Children { get; set; } = new();
     }
 }

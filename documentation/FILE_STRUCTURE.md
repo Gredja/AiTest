@@ -9,30 +9,36 @@ Gredja/
 ├── Gredja.slnx
 ├── Directory.Build.props
 ├── AGENTS.md
-├── README.md
-├── PLAN.md
-├── TODO.md
-├── TestPlan.md
-├── FILE_STRUCTURE.md
-├── token-budget.md               # token budgets per workflow
 ├── allureConfig.json             # Allure Report configuration
+├── testsettings.json             # .NET test settings
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
 ├── .graphifyignore
-├── .claude/                      # AI agent configuration
+├── .mimocode/                    # MiMoCode skills, hooks, scripts
+│   ├── mimocode.jsonc
+│   ├── hooks/
+│   │   └── safety-commit.ts      # pre-commit safety hook
+│   ├── scripts/
+│   │   └── gh-pr-create.ps1      # wrapper for gh pr create
 │   └── skills/
+│       ├── api-test-gen/
+│       │   └── SKILL.md          # API test generation for FakeStoreAPI
+│       ├── commit/
+│       │   └── SKILL.md          # commit with safety checks + Allure
 │       ├── gredja-rules/
-│       │   └── SKILL.md          # entry point for project rules (overview + links)
-│       └── review-pr/
-│           └── SKILL.md          # PR review skill (GitHub API based)
-└── .mimocode/                    # MiMoCode hooks and scripts
-    ├── hooks/
-    │   └── read-memory.ts        # auto-loads project memory into session
-    └── scripts/
-        └── gh-pr-create.ps1      # wrapper for gh pr create
-
-Scripts/
-└── allure-report.ps1             # run tests + generate Allure report
+│       │   └── SKILL.md          # entry point for project rules
+│       ├── pr/
+│       │   └── SKILL.md          # create pull request
+│       ├── review/
+│       │   └── SKILL.md          # review local changes
+│       ├── review-pr/
+│       │   └── SKILL.md          # PR review (GitHub API based)
+│       └── test/
+│           └── SKILL.md          # run tests + Allure report
+└── Scripts/
+    ├── allure-categories.json    # Allure severity categories
+    ├── allure-report.ps1         # run tests + generate Allure report
+    └── generate-behaviors.ps1    # generate BDD behaviors for Allure
 ```
 
 ## Core/
@@ -45,10 +51,11 @@ Core/
 │   ├── RequiredFieldAttribute.cs
 │   └── ValueRangeAttribute.cs
 ├── Config/
-│   └── Endpoints.cs              # BaseUrl + all endpoint constants
+│   ├── Endpoints.cs              # BaseUrl + all endpoint constants
+│   └── TestConfig.cs             # test configuration
 ├── Helpers/
 │   ├── AssertHelper.cs           # Generic assertions (ShouldBeOk, ShouldHaveValidFields<T>)
-│   └── RequestHelper.cs          # HTTP request wrapper (Get, RestClient init) — WIP
+│   └── RequestHelper.cs          # HTTP request wrapper (Get, RestClient init)
 ├── Models/
 │   ├── Generic/
 │   │   └── IdNameModel.cs
@@ -58,6 +65,9 @@ Core/
 │   ├── CartProductModel.cs
 │   ├── CartRequest.cs
 │   ├── GeolocationModel.cs
+│   ├── LoginErrorResponse.cs
+│   ├── LoginRequest.cs
+│   ├── LoginResponse.cs
 │   ├── ProductModel.cs
 │   ├── ProductRequest.cs
 │   ├── RatingModel.cs
@@ -72,11 +82,22 @@ Core/
 ```
 Api/
 ├── Api.csproj
+├── .runsettings                  # NUnit run settings
+├── AllureGlobalSetup.cs          # [SetUpFixture] — Allure setup
 ├── Helpers/
-│   └── ProductAssertHelper.cs    # Product-specific assertions
+│   ├── CartAssertHelper.cs       # Cart-specific assertions
+│   ├── ProductAssertHelper.cs    # Product-specific assertions
+│   └── UserAssertHelper.cs       # User-specific assertions
 └── Tests/
-    ├── GetAllProductsTests.cs       # GET /products — 11 tests
-    └── GetProductByIdTests.cs       # GET /products/{id} — 11 tests (8 active + 3 Ignore)
+    ├── GetAllCartsTests.cs       # GET /carts — all carts
+    ├── GetAllProductsTests.cs    # GET /products — all products
+    ├── GetAllUsersTests.cs       # GET /users — all users
+    ├── GetCartByIdTests.cs       # GET /carts/{id} — cart by ID
+    ├── GetProductByIdTests.cs    # GET /products/{id} — product by ID
+    ├── GetProductCategoriesTests.cs    # GET /products/categories
+    ├── GetProductsByCategoryTests.cs   # GET /products/category/{category}
+    ├── GetUserByIdTests.cs       # GET /users/{id} — user by ID
+    └── LoginTests.cs             # POST /auth/login — login
 ```
 
 ## TestAdapter/
@@ -84,19 +105,25 @@ Api/
 ```
 TestAdapter/
 ├── TestAdapter.csproj
+├── AllureBddAttributes.cs        # BDD step attributes for Allure
 └── Helpers/
-    ├── AllureHelper.cs             # Shared utilities (FindProjectRoot, GetResultsDir)
-    ├── AllureGlobalSetup.cs        # [SetUpFixture] — captures [Ignore] tests as skipped
-    ├── AllureJsonWriter.cs         # JSON file writer for Allure results
-    ├── AllureNUnitAttribute.cs     # Custom Allure adapter for NUnit 4.x (ITestAction)
-    └── AllureTestResultBuilder.cs  # Builds Allure JSON dictionaries
+    ├── AllureGlobalSetup.cs      # [SetUpFixture] — captures [Ignore] tests as skipped
+    ├── AllureHelper.cs           # Shared utilities (FindProjectRoot, GetResultsDir)
+    ├── AllureJsonWriter.cs       # JSON file writer for Allure results
+    ├── AllureNUnitAttribute.cs   # Custom Allure adapter for NUnit 4.x (ITestAction)
+    ├── AllureSkippedTestWriter.cs # writes skipped test results
+    └── AllureTestResultBuilder.cs # Builds Allure JSON dictionaries
 ```
 
 ## Ui/
 
 ```
 Ui/
-└── Ui.csproj
+├── Ui.csproj
+├── .runsettings                  # NUnit run settings
+├── AllureGlobalSetup.cs          # [SetUpFixture] — Allure setup
+└── Tests/
+    └── DummyTests.cs             # placeholder tests
 ```
 
 ## Rules/
@@ -110,6 +137,19 @@ Rules/
 ├── git.md                        # remote, commits, secrets
 ├── models.md                     # Model/Request building rules
 └── workflow.md                   # plan → approval → execute → report
+```
+
+## Documentation/
+
+```
+documentation/
+├── AGENTS.md                     # AI agent instructions
+├── FILE_STRUCTURE.md             # this file
+├── PLAN.md                       # project plan
+├── README.md                     # project readme
+├── TestPlan.md                   # test plan
+├── TODO.md                       # tasks and priorities
+└── token-budget.md               # token budgets per workflow
 ```
 
 ## Other

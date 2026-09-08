@@ -4,6 +4,9 @@ namespace Core.Models;
 
 public class RatingModel
 {
-    [ValueRange(0, 5)] public double Rate { get; set; }
-    [ValueRange(0)] public int Count { get; set; }
+    [ValueRange(0, 5)]
+    public double Rate { get; set; }
+
+    [ValueRange(0)]
+    public int Count { get; set; }
 }

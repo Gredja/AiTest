@@ -15,33 +15,43 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 
 Write-Host "=== Allure Report Generator ===" -ForegroundColor Cyan
 
-# Step 1: Clean previous results
-if (Test-Path $ResultsDir) {
-    Write-Host "[1/4] Cleaning previous results..." -ForegroundColor Yellow
-    Remove-Item -Recurse -Force $ResultsDir
-}
-
-# Step 2: Run tests
+# Step 1: Run tests
 if (-not $SkipTests) {
-    Write-Host "[2/4] Running tests..." -ForegroundColor Yellow
-    dotnet test $ProjectRoot --verbosity minimal
+    Write-Host "[1/3] Running tests..." -ForegroundColor Yellow
+    if (Test-Path $ResultsDir) {
+        Remove-Item -Recurse -Force $ResultsDir
+    }
+    dotnet test "$ProjectRoot/Api/Api.csproj" --settings "$ProjectRoot/Api/.runsettings" --verbosity minimal
+    dotnet test "$ProjectRoot/Ui/Ui.csproj" --settings "$ProjectRoot/Ui/.runsettings" --verbosity minimal
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Tests had failures, but continuing to generate report..." -ForegroundColor DarkYellow
     }
 } else {
-    Write-Host "[2/4] Skipping tests (used -SkipTests)" -ForegroundColor DarkGray
+    Write-Host "[1/3] Skipping tests (used -SkipTests)" -ForegroundColor DarkGray
 }
 
-# Step 3: Generate report
-Write-Host "[3/4] Generating Allure report..." -ForegroundColor Yellow
+# Step 1b: Copy categories
+$CategoriesSource = Join-Path $PSScriptRoot "allure-categories.json"
+if (Test-Path $CategoriesSource) {
+    Copy-Item $CategoriesSource -Destination (Join-Path $ResultsDir "categories.json") -Force
+}
+
+# Step 2: Generate report
+Write-Host "[2/3] Generating Allure report..." -ForegroundColor Yellow
 if (-not (Test-Path $ResultsDir) -or (Get-ChildItem $ResultsDir).Count -eq 0) {
     Write-Host "No allure-results found. Make sure AllureNUnit attribute is applied to test classes." -ForegroundColor Red
     exit 1
 }
 allure generate $ResultsDir -o $ReportDir --clean
 
-# Step 4: Serve report and open in browser
-Write-Host "[4/4] Starting Allure server on port 9090..." -ForegroundColor Yellow
+# Step 2b: Override behaviors.json with NUnit categories
+$BehaviorsScript = Join-Path $PSScriptRoot "generate-behaviors.ps1"
+if (Test-Path $BehaviorsScript) {
+    & $BehaviorsScript -ResultsDir $ResultsDir -ReportDataDir (Join-Path $ReportDir "data")
+}
+
+# Step 3: Serve report and open in browser
+Write-Host "[3/3] Starting Allure server on port 9090..." -ForegroundColor Yellow
 Stop-Process -Name "java" -Force -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 1
 Start-Process allure -ArgumentList "open",$ReportDir,"--port","9090" -WindowStyle Hidden

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Core.Config;
 using Core.Models;
 using RestSharp;
@@ -8,33 +6,13 @@ namespace Core.Helpers;
 
 public class RequestHelper
 {
-    public async Task<RestResponse> Get(
-        string url,
-        string endpoint,
-        Method method,
-        List<string> multiFilesPath = null,
-        List<RequestDictionaryModel> additionalParams = null)
-    {
-        var client = InitializationRestClient(url);
-        var request = new RestRequest(endpoint, method)
-        {
-            RequestFormat = DataFormat.Json
-        };
-
-        AddDefaultHeaders(request);
-
-        if (additionalParams != null)
-            AddParams(request, additionalParams);
-
-        return await client.ExecuteAsync(request);
-    }
+    private static readonly RestClient Client = CreateClient();
 
     public async Task<RestResponse<T>> Get<T>(
         string endpoint,
         Method method,
         List<RequestDictionaryModel> additionalParams = null)
     {
-        var client = InitializationRestClient(Endpoints.BaseUrl);
         var request = new RestRequest(endpoint, method)
         {
             RequestFormat = DataFormat.Json
@@ -43,9 +21,96 @@ public class RequestHelper
         AddDefaultHeaders(request);
 
         if (additionalParams != null)
+        {
             AddParams(request, additionalParams);
+        }
 
-        return await client.ExecuteAsync<T>(request);
+        return await Client.ExecuteAsync<T>(request);
+    }
+
+    public async Task<RestResponse<TResponse>> Post<TRequest, TResponse>(
+        string endpoint,
+        TRequest body,
+        List<RequestDictionaryModel> additionalParams = null)
+        where TRequest : class
+    {
+        var request = new RestRequest(endpoint, Method.Post)
+        {
+            RequestFormat = DataFormat.Json
+        };
+
+        AddDefaultHeaders(request);
+        request.AddJsonBody(body);
+
+        if (additionalParams != null)
+        {
+            AddParams(request, additionalParams);
+        }
+
+        return await Client.ExecuteAsync<TResponse>(request);
+    }
+
+    public async Task<RestResponse<TResponse>> Put<TRequest, TResponse>(
+        string endpoint,
+        TRequest body,
+        List<RequestDictionaryModel> additionalParams = null)
+        where TRequest : class
+    {
+        var request = new RestRequest(endpoint, Method.Put)
+        {
+            RequestFormat = DataFormat.Json
+        };
+
+        AddDefaultHeaders(request);
+        request.AddJsonBody(body);
+
+        if (additionalParams != null)
+        {
+            AddParams(request, additionalParams);
+        }
+
+        return await Client.ExecuteAsync<TResponse>(request);
+    }
+
+    public async Task<RestResponse<TResponse>> Patch<TRequest, TResponse>(
+        string endpoint,
+        TRequest body,
+        List<RequestDictionaryModel> additionalParams = null)
+        where TRequest : class
+    {
+        var request = new RestRequest(endpoint, Method.Patch)
+        {
+            RequestFormat = DataFormat.Json
+        };
+
+        AddDefaultHeaders(request);
+        request.AddJsonBody(body);
+
+        if (additionalParams != null)
+        {
+            AddParams(request, additionalParams);
+        }
+
+        return await Client.ExecuteAsync<TResponse>(request);
+    }
+
+    public async Task<RestResponse<T>> Delete<T>(
+        string endpoint,
+        List<RequestDictionaryModel> additionalParams = null)
+    {
+        var request = new RestRequest(endpoint, Method.Delete)
+        {
+            RequestFormat = DataFormat.Json
+        };
+
+        AddDefaultHeaders(request);
+
+        if (additionalParams != null)
+        {
+            AddParams(request, additionalParams);
+        }
+
+        return await Client.ExecuteAsync<T>(request);
     }
 
     public static RestRequest AddDefaultHeaders(RestRequest request)
@@ -77,9 +142,9 @@ public class RequestHelper
         return request;
     }
 
-    private static RestClient InitializationRestClient(string url)
+    private static RestClient CreateClient()
     {
-        var options = new RestClientOptions(url)
+        var options = new RestClientOptions(Endpoints.BaseUrl)
         {
             RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
         };
