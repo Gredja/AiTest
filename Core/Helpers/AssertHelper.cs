@@ -29,34 +29,35 @@ public static class AssertHelper
         {
             var value = prop.GetValue(entity);
 
-            if (prop.GetCustomAttribute<RequiredFieldAttribute>() != null)
+            foreach (var attr in prop.GetCustomAttributes())
             {
-                value.Should().NotBeNull($"{prop.Name} is marked [RequiredField]");
-                if (value is string str)
+                switch (attr)
                 {
-                    str.Should().NotBeNullOrWhiteSpace($"{prop.Name} is marked [RequiredField]");
-                }
-            }
+                    case RequiredFieldAttribute:
+                        value.Should().NotBeNull($"{prop.Name} is marked [RequiredField]");
+                        if (value is string str)
+                        {
+                            str.Should().NotBeNullOrWhiteSpace($"{prop.Name} is marked [RequiredField]");
+                        }
+                        break;
 
-            if (prop.GetCustomAttribute<PositiveIdAttribute>() != null)
-            {
-                value.Should().NotBeNull($"{prop.Name} is marked [PositiveId]");
-                Convert.ToDouble(value).Should().BeGreaterThan(0, $"{prop.Name} is marked [PositiveId]");
-            }
+                    case PositiveIdAttribute:
+                        value.Should().NotBeNull($"{prop.Name} is marked [PositiveId]");
+                        Convert.ToDouble(value).Should().BeGreaterThan(0, $"{prop.Name} is marked [PositiveId]");
+                        break;
 
-            var range = prop.GetCustomAttribute<ValueRangeAttribute>();
-            if (range != null)
-            {
-                value.Should().NotBeNull($"{prop.Name} is marked [ValueRange]");
-                var doubleValue = Convert.ToDouble(value);
-                if (range.Min != double.MinValue)
-                {
-                    doubleValue.Should().BeGreaterThanOrEqualTo(range.Min, $"{prop.Name} min is {range.Min}");
-                }
-
-                if (range.Max != double.MaxValue)
-                {
-                    doubleValue.Should().BeLessThanOrEqualTo(range.Max, $"{prop.Name} max is {range.Max}");
+                    case ValueRangeAttribute range:
+                        value.Should().NotBeNull($"{prop.Name} is marked [ValueRange]");
+                        var doubleValue = Convert.ToDouble(value);
+                        if (range.Min != double.MinValue)
+                        {
+                            doubleValue.Should().BeGreaterThanOrEqualTo(range.Min, $"{prop.Name} min is {range.Min}");
+                        }
+                        if (range.Max != double.MaxValue)
+                        {
+                            doubleValue.Should().BeLessThanOrEqualTo(range.Max, $"{prop.Name} max is {range.Max}");
+                        }
+                        break;
                 }
             }
         }

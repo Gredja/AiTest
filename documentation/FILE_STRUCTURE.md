@@ -88,14 +88,21 @@ Api/
 ├── Api.csproj
 ├── .runsettings
 ├── AllureGlobalSetup.cs
-├── Helpers/
-│   ├── ProductAssertHelper.cs
-│   └── UserAssertHelper.cs
-└── Tests/
-    ├── GetAllProductsTests.cs
-    ├── GetAllUsersTests.cs
-    ├── GetProductByIdTests.cs
-    └── GetUserByIdTests.cs
+├── FakeStore/
+│   └── Tests/
+│       ├── GetAllProductsTests.cs    # 6 tests
+│       ├── GetAllUsersTests.cs       # 6 tests
+│       ├── GetProductByIdTests.cs    # 7 tests (4 active + 3 Ignore)
+│       └── GetUserByIdTests.cs       # 6 tests (3 active + 3 Ignore)
+└── JsonPlaceholder/
+    └── Tests/
+        ├── CreatePostTests.cs        # 4 tests
+        ├── DeletePostTests.cs        # 2 tests
+        ├── GetAllPostsTests.cs       # 6 tests
+        ├── GetAllTodosTests.cs       # 5 tests
+        ├── GetPostByIdTests.cs       # 7 tests
+        ├── GetTodosByUserIdTests.cs  # 5 tests
+        └── UpdatePostTests.cs        # 4 tests
 ```
 
 ## TestAdapter/

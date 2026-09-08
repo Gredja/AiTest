@@ -8,7 +8,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 
-namespace Api.Tests;
+namespace Api.FakeStore.Tests;
 
 [TestFixture]
 [AllureNUnit]
@@ -54,46 +54,8 @@ public class GetProductByIdTests : RequestHelper
     }
 
     [Test]
-    [Description("2.5 `title` is string, not empty")]
-    public async Task GetProductById_ValidId_HasTitle()
-    {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
-
-        response.Data!.Title.Should().NotBeNullOrWhiteSpace();
-    }
-
-    [Test]
-    [Description("2.6 `price` is number, >= 0")]
-    public async Task GetProductById_ValidId_HasPrice()
-    {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
-
-        response.Data!.Price.Should().BeGreaterThanOrEqualTo(0);
-    }
-
-    [Test]
-    [Description("2.7 `category` is string, not empty")]
-    public async Task GetProductById_ValidId_HasCategory()
-    {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
-
-        response.Data!.Category.Should().NotBeNullOrWhiteSpace();
-    }
-
-    [Test]
-    [Description("2.8 `rating.rate` is number, 0-5")]
-    public async Task GetProductById_ValidId_HasRating()
-    {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
-
-        response.Data!.Rating.Should().NotBeNull();
-        response.Data.Rating.Rate.Should().BeInRange(0, 5);
-        response.Data.Rating.Count.Should().BeGreaterThanOrEqualTo(0);
-    }
-
-    [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for non-existent IDs")]
-    [Description("2.9 Get product by non-existent ID (maxId + 1) — status code 404")]
+    [Description("2.5 Get product by non-existent ID (maxId + 1) — status code 404")]
     public async Task GetProductById_NonExistentId_ReturnsNotFound()
     {
         var allProducts = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
@@ -107,7 +69,7 @@ public class GetProductByIdTests : RequestHelper
 
     [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for ID=0")]
-    [Description("2.10 Get product by ID = 0 — status code 404")]
+    [Description("2.6 Get product by ID = 0 — status code 404")]
     public async Task GetProductById_ZeroId_ReturnsNotFound()
     {
         var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(0));
@@ -117,7 +79,7 @@ public class GetProductByIdTests : RequestHelper
 
     [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for negative IDs")]
-    [Description("2.11 Get product by negative ID (-1) — status code 404")]
+    [Description("2.7 Get product by negative ID (-1) — status code 404")]
     public async Task GetProductById_NegativeId_ReturnsNotFound()
     {
         var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(-1));

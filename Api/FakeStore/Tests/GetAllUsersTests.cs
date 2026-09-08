@@ -1,16 +1,14 @@
 using NUnit.Framework;
 using RestSharp;
-using Core.Models;
 using Core.Models.FakeStore;
 using Core.Config;
-using Api.Helpers;
 using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
 
-namespace Api.Tests;
+namespace Api.FakeStore.Tests;
 
 [TestFixture]
 [AllureNUnit]
@@ -45,61 +43,19 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
-    [Description("3.4 Each item has `id` (integer)")]
-    public async Task GetAllUsers_EachItemHasId()
+    [Description("3.4 Each item has valid required fields (via attributes)")]
+    public async Task GetAllUsers_EachItemHasValidFields()
     {
         var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
 
-        response.Data!.ShouldAllHaveValidUserIds();
+        foreach (var user in response.Data!)
+        {
+            user.ShouldHaveValidFields();
+        }
     }
 
     [Test]
-    [Description("3.5 Each item has `email` (string, not empty)")]
-    public async Task GetAllUsers_EachItemHasEmail()
-    {
-        var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
-
-        response.Data!.ShouldAllHaveValidEmail();
-    }
-
-    [Test]
-    [Description("3.6 Each item has `username` (string, not empty)")]
-    public async Task GetAllUsers_EachItemHasUsername()
-    {
-        var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
-
-        response.Data!.ShouldAllHaveValidUsername();
-    }
-
-    [Test]
-    [Description("3.7 Each item has `name` (object with firstname, lastname)")]
-    public async Task GetAllUsers_EachItemHasName()
-    {
-        var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
-
-        response.Data!.ShouldAllHaveValidName();
-    }
-
-    [Test]
-    [Description("3.8 Each item has `phone` (string, not empty)")]
-    public async Task GetAllUsers_EachItemHasPhone()
-    {
-        var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
-
-        response.Data!.ShouldAllHaveValidPhone();
-    }
-
-    [Test]
-    [Description("3.9 Each item has `address` (object with city, street, zipcode)")]
-    public async Task GetAllUsers_EachItemHasAddress()
-    {
-        var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
-
-        response.Data!.ShouldAllHaveValidAddress();
-    }
-
-    [Test]
-    [Description("3.10 Response time < 5 seconds")]
+    [Description("3.5 Response time < 5 seconds")]
     public async Task GetAllUsers_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
@@ -110,7 +66,7 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
-    [Description("3.11 Returns exactly 10 users")]
+    [Description("3.6 Returns exactly 10 users")]
     public async Task GetAllUsers_ReturnsExpectedCount()
     {
         var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
