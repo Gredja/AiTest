@@ -21,7 +21,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.1 Get product by ID = 1 — status code 200")]
     public async Task GetProductById_ValidId_ReturnsOk()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(Endpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -30,7 +30,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.2 Response body is not empty")]
     public async Task GetProductById_ValidId_ReturnsNonEmptyBody()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(Endpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
         response.ShouldBeOk();
     }
@@ -39,7 +39,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.3 Response has all expected fields")]
     public async Task GetProductById_ValidId_HasAllExpectedFields()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(Endpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -48,16 +48,16 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.4 `id` in response matches requested ID")]
     public async Task GetProductById_ValidId_IdMatchesRequested()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(Endpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
-        response.Data!.Id.Should().Be(Endpoints.TestProductId);
+        response.Data!.Id.Should().Be(FakeStoreEndpoints.TestProductId);
     }
 
     [Test]
     [Description("2.5 `title` is string, not empty")]
     public async Task GetProductById_ValidId_HasTitle()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(Endpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
         response.Data!.Title.Should().NotBeNullOrWhiteSpace();
     }
@@ -66,7 +66,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.6 `price` is number, >= 0")]
     public async Task GetProductById_ValidId_HasPrice()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(Endpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
         response.Data!.Price.Should().BeGreaterThanOrEqualTo(0);
     }
@@ -75,7 +75,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.7 `category` is string, not empty")]
     public async Task GetProductById_ValidId_HasCategory()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(Endpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
         response.Data!.Category.Should().NotBeNullOrWhiteSpace();
     }
@@ -84,7 +84,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.8 `rating.rate` is number, 0-5")]
     public async Task GetProductById_ValidId_HasRating()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(Endpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
         response.Data!.Rating.Should().NotBeNull();
         response.Data.Rating.Rate.Should().BeInRange(0, 5);
@@ -96,11 +96,11 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.9 Get product by non-existent ID (maxId + 1) — status code 404")]
     public async Task GetProductById_NonExistentId_ReturnsNotFound()
     {
-        var allProducts = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var allProducts = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
         var maxId = allProducts.Data!.Max(p => p.Id);
         var nonExistentId = maxId + 1;
 
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(nonExistentId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -110,7 +110,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.10 Get product by ID = 0 — status code 404")]
     public async Task GetProductById_ZeroId_ReturnsNotFound()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(0));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -120,7 +120,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.11 Get product by negative ID (-1) — status code 404")]
     public async Task GetProductById_NegativeId_ReturnsNotFound()
     {
-        var response = await Get<ProductModel>(Endpoints.ProductsById, Method.Get, ProductIdParam(-1));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

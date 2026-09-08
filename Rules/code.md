@@ -43,3 +43,13 @@
 - No nested ternaries — use `if`/`switch`
 - Don't catch exceptions silently — either handle or let propagate
 - Use `nameof()` for argument exceptions instead of string literals
+
+## Access modifiers (review rule)
+
+During any code review: check that every method, property, and field has the **narrowest possible** access modifier.
+
+- If used only inside the class → `private`
+- If used only by subclasses → `protected`
+- If used by external callers → `public`
+
+Default to `private`. Only widen when there's a concrete reason.

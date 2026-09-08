@@ -6,7 +6,14 @@ namespace Core.Helpers;
 
 public class RequestHelper
 {
-    private static readonly RestClient Client = CreateClient();
+    private static readonly RestClient FakeStoreClient = CreateClient(FakeStoreEndpoints.BaseUrl);
+    private static readonly RestClient JsonPlaceholderClient = CreateClient(JsonPlaceholderEndpoints.BaseUrl);
+
+    protected RestClient Client { get; private set; } = FakeStoreClient;
+
+    protected void UseJsonPlaceholder() => Client = JsonPlaceholderClient;
+
+    protected void UseFakeStore() => Client = FakeStoreClient;
 
     public async Task<RestResponse<T>> Get<T>(
         string endpoint,
@@ -113,7 +120,7 @@ public class RequestHelper
         return await Client.ExecuteAsync<T>(request);
     }
 
-    public static RestRequest AddDefaultHeaders(RestRequest request)
+    private static RestRequest AddDefaultHeaders(RestRequest request)
     {
         request.AddHeader("Content-Type", "application/json;charset=utf-8");
         request.AddHeader("X-Lang", "en_GB");
@@ -121,7 +128,7 @@ public class RequestHelper
         return request;
     }
 
-    public static RestRequest AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
+    private static RestRequest AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
     {
         foreach (var param in additionalParams)
         {
@@ -142,9 +149,9 @@ public class RequestHelper
         return request;
     }
 
-    private static RestClient CreateClient()
+    private static RestClient CreateClient(string baseUrl)
     {
-        var options = new RestClientOptions(Endpoints.BaseUrl)
+        var options = new RestClientOptions(baseUrl)
         {
             RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
         };

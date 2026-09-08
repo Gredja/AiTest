@@ -44,10 +44,12 @@ Core/
 │   ├── RequiredFieldAttribute.cs
 │   └── ValueRangeAttribute.cs
 ├── Config/
-│   ├── Endpoints.cs              # FakeStoreAPI endpoints
-│   └── TestConfig.cs             # reads testsettings.json
+│   ├── FakeStoreEndpoints.cs     # FakeStoreAPI endpoints
+│   ├── JsonPlaceholderEndpoints.cs  # JSONPlaceholder endpoints
+│   └── TestConfig.cs             # reads common settings from testsettings.json
 ├── Helpers/
 │   ├── AssertHelper.cs           # Generic assertions
+│   ├── JsonPlaceholderRequestHelper.cs  # RequestHelper for JSONPlaceholder
 │   └── RequestHelper.cs          # HTTP request wrapper (Get/Post/Put/Patch/Delete)
 ├── Models/
 │   ├── Generic/

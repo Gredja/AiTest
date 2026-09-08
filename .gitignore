@@ -31,6 +31,10 @@ launchSettings.json
 ## Secrets
 .credentials
 .env
+testsettings.json
 
 ## Graphify cache (generated)
 graphify-out/cache/
+
+## Documentation plans (not tracked)
+documentation/*Plan*.md

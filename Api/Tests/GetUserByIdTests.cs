@@ -21,7 +21,7 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.1 Get user by ID = 1 — status code 200")]
     public async Task GetUserById_ValidId_ReturnsOk()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(Endpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(FakeStoreEndpoints.TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -30,7 +30,7 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.3 Response has all expected fields")]
     public async Task GetUserById_ValidId_HasAllExpectedFields()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(Endpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(FakeStoreEndpoints.TestUserId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -39,16 +39,16 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.4 `id` in response matches requested ID")]
     public async Task GetUserById_ValidId_IdMatchesRequested()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(Endpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(FakeStoreEndpoints.TestUserId));
 
-        response.Data!.Id.Should().Be(Endpoints.TestUserId);
+        response.Data!.Id.Should().Be(FakeStoreEndpoints.TestUserId);
     }
 
     [Test]
     [Description("4.5 `email` is string, not empty")]
     public async Task GetUserById_ValidId_HasEmail()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(Endpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(FakeStoreEndpoints.TestUserId));
 
         response.Data!.Email.Should().NotBeNullOrWhiteSpace();
     }
@@ -57,7 +57,7 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.6 `username` is string, not empty")]
     public async Task GetUserById_ValidId_HasUsername()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(Endpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(FakeStoreEndpoints.TestUserId));
 
         response.Data!.Username.Should().NotBeNullOrWhiteSpace();
     }
@@ -66,7 +66,7 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.7 `name.firstname` and `name.lastname` are strings, not empty")]
     public async Task GetUserById_ValidId_HasName()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(Endpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(FakeStoreEndpoints.TestUserId));
 
         response.Data!.Name.Should().NotBeNull();
         response.Data.Name.Firstname.Should().NotBeNullOrWhiteSpace();
@@ -77,7 +77,7 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.8 `phone` is string, not empty")]
     public async Task GetUserById_ValidId_HasPhone()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(Endpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(FakeStoreEndpoints.TestUserId));
 
         response.Data!.Phone.Should().NotBeNullOrWhiteSpace();
     }
@@ -87,11 +87,11 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.9 Get user by non-existent ID (maxId + 1) — status code 404")]
     public async Task GetUserById_NonExistentId_ReturnsNotFound()
     {
-        var allUsers = await Get<List<UserModel>>(Endpoints.Users, Method.Get);
+        var allUsers = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
         var maxId = allUsers.Data!.Max(u => u.Id);
         var nonExistentId = maxId + 1;
 
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(nonExistentId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -101,7 +101,7 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.10 Get user by ID = 0 — status code 404")]
     public async Task GetUserById_ZeroId_ReturnsNotFound()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(0));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -111,7 +111,7 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.11 Get user by negative ID (-1) — status code 404")]
     public async Task GetUserById_NegativeId_ReturnsNotFound()
     {
-        var response = await Get<UserModel>(Endpoints.UsersById, Method.Get, UserIdParam(-1));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

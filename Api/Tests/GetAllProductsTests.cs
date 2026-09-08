@@ -20,7 +20,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.1 Status code is 200")]
     public async Task GetAllProducts_ReturnsOk()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -29,7 +29,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.2 Response body is not empty")]
     public async Task GetAllProducts_ReturnsNonEmptyList()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -39,7 +39,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.3 Content-Type is application/json")]
     public async Task GetAllProducts_ContentTypeIsJson()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.ContentType.Should().Contain("application/json");
     }
@@ -48,7 +48,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.4 Each item has `id` (integer)")]
     public async Task GetAllProducts_EachItemHasId()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.Data!.ShouldAllHaveValidProductIds();
     }
@@ -57,7 +57,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.5 Each item has `title` (string, not empty)")]
     public async Task GetAllProducts_EachItemHasTitle()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.Data!.ShouldAllHaveValidTitle();
     }
@@ -66,7 +66,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.6 Each item has `price` (number, >= 0)")]
     public async Task GetAllProducts_EachItemHasPrice()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.Data!.ShouldAllHaveValidPrice();
     }
@@ -75,7 +75,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.7 Each item has `description` (string)")]
     public async Task GetAllProducts_EachItemHasDescription()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.Data!.ShouldAllHaveValidDescription();
     }
@@ -84,7 +84,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.8 Each item has `category` (string, not empty)")]
     public async Task GetAllProducts_EachItemHasCategory()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.Data!.ShouldAllHaveValidCategory();
     }
@@ -93,7 +93,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.9 Each item has `image` (string, valid URL)")]
     public async Task GetAllProducts_EachItemHasImage()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.Data!.ShouldAllHaveValidImage();
     }
@@ -102,7 +102,7 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.10 Each item has `rating` (object with `rate` 0-5, `count` >= 0)")]
     public async Task GetAllProducts_EachItemHasRating()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.Data!.ShouldAllHaveValidRating();
     }
@@ -112,19 +112,19 @@ public class GetAllProductsTests : RequestHelper
     public async Task GetAllProducts_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(Endpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(FakeStoreEndpoints.MaxResponseTimeMs);
     }
 
     [Test]
     [Description("1.12 Returns exactly 20 products")]
     public async Task GetAllProducts_ReturnsExpectedCount()
     {
-        var response = await Get<List<ProductModel>>(Endpoints.Products, Method.Get);
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(Endpoints.ExpectedProductCount);
+        response.Data.Should().HaveCount(FakeStoreEndpoints.ExpectedProductCount);
     }
 }
