@@ -33,8 +33,8 @@ launchSettings.json
 .env
 testsettings.json
 
-## Graphify cache (generated)
-graphify-out/cache/
+## Graphify (generated)
+graphify-out/
 
 ## Documentation plans (not tracked)
 documentation/*Plan*.md
