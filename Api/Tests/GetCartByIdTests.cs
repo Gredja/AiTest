@@ -94,7 +94,7 @@ public class GetCartByIdTests : RequestHelper
     {
         var response = await Get<CartModel>(Endpoints.CartsById, Method.Get, CartIdParam(Endpoints.TestCartId));
 
-        response.Data!.Date.Should().BeAfter(default(DateTime));
+        response.Data!.Date.Should().BeAfter(DateTime.MinValue);
     }
 
     [Test]

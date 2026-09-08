@@ -48,6 +48,9 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     {
         var description = GetDescription(test);
         var categories = GetCategories(test);
+        var epic = GetBddAttribute<AllureEpicAttribute>(test, a => a.Epic);
+        var feature = GetBddAttribute<AllureFeatureAttribute>(test, a => a.Feature);
+        var story = GetBddAttribute<AllureStoryAttribute>(test, a => a.Story);
         var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
             Uuid: uuid,
             FullName: test.FullName,
@@ -58,7 +61,10 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             StatusMessage: "Ignored by [Ignore] attribute",
             Description: description,
             TestClassName: test.ClassName,
-            Categories: categories));
+            Categories: categories,
+            Epic: epic,
+            Feature: feature,
+            Story: story));
 
         AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
         AddToContainer(test, uuid);
@@ -73,6 +79,9 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         var status = MapTestStatus(result.Outcome.Status);
         var description = GetDescription(test);
         var categories = GetCategories(test);
+        var epic = GetBddAttribute<AllureEpicAttribute>(test, a => a.Epic);
+        var feature = GetBddAttribute<AllureFeatureAttribute>(test, a => a.Feature);
+        var story = GetBddAttribute<AllureStoryAttribute>(test, a => a.Story);
 
         var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
             Uuid: uuid,
@@ -85,7 +94,10 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             StatusTrace: status == "failed" ? result.StackTrace : null,
             Description: description,
             TestClassName: test.ClassName,
-            Categories: categories));
+            Categories: categories,
+            Epic: epic,
+            Feature: feature,
+            Story: story));
 
         AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
         AddToContainer(test, uuid);
@@ -127,7 +139,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             {
                 Uuid = containerUuid,
                 Name = className,
-                Children = new ConcurrentBag<string>()
+                Children = new List<string>()
             };
         }
 
@@ -188,6 +200,6 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     {
         public string Uuid { get; set; } = "";
         public string Name { get; set; } = "";
-        public ConcurrentBag<string> Children { get; set; } = new();
+        public List<string> Children { get; set; } = new();
     }
 }

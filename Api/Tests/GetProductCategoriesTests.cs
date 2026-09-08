@@ -81,10 +81,10 @@ public class GetProductCategoriesTests : RequestHelper
     {
         var response = await Get<List<string>>(Endpoints.ProductsCategories, Method.Get);
 
-        response.Data!.Should().Contain("electronics");
-        response.Data!.Should().Contain("jewelery");
-        response.Data!.Should().Contain("men's clothing");
-        response.Data!.Should().Contain("women's clothing");
+        foreach (var category in Endpoints.ExpectedCategories)
+        {
+            response.Data!.Should().Contain(category);
+        }
     }
 
     [Test]
