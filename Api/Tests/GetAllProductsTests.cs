@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using RestSharp;
 using Core.Models;
+using Core.Models.FakeStore;
 using Core.Config;
 using Api.Helpers;
 using Core.Helpers;

@@ -1,6 +1,6 @@
 using Core.Attributes;
 
-namespace Core.Models;
+namespace Core.Models.FakeStore;
 
 public class ProductModel
 {

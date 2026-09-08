@@ -1,4 +1,4 @@
-namespace Core.Models;
+namespace Core.Models.FakeStore;
 
 public class CartProductModel
 {

@@ -43,6 +43,8 @@ For reusable structures shared across multiple entities — place in `Core/Model
 
 Example: `IdNameModel<T>` for any entity with `Id` + `Name`.
 
+**When adding or changing models (CRITICAL):** Always check if 2+ models share identical fields with the same types. If yes — create a base class in `Core/Models/Generic/` and use inheritance. Example: `PostModel`, `TodoModel`, `AlbumModel` all have `Id` + `UserId` + `Title` → extracted to `UserOwnedModel`.
+
 ## Nested models
 
 When an entity contains another entity as a field — create a separate model for the nested part.

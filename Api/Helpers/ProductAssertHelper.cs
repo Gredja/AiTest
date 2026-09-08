@@ -1,5 +1,5 @@
 using Core.Helpers;
-using Core.Models;
+using Core.Models.FakeStore;
 using FluentAssertions;
 using RestSharp;
 
