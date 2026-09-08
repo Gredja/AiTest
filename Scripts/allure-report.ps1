@@ -21,7 +21,8 @@ if (-not $SkipTests) {
     if (Test-Path $ResultsDir) {
         Remove-Item -Recurse -Force $ResultsDir
     }
-    dotnet test $ProjectRoot --verbosity minimal
+    dotnet test "$ProjectRoot/Api/Api.csproj" --settings "$ProjectRoot/Api/.runsettings" --verbosity minimal
+    dotnet test "$ProjectRoot/Ui/Ui.csproj" --settings "$ProjectRoot/Ui/.runsettings" --verbosity minimal
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Tests had failures, but continuing to generate report..." -ForegroundColor DarkYellow
     }
