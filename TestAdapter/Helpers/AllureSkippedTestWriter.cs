@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using NUnit.Framework;
 
 namespace TestAdapter.Helpers;
@@ -54,6 +54,6 @@ public static class AllureSkippedTestWriter
     private static Type[] GetTypesSafely(Assembly assembly)
     {
         try { return assembly.GetTypes(); }
-        catch (ReflectionTypeLoadException) { return Array.Empty<Type>(); }
+        catch (ReflectionTypeLoadException ex) { return ex.Types.Where(t => t != null).ToArray()!; }
     }
 }

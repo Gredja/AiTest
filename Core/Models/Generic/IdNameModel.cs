@@ -1,4 +1,4 @@
-namespace Core.Models.Generic;
+﻿namespace Core.Models.Generic;
 
 public class IdNameModel<T>
 {

@@ -1,4 +1,4 @@
-# TestPlan.md — Gredja API Test Strategy
+﻿# TestPlan.md — Gredja API Test Strategy
 
 **Project:** Gredja (.NET 10.0)
 **Author:** Алексей (AQA)

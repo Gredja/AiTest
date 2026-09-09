@@ -1,13 +1,13 @@
----
+﻿---
 name: commit
-description: Use when the user says "commit", "/commit", or wants to commit changes. Creates a commit with safety checks (format + Allure report) and pushes. Allure report generates before commit — if tests fail, commit is blocked.
+description: Use when the user says "commit", "/commit", or wants to commit changes. Creates a commit with safety checks (format + HealthCheck tests) and pushes. If HealthCheck tests fail, commit is blocked.
 ---
 
-# Commit Agent for Gredja
+# Commit — Gredja
 
-Orchestrate a commit via a subagent. The main agent gathers inputs; the subagent executes in the background.
+All steps executed directly by the main agent. No subagent.
 
-## Step 1: Status check (main agent)
+## Step 1: Status check
 
 Run `git status` and `git diff --stat`. Show:
 - Current branch
@@ -16,9 +16,7 @@ Run `git status` and `git diff --stat`. Show:
 
 If working tree is clean — report and stop.
 
-Ask for confirmation to proceed.
-
-## Step 2: Gather commit message (main agent)
+## Step 2: Gather commit message
 
 If the user provided a commit message — use it.
 
@@ -26,75 +24,68 @@ Otherwise, analyze the staged changes and propose a message: **action + object**
 
 Show proposed message and ask for approval.
 
-## Step 3: Spawn subagent (main agent)
-
-Once user confirmed AND commit message approved, spawn a `general` subagent in the background. Do NOT wait for it — it runs asynchronously and the result arrives as a notification.
+## Step 3: Safety gate — format check
 
 ```
-You are a commit subagent for Gredja. Execute the following steps precisely. Do NOT ask the user anything — all inputs are provided below.
-
-Branch: {branch}
-Commit message: {message}
-Working dir: {working_dir}
-
-## Steps
-
-1. Safety gate — format check:
-   - Run `dotnet format --verify-no-changes`. If fails: run `dotnet format`, then re-verify.
-
-2. Code review (before staging):
-   - Run `git diff` to see all unstaged changes
-   - Read `Rules/code.md`, `Rules/models.md`, `Rules/comments.md`, `Rules/assertions.md` for full project rules
-   - Review each changed file against ALL project rules, including:
-     * Naming, types, file layout, methods, async, general (from code.md)
-     * Models: suffixes, properties, no constructors/logic (from models.md)
-     * Assertions: FluentAssertions only (from assertions.md)
-     * Comments: default = no comments (from comments.md)
-     * No magic numbers — extract to constants
-     * Config: Endpoints in `Core/Config/Endpoints.cs`, never hardcoded in tests
-   - If blocking issues found: report them and STOP. Do not commit.
-   - If only suggestions/nits: report them but proceed.
-
-3. Allure report (HARD RULE — replaces dotnet test):
-   - Run `powershell -File "./Scripts/allure-report.ps1"` to run tests with Allure results
-   - Wait for completion (report opens at http://localhost:9090)
-   - If ANY tests fail: report the failures and STOP. Do not commit.
-
-4. Stage:
-   - Run `git add -A`
-   - Run `git diff --cached --stat` to confirm
-
-5. Commit:
-   - Run `git commit -m "{message}"`
-
-6. Push:
-   - If branch is `main` — do NOT push. Report that push was skipped.
-   - Otherwise: run `git push -u origin HEAD`
-
-7. Report:
-   - Branch name
-   - Commit hash (from git log -1 --format="%H")
-   - Files changed
-   - Commit message
-   - Push status (pushed / skipped)
-   - Review findings (if any)
-   - Allure report URL: http://localhost:9090
+dotnet format --verify-no-changes
 ```
 
-After spawning, tell the user: "Субагент запущен, результат прилетит как нотификация. Можете продолжать." Then continue the conversation normally.
+If fails: run `dotnet format`, then re-verify. If still fails — report and STOP.
 
-## Step 4: Deliver result (main agent)
+## Step 4: Code review
 
-When the notification arrives from the subagent, show the report to the user.
+Run `git diff` to see all unstaged changes.
+
+Read `Rules/code.md`, `Rules/models.md`, `Rules/comments.md`, `Rules/assertions.md` for full project rules.
+
+Review each changed file against ALL project rules:
+- Naming, types, file layout, methods, async, general (from code.md)
+- Models: suffixes, properties, no constructors/logic (from models.md)
+- Assertions: FluentAssertions only (from assertions.md)
+- Comments: default = no comments (from comments.md)
+- No magic numbers — extract to constants
+- Config: Endpoints in `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`, never hardcoded in tests
+
+If blocking issues found: report them and STOP. Do not commit.
+
+If only suggestions/nits: report them but proceed.
+
+## Step 5: HealthCheck tests
+
+```
+dotnet test --verbosity minimal --filter Category=HealthCheck
+```
+
+If ANY tests fail: report the failures and STOP. Do not commit.
+
+## Step 6: Stage, commit, push
+
+```
+git add -A
+git diff --cached --stat
+git commit -m "{message}"
+```
+
+If branch is `main` — do NOT push. Report that push was skipped.
+Otherwise: `git push -u origin HEAD`
+
+## Step 7: Report
+
+- Branch name
+- Commit hash (from `git log -1 --format="%H"`)
+- Files changed
+- Commit message
+- Push status (pushed / skipped)
+- Review findings (if any)
 
 ---
 
 ## Rules
 
-- Never skip safety gate (format check + Allure report)
-- Allure report runs tests — if any fail, STOP. Do not commit.
+- Never skip safety gate (format check + HealthCheck tests)
+- HealthCheck tests must pass — if any fail, STOP. Do not commit.
 - Never skip code review
-- Never commit without user approval (gathered in Step 1-2 before spawning)
+- Never commit without user approval (gathered in Step 1-2)
 - Never push to `main` without explicit confirmation
 - Commits: English only, format: action + object
 - Never commit `.env` or tokens

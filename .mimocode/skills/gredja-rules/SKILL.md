@@ -1,4 +1,4 @@
----
+﻿---
 name: gredja-rules
 description: Use when the user asks about Gredja project rules, coding standards, or conventions. Entry point for all Gredja project rules.
 ---
@@ -14,7 +14,7 @@ Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). Fa
 - Repo: https://github.com/Gredja/AiTest.git
 - Branch: `main`, changes in `features/<topic>`
 - Test base class: `ApiTestBase` in `Api/ApiTestBase.cs`
-- Endpoints: `Core/Config/Endpoints.cs`
+- Endpoints: `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`
 
 ## Rule Files
 

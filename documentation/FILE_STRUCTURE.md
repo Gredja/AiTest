@@ -6,33 +6,40 @@
 
 ```
 Gredja/
+├── AGENTS.md
 ├── Gredja.slnx
 ├── Directory.Build.props
-├── AGENTS.md
-├── README.md
-├── PLAN.md
-├── TODO.md
-├── TestPlan.md
-├── FILE_STRUCTURE.md
-├── token-budget.md               # token budgets per workflow
-├── allureConfig.json             # Allure Report configuration
+├── allureConfig.json
+├── testsettings.json
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
 ├── .graphifyignore
-├── .claude/                      # AI agent configuration
+├── .mimocode/
+│   ├── mimocode.jsonc
+│   ├── commands/
+│   │   ├── api-test-gen.md
+│   │   ├── commit.md
+│   │   ├── review.md
+│   │   ├── review-commit.md
+│   │   ├── review-pr.md
+│   │   └── test.md
+│   ├── hooks/
+│   │   └── safety-commit.ts
+│   ├── reviews/                  # not tracked
+│   ├── plans/                    # not tracked
+│   ├── scripts/
+│   │   └── gh-pr-create.ps1
 │   └── skills/
-│       ├── gredja-rules/
-│       │   └── SKILL.md          # entry point for project rules (overview + links)
-│       └── review-pr/
-│           └── SKILL.md          # PR review skill (GitHub API based)
-└── .mimocode/                    # MiMoCode hooks and scripts
-    ├── hooks/
-    │   └── read-memory.ts        # auto-loads project memory into session
-    └── scripts/
-        └── gh-pr-create.ps1      # wrapper for gh pr create
-
-Scripts/
-└── allure-report.ps1             # run tests + generate Allure report
+│       ├── api-test-gen/SKILL.md
+│       ├── commit/SKILL.md
+│       ├── gredja-rules/SKILL.md
+│       ├── review/SKILL.md
+│       ├── review-commit/SKILL.md
+│       ├── review-pr/SKILL.md
+│       ├── test/SKILL.md
+│       └── test-report/SKILL.md
+└── Scripts/
+    └── allure-report.ps1
 ```
 
 ## Core/
@@ -45,26 +52,43 @@ Core/
 │   ├── RequiredFieldAttribute.cs
 │   └── ValueRangeAttribute.cs
 ├── Config/
-│   └── Endpoints.cs              # BaseUrl + all endpoint constants
+│   ├── FakeStoreEndpoints.cs     # FakeStoreAPI endpoints
+│   ├── JsonPlaceholderEndpoints.cs  # JSONPlaceholder endpoints
+│   └── TestConfig.cs             # reads common settings from testsettings.json
 ├── Helpers/
-│   ├── AssertHelper.cs           # Generic assertions (ShouldBeOk, ShouldHaveValidFields<T>)
-│   └── RequestHelper.cs          # HTTP request wrapper (Get, RestClient init) — WIP
+│   ├── AssertHelper.cs           # Generic assertions
+│   ├── JsonPlaceholderRequestHelper.cs  # RequestHelper for JSONPlaceholder
+│   └── RequestHelper.cs          # HTTP request wrapper (Get/Post/Put/Patch/Delete)
 ├── Models/
 │   ├── Generic/
-│   │   └── IdNameModel.cs
-│   ├── AddressModel.cs
-│   ├── AuthRequest.cs
-│   ├── CartModel.cs
-│   ├── CartProductModel.cs
-│   ├── CartRequest.cs
-│   ├── GeolocationModel.cs
-│   ├── ProductModel.cs
-│   ├── ProductRequest.cs
-│   ├── RatingModel.cs
-│   ├── RequestDictionaryModel.cs
-│   ├── UserModel.cs
-│   ├── UserNameModel.cs
-│   └── UserRequest.cs
+│   │   ├── IdNameModel.cs
+│   │   └── UserOwnedModel.cs
+│   ├── FakeStore/
+│   │   ├── AddressModel.cs
+│   │   ├── AuthRequest.cs
+│   │   ├── CartModel.cs
+│   │   ├── CartProductModel.cs
+│   │   ├── CartRequest.cs
+│   │   ├── GeolocationModel.cs
+│   │   ├── ProductModel.cs
+│   │   ├── ProductRequest.cs
+│   │   ├── RatingModel.cs
+│   │   ├── UserModel.cs
+│   │   ├── UserNameModel.cs
+│   │   └── UserRequest.cs
+│   ├── JsonPlaceholder/
+│   │   ├── AlbumModel.cs
+│   │   ├── CommentModel.cs
+│   │   ├── CompanyModel.cs
+│   │   ├── GeoModel.cs
+│   │   ├── JsonPlaceholderAddressModel.cs
+│   │   ├── JsonPlaceholderUserModel.cs
+│   │   ├── PhotoModel.cs
+│   │   ├── PostModel.cs
+│   │   ├── PostRequest.cs
+│   │   └── TodoModel.cs
+│   ├── ParamType.cs              # enum: Header, Parameter, UrlSegment
+│   └── RequestDictionaryModel.cs # dynamic request params
 ```
 
 ## Api/
@@ -72,11 +96,26 @@ Core/
 ```
 Api/
 ├── Api.csproj
-├── Helpers/
-│   └── ProductAssertHelper.cs    # Product-specific assertions
-└── Tests/
-    ├── GetAllProductsTests.cs       # GET /products — 11 tests
-    └── GetProductByIdTests.cs       # GET /products/{id} — 11 tests (8 active + 3 Ignore)
+├── AllureGlobalSetup.cs
+├── FakeStore/
+│   ├── Helpers/
+│   │   └── FakeStoreParamHelper.cs  # IdParam()
+│   └── Tests/
+│       ├── GetAllProductsTests.cs    # 6 tests
+│       ├── GetAllUsersTests.cs       # 6 tests
+│       ├── GetProductByIdTests.cs    # 7 tests (4 active + 3 Ignore)
+│       └── GetUserByIdTests.cs       # 6 tests
+└── JsonPlaceholder/
+    ├── Helpers/
+    │   └── JsonPlaceholderParamHelper.cs  # PostIdParam(), UserIdParam()
+    └── Tests/
+        ├── CreatePostTests.cs        # 4 tests
+        ├── DeletePostTests.cs        # 2 tests
+        ├── GetAllPostsTests.cs       # 6 tests
+        ├── GetAllTodosTests.cs       # 7 tests
+        ├── GetPostByIdTests.cs       # 7 tests
+        ├── GetTodosByUserIdTests.cs  # 5 tests
+        └── UpdatePostTests.cs        # 4 tests
 ```
 
 ## TestAdapter/
@@ -85,31 +124,53 @@ Api/
 TestAdapter/
 ├── TestAdapter.csproj
 └── Helpers/
-    ├── AllureHelper.cs             # Shared utilities (FindProjectRoot, GetResultsDir)
-    ├── AllureGlobalSetup.cs        # [SetUpFixture] — captures [Ignore] tests as skipped
-    ├── AllureJsonWriter.cs         # JSON file writer for Allure results
-    ├── AllureNUnitAttribute.cs     # Custom Allure adapter for NUnit 4.x (ITestAction)
-    └── AllureTestResultBuilder.cs  # Builds Allure JSON dictionaries
+    ├── AllureGlobalSetup.cs
+    ├── AllureHelper.cs
+    ├── AllureJsonWriter.cs
+    ├── AllureNUnitAttribute.cs
+    ├── AllureSkippedTestWriter.cs
+    └── AllureTestResultBuilder.cs
 ```
 
 ## Ui/
 
 ```
 Ui/
-└── Ui.csproj
+├── Ui.csproj
+├── AllureGlobalSetup.cs
+└── Tests/
+    └── DummyTests.cs
 ```
 
 ## Rules/
 
 ```
 Rules/
-├── assertions.md                 # FluentAssertions patterns
-├── code.md                       # general code writing rules
-├── comments.md                   # when to comment code
-├── config.md                     # endpoints, configuration
-├── git.md                        # remote, commits, secrets
-├── models.md                     # Model/Request building rules
-└── workflow.md                   # plan → approval → execute → report
+├── assertions.md
+├── categories.md
+├── code.md
+├── comments.md
+├── config.md
+├── git.md
+├── models.md
+└── workflow.md
+```
+
+## Documentation/
+
+```
+documentation/
+├── FILE_STRUCTURE.md
+├── JSONPlaceholder-PLAN.md       # plan for adding JSONPlaceholder API
+├── Katas/
+│   ├── model-selection-note.md
+│   ├── prompt-or-skill-template-api-test-gen.md
+│   └── maturity-gap-analysis.md
+├── PLAN.md
+├── README.md
+├── TestPlan.md
+├── TODO.md
+└── token-budget.md
 ```
 
 ## Other
@@ -118,7 +179,7 @@ Rules/
 Prompts/
 ├── prompts.md
 └── templates/
-    └── api-test-generation.md    # Reusable prompt template for endpoint test generation
+    └── api-test-generation.md
 
 graphify-out/
 ├── graph.json

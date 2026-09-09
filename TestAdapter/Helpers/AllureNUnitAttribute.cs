@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using System.Collections.Concurrent;
@@ -122,7 +122,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             {
                 Uuid = containerUuid,
                 Name = className,
-                Children = new ConcurrentBag<string>()
+                Children = new List<string>()
             };
         }
 
@@ -151,6 +151,6 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     {
         public string Uuid { get; set; } = "";
         public string Name { get; set; } = "";
-        public ConcurrentBag<string> Children { get; set; } = new();
+        public List<string> Children { get; set; } = new();
     }
 }

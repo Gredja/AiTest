@@ -1,4 +1,4 @@
-# Gredja
+﻿# Gredja
 
 Test application for learning AI-Native SDLC. Project for API (FakeStoreAPI) and UI (Playwright) test automation.
 

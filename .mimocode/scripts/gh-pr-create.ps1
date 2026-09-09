@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Wrapper around `gh pr create` that auto-triggers PR review after creation.
 .DESCRIPTION

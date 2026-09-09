@@ -1,4 +1,4 @@
-# Gredja — Prompts Library
+﻿# Gredja — Prompts Library
 
 Reusable prompt templates for the Gredja project.
 Each prompt is versioned, reviewable, and reusable — an artefact, not a chat.
