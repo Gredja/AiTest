@@ -8,15 +8,7 @@ public class BranchModel
     public string Name { get; set; }
 
     [RequiredField]
-    public BranchCommit Commit { get; set; }
+    public BranchCommitModel Commit { get; set; }
 
     public bool Protected { get; set; }
-}
-
-public class BranchCommit
-{
-    [RequiredField]
-    public string Sha { get; set; }
-
-    public string Url { get; set; }
 }
