@@ -6,6 +6,7 @@
 
 ```
 Gredja/
+├── AGENTS.md
 ├── Gredja.slnx
 ├── Directory.Build.props
 ├── allureConfig.json
@@ -15,22 +16,30 @@ Gredja/
 ├── .graphifyignore
 ├── .mimocode/
 │   ├── mimocode.jsonc
+│   ├── commands/
+│   │   ├── api-test-gen.md
+│   │   ├── commit.md
+│   │   ├── review.md
+│   │   ├── review-commit.md
+│   │   ├── review-pr.md
+│   │   └── test.md
 │   ├── hooks/
 │   │   └── safety-commit.ts
+│   ├── reviews/                  # not tracked
+│   ├── plans/                    # not tracked
 │   ├── scripts/
 │   │   └── gh-pr-create.ps1
 │   └── skills/
 │       ├── api-test-gen/SKILL.md
 │       ├── commit/SKILL.md
 │       ├── gredja-rules/SKILL.md
-│       ├── pr/SKILL.md
 │       ├── review/SKILL.md
+│       ├── review-commit/SKILL.md
 │       ├── review-pr/SKILL.md
-│       └── test/SKILL.md
+│       ├── test/SKILL.md
+│       └── test-report/SKILL.md
 └── Scripts/
-    ├── allure-categories.json
-    ├── allure-report.ps1
-    └── generate-behaviors.ps1
+    └── allure-report.ps1
 ```
 
 ## Core/
@@ -77,7 +86,7 @@ Core/
 │   │   ├── PhotoModel.cs
 │   │   ├── PostModel.cs
 │   │   └── TodoModel.cs
-│   └── RequestDictionaryModel.cs # shared — dynamic request params
+│   └── RequestDictionaryModel.cs # shared — dynamic request params + ParamType enum
 ```
 
 ## Api/
@@ -85,20 +94,23 @@ Core/
 ```
 Api/
 ├── Api.csproj
-├── .runsettings
 ├── AllureGlobalSetup.cs
 ├── FakeStore/
+│   ├── Helpers/
+│   │   └── FakeStoreParamHelper.cs  # IdParam()
 │   └── Tests/
 │       ├── GetAllProductsTests.cs    # 6 tests
 │       ├── GetAllUsersTests.cs       # 6 tests
 │       ├── GetProductByIdTests.cs    # 7 tests (4 active + 3 Ignore)
-│       └── GetUserByIdTests.cs       # 6 tests (3 active + 3 Ignore)
+│       └── GetUserByIdTests.cs       # 6 tests
 └── JsonPlaceholder/
+    ├── Helpers/
+    │   └── JsonPlaceholderParamHelper.cs  # PostIdParam(), UserIdParam()
     └── Tests/
         ├── CreatePostTests.cs        # 4 tests
         ├── DeletePostTests.cs        # 2 tests
         ├── GetAllPostsTests.cs       # 6 tests
-        ├── GetAllTodosTests.cs       # 5 tests
+        ├── GetAllTodosTests.cs       # 7 tests
         ├── GetPostByIdTests.cs       # 7 tests
         ├── GetTodosByUserIdTests.cs  # 5 tests
         └── UpdatePostTests.cs        # 4 tests
@@ -109,7 +121,6 @@ Api/
 ```
 TestAdapter/
 ├── TestAdapter.csproj
-├── AllureBddAttributes.cs
 └── Helpers/
     ├── AllureGlobalSetup.cs
     ├── AllureHelper.cs
@@ -124,7 +135,6 @@ TestAdapter/
 ```
 Ui/
 ├── Ui.csproj
-├── .runsettings
 ├── AllureGlobalSetup.cs
 └── Tests/
     └── DummyTests.cs
@@ -135,6 +145,7 @@ Ui/
 ```
 Rules/
 ├── assertions.md
+├── categories.md
 ├── code.md
 ├── comments.md
 ├── config.md
@@ -147,7 +158,6 @@ Rules/
 
 ```
 documentation/
-├── AGENTS.md
 ├── FILE_STRUCTURE.md
 ├── JSONPlaceholder-PLAN.md       # plan for adding JSONPlaceholder API
 ├── Katas/

@@ -1,6 +1,6 @@
 using Core.Models;
 
-namespace Api.Helpers;
+namespace Api.JsonPlaceholder.Helpers;
 
 public static class JsonPlaceholderParamHelper
 {

@@ -7,7 +7,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
-using static Api.Helpers.JsonPlaceholderParamHelper;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 
 namespace Api.JsonPlaceholder.Tests;
 

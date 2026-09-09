@@ -7,17 +7,17 @@ description: Use when the user says "test-report", "/test-report", "allure", or 
 
 Run **all tests** (every category, every service) and generate Allure report via a subagent.
 
-## Step 1: Confirm with user (main agent)
+## Step 1: Quick pre-check (main agent)
 
-Run `dotnet test --verbosity minimal` as a quick pre-check. Show:
+Run `dotnet test --verbosity minimal` and show:
 - Current branch
 - Quick pass/fail summary
 
-Ask for confirmation to proceed with full run + Allure report.
+Do NOT ask for confirmation — spawn subagent immediately after showing results.
 
 ## Step 2: Spawn subagent (main agent)
 
-Once user confirmed, spawn a `general` subagent with this prompt:
+Spawn a `general` subagent with this prompt:
 
 ```
 You are a test subagent for Gredja. Execute the following steps precisely. Do NOT ask the user anything.

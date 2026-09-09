@@ -5,7 +5,7 @@ namespace Core.Config;
 public static class TestConfig
 {
     private static readonly JsonDocument Root = JsonDocument.Parse(
-        File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "testsettings.json")));
+        File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "testsettings.json")));
 
     private static JsonElement FakeStore => Root.RootElement.GetProperty("FakeStore");
     private static JsonElement JsonPlaceholder => Root.RootElement.GetProperty("JsonPlaceholder");
