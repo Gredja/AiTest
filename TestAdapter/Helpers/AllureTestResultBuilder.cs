@@ -10,13 +10,20 @@ public record TestResultParams(
     string? StatusMessage = null,
     string? StatusTrace = null,
     string? Description = null,
-    string? TestClassName = null);
+    string? TestClassName = null,
+    List<string>? Categories = null,
+    string? Epic = null,
+    string? Feature = null,
+    string? Story = null);
 
 public static class AllureTestResultBuilder
 {
     public static Dictionary<string, object> BuildTestResult(TestResultParams p)
     {
-        var result = CreateBaseResult(p.Uuid, p.FullName, p.Name, p.StartMs, p.StopMs, p.Status, p.TestClassName);
+        var result = CreateBaseResult(p.Uuid, p.FullName, p.Name, p.StartMs, p.StopMs, p.Status, p.TestClassName, p.Categories, p.Epic, p.Feature, p.Story);
+
+        if (p.Categories != null && p.Categories.Count > 0)
+            result["tags"] = p.Categories.Select(c => new Dictionary<string, string> { ["name"] = c }).ToList();
 
         if (p.StatusMessage != null)
         {
@@ -49,7 +56,8 @@ public static class AllureTestResultBuilder
 
     private static Dictionary<string, object> CreateBaseResult(
         string uuid, string fullName, string name,
-        long startMs, long stopMs, string status, string? testClassName)
+        long startMs, long stopMs, string status, string? testClassName, List<string>? categories,
+        string? epic, string? feature, string? story)
     {
         return new Dictionary<string, object>
         {
@@ -60,7 +68,7 @@ public static class AllureTestResultBuilder
             ["fullName"] = fullName,
             ["time"] = BuildTime(startMs, stopMs),
             ["status"] = status,
-            ["labels"] = BuildLabels(testClassName),
+            ["labels"] = BuildLabels(testClassName, categories, epic, feature, story),
             ["links"] = new List<object>(),
             ["steps"] = new List<object>(),
             ["attachments"] = new List<object>()
@@ -86,11 +94,11 @@ public static class AllureTestResultBuilder
         };
     }
 
-    private static List<Dictionary<string, string>> BuildLabels(string? testClassName)
+    private static List<Dictionary<string, string>> BuildLabels(string? testClassName, List<string>? categories, string? epic, string? feature, string? story)
     {
         var serviceName = ExtractServiceName(testClassName);
 
-        return new List<Dictionary<string, string>>
+        var labels = new List<Dictionary<string, string>>
         {
             new() { ["name"] = "framework", ["value"] = "nunit" },
             new() { ["name"] = "host", ["value"] = Environment.MachineName },
@@ -98,6 +106,25 @@ public static class AllureTestResultBuilder
             new() { ["name"] = "parentSuite", ["value"] = serviceName },
             new() { ["name"] = "suite", ["value"] = testClassName ?? "Tests" }
         };
+
+        if (epic != null)
+            labels.Add(new() { ["name"] = "epic", ["value"] = epic });
+
+        if (feature != null)
+            labels.Add(new() { ["name"] = "feature", ["value"] = feature });
+
+        if (story != null)
+            labels.Add(new() { ["name"] = "story", ["value"] = story });
+
+        if (categories != null)
+        {
+            foreach (var category in categories)
+            {
+                labels.Add(new() { ["name"] = "tag", ["value"] = category });
+            }
+        }
+
+        return labels;
     }
 
     private static string ExtractServiceName(string? testClassName)
