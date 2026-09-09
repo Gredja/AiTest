@@ -31,6 +31,7 @@ How to decide for value types: check the actual JSON response from the API. If t
 
 - Model suffix for responses, Request suffix for requests
 - No abbreviations in class names
+- **Readable property names**: If a JSON field name is ambiguous or requires domain knowledge to understand (e.g. `bs`, `pk`, `ts`), rename the C# property to a meaningful name and add `[JsonPropertyName("original")]` for deserialization. Well-known abbreviations (`Lat`, `Lng`, `Url`, `Id`) — keep as-is. Example: `Bs` → `BusinessSlogan` + `[JsonPropertyName("bs")]`
 
 ## Namespaces
 

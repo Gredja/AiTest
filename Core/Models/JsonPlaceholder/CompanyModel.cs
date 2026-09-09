@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Core.Attributes;
 
 namespace Core.Models.JsonPlaceholder;
@@ -11,5 +12,6 @@ public class CompanyModel
     public string CatchPhrase { get; set; }
 
     [RequiredField]
-    public string Bs { get; set; }
+    [JsonPropertyName("bs")]
+    public string BusinessSlogan { get; set; }
 }
