@@ -5,9 +5,11 @@ namespace Ui.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("Ui")]
 public class DummyTests
 {
     [Test]
+    [Category("Smoke")]
     public void DummySmokeTest()
     {
         Assert.Pass("This is a dummy test to verify Allure integration works");

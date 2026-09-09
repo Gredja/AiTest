@@ -11,9 +11,11 @@ namespace Api.JsonPlaceholder.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("JsonPlaceholder")]
 public class CreatePostTests : JsonPlaceholderRequestHelper
 {
     [Test]
+    [Category("HealthCheck")]
     [Description("4.1 POST returns 201 Created")]
     public async Task CreatePost_ReturnsCreated()
     {
@@ -24,6 +26,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("4.2 Response has valid fields")]
     public async Task CreatePost_HasValidFields()
     {
@@ -34,6 +37,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("4.3 Response contains correct data")]
     public async Task CreatePost_ReturnsCorrectData()
     {
@@ -46,6 +50,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("4.4 Response has generated ID")]
     public async Task CreatePost_HasGeneratedId()
     {

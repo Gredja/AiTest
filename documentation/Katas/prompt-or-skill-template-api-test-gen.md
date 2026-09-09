@@ -15,7 +15,7 @@ description: Use when the user wants to generate API tests for a FakeStoreAPI or
 
 ## Purpose
 
-Генерирует полный набор NUnit API-тестов для эндпоинта FakeStoreAPI или JsonPlaceholder — для AQA Engineer на этапе автоматизации тестирования.
+Generates a complete set of NUnit API tests for a FakeStoreAPI or JsonPlaceholder endpoint — for AQA Engineer at the test automation stage.
 
 ---
 
@@ -23,14 +23,14 @@ description: Use when the user wants to generate API tests for a FakeStoreAPI or
 
 | Placeholder | Description | Example value |
 |---|---|---|
-| `{{service_name}}` | Сервис API | FakeStore |
-| `{{endpoint_name}}` | Эндпоинт для тестирования | users |
+| `{{service_name}}` | API service | FakeStore |
+| `{{endpoint_name}}` | Endpoint to test | users |
 
 ---
 
 ## Output Format Instruction
 
-Модель должна вернуть: файлы тестов (.cs), моделей (.cs) и констант (.cs) в формате C# с namespace, class, methods. Формат — code без комментариев. После генерации — отчёт: список файлов, количество тестов (total / positive / negative / ignored).
+Model must return: test files (.cs), models (.cs), and constants (.cs) in C# format with namespace, class, methods. Format — code without comments. After generation — report: list of files, test count (total / positive / negative / ignored).
 
 ---
 
@@ -224,13 +224,13 @@ Show:
 - `{{service_name}}` = FakeStore
 - `{{endpoint_name}}` = users
 
-**Output quality:** Работает — генерирует 12 тестов (9 active, 3 ignored), модели и константы соответствуют API.
+**Output quality:** Works — generates 12 tests (9 active, 3 ignored), models and constants match API response.
 
 ---
 
 ## Peer Review
 
-**Reviewer:** MiMo (AI —扮演 тиммейт)
+**Reviewer:** MiMo (AI — playing teammate)
 **Date reviewed:** 2026-06-25
 **Model used by reviewer:** MiMo V2.5 Pro
 
@@ -240,10 +240,10 @@ Show:
 
 | Review question | Reviewer answer |
 |---|---|
-| Could you run the template without asking the author anything? | Yes — шаблон содержит все шаги, ссылки на файлы и правила. Вопросов не было. |
-| Was the output format what you expected? | Yes —得到了 Models, Endpoints, Tests в формате C# как описано. |
-| Would you use this template on your own work? | Yes — работает для любого эндпоинта. Единственное: не хватает таблицы placeholders в начале (где `{{service_name}}`, `{{endpoint_name}}`). |
-| One concrete improvement suggestion | Добавить секцию **Variable Placeholders** с таблицей перед Input — чтобы было видно какие placeholders заполнять. Сейчас placeholders только в описании, но нет явной таблицы в body шаблона. |
+| Could you run the template without asking the author anything? | Yes — template contains all steps, file references, and rules. No questions needed. |
+| Was the output format what you expected? | Yes — got Models, Endpoints, Tests in C# format as described. |
+| Would you use this template on your own work? | Yes — works for any endpoint. The only issue: missing Variable Placeholders table at the beginning. |
+| One concrete improvement suggestion | Add **Variable Placeholders** table section before Input — so it's clear which placeholders to fill. Currently placeholders are only in the description, but there's no explicit table in the body. |
 
 ---
 

@@ -12,12 +12,14 @@ namespace Api.FakeStore.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("FakeStore")]
 public class GetProductByIdTests : RequestHelper
 {
     private static List<RequestDictionaryModel> ProductIdParam(int id) =>
         new() { new() { Type = "UrlSegment", Key = "id", Value = id } };
 
     [Test]
+    [Category("HealthCheck")]
     [Description("2.1 Get product by ID = 1 — status code 200")]
     public async Task GetProductById_ValidId_ReturnsOk()
     {
@@ -27,6 +29,7 @@ public class GetProductByIdTests : RequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("2.2 Response body is not empty")]
     public async Task GetProductById_ValidId_ReturnsNonEmptyBody()
     {
@@ -36,6 +39,7 @@ public class GetProductByIdTests : RequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("2.3 Response has all expected fields")]
     public async Task GetProductById_ValidId_HasAllExpectedFields()
     {
@@ -45,6 +49,7 @@ public class GetProductByIdTests : RequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("2.4 `id` in response matches requested ID")]
     public async Task GetProductById_ValidId_IdMatchesRequested()
     {
@@ -55,6 +60,7 @@ public class GetProductByIdTests : RequestHelper
 
     [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for non-existent IDs")]
+    [Category("Negative")]
     [Description("2.5 Get product by non-existent ID (maxId + 1) — status code 404")]
     public async Task GetProductById_NonExistentId_ReturnsNotFound()
     {
@@ -69,6 +75,7 @@ public class GetProductByIdTests : RequestHelper
 
     [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for ID=0")]
+    [Category("Negative")]
     [Description("2.6 Get product by ID = 0 — status code 404")]
     public async Task GetProductById_ZeroId_ReturnsNotFound()
     {
@@ -79,6 +86,7 @@ public class GetProductByIdTests : RequestHelper
 
     [Test]
     [Ignore("FakeStoreAPI returns 200 OK instead of 404 for negative IDs")]
+    [Category("Negative")]
     [Description("2.7 Get product by negative ID (-1) — status code 404")]
     public async Task GetProductById_NegativeId_ReturnsNotFound()
     {

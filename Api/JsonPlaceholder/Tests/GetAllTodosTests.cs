@@ -12,9 +12,11 @@ namespace Api.JsonPlaceholder.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("JsonPlaceholder")]
 public class GetAllTodosTests : JsonPlaceholderRequestHelper
 {
     [Test]
+    [Category("HealthCheck")]
     [Description("7.1 Status code is 200")]
     public async Task GetAllTodos_ReturnsOk()
     {
@@ -24,6 +26,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("7.2 Response body is not empty")]
     public async Task GetAllTodos_ReturnsNonEmptyList()
     {
@@ -34,6 +37,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("7.3 Each item has valid fields")]
     public async Task GetAllTodos_EachItemHasValidFields()
     {
@@ -46,6 +50,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Performance")]
     [Description("7.4 Response time < 5 seconds")]
     public async Task GetAllTodos_ResponseTimeIsAcceptable()
     {
@@ -57,6 +62,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("7.5 Returns exactly 200 todos")]
     public async Task GetAllTodos_ReturnsExpectedCount()
     {

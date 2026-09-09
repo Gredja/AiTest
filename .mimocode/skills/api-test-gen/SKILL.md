@@ -5,13 +5,32 @@ description: Use when the user wants to generate API tests for a FakeStoreAPI or
 
 # API Test Generation
 
-Generate a complete set of NUnit API tests for an API endpoint.
+## Purpose
+
+Generates a complete set of NUnit API tests for a FakeStoreAPI or JsonPlaceholder endpoint — for AQA Engineer at the test automation stage.
+
+---
+
+## Variable Placeholders
+
+| Placeholder | Description | Example value |
+|---|---|---|
+| `{{service_name}}` | API service | FakeStore |
+| `{{endpoint_name}}` | Endpoint to test | users |
+
+---
+
+## Output Format Instruction
+
+Model must return: test files (.cs), models (.cs), and constants (.cs) in C# format with namespace, class, methods. Format — code without comments. After generation — report: list of files, test count (total / positive / negative / ignored).
+
+---
 
 ## Input
 
 User provides:
-1. **Service name** — `FakeStore` or `JsonPlaceholder`
-2. **Endpoint name** (e.g. `products`, `users`, `posts`, `todos`)
+1. **Service name** — `{{service_name}}` (`FakeStore` or `JsonPlaceholder`)
+2. **Endpoint name** — `{{endpoint_name}}` (e.g. `products`, `users`, `posts`, `todos`)
 
 If not provided, ask which service and endpoint to test.
 
@@ -98,9 +117,11 @@ namespace Api.{Service}.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("{Service}")]
 public class GetAll{Endpoint}Tests : {BaseClass}
 {
     [Test]
+    [Category("HealthCheck")]
     [Description("1.1 Status code is 200")]
     public async Task GetAll{Endpoint}_ReturnsOk()
     {
@@ -109,6 +130,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("1.2 Response body is not empty")]
     public async Task GetAll{Endpoint}_ReturnsNonEmptyList()
     {
@@ -118,6 +140,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("1.3 Content-Type is application/json")]
     public async Task GetAll{Endpoint}_ContentTypeIsJson()
     {
@@ -126,6 +149,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     }
 
     [Test]
+    [Category("Regression")]
     [Description("1.4 Each item has valid required fields (via attributes)")]
     public async Task GetAll{Endpoint}_EachItemHasValidFields()
     {
@@ -137,6 +161,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     }
 
     [Test]
+    [Category("Performance")]
     [Description("1.5 Response time < 5 seconds")]
     public async Task GetAll{Endpoint}_ResponseTimeIsAcceptable()
     {
@@ -147,6 +172,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("1.6 Returns expected count")]
     public async Task GetAll{Endpoint}_ReturnsExpectedCount()
     {
@@ -165,6 +191,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 ### Step 5: Follow All Rules
 
 - **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers
+- **Categories:** `[Category("{Service}")]` on class; `[Category("HealthCheck|Smoke|Regression|Negative|Performance")]` on every method — see `Rules/categories.md`
 - **Non-existent IDs:** Dynamic only — GET all → `maxId + 1`. Never static 999 or any hardcoded number
 - **Assertions:** FluentAssertions only. Use `ShouldHaveValidFields()` via attributes — not per-field helpers
 - **Attributes on separate lines above properties**, not inline
@@ -188,3 +215,41 @@ Show:
 - Test count (total, positive, negative, edge cases)
 - Any issues found during safety check
 - Suggested commit message
+
+---
+
+## Test Run (Author)
+
+**Input values used:**
+- `{{service_name}}` = FakeStore
+- `{{endpoint_name}}` = users
+
+**Output quality:** Works — generates 12 tests (9 active, 3 ignored), models and constants match API response.
+
+---
+
+## Peer Review
+
+**Reviewer:** MiMo (AI — playing teammate)
+**Date reviewed:** 2026-06-25
+**Model used by reviewer:** MiMo V2.5 Pro
+
+**Reviewer input values used:**
+- `{{service_name}}` = FakeStore
+- `{{endpoint_name}}` = products
+
+| Review question | Reviewer answer |
+|---|---|
+| Could you run the template without asking the author anything? | Yes — template contains all steps, file references, and rules. No questions needed. |
+| Was the output format what you expected? | Yes — got Models, Endpoints, Tests in C# format as described. |
+| Would you use this template on your own work? | Yes — works for any endpoint. |
+| One concrete improvement suggestion | Add **Variable Placeholders** table section before Input — already added in v1.1. |
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-06-25 | Initial commit | Алексей |
+| 1.1 | 2026-06-25 | Added Purpose, Variable Placeholders table, Output Format Instruction, Peer Review | Алексей |

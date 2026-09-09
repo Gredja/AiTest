@@ -12,9 +12,11 @@ namespace Api.FakeStore.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("FakeStore")]
 public class GetAllUsersTests : RequestHelper
 {
     [Test]
+    [Category("HealthCheck")]
     [Description("3.1 Status code is 200")]
     public async Task GetAllUsers_ReturnsOk()
     {
@@ -24,6 +26,7 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("3.2 Response body is not empty")]
     public async Task GetAllUsers_ReturnsNonEmptyList()
     {
@@ -34,6 +37,7 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("3.3 Content-Type is application/json")]
     public async Task GetAllUsers_ContentTypeIsJson()
     {
@@ -43,6 +47,7 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("3.4 Each item has valid required fields (via attributes)")]
     public async Task GetAllUsers_EachItemHasValidFields()
     {
@@ -55,6 +60,7 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Performance")]
     [Description("3.5 Response time < 5 seconds")]
     public async Task GetAllUsers_ResponseTimeIsAcceptable()
     {
@@ -66,6 +72,7 @@ public class GetAllUsersTests : RequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("3.6 Returns exactly 10 users")]
     public async Task GetAllUsers_ReturnsExpectedCount()
     {

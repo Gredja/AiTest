@@ -12,9 +12,11 @@ namespace Api.JsonPlaceholder.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("JsonPlaceholder")]
 public class GetAllPostsTests : JsonPlaceholderRequestHelper
 {
     [Test]
+    [Category("HealthCheck")]
     [Description("1.1 Status code is 200")]
     public async Task GetAllPosts_ReturnsOk()
     {
@@ -24,6 +26,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("1.2 Response body is not empty")]
     public async Task GetAllPosts_ReturnsNonEmptyList()
     {
@@ -34,6 +37,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("1.3 Content-Type is application/json")]
     public async Task GetAllPosts_ContentTypeIsJson()
     {
@@ -43,6 +47,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("1.4 Each item has valid required fields (via attributes)")]
     public async Task GetAllPosts_EachItemHasValidFields()
     {
@@ -55,6 +60,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Performance")]
     [Description("1.5 Response time < 5 seconds")]
     public async Task GetAllPosts_ResponseTimeIsAcceptable()
     {
@@ -66,6 +72,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("1.9 Returns exactly 100 posts")]
     public async Task GetAllPosts_ReturnsExpectedCount()
     {

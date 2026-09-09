@@ -3,7 +3,7 @@
 **Date:** 2026-06-25
 **Author:** Алексей — AQA Engineer
 **Project:** Gredja
-**Task:** Генерация NUnit API-тестов для эндпоинта FakeStoreAPI через скилл /api-test-gen
+**Task:** Generate NUnit API tests for FakeStoreAPI endpoint via /api-test-gen skill
 **Committed location:** `Gredja/documentation/Katas/model-selection-note.md`
 
 ---
@@ -12,10 +12,10 @@
 
 | # | Criterion | Why it matters for this task |
 |---|-----------|------------------------------|
-| 1 | Соответствие шаблону | Единообразие |
-| 2 | Полнота | Тесты должны покрывать большое количество вариантов |
-| 3 | Code-style | Закреплено в команде |
-| 4 | Простота | Код теста должен говорить сам за себя, комментарии не нужны |
+| 1 | Template compliance | Consistency |
+| 2 | Completeness | Tests should cover a large number of scenarios |
+| 3 | Code-style | Established in the team |
+| 4 | Simplicity | Test code should speak for itself, comments are not needed |
 
 ---
 
@@ -74,7 +74,7 @@ Write the generated files. Show files created/modified and test count summary.
 >     response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
 > }
 > ```
-> Файл: `UsersTests.cs` — дублирует существующие `GetAllUsersTests.cs` + `GetUserByIdTests.cs`. Лишний import `Core.Models`. Лишняя промежуточная переменная `nonExistentId`. Двойные проверки `ShouldHaveStatusCode` + `NotBeEmpty` в `ReturnsNonEmptyList`.
+> File: `UsersTests.cs` — duplicates existing `GetAllUsersTests.cs` + `GetUserByIdTests.cs`. Redundant import `Core.Models`. Redundant intermediate variable `nonExistentId`. Double checks `ShouldHaveStatusCode` + `NotBeEmpty` in `ReturnsNonEmptyList`.
 
 ### Model B: MiMo V2.5 Pro (main)
 > ```csharp
@@ -90,7 +90,7 @@ Write the generated files. Show files created/modified and test count summary.
 >     response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
 > }
 > ```
-> Файл: `UsersTests_Main.cs` — тоже дублирует существующие файлы. Нет лишней переменной. Нет двойных проверок. Чище по code-style. Лишний import `Core.Models`.
+> File: `UsersTests_Main.cs` — also duplicates existing files. No redundant variable. No double checks. Cleaner code-style. Redundant import `Core.Models`.
 
 ---
 
@@ -98,10 +98,10 @@ Write the generated files. Show files created/modified and test count summary.
 
 | Criterion | Model A score (1–3) | Model A evidence | Model B score (1–3) | Model B evidence |
 |-----------|---------------------|------------------|---------------------|------------------|
-| Соответствие шаблону | 2 | Создал дублирующий файл вместо работы с существующими GetAllUsersTests.cs + GetUserByIdTests.cs | 2 | Создал дублирующий файл вместо работы с существующими GetAllUsersTests.cs + GetUserByIdTests.cs |
-| Полнота | 3 | 12 тестов, все кейсы покрыты (GET all, GET by id, invalid id) | 3 | 12 тестов, все кейсы покрыты (GET all, GET by id, invalid id) |
-| Code-style | 2 | Лишний import Core.Models, двойные ShouldHaveStatusCode в ReturnsNonEmptyList, промежуточная переменная nonExistentId | 3 | Лишний import Core.Models, но нет двойных проверок, нет лишних переменных |
-| Простота | 2 | Избыточные ShouldHaveStatusCode перед NotBeEmpty, лишняя переменная nonExistentId | 3 | Минимальный код, нет лишних проверок и переменных |
+| Template compliance | 2 | Created duplicate file instead of working with existing GetAllUsersTests.cs + GetUserByIdTests.cs | 2 | Created duplicate file instead of working with existing GetAllUsersTests.cs + GetUserByIdTests.cs |
+| Completeness | 3 | 12 tests, all cases covered (GET all, GET by id, invalid id) | 3 | 12 tests, all cases covered (GET all, GET by id, invalid id) |
+| Code-style | 2 | Redundant import Core.Models, double ShouldHaveStatusCode in ReturnsNonEmptyList, intermediate variable nonExistentId | 3 | Redundant import Core.Models, but no double checks, no redundant variables |
+| Simplicity | 2 | Redundant ShouldHaveStatusCode before NotBeEmpty, redundant variable nonExistentId | 3 | Minimal code, no redundant checks or variables |
 | **Total** | **9** | | **11** | |
 
 ---
@@ -110,14 +110,14 @@ Write the generated files. Show files created/modified and test count summary.
 
 **Selected model:** MiMo V2.5 Pro (main)
 
-**Rationale:** Main выиграл — чище по code-style (3 vs 2), нет лишних проверок и переменных. Но обе модели проиграли на соответствии шаблону — создали дублирующие файлы вместо работы с существующими. Это самая грубая ошибка: не прочитали код проекта перед генерацией.
+**Rationale:** Main won — cleaner code-style (3 vs 2), no redundant checks or variables. But both models failed on template compliance — created duplicate files instead of working with existing ones. This is the most critical error: didn't read the project code before generation.
 
 ---
 
 ## Active Constraint
 
 **What could change this decision within 30 days:**
-Внешние модели (Claude, DeepSeek) сейчас недоступны из-за API-ошибок — если доступ появится и стоимость снизится, повторное сравнение с учётом чтения существующего кода может изменить результат.
+External models (Claude, DeepSeek) are currently unavailable due to API errors — if access appears and cost decreases, a re-comparison with consideration of reading existing code may change the result.
 
 ---
 

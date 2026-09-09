@@ -12,9 +12,11 @@ namespace Api.JsonPlaceholder.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("JsonPlaceholder")]
 public class GetPostByIdTests : JsonPlaceholderRequestHelper
 {
     [Test]
+    [Category("HealthCheck")]
     [Description("2.1 Status code is 200 for valid ID")]
     public async Task GetPostById_ReturnsOk()
     {
@@ -25,6 +27,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("2.2 Response body is not null")]
     public async Task GetPostById_ReturnsNonNull()
     {
@@ -35,6 +38,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("2.3 Each field has valid attributes")]
     public async Task GetPostById_HasValidFields()
     {
@@ -45,6 +49,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("2.4 Response contains correct ID")]
     public async Task GetPostById_ReturnsCorrectId()
     {
@@ -55,6 +60,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Negative")]
     [Description("2.5 Returns 404 for non-existent ID")]
     public async Task GetPostById_NonExistentId_ReturnsNotFound()
     {
@@ -69,6 +75,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Negative")]
     [Description("2.6 Returns 404 for ID 0")]
     public async Task GetPostById_ZeroId_ReturnsNotFound()
     {
@@ -79,6 +86,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Negative")]
     [Description("2.7 Returns 404 for negative ID")]
     public async Task GetPostById_NegativeId_ReturnsNotFound()
     {

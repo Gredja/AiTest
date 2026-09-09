@@ -11,11 +11,11 @@
 
 | Dimension | Level (L1 / L2 / L3) | Score (1.0 / 2.0 / 3.0) | Evidence (2–3 sentences) |
 |---|---|---|---|
-| AI Capabilities | L1 | 1.0 | AI помогает в написании автотестов — генерирует тесты, анализирует ошибки. Но >50% deliverables не через AI: ручная настройка среды, ручной ревью, ручное написание правил. Результаты варьируются в зависимости от модели. |
-| Reusability | L2 | 2.0 | 7 скиллов и 4 команды в `.mimocode/` — шаблоны переиспользуются через `/skill-name`. 7 файлов правил в `Rules/` подхватываются AGENTS.md. Любой AI-агент автоматически применяет правила при работе с проектом. |
-| AI Champions | L1 | 1.0 | Алексей — единственный человек в проекте. Нет команды, нет mandate, нет designated Champion. |
-| Performance Tracking | L1 | 1.0 | Нет метрик продуктивности. Нет трекинга времени или стоимости AI. Единственный data point — model-selection-note (Kata 1). |
-| DAU | L1 | 1.0 | 1 человек, работает не каждый день. |
+| AI Capabilities | L1 | 1.0 | AI helps in writing automated tests — generates tests, analyzes errors. But >50% deliverables are not through AI: manual environment setup, manual review, manual rule writing. Results vary depending on the model. |
+| Reusability | L2 | 2.0 | 7 skills and 4 commands in `.mimocode/` — templates are reused via `/skill-name`. 7 rule files in `Rules/` are picked up by AGENTS.md. Any AI agent automatically applies rules when working with the project. |
+| AI Champions | L1 | 1.0 | Alexey is the only person in the project. No team, no mandate, no designated Champion. |
+| Performance Tracking | L1 | 1.0 | No productivity metrics. No tracking of AI time or cost. The only data point — model-selection-note (Kata 1). |
+| DAU | L1 | 1.0 | 1 person, doesn't work every day. |
 | **Average** | | **1.2** | |
 | **Overall Level** | **L1** | | L1 = 1.0–1.9 |
 
@@ -27,8 +27,8 @@
 
 **Dimension:** Performance Tracking
 **Current level:** L1
-**Why this gap is most damaging:** Без метрик невозможно доказать ценность AI и обосновать инвестиции. Модель选择 основана на gut-feel, а не на данных.
-**Root cause:** Нет определённых метрик продуктивности и инструментов для их трекинга — AI используется, но его impact не измеряется.
+**Why this gap is most damaging:** Without metrics, it's impossible to prove AI value and justify investments. Model selection is based on gut-feel, not data.
+**Root cause:** No defined productivity metrics or tracking tools — AI is used but its impact is not measured.
 
 ---
 
@@ -36,8 +36,8 @@
 
 **Dimension:** AI Champions
 **Current level:** L1
-**Why this gap is most damaging:** Нет designated Champion — нет mandate для масштабирования AI на команду. Один энтузиаст не может изменить процесс.
-**Root cause:** Проект индивидуальный, нет команды — нет organizational structure для назначения Champion и передачи опыта.
+**Why this gap is most damaging:** No designated Champion — no mandate for scaling AI to the team. One enthusiast cannot change the process.
+**Root cause:** Project is individual, no team — no organizational structure for appointing a Champion and transferring experience.
 
 ---
 
@@ -47,10 +47,10 @@
 
 | Field | Value |
 |---|---|
-| **Action** | Создать файл `metrics.md` в корне проекта. Трекать: количество сгенерированных тестов через AI, время на генерацию vs ручное написание, стоимость API-вызовов по модели. Обновлять после каждого использования /api-test-gen. |
-| **Owner** | Алексей |
+| **Action** | Create a `metrics.md` file in the project root. Track: number of tests generated via AI, time on generation vs manual writing, API call cost per model. Update after each use of /api-test-gen. |
+| **Owner** | Alexey |
 | **Timeline** | 2026-07-10 |
-| **Success metric** | ≥5 записей в metrics.md с конкретными цифрами (тесты, время, стоимость) |
+| **Success metric** | ≥5 entries in metrics.md with specific numbers (tests, time, cost) |
 
 ---
 
@@ -58,25 +58,25 @@
 
 | Field | Value |
 |---|---|
-| **Action** | Документировать все AI-процессы в AGENTS.md и Rules/ так, чтобы новый человек мог начать работу с AI без объяснений. Добавить секцию "AI Onboarding" в AGENTS.md с пошаговой инструкцией. |
-| **Owner** | Алексей |
+| **Action** | Document all AI processes in AGENTS.md and Rules/ so that a new person can start working with AI without explanations. Add an "AI Onboarding" section to AGENTS.md with step-by-step instructions. |
+| **Owner** | Alexey |
 | **Timeline** | 2026-07-15 |
-| **Success metric** | Секция "AI Onboarding" в AGENTS.md содержит ≥3 шага с конкретными командами (/api-test-gen, /review, /commit) |
+| **Success metric** | "AI Onboarding" section in AGENTS.md contains ≥3 steps with specific commands (/api-test-gen, /review, /commit) |
 
 ---
 
 ## Peer Review
 
-**Reviewer:** MiMo (AI —扮演 тиммейт)
+**Reviewer:** MiMo (AI — playing teammate)
 **Date reviewed:** 2026-06-25
 
 | Review question | Reviewer answer |
 |---|---|
-| Is the evidence for each dimension specific and observable — not aspirational? | Да — все evidence описывают что делается сегодня, не планы. |
-| Which score do you challenge, and why? | DAU — L1 корректен, но有趣的是 что 1 из 1 = 100% DAU. Однако матрица определяет DAU как "team" metric, поэтому L1 правильный. |
-| Is each root cause a structural/behavioural cause — not a symptom? | Да — "нет метрик" и "нет команды" causes, не symptoms. |
-| Are the success metrics measurable without asking the author? | Да — ≥5 записей в metrics.md, ≥3 шага в AGENTS.md — проверяемые без вопросов. |
-| Would you sign off on this plan as a teammate? | Да — план конкретный, с датами и метриками. |
+| Is the evidence for each dimension specific and observable — not aspirational? | Yes — all evidence describes what is done today, not plans. |
+| Which score do you challenge, and why? | DAU — L1 is correct, but interestingly 1 out of 1 = 100% DAU. However, the matrix defines DAU as a "team" metric, so L1 is correct. |
+| Is each root cause a structural/behavioural cause — not a symptom? | Yes — "no metrics" and "no team" are causes, not symptoms. |
+| Are the success metrics measurable without asking the author? | Yes — ≥5 entries in metrics.md, ≥3 steps in AGENTS.md — verifiable without questions. |
+| Would you sign off on this plan as a teammate? | Yes — the plan is specific, with dates and metrics. |
 
 ---
 

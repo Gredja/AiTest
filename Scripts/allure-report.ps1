@@ -2,7 +2,8 @@
 # Run tests and generate Allure report
 
 param(
-    [switch]$SkipTests
+    [switch]$SkipTests,
+    [string]$Filter
 )
 
 $ErrorActionPreference = "Stop"
@@ -21,7 +22,12 @@ if (-not $SkipTests) {
     if (Test-Path $ResultsDir) {
         Remove-Item -Recurse -Force $ResultsDir
     }
-    dotnet test $ProjectRoot --verbosity minimal
+    if ($Filter) {
+        Write-Host "  Filter: $Filter" -ForegroundColor DarkGray
+        dotnet test $ProjectRoot --verbosity minimal --filter $Filter
+    } else {
+        dotnet test $ProjectRoot --verbosity minimal
+    }
     if ($LASTEXITCODE -ne 0) {
         Write-Host "Tests had failures, but continuing to generate report..." -ForegroundColor DarkYellow
     }

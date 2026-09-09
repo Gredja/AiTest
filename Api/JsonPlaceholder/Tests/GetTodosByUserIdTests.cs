@@ -12,9 +12,11 @@ namespace Api.JsonPlaceholder.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("JsonPlaceholder")]
 public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 {
     [Test]
+    [Category("HealthCheck")]
     [Description("8.1 Status code is 200")]
     public async Task GetTodosByUserId_ReturnsOk()
     {
@@ -25,6 +27,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("8.2 Response body is not empty")]
     public async Task GetTodosByUserId_ReturnsNonEmptyList()
     {
@@ -35,6 +38,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("8.3 Each item has valid fields")]
     public async Task GetTodosByUserId_EachItemHasValidFields()
     {
@@ -48,6 +52,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("8.4 All items belong to same user")]
     public async Task GetTodosByUserId_AllBelongToSameUser()
     {
@@ -58,6 +63,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Negative")]
     [Description("8.5 Returns empty list for non-existent user")]
     public async Task GetTodosByUserId_NonExistentUser_ReturnsEmpty()
     {

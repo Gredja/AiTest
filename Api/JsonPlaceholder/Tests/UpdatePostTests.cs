@@ -12,9 +12,11 @@ namespace Api.JsonPlaceholder.Tests;
 
 [TestFixture]
 [AllureNUnit]
+[Category("JsonPlaceholder")]
 public class UpdatePostTests : JsonPlaceholderRequestHelper
 {
     [Test]
+    [Category("HealthCheck")]
     [Description("5.1 PUT returns 200 OK")]
     public async Task UpdatePost_Put_ReturnsOk()
     {
@@ -26,6 +28,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Regression")]
     [Description("5.2 PUT response has valid fields")]
     public async Task UpdatePost_Put_HasValidFields()
     {
@@ -37,6 +40,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("HealthCheck")]
     [Description("5.3 PATCH returns 200 OK")]
     public async Task UpdatePost_Patch_ReturnsOk()
     {
@@ -48,6 +52,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("Smoke")]
     [Description("5.4 PATCH response contains updated title")]
     public async Task UpdatePost_Patch_ReturnsUpdatedTitle()
     {
