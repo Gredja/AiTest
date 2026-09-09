@@ -38,3 +38,6 @@ graphify-out/
 
 ## Documentation plans (not tracked)
 documentation/*Plan*.md
+
+## AI plans (not tracked)
+.mimocode/plans/
