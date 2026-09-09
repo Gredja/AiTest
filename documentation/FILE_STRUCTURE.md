@@ -8,7 +8,6 @@
 Gredja/
 ├── Gredja.slnx
 ├── Directory.Build.props
-├── AGENTS.md
 ├── allureConfig.json
 ├── testsettings.json
 ├── .env                          # secrets (not tracked)
@@ -151,6 +150,10 @@ documentation/
 ├── AGENTS.md
 ├── FILE_STRUCTURE.md
 ├── JSONPlaceholder-PLAN.md       # plan for adding JSONPlaceholder API
+├── Katas/
+│   ├── model-selection-note.md
+│   ├── prompt-or-skill-template-api-test-gen.md
+│   └── maturity-gap-analysis.md
 ├── PLAN.md
 ├── README.md
 ├── TestPlan.md
