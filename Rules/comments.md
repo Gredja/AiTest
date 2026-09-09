@@ -1,4 +1,4 @@
-# Rules: Comments
+﻿# Rules: Comments
 
 ## Default: no comments
 

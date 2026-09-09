@@ -6,7 +6,14 @@ namespace Core.Helpers;
 
 public class RequestHelper
 {
-    private static readonly RestClient Client = CreateClient();
+    private static readonly RestClient FakeStoreClient = CreateClient(FakeStoreEndpoints.BaseUrl);
+    private static readonly RestClient JsonPlaceholderClient = CreateClient(JsonPlaceholderEndpoints.BaseUrl);
+
+    protected RestClient Client { get; private set; } = FakeStoreClient;
+
+    protected void UseJsonPlaceholder() => Client = JsonPlaceholderClient;
+
+    protected void UseFakeStore() => Client = FakeStoreClient;
 
     public async Task<RestResponse<T>> Get<T>(
         string endpoint,
@@ -32,53 +39,31 @@ public class RequestHelper
         string endpoint,
         TRequest body,
         List<RequestDictionaryModel> additionalParams = null)
-        where TRequest : class
-    {
-        var request = new RestRequest(endpoint, Method.Post)
-        {
-            RequestFormat = DataFormat.Json
-        };
-
-        AddDefaultHeaders(request);
-        request.AddJsonBody(body);
-
-        if (additionalParams != null)
-        {
-            AddParams(request, additionalParams);
-        }
-
-        return await Client.ExecuteAsync<TResponse>(request);
-    }
+        where TRequest : class =>
+        await Send<TRequest, TResponse>(endpoint, Method.Post, body, additionalParams);
 
     public async Task<RestResponse<TResponse>> Put<TRequest, TResponse>(
         string endpoint,
         TRequest body,
         List<RequestDictionaryModel> additionalParams = null)
-        where TRequest : class
-    {
-        var request = new RestRequest(endpoint, Method.Put)
-        {
-            RequestFormat = DataFormat.Json
-        };
-
-        AddDefaultHeaders(request);
-        request.AddJsonBody(body);
-
-        if (additionalParams != null)
-        {
-            AddParams(request, additionalParams);
-        }
-
-        return await Client.ExecuteAsync<TResponse>(request);
-    }
+        where TRequest : class =>
+        await Send<TRequest, TResponse>(endpoint, Method.Put, body, additionalParams);
 
     public async Task<RestResponse<TResponse>> Patch<TRequest, TResponse>(
         string endpoint,
         TRequest body,
         List<RequestDictionaryModel> additionalParams = null)
+        where TRequest : class =>
+        await Send<TRequest, TResponse>(endpoint, Method.Patch, body, additionalParams);
+
+    private async Task<RestResponse<TResponse>> Send<TRequest, TResponse>(
+        string endpoint,
+        Method method,
+        TRequest body,
+        List<RequestDictionaryModel> additionalParams = null)
         where TRequest : class
     {
-        var request = new RestRequest(endpoint, Method.Patch)
+        var request = new RestRequest(endpoint, method)
         {
             RequestFormat = DataFormat.Json
         };
@@ -113,7 +98,7 @@ public class RequestHelper
         return await Client.ExecuteAsync<T>(request);
     }
 
-    public static RestRequest AddDefaultHeaders(RestRequest request)
+    private static RestRequest AddDefaultHeaders(RestRequest request)
     {
         request.AddHeader("Content-Type", "application/json;charset=utf-8");
         request.AddHeader("X-Lang", "en_GB");
@@ -121,19 +106,19 @@ public class RequestHelper
         return request;
     }
 
-    public static RestRequest AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
+    private static RestRequest AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
     {
         foreach (var param in additionalParams)
         {
             switch (param.Type)
             {
-                case "Header":
+                case ParamType.Header:
                     request.AddHeader(param.Key, param.Value?.ToString());
                     break;
-                case "Parameter":
+                case ParamType.Parameter:
                     request.AddParameter(param.Key, param.Value?.ToString());
                     break;
-                case "UrlSegment":
+                case ParamType.UrlSegment:
                     request.AddUrlSegment(param.Key, param.Value!.ToString());
                     break;
             }
@@ -142,12 +127,14 @@ public class RequestHelper
         return request;
     }
 
-    private static RestClient CreateClient()
+    private static RestClient CreateClient(string baseUrl)
     {
-        var options = new RestClientOptions(Endpoints.BaseUrl)
+        var options = new RestClientOptions(baseUrl);
+
+        if (TestConfig.SkipSslValidation)
         {
-            RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-        };
+            options.RemoteCertificateValidationCallback = (_, _, _, _) => true;
+        }
 
         return new RestClient(options);
     }

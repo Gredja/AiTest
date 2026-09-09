@@ -1,4 +1,4 @@
----
+﻿---
 description: Create a commit with safety checks
 argument-hint: [optional: commit message]
 ---

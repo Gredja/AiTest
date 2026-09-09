@@ -1,4 +1,4 @@
-## .NET
+﻿## .NET
 bin/
 obj/
 *.user
@@ -31,6 +31,16 @@ launchSettings.json
 ## Secrets
 .credentials
 .env
+testsettings.json
 
-## Graphify cache (generated)
-graphify-out/cache/
+## Graphify (generated)
+graphify-out/
+
+## Documentation plans (not tracked)
+documentation/*Plan*.md
+
+## AI plans (not tracked)
+.mimocode/plans/
+
+## AI reviews (not tracked)
+.mimocode/reviews/

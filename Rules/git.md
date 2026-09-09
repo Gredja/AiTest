@@ -1,4 +1,4 @@
-# Rules: Git
+﻿# Rules: Git
 
 ## Remote
 

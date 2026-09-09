@@ -1,4 +1,4 @@
-# PLAN
+﻿# PLAN
 
 > Trigger: type "План" — agent opens this document.
 

@@ -1,4 +1,4 @@
-namespace Core.Attributes;
+﻿namespace Core.Attributes;
 
 [AttributeUsage(AttributeTargets.Property)]
 public class ValueRangeAttribute : Attribute

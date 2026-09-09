@@ -8,7 +8,7 @@ namespace Core.Helpers;
 
 public static class AssertHelper
 {
-    public static void ShouldBeOk<T>(this RestResponse<T> response)
+    public static void ShouldBeOkWithData<T>(this RestResponse<T> response)
     {
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -29,36 +29,42 @@ public static class AssertHelper
         {
             var value = prop.GetValue(entity);
 
-            if (prop.GetCustomAttribute<RequiredFieldAttribute>() != null)
+            foreach (var attr in prop.GetCustomAttributes())
             {
-                value.Should().NotBeNull($"{prop.Name} is marked [RequiredField]");
+                ValidateProperty(prop.Name, value, attr);
+            }
+        }
+    }
+
+    private static void ValidateProperty(string name, object? value, Attribute attr)
+    {
+        switch (attr)
+        {
+            case RequiredFieldAttribute:
+                value.Should().NotBeNull($"{name} is marked [RequiredField]");
                 if (value is string str)
                 {
-                    str.Should().NotBeNullOrWhiteSpace($"{prop.Name} is marked [RequiredField]");
+                    str.Should().NotBeNullOrWhiteSpace($"{name} is marked [RequiredField]");
                 }
-            }
+                break;
 
-            if (prop.GetCustomAttribute<PositiveIdAttribute>() != null)
-            {
-                value.Should().NotBeNull($"{prop.Name} is marked [PositiveId]");
-                Convert.ToDouble(value).Should().BeGreaterThan(0, $"{prop.Name} is marked [PositiveId]");
-            }
+            case PositiveIdAttribute:
+                value.Should().NotBeNull($"{name} is marked [PositiveId]");
+                Convert.ToDouble(value).Should().BeGreaterThan(0, $"{name} is marked [PositiveId]");
+                break;
 
-            var range = prop.GetCustomAttribute<ValueRangeAttribute>();
-            if (range != null)
-            {
-                value.Should().NotBeNull($"{prop.Name} is marked [ValueRange]");
+            case ValueRangeAttribute range:
+                value.Should().NotBeNull($"{name} is marked [ValueRange]");
                 var doubleValue = Convert.ToDouble(value);
                 if (range.Min != double.MinValue)
                 {
-                    doubleValue.Should().BeGreaterThanOrEqualTo(range.Min, $"{prop.Name} min is {range.Min}");
+                    doubleValue.Should().BeGreaterThanOrEqualTo(range.Min, $"{name} min is {range.Min}");
                 }
-
                 if (range.Max != double.MaxValue)
                 {
-                    doubleValue.Should().BeLessThanOrEqualTo(range.Max, $"{prop.Name} max is {range.Max}");
+                    doubleValue.Should().BeLessThanOrEqualTo(range.Max, $"{name} max is {range.Max}");
                 }
-            }
+                break;
         }
     }
 }

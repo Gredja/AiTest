@@ -1,4 +1,4 @@
----
+﻿---
 description: Run all tests and generate Allure report
 argument-hint: (no arguments)
 ---

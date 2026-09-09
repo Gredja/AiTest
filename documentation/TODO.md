@@ -1,4 +1,4 @@
-# TODO
+﻿# TODO
 
 > Trigger: type "Список" — agent opens this document.
 

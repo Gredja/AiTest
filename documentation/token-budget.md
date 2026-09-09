@@ -1,4 +1,4 @@
-# Token Budget — Gredja
+﻿# Token Budget — Gredja
 
 Every automated AI workflow must declare a token budget. The budget is part of the spec, not part of the bill. Without a budget, agents can fan out, retry, and expand context — and the cost surfaces only after the fact.
 
