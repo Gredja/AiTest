@@ -1,4 +1,4 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace Core.Config;
 
@@ -9,6 +9,7 @@ public static class TestConfig
 
     private static JsonElement FakeStore => Root.RootElement.GetProperty("FakeStore");
     private static JsonElement JsonPlaceholder => Root.RootElement.GetProperty("JsonPlaceholder");
+    private static JsonElement GitHub => Root.RootElement.GetProperty("GitHub");
 
     public static int MaxResponseTimeMs => Root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
     public static bool SkipSslValidation => Root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
@@ -30,4 +31,41 @@ public static class TestConfig
     public static int ExpectedCommentCount => JsonPlaceholder.GetProperty("ExpectedCommentCount").GetInt32();
     public static int ExpectedPhotoCount => JsonPlaceholder.GetProperty("ExpectedPhotoCount").GetInt32();
     public static int JsonPlaceholderExpectedUserCount => JsonPlaceholder.GetProperty("ExpectedUserCount").GetInt32();
+
+    public static string GitHubBaseUrl => GitHub.GetProperty("BaseUrl").GetString()!;
+    public static string GitHubToken
+    {
+        get
+        {
+            var token = GitHub.GetProperty("Token").GetString();
+            if (!string.IsNullOrEmpty(token))
+            {
+                return token;
+            }
+            return ReadTokenFromEnvFile();
+        }
+    }
+    public static string GitHubTestRepo => GitHub.GetProperty("TestRepo").GetString()!;
+    public static string GitHubTestUserId => GitHub.GetProperty("TestUserId").GetString()!;
+
+    private static string ReadTokenFromEnvFile()
+    {
+        var dir = AppContext.BaseDirectory;
+        while (dir != null)
+        {
+            var envFile = Path.Combine(dir, ".env");
+            if (File.Exists(envFile))
+            {
+                var line = File.ReadAllLines(envFile).FirstOrDefault(l => l.StartsWith("GITHUB_PAT="));
+                if (line != null)
+                {
+                    return line["GITHUB_PAT=".Length..];
+                }
+                break;
+            }
+            dir = Directory.GetParent(dir)?.FullName;
+        }
+
+        throw new InvalidOperationException("GitHub PAT not found. Set Token in testsettings.json or add GITHUB_PAT to .env");
+    }
 }

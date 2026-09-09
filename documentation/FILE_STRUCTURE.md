@@ -53,10 +53,12 @@ Core/
 │   └── ValueRangeAttribute.cs
 ├── Config/
 │   ├── FakeStoreEndpoints.cs     # FakeStoreAPI endpoints
+│   ├── GitHubEndpoints.cs        # GitHub API endpoints
 │   ├── JsonPlaceholderEndpoints.cs  # JSONPlaceholder endpoints
 │   └── TestConfig.cs             # reads common settings from testsettings.json
 ├── Helpers/
 │   ├── AssertHelper.cs           # Generic assertions
+│   ├── GitHubRequestHelper.cs    # RequestHelper for GitHub API
 │   ├── JsonPlaceholderRequestHelper.cs  # RequestHelper for JSONPlaceholder
 │   └── RequestHelper.cs          # HTTP request wrapper (Get/Post/Put/Patch/Delete)
 ├── Models/
@@ -87,6 +89,15 @@ Core/
 │   │   ├── PostModel.cs
 │   │   ├── PostRequest.cs
 │   │   └── TodoModel.cs
+│   ├── GitHub/
+│   │   ├── BranchModel.cs
+│   │   ├── CreateCommentRequest.cs
+│   │   ├── CreateIssueRequest.cs
+│   │   ├── IssueModel.cs
+│   │   ├── LabelModel.cs
+│   │   ├── PullRequestModel.cs
+│   │   ├── RepositoryModel.cs
+│   │   └── UserModel.cs
 │   ├── ParamType.cs              # enum: Header, Parameter, UrlSegment
 │   └── RequestDictionaryModel.cs # dynamic request params
 ```
@@ -116,6 +127,16 @@ Api/
         ├── GetPostByIdTests.cs       # 7 tests
         ├── GetTodosByUserIdTests.cs  # 5 tests
         └── UpdatePostTests.cs        # 4 tests
+└── GitHub/
+    ├── Helpers/
+    │   └── GitHubParamHelper.cs     # RepoParam(), IssueNumberParam(), PaginationParams()
+    └── Tests/
+        ├── GetBranchesTests.cs      # 5 tests
+        ├── GetIssuesTests.cs        # 5 tests
+        ├── GetPullRequestsTests.cs  # 5 tests
+        ├── GetRateLimitTests.cs     # 4 tests
+        ├── GetRepositoryTests.cs    # 4 tests
+        └── GetUserTests.cs          # 4 tests
 ```
 
 ## TestAdapter/

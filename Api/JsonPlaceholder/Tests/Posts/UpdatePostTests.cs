@@ -9,7 +9,7 @@ using FluentAssertions;
 using TestAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 
-namespace Api.JsonPlaceholder.Tests;
+namespace Api.JsonPlaceholder.Posts;
 
 [TestFixture]
 [AllureNUnit]

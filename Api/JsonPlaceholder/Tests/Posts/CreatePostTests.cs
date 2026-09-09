@@ -7,7 +7,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 
-namespace Api.JsonPlaceholder.Tests;
+namespace Api.JsonPlaceholder.Posts;
 
 [TestFixture]
 [AllureNUnit]

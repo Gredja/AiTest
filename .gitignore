@@ -44,3 +44,4 @@ documentation/*Plan*.md
 
 ## AI reviews (not tracked)
 .mimocode/reviews/
+/testsettings.json

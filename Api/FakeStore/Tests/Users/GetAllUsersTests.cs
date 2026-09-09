@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using RestSharp;
 using Core.Models.FakeStore;
 using Core.Config;
@@ -8,7 +8,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 
-namespace Api.FakeStore.Tests;
+namespace Api.FakeStore.Users;
 
 [TestFixture]
 [AllureNUnit]

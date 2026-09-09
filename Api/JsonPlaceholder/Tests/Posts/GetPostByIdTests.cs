@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using RestSharp;
 using Core.Models;
 using Core.Models.JsonPlaceholder;
@@ -9,7 +9,7 @@ using FluentAssertions;
 using TestAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 
-namespace Api.JsonPlaceholder.Tests;
+namespace Api.JsonPlaceholder.Posts;
 
 [TestFixture]
 [AllureNUnit]
