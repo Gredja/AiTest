@@ -6,39 +6,40 @@
 
 ```
 Gredja/
+├── AGENTS.md
 ├── Gredja.slnx
 ├── Directory.Build.props
-├── AGENTS.md
-├── allureConfig.json             # Allure Report configuration
-├── testsettings.json             # .NET test settings
+├── allureConfig.json
+├── testsettings.json
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
 ├── .graphifyignore
-├── .mimocode/                    # MiMoCode skills, hooks, scripts
+├── .mimocode/
 │   ├── mimocode.jsonc
+│   ├── commands/
+│   │   ├── api-test-gen.md
+│   │   ├── commit.md
+│   │   ├── review.md
+│   │   ├── review-commit.md
+│   │   ├── review-pr.md
+│   │   └── test.md
 │   ├── hooks/
-│   │   └── safety-commit.ts      # pre-commit safety hook
+│   │   └── safety-commit.ts
+│   ├── reviews/                  # not tracked
+│   ├── plans/                    # not tracked
 │   ├── scripts/
-│   │   └── gh-pr-create.ps1      # wrapper for gh pr create
+│   │   └── gh-pr-create.ps1
 │   └── skills/
-│       ├── api-test-gen/
-│       │   └── SKILL.md          # API test generation for FakeStoreAPI
-│       ├── commit/
-│       │   └── SKILL.md          # commit with safety checks + Allure
-│       ├── gredja-rules/
-│       │   └── SKILL.md          # entry point for project rules
-│       ├── pr/
-│       │   └── SKILL.md          # create pull request
-│       ├── review/
-│       │   └── SKILL.md          # review local changes
-│       ├── review-pr/
-│       │   └── SKILL.md          # PR review (GitHub API based)
-│       └── test/
-│           └── SKILL.md          # run tests + Allure report
+│       ├── api-test-gen/SKILL.md
+│       ├── commit/SKILL.md
+│       ├── gredja-rules/SKILL.md
+│       ├── review/SKILL.md
+│       ├── review-commit/SKILL.md
+│       ├── review-pr/SKILL.md
+│       ├── test/SKILL.md
+│       └── test-report/SKILL.md
 └── Scripts/
-    ├── allure-categories.json    # Allure severity categories
-    ├── allure-report.ps1         # run tests + generate Allure report
-    └── generate-behaviors.ps1    # generate BDD behaviors for Allure
+    └── allure-report.ps1
 ```
 
 ## Core/
@@ -51,30 +52,41 @@ Core/
 │   ├── RequiredFieldAttribute.cs
 │   └── ValueRangeAttribute.cs
 ├── Config/
-│   ├── Endpoints.cs              # BaseUrl + all endpoint constants
-│   └── TestConfig.cs             # test configuration
+│   ├── FakeStoreEndpoints.cs     # FakeStoreAPI endpoints
+│   ├── JsonPlaceholderEndpoints.cs  # JSONPlaceholder endpoints
+│   └── TestConfig.cs             # reads common settings from testsettings.json
 ├── Helpers/
-│   ├── AssertHelper.cs           # Generic assertions (ShouldBeOk, ShouldHaveValidFields<T>)
-│   └── RequestHelper.cs          # HTTP request wrapper (Get, RestClient init)
+│   ├── AssertHelper.cs           # Generic assertions
+│   ├── JsonPlaceholderRequestHelper.cs  # RequestHelper for JSONPlaceholder
+│   └── RequestHelper.cs          # HTTP request wrapper (Get/Post/Put/Patch/Delete)
 ├── Models/
 │   ├── Generic/
-│   │   └── IdNameModel.cs
-│   ├── AddressModel.cs
-│   ├── AuthRequest.cs
-│   ├── CartModel.cs
-│   ├── CartProductModel.cs
-│   ├── CartRequest.cs
-│   ├── GeolocationModel.cs
-│   ├── LoginErrorResponse.cs
-│   ├── LoginRequest.cs
-│   ├── LoginResponse.cs
-│   ├── ProductModel.cs
-│   ├── ProductRequest.cs
-│   ├── RatingModel.cs
-│   ├── RequestDictionaryModel.cs
-│   ├── UserModel.cs
-│   ├── UserNameModel.cs
-│   └── UserRequest.cs
+│   │   ├── IdNameModel.cs
+│   │   └── UserOwnedModel.cs
+│   ├── FakeStore/
+│   │   ├── AddressModel.cs
+│   │   ├── AuthRequest.cs
+│   │   ├── CartModel.cs
+│   │   ├── CartProductModel.cs
+│   │   ├── CartRequest.cs
+│   │   ├── GeolocationModel.cs
+│   │   ├── ProductModel.cs
+│   │   ├── ProductRequest.cs
+│   │   ├── RatingModel.cs
+│   │   ├── UserModel.cs
+│   │   ├── UserNameModel.cs
+│   │   └── UserRequest.cs
+│   ├── JsonPlaceholder/
+│   │   ├── AlbumModel.cs
+│   │   ├── CommentModel.cs
+│   │   ├── CompanyModel.cs
+│   │   ├── GeoModel.cs
+│   │   ├── JsonPlaceholderAddressModel.cs
+│   │   ├── JsonPlaceholderUserModel.cs
+│   │   ├── PhotoModel.cs
+│   │   ├── PostModel.cs
+│   │   └── TodoModel.cs
+│   └── RequestDictionaryModel.cs # shared — dynamic request params + ParamType enum
 ```
 
 ## Api/
@@ -82,22 +94,26 @@ Core/
 ```
 Api/
 ├── Api.csproj
-├── .runsettings                  # NUnit run settings
-├── AllureGlobalSetup.cs          # [SetUpFixture] — Allure setup
-├── Helpers/
-│   ├── CartAssertHelper.cs       # Cart-specific assertions
-│   ├── ProductAssertHelper.cs    # Product-specific assertions
-│   └── UserAssertHelper.cs       # User-specific assertions
-└── Tests/
-    ├── GetAllCartsTests.cs       # GET /carts — all carts
-    ├── GetAllProductsTests.cs    # GET /products — all products
-    ├── GetAllUsersTests.cs       # GET /users — all users
-    ├── GetCartByIdTests.cs       # GET /carts/{id} — cart by ID
-    ├── GetProductByIdTests.cs    # GET /products/{id} — product by ID
-    ├── GetProductCategoriesTests.cs    # GET /products/categories
-    ├── GetProductsByCategoryTests.cs   # GET /products/category/{category}
-    ├── GetUserByIdTests.cs       # GET /users/{id} — user by ID
-    └── LoginTests.cs             # POST /auth/login — login
+├── AllureGlobalSetup.cs
+├── FakeStore/
+│   ├── Helpers/
+│   │   └── FakeStoreParamHelper.cs  # IdParam()
+│   └── Tests/
+│       ├── GetAllProductsTests.cs    # 6 tests
+│       ├── GetAllUsersTests.cs       # 6 tests
+│       ├── GetProductByIdTests.cs    # 7 tests (4 active + 3 Ignore)
+│       └── GetUserByIdTests.cs       # 6 tests
+└── JsonPlaceholder/
+    ├── Helpers/
+    │   └── JsonPlaceholderParamHelper.cs  # PostIdParam(), UserIdParam()
+    └── Tests/
+        ├── CreatePostTests.cs        # 4 tests
+        ├── DeletePostTests.cs        # 2 tests
+        ├── GetAllPostsTests.cs       # 6 tests
+        ├── GetAllTodosTests.cs       # 7 tests
+        ├── GetPostByIdTests.cs       # 7 tests
+        ├── GetTodosByUserIdTests.cs  # 5 tests
+        └── UpdatePostTests.cs        # 4 tests
 ```
 
 ## TestAdapter/
@@ -105,14 +121,13 @@ Api/
 ```
 TestAdapter/
 ├── TestAdapter.csproj
-├── AllureBddAttributes.cs        # BDD step attributes for Allure
 └── Helpers/
-    ├── AllureGlobalSetup.cs      # [SetUpFixture] — captures [Ignore] tests as skipped
-    ├── AllureHelper.cs           # Shared utilities (FindProjectRoot, GetResultsDir)
-    ├── AllureJsonWriter.cs       # JSON file writer for Allure results
-    ├── AllureNUnitAttribute.cs   # Custom Allure adapter for NUnit 4.x (ITestAction)
-    ├── AllureSkippedTestWriter.cs # writes skipped test results
-    └── AllureTestResultBuilder.cs # Builds Allure JSON dictionaries
+    ├── AllureGlobalSetup.cs
+    ├── AllureHelper.cs
+    ├── AllureJsonWriter.cs
+    ├── AllureNUnitAttribute.cs
+    ├── AllureSkippedTestWriter.cs
+    └── AllureTestResultBuilder.cs
 ```
 
 ## Ui/
@@ -120,36 +135,40 @@ TestAdapter/
 ```
 Ui/
 ├── Ui.csproj
-├── .runsettings                  # NUnit run settings
-├── AllureGlobalSetup.cs          # [SetUpFixture] — Allure setup
+├── AllureGlobalSetup.cs
 └── Tests/
-    └── DummyTests.cs             # placeholder tests
+    └── DummyTests.cs
 ```
 
 ## Rules/
 
 ```
 Rules/
-├── assertions.md                 # FluentAssertions patterns
-├── code.md                       # general code writing rules
-├── comments.md                   # when to comment code
-├── config.md                     # endpoints, configuration
-├── git.md                        # remote, commits, secrets
-├── models.md                     # Model/Request building rules
-└── workflow.md                   # plan → approval → execute → report
+├── assertions.md
+├── categories.md
+├── code.md
+├── comments.md
+├── config.md
+├── git.md
+├── models.md
+└── workflow.md
 ```
 
 ## Documentation/
 
 ```
 documentation/
-├── AGENTS.md                     # AI agent instructions
-├── FILE_STRUCTURE.md             # this file
-├── PLAN.md                       # project plan
-├── README.md                     # project readme
-├── TestPlan.md                   # test plan
-├── TODO.md                       # tasks and priorities
-└── token-budget.md               # token budgets per workflow
+├── FILE_STRUCTURE.md
+├── JSONPlaceholder-PLAN.md       # plan for adding JSONPlaceholder API
+├── Katas/
+│   ├── model-selection-note.md
+│   ├── prompt-or-skill-template-api-test-gen.md
+│   └── maturity-gap-analysis.md
+├── PLAN.md
+├── README.md
+├── TestPlan.md
+├── TODO.md
+└── token-budget.md
 ```
 
 ## Other
@@ -158,7 +177,7 @@ documentation/
 Prompts/
 ├── prompts.md
 └── templates/
-    └── api-test-generation.md    # Reusable prompt template for endpoint test generation
+    └── api-test-generation.md
 
 graphify-out/
 ├── graph.json

@@ -57,7 +57,7 @@ Create `Api/Tests/{Endpoint}ApiTests.cs` with these test categories:
 
 - **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers
 - **Assertions:** FluentAssertions — `.Should().Be()`, `.NotBeNull()`, `.NotBeNullOrWhiteSpace()`
-- **Config:** Use `Endpoints.{Endpoint}` from `Core/Config/Endpoints.cs` — never hardcode URLs
+- **Config:** Use `FakeStoreEndpoints.{Endpoint}` or `JsonPlaceholderEndpoints.{Endpoint}` from the corresponding config file — never hardcode URLs
 - **Comments:** No comments unless regex or non-obvious WHY
 
 ### Step 5: Safety Check

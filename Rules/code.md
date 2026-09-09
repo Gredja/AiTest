@@ -12,8 +12,7 @@
 
 - Use file-scoped namespaces (`namespace X;`)
 - One class per file, file name matches class name
-- Prefer explicit types over `var` when type is not obvious from the right side
-- `var` is fine when type is clear: `var request = new RestRequest(...)`, `var response = _client.Execute<...>(request)`
+- Use `var` wherever possible — only use explicit type when `var` is not applicable (e.g. `null`, tuples, primitives without assignment)
 
 ## File Layout
 
@@ -41,5 +40,16 @@
 - Simplify when possible: `var x = new T(); return x;` → `return new T();`
 - No magic numbers or strings — extract to constants
 - No nested ternaries — use `if`/`switch`
+- Always use `{}` for `if` blocks, even single-line
 - Don't catch exceptions silently — either handle or let propagate
 - Use `nameof()` for argument exceptions instead of string literals
+
+## Access modifiers (review rule)
+
+During any code review: check that every method, property, and field has the **narrowest possible** access modifier.
+
+- If used only inside the class → `private`
+- If used only by subclasses → `protected`
+- If used by external callers → `public`
+
+Default to `private`. Only widen when there's a concrete reason.

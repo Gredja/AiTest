@@ -26,10 +26,14 @@ public static class AllureTestResultBuilder
             result["tags"] = p.Categories.Select(c => new Dictionary<string, string> { ["name"] = c }).ToList();
 
         if (p.StatusMessage != null)
+        {
             result["statusDetails"] = BuildStatusDetails(p.StatusMessage, p.StatusTrace);
+        }
 
         if (p.Description != null)
+        {
             result["description"] = p.Description;
+        }
 
         return result;
     }
@@ -92,14 +96,14 @@ public static class AllureTestResultBuilder
 
     private static List<Dictionary<string, string>> BuildLabels(string? testClassName, List<string>? categories, string? epic, string? feature, string? story)
     {
-        var projectName = ExtractProjectName(testClassName);
+        var serviceName = ExtractServiceName(testClassName);
 
         var labels = new List<Dictionary<string, string>>
         {
             new() { ["name"] = "framework", ["value"] = "nunit" },
             new() { ["name"] = "host", ["value"] = Environment.MachineName },
             new() { ["name"] = "package", ["value"] = testClassName ?? "Tests" },
-            new() { ["name"] = "parentSuite", ["value"] = projectName },
+            new() { ["name"] = "parentSuite", ["value"] = serviceName },
             new() { ["name"] = "suite", ["value"] = testClassName ?? "Tests" }
         };
 
@@ -123,12 +127,23 @@ public static class AllureTestResultBuilder
         return labels;
     }
 
-    private static string ExtractProjectName(string? namespaceName)
+    private static string ExtractServiceName(string? testClassName)
     {
-        if (string.IsNullOrEmpty(namespaceName))
+        if (string.IsNullOrEmpty(testClassName))
+        {
             return "Tests";
+        }
 
-        var parts = namespaceName.Split('.');
-        return parts.Length > 0 ? parts[0] : "Tests";
+        var parts = testClassName.Split('.');
+
+        for (var i = 0; i < parts.Length; i++)
+        {
+            if (parts[i] == "Tests" && i > 0)
+            {
+                return parts[i - 1];
+            }
+        }
+
+        return parts.Length > 1 ? parts[1] : "Tests";
     }
 }

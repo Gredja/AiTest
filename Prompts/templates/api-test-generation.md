@@ -13,7 +13,7 @@ Generate a test class for the endpoint: {METHOD} {ENDPOINT_PATH}
 
 - Method: {METHOD}
 - Path: {ENDPOINT_PATH}
-- Path constant in Endpoints.cs: {ENDPOINTS_CONSTANT}
+- Path constant in Endpoints file: {ENDPOINTS_CONSTANT}
 - Description: {DESCRIPTION}
 - Request model (if POST/PUT): {REQUEST_MODEL}
 - Response model: {RESPONSE_MODEL}
@@ -29,7 +29,8 @@ Generate a test class for the endpoint: {METHOD} {ENDPOINT_PATH}
 - Usings at top: NUnit.Framework, RestSharp, Core.Models, Core.Config, Core.Helpers, System.Threading.Tasks, FluentAssertions, plus any needed (System.Net, System.Diagnostics, Api.Helpers)
 
 ### Class structure
-- `[TestFixture]` class named `{CLASS_NAME}`
+- `[TestFixture]` + `[AllureNUnit]` + `[Category("{SERVICE}")]` class named `{CLASS_NAME}`
+- `{SERVICE}` = `FakeStore`, `JsonPlaceholder`, or `Ui`
 - Private field: `private RestClient _client = null!;`
 - `[SetUp]`: `_client = new RestClient(Endpoints.BaseUrl);`
 - `[TearDown]`: `_client?.Dispose();`
@@ -60,7 +61,7 @@ public void GetAllProducts_ReturnsOk()
 ```
 
 ### Test method rules
-- Every test: `[Test]` + `[Description("X.Y description")]`
+- Every test: `[Test]` + `[Category("...")]` + `[Description("X.Y description")]`
 - Naming: `{ClassName}_{Scenario}_{ExpectedBehavior}` (PascalCase)
 - Test numbering: continuous per class, starting from `{START_NUMBER}.1`
 - Keep methods under 30 lines
@@ -103,27 +104,10 @@ GetProductByIdTests:
 
 ### Test categories (cover ALL applicable)
 
-**P0 — Happy Path (always include):**
-- Status code is {EXPECTED_STATUS}
-- Response body is not empty
-- Response type matches (List<T> for lists, T for single)
-
-**P1 — Validation (always include):**
-- Each field present and correct type:
-  - string fields: `.Should().NotBeNullOrWhiteSpace()`
-  - numeric fields: `.Should().BeGreaterThanOrEqualTo(0)` or `.Should().BeInRange(min, max)`
-  - nested objects: `.Should().NotBeNull()` then validate fields
-- For single-item endpoint: `id` in response matches requested ID
-- Response has all expected fields (use `ShouldHaveValidFields()` if model has attributes)
-
-**P2 — Edge Cases (include when relevant):**
-- Non-existent ID: dynamic approach (GET all → maxId → maxId + 1)
-- ID = 0 (static, always invalid)
-- Negative ID = -1 (static, always invalid)
-- Mark with `[Ignore("reason")]` if API returns wrong status (e.g. 200 instead of 404)
-
-**P3 — Performance (include for GET list endpoints):**
-- Response time < 5 seconds
+Every test MUST have `[Category]` attributes. See `Rules/categories.md` for full rules:
+- Service category on class (`FakeStore` / `JsonPlaceholder` / `Ui`)
+- Check-type category on method (`HealthCheck` / `Smoke` / `Regression` / `Negative` / `Performance`)
+- Category-to-test mapping table
 
 ### Non-existent ID test pattern (for GET /{id} endpoints)
 
@@ -193,7 +177,7 @@ Generate the complete test file content only. No explanations, no markdown wrapp
 
 ## How to use
 
-1. Pick an endpoint from `TestPlan.md` or `Endpoints.cs`
+1. Pick an endpoint from `TestPlan.md` or the corresponding Endpoints file
 2. Fill in the placeholders in the prompt above
 3. Send the filled prompt to the AI
 4. Review the generated test class against project rules
@@ -207,7 +191,7 @@ Generate the complete test file content only. No explanations, no markdown wrapp
 |-------------|-------------|---------|
 | `{METHOD}` | HTTP method | GET, POST, PUT, DELETE |
 | `{ENDPOINT_PATH}` | URL path with segments | /products/{id} |
-| `{ENDPOINTS_CONSTANT}` | Constant name in Endpoints.cs | ProductsById |
+| `{ENDPOINTS_CONSTANT}` | Constant name in Endpoints file | ProductsById |
 | `{DESCRIPTION}` | Human-readable endpoint description | Get product by ID |
 | `{REQUEST_MODEL}` | Model class for request body | ProductRequest |
 | `{RESPONSE_MODEL}` | Model class for response body | ProductModel |
@@ -217,6 +201,7 @@ Generate the complete test file content only. No explanations, no markdown wrapp
 | `{CLASS_NAME}` | Test class name | GetProductByIdTests |
 | `{START_NUMBER}` | First test number prefix | 2 (if products list is 1) |
 | `{EXPECTED_STATUS}` | Expected HTTP status code | 200, 201, 404 |
+| `{SERVICE}` | Service category for [Category] | FakeStore, JsonPlaceholder, Ui |
 | `{ALL_ITEMS_CONSTANT}` | Constant for list endpoint | Products |
 | `{BY_ID_CONSTANT}` | Constant for by-ID endpoint | ProductsById |
 | `{N}` | Test number prefix in descriptions | 2 |
@@ -242,7 +227,7 @@ Generate a test class for the endpoint: GET /carts/{id}
 
 - Method: GET
 - Path: /carts/{id}
-- Path constant in Endpoints.cs: CartsById
+- Path constant in Endpoints file: CartsById
 - Description: Get cart by ID
 - Request model (if POST/PUT): n/a
 - Response model: CartModel

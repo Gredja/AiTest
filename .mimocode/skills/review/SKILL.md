@@ -1,107 +1,120 @@
 ---
 name: review
-description: Use when the user says "review", "/review", "review code", "review changes", or wants to review local uncommitted code changes. Reviews all modified and new files against project rules and existing patterns. NOT for PR reviews (use /review-pr instead).
+description: Use when the user says "review", "/review", or wants a full project review. Reviews the entire Gredja codebase against all project rules. NOT for uncommitted changes (use /review-commit) or PR reviews (use /review-pr).
 ---
 
-# Skill: Code Review
+# Skill: Full Project Review
 
-Review all local uncommitted changes (modified + new/untracked files) against Gredja project rules and existing code patterns.
+Review the entire Gredja project against all rules and patterns. Comprehensive audit of every .cs file.
 
-## Step 1: Identify changed files
+## Step 1: Collect project files (main agent)
 
 Run in parallel:
-- `git status` — see all modified, deleted, untracked files
-- `git diff --stat HEAD` — summary of changes vs last commit
+- `Get-ChildItem -Recurse -Include "*.cs" | Where-Object { $_.FullName -notmatch "\\obj\\" }` — list all source files
+- Read `Rules/*.md` — all rule files
+- Read `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`
 
-If working tree is clean — report "No uncommitted changes" and stop.
+## Step 2: Spawn subagent (main agent)
 
-Collect three lists:
-1. **Modified files** (tracked, changed)
-2. **New files** (untracked)
-3. **Deleted files**
+Full project scan is the heaviest review operation. Delegate to subagent — main agent stays responsive.
 
-## Step 2: Read all changed content
-
-**Modified files** — run `git diff -- <file>` for each to see exact diffs.
-
-**New files** — read full content of each file.
-
-**Also read for context:**
-- Existing similar files (e.g. if reviewing `UserAssertHelper`, also read `ProductAssertHelper`)
-- `Rules/*.md` — all rule files in `Rules/` directory
-- `Core/Config/Endpoints.cs` — if any endpoint references changed
-
-## Step 3: Review each file
-
-Check every changed file against ALL project rules:
-
-### Code rules (`Rules/code.md`)
-- PascalCase classes/methods/properties/constants
-- camelCase locals/parameters, `_camelCase` private fields
-- No abbreviations (`response` not `resp`)
-- Boolean prefix: `Is`, `Has`, `Can`, `Should`
-- File-scoped namespaces, one class per file
-- Explicit types > var (unless obvious)
-- Max ~30 lines per method, max 3-4 params
-- No magic numbers/strings — extract to constants
-- No nested ternaries
-- `if` blocks always have `{ }`
-
-### Model rules (`Rules/models.md`)
-- Response: suffix `Model` (includes `Id`). Request: suffix `Request` (no `Id`)
-- Reference types: no `?`, no initializer
-- Value types: `?` only if JSON field can be null/absent
-- Namespace: `Core.Models`
-- Pure data containers — no constructors, validation, or logic
-
-### Assertion rules (`Rules/assertions.md`)
-- FluentAssertions only (not NUnit Assert)
-- No `out _` inside `OnlyContain` lambdas
-- Key patterns: `.Should().Be()`, `.NotBeNull()`, `.NotBeNullOrWhiteSpace()`, `.BeGreaterThan()`, `.BeInRange()`, `.OnlyContain()`
-
-### Comment rules (`Rules/comments.md`)
-- Default: no comments
-- Exceptions: regex explanations, non-obvious WHY only
-
-### Config rules (`Rules/config.md`)
-- Endpoints in `Core/Config/Endpoints.cs`
-- Never hardcode URLs in tests
-
-### Pattern consistency
-- Compare new code against existing similar code (e.g. `UserAssertHelper` vs `ProductAssertHelper`)
-- Check for DRY violations — repeated setup blocks should be extracted
-- Check for extension method name collisions across helpers
-
-## Step 4: Classify and report
-
-For each issue found, classify severity:
-- **major** — must fix (rule violation, DRY violation, potential bug, naming collision)
-- **minor** — should consider (style inconsistency, suboptimal pattern)
-- **ok** — works correctly, no issues
-
-### Report format
+Spawn a `general` subagent with this prompt:
 
 ```
-## Review: [feature name]
+You are a full project review subagent for Gredja. Execute the following steps precisely. Do NOT ask the user anything.
 
-### Summary
-1-2 sentence overview of what was changed and overall quality.
+Working dir: {working_dir}
 
-### Issues
+## Steps
 
-| Severity | File | Line | Issue |
-|----------|------|------|-------|
-| major | File.cs | 12 | Description with suggestion |
-| minor | File.cs | 34 | Description |
+1. Read all Rules/*.md files for project rules context.
 
-### What's good
-- Bullet list of positives (mandatory section)
+2. Read ALL .cs files (excluding obj/ directories):
+   - Core/Attributes/*.cs
+   - Core/Config/*.cs
+   - Core/Helpers/*.cs
+   - Core/Models/**/*.cs
+   - Api/FakeStore/Tests/*.cs
+   - Api/JsonPlaceholder/Tests/*.cs
+   - Api/AllureGlobalSetup.cs
+   - TestAdapter/Helpers/*.cs
+   - Ui/Tests/*.cs
+   - Ui/AllureGlobalSetup.cs
+
+3. Review EACH file against ALL project rules:
+
+   Code rules (Rules/code.md):
+   - PascalCase for classes, methods, properties, constants
+   - camelCase for locals, params
+   - _camelCase for private fields
+   - No abbreviations (response, not resp)
+   - Boolean prefixes: Is, Has, Can, Should
+   - File-scoped namespaces
+   - One class per file
+   - Explicit types > var (unless obvious)
+   - Methods: short, one responsibility, max ~30 lines, max 5 params
+   - All API requests async
+   - No magic numbers
+   - No nested ternary
+   - nameof() for exceptions
+   - {} for all if blocks, even single-line
+
+   Model rules (Rules/models.md):
+   - Response: suffix Model (includes Id)
+   - Request: suffix Request (no Id)
+   - Reference types: no ?, no initializer
+   - Value types: ? only if JSON field can be null/absent
+   - Namespace: Core.Models
+   - Pure data containers — no constructors, validation, logic
+
+   Assertion rules (Rules/assertions.md):
+   - FluentAssertions only (no NUnit Assert)
+   - Key patterns: .Should().Be(), .NotBeNull(), .NotBeNullOrWhiteSpace(), .BeGreaterThan(), .BeInRange(), .OnlyContain()
+
+   Comment rules (Rules/comments.md):
+   - Default: no comments
+   - Exceptions: regex explanations, TODO (remove before merge), non-obvious WHY
+
+   Config rules (Rules/config.md):
+   - Base URL and endpoints in FakeStoreEndpoints.cs/JsonPlaceholderEndpoints.cs
+   - Never hardcode in tests
+
+   Category rules (Rules/categories.md):
+   - [Category] on [TestFixture] class — service type
+   - [Category] on [Test] method — check type
+   - Both dimensions applied
+
+4. Cross-cutting checks:
+   - Dead code: unused methods, unused models, unused using statements
+   - DRY violations: repeated patterns that should be extracted
+   - Inconsistencies: different patterns for same operation across services
+   - Missing coverage: endpoints without tests
+   - Naming consistency across files
+
+5. Classify each issue:
+   - major — must fix (rule violation, potential bug, security issue)
+   - minor — should consider (style, suboptimal pattern, dead code)
+
+6. Report:
+   - Executive summary (2-3 sentences)
+   - Statistics: files reviewed, issues found, major vs minor
+   - Issues table: Severity | File | Line | Issue
+   - Dead code inventory
+   - Consistency issues across services
+   - What's good (mandatory section)
 ```
+
+## Step 3: Deliver result (main agent)
+
+Report the subagent's output to the user.
+
+---
 
 ## Rules
 
-- Review ALL changed files, not just a sample
-- Always read existing similar files for pattern comparison
+- Review ALL .cs files, not just a sample
+- Exclude obj/ directories (auto-generated)
 - Line references must be exact (file:line format)
-- "What's good" section is mandatory — acknowledge good work
-- If no issues found, say so explicitly — don't invent nitpicks
+- "What's good" section is mandatory
+- If no issues found, say so explicitly
+- Major issues need clear explanation of why they're blocking
