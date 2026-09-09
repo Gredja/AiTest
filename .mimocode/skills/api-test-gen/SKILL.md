@@ -1,13 +1,13 @@
 ---
 name: api-test-gen
-description: Use when the user wants to generate API tests for a FakeStoreAPI or JSONPlaceholder endpoint. Trigger on mentions of "api test gen", "generate API tests", "/api-test-gen", or testing a new endpoint.
+description: Use when the user wants to generate API tests for any service endpoint. Trigger on mentions of "api test gen", "generate API tests", "/api-test-gen", or testing a new endpoint.
 ---
 
 # API Test Generation
 
 ## Purpose
 
-Generates a complete set of NUnit API tests for a FakeStoreAPI or JsonPlaceholder endpoint — for AQA Engineer at the test automation stage.
+Generates a complete set of NUnit API tests for any REST API service endpoint — for AQA Engineer at the test automation stage.
 
 ---
 
@@ -15,8 +15,8 @@ Generates a complete set of NUnit API tests for a FakeStoreAPI or JsonPlaceholde
 
 | Placeholder | Description | Example value |
 |---|---|---|
-| `{{service_name}}` | API service | FakeStore |
-| `{{endpoint_name}}` | Endpoint to test | users |
+| `{{service_name}}` | API service (matches directory/class names) | FakeStore, JsonPlaceholder, Swapi |
+| `{{endpoint_name}}` | Endpoint to test | users, posts, todos |
 
 ---
 
@@ -29,25 +29,39 @@ Model must return: test files (.cs), models (.cs), and constants (.cs) in C# for
 ## Input
 
 User provides:
-1. **Service name** — `{{service_name}}` (`FakeStore` or `JsonPlaceholder`)
-2. **Endpoint name** — `{{endpoint_name}}` (e.g. `products`, `users`, `posts`, `todos`)
+1. **Service name** — `{{service_name}}` (must match existing directory name in `Api/`)
+2. **Endpoint name** — `{{endpoint_name}}` (e.g. `products`, `users`, `posts`)
 
 If not provided, ask which service and endpoint to test.
+
+## File Convention (service-agnostic)
+
+All paths use `{Service}` as the service name (PascalCase, matches directory names):
+
+| What | Path pattern |
+|---|---|
+| Endpoints config | `Core/Config/{Service}Endpoints.cs` |
+| Models | `Core/Models/{Service}/` |
+| Tests | `Api/{Service}/Tests/{Endpoint}Tests.cs` |
+| Param helper | `Api/Helpers/{Service}ParamHelper.cs` |
+| Namespace (tests) | `Api.{Service}.Tests` |
+| Namespace (models) | `Core.Models.{Service}` |
+| Category (class) | `[Category("{Service}")]` |
+
+Before generating — verify that `Core/Config/{Service}Endpoints.cs` exists. If not, create it.
 
 ## Flow
 
 ### Step 1: Research the endpoint
 
-1. Fetch the endpoint from the API
+1. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
 2. Analyze the response structure — what fields, what types, what's nullable
 3. Check for sub-endpoints: `/{endpoint}/{id}`, nested resources
 4. Count total items (needed for `ExpectedCount`)
 
 ### Step 2: Add constants to Endpoints file
 
-Update the appropriate endpoints file:
-- **FakeStore:** `Core/Config/FakeStoreEndpoints.cs`
-- **JsonPlaceholder:** `Core/Config/JsonPlaceholderEndpoints.cs`
+Update `Core/Config/{Service}Endpoints.cs`:
 
 Add:
 - `Expected{Endpoint}Count` — total items from API
@@ -88,17 +102,22 @@ If models already exist — verify they match current API response.
 
 ### Step 4: Generate Tests
 
-**File location:**
-- **FakeStore:** `Api/FakeStore/Tests/{Endpoint}Tests.cs`
-- **JsonPlaceholder:** `Api/JsonPlaceholder/Tests/{Endpoint}Tests.cs`
+**Base class** — check if `{Service}RequestHelper` exists in `Core/Helpers/`. If not, create it extending `RequestHelper`. If it exists, use it.
 
-**Namespace:**
-- **FakeStore:** `Api.FakeStore.Tests`
-- **JsonPlaceholder:** `Api.JsonPlaceholder.Tests`
+**Param helpers** — use shared helpers for URL segments and query parameters:
+- Use `using static Api.Helpers.{Service}ParamHelper;`
+- If helper doesn't exist, create it with `ProductIdParam`/`UserIdParam`/`PostIdParam` as needed
 
-**Base class:**
-- **FakeStore:** `RequestHelper`
-- **JsonPlaceholder:** `JsonPlaceholderRequestHelper`
+For custom params, use `ParamType` enum (from `Core.Models`) — never magic strings:
+```csharp
+new() { Type = ParamType.UrlSegment, Key = "id", Value = id }
+new() { Type = ParamType.Parameter, Key = "userId", Value = userId }
+```
+
+**Request body** — extract repeated bodies to `static readonly` fields:
+```csharp
+private static readonly PostModel TestPost = new() { UserId = 1, Title = "Test Post", Body = "Test Body" };
+```
 
 **Pattern:** Use `ShouldHaveValidFields()` via attributes — NOT per-field helpers.
 
@@ -112,6 +131,7 @@ using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.Helpers.{Service}ParamHelper;
 
 namespace Api.{Service}.Tests;
 
@@ -125,27 +145,27 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.1 Status code is 200")]
     public async Task GetAll{Endpoint}_ReturnsOk()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
     [Category("Smoke")]
-    [Description("1.2 Response body is not empty")]
-    public async Task GetAll{Endpoint}_ReturnsNonEmptyList()
-    {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().NotBeEmpty();
-    }
-
-    [Test]
-    [Category("Smoke")]
-    [Description("1.3 Content-Type is application/json")]
+    [Description("1.2 Content-Type is application/json")]
     public async Task GetAll{Endpoint}_ContentTypeIsJson()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
         response.ContentType.Should().Contain("application/json");
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("1.3 Response body is not empty")]
+    public async Task GetAll{Endpoint}_ReturnsNonEmptyList()
+    {
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
     }
 
     [Test]
@@ -153,7 +173,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.4 Each item has valid required fields (via attributes)")]
     public async Task GetAll{Endpoint}_EachItemHasValidFields()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
         foreach (var item in response.Data!)
         {
             item.ShouldHaveValidFields();
@@ -166,9 +186,9 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     public async Task GetAll{Endpoint}_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
         stopwatch.Stop();
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan({Endpoints}.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan({Service}Endpoints.MaxResponseTimeMs);
     }
 
     [Test]
@@ -176,9 +196,9 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.6 Returns expected count")]
     public async Task GetAll{Endpoint}_ReturnsExpectedCount()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount({Endpoints}.Expected{Endpoint}Count);
+        response.Data.Should().HaveCount({Service}Endpoints.Expected{Endpoint}Count);
     }
 }
 ```
@@ -190,16 +210,17 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 
 ### Step 5: Follow All Rules
 
-- **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers
+- **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers or strings
 - **Categories:** `[Category("{Service}")]` on class; `[Category("HealthCheck|Smoke|Regression|Negative|Performance")]` on every method — see `Rules/categories.md`
 - **Non-existent IDs:** Dynamic only — GET all → `maxId + 1`. Never static 999 or any hardcoded number
 - **Assertions:** FluentAssertions only. Use `ShouldHaveValidFields()` via attributes — not per-field helpers
 - **Attributes on separate lines above properties**, not inline
-- **Config:** Use `{Endpoints}.*` from appropriate Endpoints file — never hardcode URLs
+- **Config:** Use `{Service}Endpoints.*` from appropriate Endpoints file — never hardcode URLs
 - **Comments:** No comments unless regex or non-obvious WHY
 - **Models:** pure data containers, no constructors, no validation logic. Check for shared base classes
 - **Negative tests:** `[Ignore]` attribute with explanation for API known bugs
 - **Access modifiers:** narrowest possible — private > protected > public
+- **Params:** Use `ParamType` enum for request parameters — never magic strings
 
 ### Step 6: Safety Check
 
@@ -253,3 +274,4 @@ Show:
 |---|---|---|---|
 | 1.0 | 2026-06-25 | Initial commit | Алексей |
 | 1.1 | 2026-06-25 | Added Purpose, Variable Placeholders table, Output Format Instruction, Peer Review | Алексей |
+| 1.2 | 2026-06-25 | Made service-agnostic: removed hardcoded FakeStore/JsonPlaceholder, added File Convention table, dynamic base class discovery | Алексей |
