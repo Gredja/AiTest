@@ -7,6 +7,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.Helpers.JsonPlaceholderParamHelper;
 
 namespace Api.JsonPlaceholder.Tests;
 
@@ -76,13 +77,5 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();
-    }
-
-    private static List<RequestDictionaryModel> UserIdParam(int userId)
-    {
-        return new List<RequestDictionaryModel>
-        {
-            new() { Type = "Parameter", Key = "userId", Value = userId }
-        };
     }
 }

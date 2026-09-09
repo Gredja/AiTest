@@ -45,7 +45,7 @@ Against checklist:
 - Naming: PascalCase/camelCase/_camelCase, no abbreviations
 - Methods: max ~30 lines, one responsibility
 - No magic numbers/strings
-- Config: Endpoints in `Core/Config/Endpoints.cs`
+- Config: Endpoints in `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`
 - Non-existent IDs: dynamic (GET all → maxId + 1), not static 999
 
 **General:**

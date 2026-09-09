@@ -14,13 +14,14 @@ namespace Api.JsonPlaceholder.Tests;
 [Category("JsonPlaceholder")]
 public class CreatePostTests : JsonPlaceholderRequestHelper
 {
+    private static readonly PostModel TestPost = new() { UserId = 1, Title = "Test Post", Body = "Test Body" };
+
     [Test]
     [Category("HealthCheck")]
     [Description("4.1 POST returns 201 Created")]
     public async Task CreatePost_ReturnsCreated()
     {
-        var body = new PostModel { UserId = 1, Title = "Test Post", Body = "Test Body" };
-        var response = await Post<PostModel, PostModel>(JsonPlaceholderEndpoints.Posts, body);
+        var response = await Post<PostModel, PostModel>(JsonPlaceholderEndpoints.Posts, TestPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
     }
@@ -30,8 +31,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.2 Response has valid fields")]
     public async Task CreatePost_HasValidFields()
     {
-        var body = new PostModel { UserId = 1, Title = "Test Post", Body = "Test Body" };
-        var response = await Post<PostModel, PostModel>(JsonPlaceholderEndpoints.Posts, body);
+        var response = await Post<PostModel, PostModel>(JsonPlaceholderEndpoints.Posts, TestPost);
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -41,8 +41,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.3 Response contains correct data")]
     public async Task CreatePost_ReturnsCorrectData()
     {
-        var body = new PostModel { UserId = 1, Title = "Test Post", Body = "Test Body" };
-        var response = await Post<PostModel, PostModel>(JsonPlaceholderEndpoints.Posts, body);
+        var response = await Post<PostModel, PostModel>(JsonPlaceholderEndpoints.Posts, TestPost);
 
         response.Data!.Title.Should().Be("Test Post");
         response.Data!.Body.Should().Be("Test Body");
@@ -54,8 +53,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.4 Response has generated ID")]
     public async Task CreatePost_HasGeneratedId()
     {
-        var body = new PostModel { UserId = 1, Title = "Test Post", Body = "Test Body" };
-        var response = await Post<PostModel, PostModel>(JsonPlaceholderEndpoints.Posts, body);
+        var response = await Post<PostModel, PostModel>(JsonPlaceholderEndpoints.Posts, TestPost);
 
         response.Data!.Id.Should().BeGreaterThan(0);
     }

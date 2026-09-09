@@ -7,6 +7,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.Helpers.JsonPlaceholderParamHelper;
 
 namespace Api.JsonPlaceholder.Tests;
 
@@ -34,7 +35,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<PostModel>(JsonPlaceholderEndpoints.PostsById, Method.Get,
             PostIdParam(JsonPlaceholderEndpoints.TestPostId));
 
-        response.ShouldBeOk();
+        response.ShouldBeOkWithData();
     }
 
     [Test]
@@ -94,13 +95,5 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
             PostIdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
-    }
-
-    private static List<RequestDictionaryModel> PostIdParam(int id)
-    {
-        return new List<RequestDictionaryModel>
-        {
-            new() { Type = "UrlSegment", Key = "id", Value = id }
-        };
     }
 }

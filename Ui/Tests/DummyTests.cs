@@ -1,3 +1,4 @@
+using FluentAssertions;
 using NUnit.Framework;
 using TestAdapter;
 
@@ -12,13 +13,13 @@ public class DummyTests
     [Category("Smoke")]
     public void DummySmokeTest()
     {
-        Assert.Pass("This is a dummy test to verify Allure integration works");
+        true.Should().BeTrue("this is a dummy test to verify Allure integration works");
     }
 
     [Test]
     [Ignore("This is a dummy ignored test to verify skipped tests appear in Allure")]
     public void DummyIgnoredTest()
     {
-        Assert.Fail("This should never run");
+        true.Should().BeFalse("this should never run");
     }
 }

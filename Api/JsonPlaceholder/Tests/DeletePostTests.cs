@@ -7,6 +7,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.Helpers.JsonPlaceholderParamHelper;
 
 namespace Api.JsonPlaceholder.Tests;
 
@@ -35,13 +36,5 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
             PostIdParam(JsonPlaceholderEndpoints.TestPostId));
 
         response.Data.Should().NotBeNull();
-    }
-
-    private static List<RequestDictionaryModel> PostIdParam(int id)
-    {
-        return new List<RequestDictionaryModel>
-        {
-            new() { Type = "UrlSegment", Key = "id", Value = id }
-        };
     }
 }

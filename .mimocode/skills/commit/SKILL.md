@@ -44,7 +44,7 @@ Review each changed file against ALL project rules:
 - Assertions: FluentAssertions only (from assertions.md)
 - Comments: default = no comments (from comments.md)
 - No magic numbers — extract to constants
-- Config: Endpoints in `Core/Config/Endpoints.cs`, never hardcoded in tests
+- Config: Endpoints in `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`, never hardcoded in tests
 
 If blocking issues found: report them and STOP. Do not commit.
 

@@ -13,7 +13,7 @@ Generate a test class for the endpoint: {METHOD} {ENDPOINT_PATH}
 
 - Method: {METHOD}
 - Path: {ENDPOINT_PATH}
-- Path constant in Endpoints.cs: {ENDPOINTS_CONSTANT}
+- Path constant in Endpoints file: {ENDPOINTS_CONSTANT}
 - Description: {DESCRIPTION}
 - Request model (if POST/PUT): {REQUEST_MODEL}
 - Response model: {RESPONSE_MODEL}
@@ -177,7 +177,7 @@ Generate the complete test file content only. No explanations, no markdown wrapp
 
 ## How to use
 
-1. Pick an endpoint from `TestPlan.md` or `Endpoints.cs`
+1. Pick an endpoint from `TestPlan.md` or the corresponding Endpoints file
 2. Fill in the placeholders in the prompt above
 3. Send the filled prompt to the AI
 4. Review the generated test class against project rules
@@ -191,7 +191,7 @@ Generate the complete test file content only. No explanations, no markdown wrapp
 |-------------|-------------|---------|
 | `{METHOD}` | HTTP method | GET, POST, PUT, DELETE |
 | `{ENDPOINT_PATH}` | URL path with segments | /products/{id} |
-| `{ENDPOINTS_CONSTANT}` | Constant name in Endpoints.cs | ProductsById |
+| `{ENDPOINTS_CONSTANT}` | Constant name in Endpoints file | ProductsById |
 | `{DESCRIPTION}` | Human-readable endpoint description | Get product by ID |
 | `{REQUEST_MODEL}` | Model class for request body | ProductRequest |
 | `{RESPONSE_MODEL}` | Model class for response body | ProductModel |
@@ -227,7 +227,7 @@ Generate a test class for the endpoint: GET /carts/{id}
 
 - Method: GET
 - Path: /carts/{id}
-- Path constant in Endpoints.cs: CartsById
+- Path constant in Endpoints file: CartsById
 - Description: Get cart by ID
 - Request model (if POST/PUT): n/a
 - Response model: CartModel

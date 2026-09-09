@@ -8,7 +8,7 @@ FakeStoreAPI, 20 товаров (IDs 1-20).
 - `Api/Tests/` — NUnit API-тесты
 - `Ui/` — Playwright UI-тесты
 - `Core/Models/` — модели ответов/запросов
-- `Core/Config/Endpoints.cs` — URL и пути эндпоинтов
+- `Core/Config/FakeStoreEndpoints.cs` и `Core/Config/JsonPlaceholderEndpoints.cs` — URL и пути эндпоинтов
 - `Prompts/` — шаблоны промптов
 - `Rules/` — полные правила (здесь — краткая сводка)
 - `documentation/` — документация проекта (Katas, TestPlan, FILE_STRUCTURE.md)
@@ -42,7 +42,7 @@ FakeStoreAPI, 20 товаров (IDs 1-20).
 - Исключения: regex-объяснения, TODO (только в dev, удалить до merge), non-obvious WHY
 
 ### Config
-- Base URL и эндпоинты в `Core/Config/Endpoints.cs`. Никогда не хардкодить в тестах.
+- Base URL и эндпоинты в `Core/Config/FakeStoreEndpoints.cs` и `Core/Config/JsonPlaceholderEndpoints.cs`. Никогда не хардкодить в тестах.
 
 ### Git
 - Repo: github.com/Gredja/AiTest.git, branch: `main`

@@ -31,7 +31,7 @@ Collect three lists:
 
 - Existing similar files (e.g. if reviewing UserAssertHelper, also read ProductAssertHelper)
 - `Rules/*.md` — all rule files in Rules/ directory
-- `Core/Config/Endpoints.cs` — if any endpoint references changed
+- `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs` — if any endpoint references changed
 
 ## Step 4: Review each file against ALL project rules
 
@@ -39,7 +39,7 @@ Collect three lists:
 - Model rules (`Rules/models.md`): Model/Request suffixes, property types, pure data containers
 - Assertion rules (`Rules/assertions.md`): FluentAssertions only
 - Comment rules (`Rules/comments.md`): default = no comments
-- Config rules (`Rules/config.md`): Endpoints in Endpoints.cs, never hardcoded
+- Config rules (`Rules/config.md`): Endpoints in FakeStoreEndpoints.cs/JsonPlaceholderEndpoints.cs, never hardcoded
 - Pattern consistency: compare against existing similar code, check for DRY violations
 
 ## Step 5: Classify each issue

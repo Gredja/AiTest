@@ -7,6 +7,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.Helpers.FakeStoreParamHelper;
 
 namespace Api.FakeStore.Tests;
 
@@ -15,9 +16,6 @@ namespace Api.FakeStore.Tests;
 [Category("FakeStore")]
 public class GetUserByIdTests : RequestHelper
 {
-    private static List<RequestDictionaryModel> UserIdParam(int id) =>
-        new() { new() { Type = "UrlSegment", Key = "id", Value = id } };
-
     [Test]
     [Category("HealthCheck")]
     [Description("4.1 Get user by ID = 1 — status code 200")]

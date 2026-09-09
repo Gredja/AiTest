@@ -134,13 +134,13 @@ public class RequestHelper
         {
             switch (param.Type)
             {
-                case "Header":
+                case ParamType.Header:
                     request.AddHeader(param.Key, param.Value?.ToString());
                     break;
-                case "Parameter":
+                case ParamType.Parameter:
                     request.AddParameter(param.Key, param.Value?.ToString());
                     break;
-                case "UrlSegment":
+                case ParamType.UrlSegment:
                     request.AddUrlSegment(param.Key, param.Value!.ToString());
                     break;
             }
@@ -151,10 +151,12 @@ public class RequestHelper
 
     private static RestClient CreateClient(string baseUrl)
     {
-        var options = new RestClientOptions(baseUrl)
+        var options = new RestClientOptions(baseUrl);
+
+        if (TestConfig.SkipSslValidation)
         {
-            RemoteCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true
-        };
+            options.RemoteCertificateValidationCallback = (_, _, _, _) => true;
+        }
 
         return new RestClient(options);
     }

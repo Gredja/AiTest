@@ -8,7 +8,7 @@ namespace Core.Helpers;
 
 public static class AssertHelper
 {
-    public static void ShouldBeOk<T>(this RestResponse<T> response)
+    public static void ShouldBeOkWithData<T>(this RestResponse<T> response)
     {
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();

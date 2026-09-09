@@ -7,6 +7,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.Helpers.FakeStoreParamHelper;
 
 namespace Api.FakeStore.Tests;
 
@@ -15,9 +16,6 @@ namespace Api.FakeStore.Tests;
 [Category("FakeStore")]
 public class GetProductByIdTests : RequestHelper
 {
-    private static List<RequestDictionaryModel> ProductIdParam(int id) =>
-        new() { new() { Type = "UrlSegment", Key = "id", Value = id } };
-
     [Test]
     [Category("HealthCheck")]
     [Description("2.1 Get product by ID = 1 — status code 200")]
@@ -35,7 +33,7 @@ public class GetProductByIdTests : RequestHelper
     {
         var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, ProductIdParam(FakeStoreEndpoints.TestProductId));
 
-        response.ShouldBeOk();
+        response.ShouldBeOkWithData();
     }
 
     [Test]

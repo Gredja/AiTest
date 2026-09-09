@@ -11,6 +11,7 @@ public static class TestConfig
     private static JsonElement JsonPlaceholder => Root.RootElement.GetProperty("JsonPlaceholder");
 
     public static int MaxResponseTimeMs => Root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
+    public static bool SkipSslValidation => Root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
 
     public static string FakeStoreBaseUrl => FakeStore.GetProperty("BaseUrl").GetString()!;
     public static int ExpectedProductCount => FakeStore.GetProperty("ExpectedProductCount").GetInt32();

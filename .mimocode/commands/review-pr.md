@@ -49,7 +49,7 @@ PR number: {pr_number}
    - Naming: PascalCase/camelCase/_camelCase, no abbreviations
    - Methods: max ~30 lines, one responsibility
    - No magic numbers/strings
-   - Config: Endpoints in Endpoints.cs
+   - Config: Endpoints in FakeStoreEndpoints.cs/JsonPlaceholderEndpoints.cs
    - Non-existent IDs: dynamic (GET all → maxId + 1), not static 999
    General:
    - No hardcoded secrets/tokens
