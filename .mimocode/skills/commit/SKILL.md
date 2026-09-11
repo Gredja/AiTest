@@ -36,7 +36,7 @@ If fails: run `dotnet format`, then re-verify. If still fails — report and STO
 
 Run `git diff` to see all unstaged changes.
 
-Read `Rules/code.md`, `Rules/models.md`, `Rules/comments.md`, `Rules/assertions.md` for full project rules.
+Read `Rules/code.md`, `Rules/code-style.md`, `Rules/code-principles.md`, `Rules/models.md`, `Rules/assertions.md`, `Rules/test-practices.md`, `Rules/comments.md` for full project rules.
 
 Review each changed file against ALL project rules:
 - Naming, types, file layout, methods, async, general (from code.md)

@@ -178,10 +178,13 @@ Rules/
 ├── assertions.md
 ├── categories.md
 ├── code.md
+├── code-principles.md
+├── code-style.md
 ├── comments.md
 ├── config.md
 ├── git.md
 ├── models.md
+├── test-practices.md
 └── workflow.md
 ```
 

@@ -1,4 +1,4 @@
-﻿# Rules: Assertions
+# Rules: Assertions
 
 ## Library
 

@@ -1,4 +1,4 @@
-﻿# Rules: Code Writing
+# Rules: Code Writing
 
 ## Naming
 
@@ -32,17 +32,6 @@
 - All API requests must be asynchronous: use `async Task<...>` methods with `await`
 - Synchronous RestSharp methods (`Execute`, `Execute<T>`) are not allowed — use `ExecuteAsync`, `ExecuteAsync<T>`
 - Test methods returning `Task` must be `async Task`, not `void`
-
-## General
-
-- No access modifier = `private` (e.g. `static RestClient` → `private static RestClient`)
-- Empty line before `return`
-- Simplify when possible: `var x = new T(); return x;` → `return new T();`
-- No magic numbers or strings — extract to constants
-- No nested ternaries — use `if`/`switch`
-- Always use `{}` for `if` blocks, even single-line
-- Don't catch exceptions silently — either handle or let propagate
-- Use `nameof()` for argument exceptions instead of string literals
 
 ## Access modifiers (review rule)
 

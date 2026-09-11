@@ -322,6 +322,10 @@ git checkout -b features/add-user-tests
 - Без аббревиатур: `response`, не `resp`
 - Все API-запросы async (`ExecuteAsync`)
 - Маленькие методы, одно действие, максимум ~30 строк
+- Конкретные исключения вместо `Exception`, без `null!`
+- LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`
+- Строки: интерполяция `$""`, `StringBuilder` в циклах
+- SOLID: один класс — одна задача, зависимости через интерфейсы
 
 **Модели:**
 - Response модели: суффикс `Model` (включает `Id`)
@@ -333,6 +337,8 @@ git checkout -b features/add-user-tests
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Категории: тип сервиса (FakeStore/JsonPlaceholder/GitHub/Ui) + тип проверки (HealthCheck/Smoke/Regression/Negative/Performance)
+- Тесты независимы друг от друга, Given/When/Then структура
+- Проверяй HTTP status и body отдельно
 
 **Workflow:**
 - План → одобение → изменения → отчёт

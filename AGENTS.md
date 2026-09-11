@@ -1,4 +1,4 @@
-﻿# AGENTS.md — Gredja
+# AGENTS.md — Gredja
 
 AQA-проект. API-тесты (NUnit + RestSharp) и UI-тесты (Playwright).
 FakeStoreAPI, 20 товаров (IDs 1-20).
@@ -26,6 +26,11 @@ FakeStoreAPI, 20 товаров (IDs 1-20).
 - Methods: short, one responsibility, max ~30 lines, max 5 params
 - Все API-запросы async (`ExecuteAsync`, не `Execute`)
 - Нет модификатора = private. Нет magic numbers. Нет вложенных ternary. `nameof()` для exceptions
+- Error handling: конкретные исключения, без `null!`, без exceptions для flow control
+- LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`, `FirstOrDefault()` вместо `Where().FirstOrDefault()`
+- Strings: интерполяция `$""`, `StringBuilder` в циклах, `IsNullOrEmpty()` вместо `.Length == 0`
+- Null safety: `?.` для safe navigation, `??` для fallback, `is not null` вместо `!= null`
+- SOLID: один класс — одна задача, зависимости через интерфейсы, расширяемость через наследование
 
 ### Models
 - Response: suffix `Model` (включает `Id`). Request: suffix `Request` (без `Id`)
@@ -58,13 +63,17 @@ FakeStoreAPI, 20 товаров (IDs 1-20).
 
 ## Detailed Rules (Rules/)
 
+- `Rules/code.md` — naming, types, file structure, methods, async, access modifiers
+- `Rules/code-style.md` — error handling, LINQ, strings, null safety
+- `Rules/code-principles.md` — SOLID, general principles
 - `Rules/models.md` — model building rules (Model/Request, properties, naming)
-- `Rules/comments.md` — when comments are needed in code
 - `Rules/assertions.md` — FluentAssertions, key patterns
-- `Rules/code.md` — general code writing rules (naming, types, file structure)
+- `Rules/test-practices.md` — test isolation, API testing patterns
+- `Rules/comments.md` — when comments are needed in code
+- `Rules/config.md` — endpoints, configuration
 - `Rules/git.md` — remote, commits, secrets
 - `Rules/workflow.md` — plan → approval → changes → report
-- `Rules/config.md` — endpoints, configuration
+- `Rules/categories.md` — test categories
 
 ## Knowledge Graph
 
