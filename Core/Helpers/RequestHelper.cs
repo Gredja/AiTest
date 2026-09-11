@@ -9,7 +9,7 @@ public class RequestHelper
     private static readonly RestClient FakeStoreClient = CreateClient(FakeStoreEndpoints.BaseUrl);
     private static readonly RestClient JsonPlaceholderClient = CreateClient(JsonPlaceholderEndpoints.BaseUrl);
     private static readonly RestClient GitHubClient = CreateClient(GitHubEndpoints.BaseUrl);
-    private static readonly string? _githubToken = GitHubEndpoints.Token;
+    private static readonly Lazy<string?> _githubToken = new(() => GitHubEndpoints.Token);
 
     protected RestClient Client { get; private set; } = FakeStoreClient;
 
@@ -115,9 +115,9 @@ public class RequestHelper
 
     private void AddGitHubAuth(RestRequest request)
     {
-        if (ReferenceEquals(Client, GitHubClient) && !string.IsNullOrEmpty(_githubToken))
+        if (ReferenceEquals(Client, GitHubClient) && !string.IsNullOrEmpty(_githubToken.Value))
         {
-            request.AddHeader("Authorization", $"Bearer {_githubToken}");
+            request.AddHeader("Authorization", $"Bearer {_githubToken.Value}");
         }
     }
 
@@ -141,7 +141,6 @@ public class RequestHelper
 
         return request;
     }
-
 
     private static RestClient CreateClient(string baseUrl)
     {

@@ -14,6 +14,11 @@ Gredja/
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
 ├── .graphifyignore
+├── black-white-cat/              # MiMo Desktop custom pet
+│   ├── manifest.json
+│   ├── spritesheet.webp
+│   ├── spritesheet.png
+│   └── generate.py
 ├── .mimocode/
 │   ├── mimocode.jsonc
 │   ├── commands/
@@ -25,6 +30,9 @@ Gredja/
 │   │   └── test.md
 │   ├── hooks/
 │   │   └── safety-commit.ts
+│   ├── node_modules/             # not tracked
+│   ├── package.json
+│   ├── package-lock.json
 │   ├── reviews/                  # not tracked
 │   ├── plans/                    # not tracked
 │   ├── scripts/
@@ -90,6 +98,7 @@ Core/
 │   │   ├── PostRequest.cs
 │   │   └── TodoModel.cs
 │   ├── GitHub/
+│   │   ├── BranchCommitModel.cs
 │   │   ├── BranchModel.cs
 │   │   ├── CreateCommentRequest.cs
 │   │   ├── CreateIssueRequest.cs
@@ -110,33 +119,44 @@ Api/
 ├── AllureGlobalSetup.cs
 ├── FakeStore/
 │   ├── Helpers/
-│   │   └── FakeStoreParamHelper.cs  # IdParam()
+│   │   └── FakeStoreParamHelper.cs      # IdParam()
 │   └── Tests/
-│       ├── GetAllProductsTests.cs    # 6 tests
-│       ├── GetAllUsersTests.cs       # 6 tests
-│       ├── GetProductByIdTests.cs    # 7 tests (4 active + 3 Ignore)
-│       └── GetUserByIdTests.cs       # 6 tests
-└── JsonPlaceholder/
-    ├── Helpers/
-    │   └── JsonPlaceholderParamHelper.cs  # PostIdParam(), UserIdParam()
-    └── Tests/
-        ├── CreatePostTests.cs        # 4 tests
-        ├── DeletePostTests.cs        # 2 tests
-        ├── GetAllPostsTests.cs       # 6 tests
-        ├── GetAllTodosTests.cs       # 7 tests
-        ├── GetPostByIdTests.cs       # 7 tests
-        ├── GetTodosByUserIdTests.cs  # 5 tests
-        └── UpdatePostTests.cs        # 4 tests
+│       ├── Products/
+│       │   ├── GetAllProductsTests.cs    # 6 tests
+│       │   └── GetProductByIdTests.cs    # 7 tests (4 active + 3 Ignore)
+│       └── Users/
+│           ├── GetAllUsersTests.cs       # 6 tests
+│           └── GetUserByIdTests.cs       # 6 tests
+├── JsonPlaceholder/
+│   ├── Helpers/
+│   │   └── JsonPlaceholderParamHelper.cs # PostIdParam(), UserIdParam()
+│   └── Tests/
+│       ├── Posts/
+│       │   ├── CreatePostTests.cs        # 4 tests
+│       │   ├── DeletePostTests.cs        # 2 tests
+│       │   ├── GetAllPostsTests.cs       # 6 tests
+│       │   ├── GetPostByIdTests.cs       # 7 tests
+│       │   └── UpdatePostTests.cs        # 4 tests
+│       └── Todos/
+│           ├── GetAllTodosTests.cs       # 7 tests
+│           └── GetTodosByUserIdTests.cs  # 5 tests
 └── GitHub/
+    ├── GitHubTestBase.cs                # Base class for GitHub tests
     ├── Helpers/
-    │   └── GitHubParamHelper.cs     # RepoParam(), IssueNumberParam(), PaginationParams()
+    │   └── GitHubParamHelper.cs         # RepoParam(), IssueNumberParam(), PaginationParams()
     └── Tests/
-        ├── GetBranchesTests.cs      # 5 tests
-        ├── GetIssuesTests.cs        # 5 tests
-        ├── GetPullRequestsTests.cs  # 5 tests
-        ├── GetRateLimitTests.cs     # 4 tests
-        ├── GetRepositoryTests.cs    # 4 tests
-        └── GetUserTests.cs          # 4 tests
+        ├── Branches/
+        │   └── GetBranchesTests.cs      # 5 tests
+        ├── Issues/
+        │   └── GetIssuesTests.cs        # 5 tests
+        ├── PullRequests/
+        │   └── GetPullRequestsTests.cs  # 5 tests
+        ├── RateLimit/
+        │   └── GetRateLimitTests.cs     # 4 tests
+        ├── Repos/
+        │   └── GetRepositoryTests.cs    # 4 tests
+        └── Users/
+            └── GetUserTests.cs          # 4 tests
 ```
 
 ## TestAdapter/

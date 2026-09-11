@@ -60,7 +60,7 @@ public class GetIssuesTests : GitHubTestBase
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Smoke")]
     [Description("3.4 Pagination works with per_page and page params")]
     public async Task GetIssues_PaginationWorks()
     {

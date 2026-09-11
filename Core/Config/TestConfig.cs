@@ -66,6 +66,6 @@ public static class TestConfig
             dir = Directory.GetParent(dir)?.FullName;
         }
 
-        throw new InvalidOperationException("GitHub PAT not found. Set Token in testsettings.json or add GITHUB_PAT to .env");
+        return string.Empty;
     }
 }

@@ -1,4 +1,4 @@
-﻿# Categories
+# Categories
 
 Every test MUST have `[Category]` attributes — one for the service (on class) and one for the check type (on method).
 
@@ -10,6 +10,7 @@ Add exactly one service category to the `[TestFixture]` class:
 |---------|----------|
 | FakeStore API | `[Category("FakeStore")]` |
 | JSONPlaceholder API | `[Category("JsonPlaceholder")]` |
+| GitHub API | `[Category("GitHub")]` |
 | UI tests | `[Category("Ui")]` |
 
 ```csharp

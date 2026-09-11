@@ -59,7 +59,7 @@ public class GetBranchesTests : GitHubTestBase
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Smoke")]
     [Description("4.4 Pagination works with per_page param")]
     public async Task GetBranches_PaginationWorks()
     {

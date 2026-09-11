@@ -60,7 +60,7 @@ public class GetPullRequestsTests : GitHubTestBase
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Smoke")]
     [Description("5.4 Pagination works with per_page param")]
     public async Task GetPullRequests_PaginationWorks()
     {

@@ -20,4 +20,7 @@ public static class GitHubParamHelper
             new() { Type = ParamType.Parameter, Key = "page", Value = page },
             new() { Type = ParamType.Parameter, Key = "per_page", Value = perPage }
         };
+
+    public static List<RequestDictionaryModel> UsernameParam(string username) =>
+        new() { new() { Type = ParamType.UrlSegment, Key = "username", Value = username } };
 }

@@ -19,9 +19,9 @@ public class PullRequestModel
     [RequiredField]
     public UserModel User { get; set; }
 
-    public BranchModel Head { get; set; }
+    public PullRequestBranchModel Head { get; set; }
 
-    public BranchModel Base { get; set; }
+    public PullRequestBranchModel Base { get; set; }
 
     [JsonPropertyName("created_at")]
     public DateTime CreatedAt { get; set; }
