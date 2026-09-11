@@ -16,15 +16,15 @@ namespace Api.JsonPlaceholder.Posts;
 [Category("JsonPlaceholder")]
 public class UpdatePostTests : JsonPlaceholderRequestHelper
 {
-    private static readonly PostRequest PutBody = new() { UserId = JsonPlaceholderEndpoints.TestUserId, Title = "Updated Title", Body = "Updated Body" };
-    private static readonly PostRequest PatchBody = new() { Title = "Patched Title" };
+    private static readonly PostRequest _putBody = new() { UserId = JsonPlaceholderEndpoints.TestUserId, Title = "Updated Title", Body = "Updated Body" };
+    private static readonly PostRequest _patchBody = new() { Title = "Patched Title" };
 
     [Test]
     [Category("HealthCheck")]
     [Description("5.1 PUT returns 200 OK")]
     public async Task UpdatePost_Put_ReturnsOk()
     {
-        var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, PutBody,
+        var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _putBody,
             PostIdParam(JsonPlaceholderEndpoints.TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -35,7 +35,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.2 PUT response has valid fields")]
     public async Task UpdatePost_Put_HasValidFields()
     {
-        var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, PutBody,
+        var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _putBody,
             PostIdParam(JsonPlaceholderEndpoints.TestPostId));
 
         response.Data!.ShouldHaveValidFields();
@@ -46,7 +46,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.3 PATCH returns 200 OK")]
     public async Task UpdatePost_Patch_ReturnsOk()
     {
-        var response = await Patch<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, PatchBody,
+        var response = await Patch<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _patchBody,
             PostIdParam(JsonPlaceholderEndpoints.TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -57,7 +57,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.4 PATCH response contains updated title")]
     public async Task UpdatePost_Patch_ReturnsUpdatedTitle()
     {
-        var response = await Patch<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, PatchBody,
+        var response = await Patch<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _patchBody,
             PostIdParam(JsonPlaceholderEndpoints.TestPostId));
 
         response.Data!.Title.Should().Be("Patched Title");

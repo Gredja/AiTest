@@ -43,7 +43,7 @@ public class GetAllProductsTests : RequestHelper
     {
         var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
-        response.ContentType.Should().Contain("application/json");
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]

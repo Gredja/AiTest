@@ -6,18 +6,18 @@ namespace Core.Helpers;
 
 public class RequestHelper
 {
-    private static readonly RestClient FakeStoreClient = CreateClient(FakeStoreEndpoints.BaseUrl);
-    private static readonly RestClient JsonPlaceholderClient = CreateClient(JsonPlaceholderEndpoints.BaseUrl);
-    private static readonly RestClient GitHubClient = CreateClient(GitHubEndpoints.BaseUrl);
+    private static readonly RestClient _fakeStoreClient = CreateClient(FakeStoreEndpoints.BaseUrl);
+    private static readonly RestClient _jsonPlaceholderClient = CreateClient(JsonPlaceholderEndpoints.BaseUrl);
+    private static readonly RestClient _gitHubClient = CreateClient(GitHubEndpoints.BaseUrl);
     private static readonly Lazy<string?> _githubToken = new(() => GitHubEndpoints.Token);
 
-    protected RestClient Client { get; private set; } = FakeStoreClient;
+    protected RestClient Client { get; private set; } = _fakeStoreClient;
 
-    protected void UseJsonPlaceholder() => Client = JsonPlaceholderClient;
+    protected void UseJsonPlaceholder() => Client = _jsonPlaceholderClient;
 
-    protected void UseFakeStore() => Client = FakeStoreClient;
+    protected void UseFakeStore() => Client = _fakeStoreClient;
 
-    protected void UseGitHub() => Client = GitHubClient;
+    protected void UseGitHub() => Client = _gitHubClient;
 
     public async Task<RestResponse<T>> Get<T>(
         string endpoint,
@@ -115,7 +115,7 @@ public class RequestHelper
 
     private void AddGitHubAuth(RestRequest request)
     {
-        if (ReferenceEquals(Client, GitHubClient) && !string.IsNullOrEmpty(_githubToken.Value))
+        if (ReferenceEquals(Client, _gitHubClient) && !string.IsNullOrEmpty(_githubToken.Value))
         {
             request.AddHeader("Authorization", $"Bearer {_githubToken.Value}");
         }

@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using System.Collections.Concurrent;
@@ -9,15 +9,15 @@ namespace TestAdapter;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AllureNUnitAttribute : Attribute, ITestAction
 {
-    private static readonly string ResultsDir;
-    private static readonly ConcurrentDictionary<string, ContainerInfo> Containers = new();
+    private static readonly string _resultsDir;
+    private static readonly ConcurrentDictionary<string, ContainerInfo> _containers = new();
 
     private long _startTicks;
     private string _testUuid = null!;
 
     static AllureNUnitAttribute()
     {
-        ResultsDir = AllureHelper.GetResultsDir();
+        _resultsDir = AllureHelper.GetResultsDir();
     }
 
     public void BeforeTest(ITest test)
@@ -57,7 +57,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             Description: description,
             TestClassName: test.ClassName));
 
-        AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
+        AllureJsonWriter.WriteResultFile(_resultsDir, testResult);
         AddToContainer(test, uuid);
     }
 
@@ -82,7 +82,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             Description: description,
             TestClassName: test.ClassName));
 
-        AllureJsonWriter.WriteResultFile(ResultsDir, testResult);
+        AllureJsonWriter.WriteResultFile(_resultsDir, testResult);
         AddToContainer(test, uuid);
     }
 
@@ -97,7 +97,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static void AddToContainer(ITest test, string uuid)
     {
         var containerUuid = EnsureContainer(test);
-        if (Containers.TryGetValue(containerUuid, out var info))
+        if (_containers.TryGetValue(containerUuid, out var info))
         {
             lock (info.Children)
             {
@@ -105,7 +105,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
                 {
                     info.Children.Add(uuid);
                     var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, info.Children.ToList());
-                    AllureJsonWriter.WriteContainerFile(ResultsDir, containerUuid, container);
+                    AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
                 }
             }
         }
@@ -116,9 +116,9 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         var className = test.ClassName ?? "Unknown";
         var containerUuid = GetDeterministicUuid(className);
 
-        if (!Containers.ContainsKey(containerUuid))
+        if (!_containers.ContainsKey(containerUuid))
         {
-            Containers[containerUuid] = new ContainerInfo
+            _containers[containerUuid] = new ContainerInfo
             {
                 Uuid = containerUuid,
                 Name = className,

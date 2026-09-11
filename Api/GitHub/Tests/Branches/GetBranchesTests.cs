@@ -55,7 +55,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(owner, repo));
 
-        response.ContentType.Should().Contain("application/json");
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]

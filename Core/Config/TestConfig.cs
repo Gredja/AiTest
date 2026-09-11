@@ -4,15 +4,15 @@ namespace Core.Config;
 
 public static class TestConfig
 {
-    private static readonly JsonDocument Root = JsonDocument.Parse(
+    private static readonly JsonDocument _root = JsonDocument.Parse(
         File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "testsettings.json")));
 
-    private static JsonElement FakeStore => Root.RootElement.GetProperty("FakeStore");
-    private static JsonElement JsonPlaceholder => Root.RootElement.GetProperty("JsonPlaceholder");
-    private static JsonElement GitHub => Root.RootElement.GetProperty("GitHub");
+    private static JsonElement FakeStore => _root.RootElement.GetProperty("FakeStore");
+    private static JsonElement JsonPlaceholder => _root.RootElement.GetProperty("JsonPlaceholder");
+    private static JsonElement GitHub => _root.RootElement.GetProperty("GitHub");
 
-    public static int MaxResponseTimeMs => Root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
-    public static bool SkipSslValidation => Root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
+    public static int MaxResponseTimeMs => _root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
+    public static bool SkipSslValidation => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
 
     public static string FakeStoreBaseUrl => FakeStore.GetProperty("BaseUrl").GetString()!;
     public static int ExpectedProductCount => FakeStore.GetProperty("ExpectedProductCount").GetInt32();

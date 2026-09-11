@@ -43,7 +43,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
-        response.ContentType.Should().Contain("application/json");
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]

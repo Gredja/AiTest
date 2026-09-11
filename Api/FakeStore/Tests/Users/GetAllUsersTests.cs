@@ -43,7 +43,7 @@ public class GetAllUsersTests : RequestHelper
     {
         var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
 
-        response.ContentType.Should().Contain("application/json");
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]

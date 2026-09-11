@@ -51,7 +51,7 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
 
-        response.ContentType.Should().Contain("application/json");
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]

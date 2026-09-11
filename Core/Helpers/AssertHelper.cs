@@ -8,6 +8,7 @@ namespace Core.Helpers;
 
 public static class AssertHelper
 {
+    public const string JsonContentType = "application/json";
     public static void ShouldBeOkWithData<T>(this RestResponse<T> response)
     {
         response.StatusCode.Should().Be(HttpStatusCode.OK);

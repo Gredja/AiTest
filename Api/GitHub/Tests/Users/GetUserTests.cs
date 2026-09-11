@@ -15,14 +15,14 @@ namespace Api.GitHub.Users;
 [Category("GitHub")]
 public class GetUserTests : GitHubTestBase
 {
-    private static readonly string Username = GitHubEndpoints.TestUserId;
+    private static readonly string _username = GitHubEndpoints.TestUserId;
 
     [Test]
     [Category("HealthCheck")]
     [Description("2.1 GET /users/{username} returns 200 OK")]
     public async Task GetUser_ReturnsOk()
     {
-        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(Username));
+        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -32,10 +32,10 @@ public class GetUserTests : GitHubTestBase
     [Description("2.2 Response contains valid user fields")]
     public async Task GetUser_HasValidFields()
     {
-        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(Username));
+        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
 
         response.Data.Should().NotBeNull();
-        response.Data!.Login.Should().Be(Username);
+        response.Data!.Login.Should().Be(_username);
         response.Data.Id.Should().BeGreaterThan(0);
     }
 
@@ -44,9 +44,9 @@ public class GetUserTests : GitHubTestBase
     [Description("2.3 Content-Type is application/json")]
     public async Task GetUser_ContentTypeIsJson()
     {
-        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(Username));
+        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
 
-        response.ContentType.Should().Contain("application/json");
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]
@@ -55,7 +55,7 @@ public class GetUserTests : GitHubTestBase
     public async Task GetUser_ResponseTimeIsAcceptable()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(Username));
+        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);

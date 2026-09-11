@@ -56,7 +56,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
 
-        response.ContentType.Should().Contain("application/json");
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]
