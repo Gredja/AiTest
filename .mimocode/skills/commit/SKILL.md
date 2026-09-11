@@ -58,7 +58,16 @@ dotnet test --verbosity minimal --filter Category=HealthCheck
 
 If ANY tests fail: report the failures and STOP. Do not commit.
 
-## Step 6: Stage, commit, push
+## Step 6: Sync backups
+
+Check if any of the following were changed in this commit:
+- `.mimocode/mimocode.jsonc` → update `backups/mimocode-project.jsonc`
+- `Rules/*.md` or `Prompts/templates/*` affecting test generation → update `backups/Prompts-templates/`
+- Anything affecting new user setup (permissions, tools, env vars) → update `backups/SETUP.md`
+
+If nothing changed — skip. If something changed — update the corresponding backup file.
+
+## Step 7: Stage, commit, push
 
 ```
 git add -A
@@ -68,15 +77,6 @@ git commit -m "{message}"
 
 If branch is `main` — do NOT push. Report that push was skipped.
 Otherwise: `git push -u origin HEAD`
-
-## Step 7: Sync backups
-
-Check if any of the following were changed in this commit:
-- `.mimocode/mimocode.jsonc` → update `backups/mimocode-project.jsonc`
-- `Rules/*.md` or `Prompts/templates/*` affecting test generation → update `backups/Prompts-templates/`
-- Anything affecting new user setup (permissions, tools, env vars) → update `backups/SETUP.md`
-
-If nothing changed — skip. If something changed — update the corresponding backup file.
 
 ## Step 8: Report
 
@@ -98,4 +98,4 @@ If nothing changed — skip. If something changed — update the corresponding b
 - Never push to `main` without explicit confirmation
 - Commits: English only, format: action + object
 - Never commit `.env` or tokens
-- Always sync backups/ after commit if relevant files changed
+- Always sync backups/ before commit if relevant files changed
