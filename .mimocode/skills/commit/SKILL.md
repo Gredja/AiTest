@@ -81,13 +81,16 @@ Otherwise: `git push -u origin HEAD`
 
 ## Step 8: Report
 
-- Branch name
-- Commit hash (from `git log -1 --format="%H"`)
-- Files changed
-- Commit message
-- Push status (pushed / skipped)
-- Backup sync status (synced / skipped with reason)
-- Review findings (if any)
+Report in execution order:
+
+- Branch name (Step 1)
+- Commit message (Step 2)
+- Format check: pass / fixed / failed (Step 3)
+- Review findings (Step 4)
+- Tests: pass / failed (Step 5)
+- Backup sync: synced / skipped with reason (Step 6)
+- Files changed, Commit hash (Step 7)
+- Push: pushed / skipped (Step 7)
 
 ---
 
