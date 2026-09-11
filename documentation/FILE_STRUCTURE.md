@@ -14,11 +14,6 @@ Gredja/
 ├── .env                          # secrets (not tracked)
 ├── .gitignore
 ├── .graphifyignore
-├── black-white-cat/              # MiMo Desktop custom pet
-│   ├── manifest.json
-│   ├── spritesheet.webp
-│   ├── spritesheet.png
-│   └── generate.py
 ├── .mimocode/
 │   ├── mimocode.jsonc
 │   ├── commands/

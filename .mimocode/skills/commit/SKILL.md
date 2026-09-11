@@ -1,4 +1,4 @@
-﻿---
+---
 name: commit
 description: Use when the user says "commit", "/commit", or wants to commit changes. Creates a commit with safety checks (format + HealthCheck tests) and pushes. If HealthCheck tests fail, commit is blocked.
 ---
@@ -69,7 +69,16 @@ git commit -m "{message}"
 If branch is `main` — do NOT push. Report that push was skipped.
 Otherwise: `git push -u origin HEAD`
 
-## Step 7: Report
+## Step 7: Sync backups
+
+Check if any of the following were changed in this commit:
+- `.mimocode/mimocode.jsonc` → update `backups/mimocode-project.jsonc`
+- `Rules/*.md` or `Prompts/templates/*` affecting test generation → update `backups/Prompts-templates/`
+- Anything affecting new user setup (permissions, tools, env vars) → update `backups/SETUP.md`
+
+If nothing changed — skip. If something changed — update the corresponding backup file.
+
+## Step 8: Report
 
 - Branch name
 - Commit hash (from `git log -1 --format="%H"`)
@@ -89,3 +98,4 @@ Otherwise: `git push -u origin HEAD`
 - Never push to `main` without explicit confirmation
 - Commits: English only, format: action + object
 - Never commit `.env` or tokens
+- Always sync backups/ after commit if relevant files changed

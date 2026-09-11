@@ -1,4 +1,4 @@
-﻿## .NET
+## .NET
 bin/
 obj/
 *.user
@@ -44,4 +44,8 @@ documentation/*Plan*.md
 
 ## AI reviews (not tracked)
 .mimocode/reviews/
+
+## MiMo Desktop pet (not tracked)
+black-white-cat/
+
 /testsettings.json
