@@ -64,6 +64,7 @@ Check if any of the following were changed in this commit:
 - `.mimocode/mimocode.jsonc` → update `backups/mimocode-project.jsonc`
 - `Rules/*.md` or `Prompts/templates/*` affecting test generation → update `backups/Prompts-templates/`
 - Anything affecting new user setup (permissions, tools, env vars) → update `backups/SETUP.md`
+- Structural changes (new files, moved files, deleted files) → update `documentation/FILE_STRUCTURE.md`
 
 If nothing changed — skip. If something changed — update the corresponding backup file.
 
