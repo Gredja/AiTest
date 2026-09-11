@@ -37,6 +37,7 @@ public static class GitHubEndpoints
     public const string Users = "/users";
     public const string UsersById = "/users/{username}";
     public const string UsersRepos = "/users/{username}/repos";
+    public const string AuthenticatedUserRepos = "/user/repos";
 
     public const string RateLimit = "/rate_limit";
 }
