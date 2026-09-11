@@ -199,10 +199,8 @@ documentation/
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md
 │   └── maturity-gap-analysis.md
-├── PLAN.md
 ├── README.md
 ├── TestPlan.md
-├── TODO.md
 └── token-budget.md
 ```
 
