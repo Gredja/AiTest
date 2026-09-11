@@ -13,6 +13,7 @@ public static class GitHubEndpoints
     public const string NonExistentUser = "this-user-definitely-does-not-exist-12345";
 
     public const string Repos = "/repos";
+    public const string Repositories = "/repositories";
     public const string ReposById = "/repos/{owner}/{repo}";
 
     public const string RepoIssues = "/repos/{owner}/{repo}/issues";
