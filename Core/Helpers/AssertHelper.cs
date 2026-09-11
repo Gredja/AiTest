@@ -9,16 +9,9 @@ namespace Core.Helpers;
 public static class AssertHelper
 {
     public const string JsonContentType = "application/json";
-    public static void ShouldBeOkWithData<T>(this RestResponse<T> response)
-    {
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Data.Should().NotBeNull();
-    }
 
-    public static void ShouldHaveStatusCode<T>(this RestResponse<T> response, HttpStatusCode expected)
-    {
+    public static void ShouldHaveStatusCode<T>(this RestResponse<T> response, HttpStatusCode expected) =>
         response.StatusCode.Should().Be(expected);
-    }
 
     public static void ShouldHaveValidFields<T>(this T entity) where T : class
     {

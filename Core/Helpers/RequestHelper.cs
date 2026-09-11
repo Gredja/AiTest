@@ -32,7 +32,7 @@ public class RequestHelper
         AddDefaultHeaders(request);
         AddGitHubAuth(request);
 
-        if (additionalParams != null)
+        if (additionalParams is not null)
         {
             AddParams(request, additionalParams);
         }
@@ -77,7 +77,7 @@ public class RequestHelper
         AddGitHubAuth(request);
         request.AddJsonBody(body);
 
-        if (additionalParams != null)
+        if (additionalParams is not null)
         {
             AddParams(request, additionalParams);
         }
@@ -97,7 +97,7 @@ public class RequestHelper
         AddDefaultHeaders(request);
         AddGitHubAuth(request);
 
-        if (additionalParams != null)
+        if (additionalParams is not null)
         {
             AddParams(request, additionalParams);
         }
@@ -105,23 +105,23 @@ public class RequestHelper
         return await Client.ExecuteAsync<T>(request);
     }
 
-    private static RestRequest AddDefaultHeaders(RestRequest request)
+    private static void AddDefaultHeaders(RestRequest request)
     {
         request.AddHeader("Content-Type", "application/json;charset=utf-8");
         request.AddHeader("X-Lang", "en_GB");
-
-        return request;
     }
 
     private void AddGitHubAuth(RestRequest request)
     {
-        if (ReferenceEquals(Client, _gitHubClient) && !string.IsNullOrEmpty(_githubToken.Value))
+        if (!ReferenceEquals(Client, _gitHubClient) || string.IsNullOrEmpty(_githubToken.Value))
         {
-            request.AddHeader("Authorization", $"Bearer {_githubToken.Value}");
+            return;
         }
+
+        request.AddHeader("Authorization", $"Bearer {_githubToken.Value}");
     }
 
-    private static RestRequest AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
+    private static void AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
     {
         foreach (var param in additionalParams)
         {
@@ -134,19 +134,17 @@ public class RequestHelper
                     request.AddParameter(param.Key, param.Value?.ToString());
                     break;
                 case ParamType.UrlSegment:
-                    request.AddUrlSegment(param.Key, param.Value!.ToString());
+                    request.AddUrlSegment(param.Key, param.Value?.ToString());
                     break;
             }
         }
-
-        return request;
     }
 
     private static RestClient CreateClient(string baseUrl)
     {
         var options = new RestClientOptions(baseUrl);
 
-        if (TestConfig.SkipSslValidation)
+        if (TestConfig.IsSslValidationSkipped)
         {
             options.RemoteCertificateValidationCallback = (_, _, _, _) => true;
         }

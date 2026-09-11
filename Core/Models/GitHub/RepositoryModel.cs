@@ -20,7 +20,8 @@ public class RepositoryModel
 
     public string Description { get; set; }
 
-    public bool Private { get; set; }
+    [JsonPropertyName("private")]
+    public bool IsPrivate { get; set; }
 
     [JsonPropertyName("html_url")]
     [RequiredField]

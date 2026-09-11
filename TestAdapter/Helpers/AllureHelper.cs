@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace TestAdapter.Helpers;
@@ -8,7 +8,7 @@ public static class AllureHelper
     public static string FindProjectRoot()
     {
         var dir = AppContext.BaseDirectory;
-        while (dir != null)
+        while (dir is not null)
         {
             if (File.Exists(Path.Combine(dir, "Gredja.slnx")) || Directory.GetFiles(dir, "*.sln").Length > 0)
             {
@@ -30,10 +30,10 @@ public static class AllureHelper
     public static string? GetDescription(MethodInfo method)
     {
         var attrs = method.GetCustomAttributes(typeof(DescriptionAttribute), false);
-        if (attrs.Length > 0)
+        if (attrs.Length == 0)
         {
-            return attrs[0].GetType().GetProperty("Description")?.GetValue(attrs[0]) as string;
+            return null;
         }
-        return null;
+        return attrs[0].GetType().GetProperty("Description")?.GetValue(attrs[0]) as string;
     }
 }

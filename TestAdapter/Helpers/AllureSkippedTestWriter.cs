@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using NUnit.Framework;
 
 namespace TestAdapter.Helpers;
@@ -14,13 +14,13 @@ public static class AllureSkippedTestWriter
             var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
             foreach (var method in methods)
             {
-                if (method.GetCustomAttribute<TestAttribute>() == null)
+                if (method.GetCustomAttribute<TestAttribute>() is null)
                 {
                     continue;
                 }
 
                 var ignoreAttr = method.GetCustomAttribute<IgnoreAttribute>();
-                if (ignoreAttr == null)
+                if (ignoreAttr is null)
                 {
                     continue;
                 }
@@ -41,10 +41,10 @@ public static class AllureSkippedTestWriter
             Uuid: uuid,
             FullName: fullName,
             Name: method.Name,
-            StartMs: now,
-            StopMs: now,
-            Status: "skipped",
-            StatusMessage: ignoreAttr.Reason ?? "Ignored by [Ignore] attribute",
+            StartMilliseconds: now,
+            StopMilliseconds: now,
+            Status: AllureConstants.StatusSkipped,
+            StatusMessage: ignoreAttr.Reason ?? AllureConstants.DefaultIgnoreMessage,
             Description: description,
             TestClassName: type.Namespace));
 
@@ -54,6 +54,6 @@ public static class AllureSkippedTestWriter
     private static Type[] GetTypesSafely(Assembly assembly)
     {
         try { return assembly.GetTypes(); }
-        catch (ReflectionTypeLoadException ex) { return ex.Types.Where(t => t != null).ToArray()!; }
+        catch (ReflectionTypeLoadException ex) { return ex.Types.Where(t => t is not null).ToArray()!; }
     }
 }

@@ -13,7 +13,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static readonly ConcurrentDictionary<string, ContainerInfo> _containers = new();
 
     private long _startTicks;
-    private string _testUuid = null!;
+    private string _testUuid = string.Empty;
 
     static AllureNUnitAttribute()
     {
@@ -26,10 +26,8 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         _testUuid = Guid.NewGuid().ToString();
     }
 
-    public void AfterTest(ITest test)
-    {
+    public void AfterTest(ITest test) =>
         WriteTestResult(test, _testUuid, _startTicks);
-    }
 
     public ActionTargets Targets => ActionTargets.Test;
 
@@ -50,10 +48,10 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             Uuid: uuid,
             FullName: test.FullName,
             Name: test.Name,
-            StartMs: now,
-            StopMs: now,
-            Status: "skipped",
-            StatusMessage: "Ignored by [Ignore] attribute",
+            StartMilliseconds: now,
+            StopMilliseconds: now,
+            Status: AllureConstants.StatusSkipped,
+            StatusMessage: AllureConstants.DefaultIgnoreMessage,
             Description: description,
             TestClassName: test.ClassName));
 
@@ -74,11 +72,11 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             Uuid: uuid,
             FullName: test.FullName,
             Name: test.Name,
-            StartMs: now - elapsed,
-            StopMs: now,
+            StartMilliseconds: now - elapsed,
+            StopMilliseconds: now,
             Status: status,
-            StatusMessage: status == "failed" ? result.Message : null,
-            StatusTrace: status == "failed" ? result.StackTrace : null,
+            StatusMessage: status == AllureConstants.StatusFailed ? result.Message : null,
+            StatusTrace: status == AllureConstants.StatusFailed ? result.StackTrace : null,
             Description: description,
             TestClassName: test.ClassName));
 
@@ -89,24 +87,26 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static string MapTestStatus(TestStatus outcome) => outcome switch
     {
         TestStatus.Passed => "passed",
-        TestStatus.Failed => "failed",
-        TestStatus.Skipped => "skipped",
+        TestStatus.Failed => AllureConstants.StatusFailed,
+        TestStatus.Skipped => AllureConstants.StatusSkipped,
         _ => "broken"
     };
 
     private static void AddToContainer(ITest test, string uuid)
     {
         var containerUuid = EnsureContainer(test);
-        if (_containers.TryGetValue(containerUuid, out var info))
+        if (!_containers.TryGetValue(containerUuid, out var info))
         {
-            lock (info.Children)
+            return;
+        }
+
+        lock (info.Children)
+        {
+            if (!info.Children.Contains(uuid))
             {
-                if (!info.Children.Contains(uuid))
-                {
-                    info.Children.Add(uuid);
-                    var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, info.Children.ToList());
-                    AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
-                }
+                info.Children.Add(uuid);
+                var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, info.Children.ToList());
+                AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
             }
         }
     }
@@ -140,7 +140,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
     private static string? GetDescription(ITest test)
     {
-        if (test.Method?.MethodInfo == null)
+        if (test.Method?.MethodInfo is null)
         {
             return null;
         }

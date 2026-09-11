@@ -9,6 +9,17 @@
 - No nested ternaries — use `if`/`switch`
 - Always use `{}` for `if` blocks, even single-line
 
+## Guard clauses
+
+- Use early return to flatten nested `if` blocks
+- Validate preconditions first, then proceed with the main logic
+- Invert condition: `if (condition) return;` instead of `if (!condition) { /* main logic */ }`
+
+## Expression-bodied members
+
+- Use `=>` for single-expression methods, properties, and lambdas
+- Example: `protected void UseFakeStore() => Client = _fakeStoreClient;`
+
 ## SOLID principles
 
 - **S**ingle Responsibility — one class, one job. If you're using "and" to describe what a class does, split it.

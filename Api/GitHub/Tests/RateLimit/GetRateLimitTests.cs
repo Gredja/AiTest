@@ -32,7 +32,8 @@ public class GetRateLimitTests : GitHubTestBase
 
         var remaining = response.Headers!.FirstOrDefault(h => h.Name == "X-RateLimit-Remaining");
         remaining.Should().NotBeNull();
-        int.Parse(remaining!.Value!.ToString()!).Should().BeGreaterThan(0);
+        var remainingValue = remaining!.Value!.ToString()!;
+        int.Parse(remainingValue).Should().BeGreaterThan(0);
     }
 
     [Test]
@@ -44,7 +45,8 @@ public class GetRateLimitTests : GitHubTestBase
 
         var reset = response.Headers!.FirstOrDefault(h => h.Name == "X-RateLimit-Reset");
         reset.Should().NotBeNull();
-        var resetTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(reset!.Value!.ToString()!));
+        var resetValue = reset!.Value!.ToString()!;
+        var resetTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(resetValue));
         resetTime.Should().BeAfter(DateTimeOffset.UtcNow);
     }
 

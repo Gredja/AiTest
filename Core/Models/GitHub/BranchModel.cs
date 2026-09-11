@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Core.Attributes;
 
 namespace Core.Models.GitHub;
@@ -10,5 +11,6 @@ public class BranchModel
     [RequiredField]
     public BranchCommitModel Commit { get; set; }
 
-    public bool Protected { get; set; }
+    [JsonPropertyName("protected")]
+    public bool IsProtected { get; set; }
 }

@@ -12,7 +12,7 @@ public static class TestConfig
     private static JsonElement GitHub => _root.RootElement.GetProperty("GitHub");
 
     public static int MaxResponseTimeMs => _root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
-    public static bool SkipSslValidation => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
+    public static bool IsSslValidationSkipped => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
 
     public static string FakeStoreBaseUrl => FakeStore.GetProperty("BaseUrl").GetString()!;
     public static int ExpectedProductCount => FakeStore.GetProperty("ExpectedProductCount").GetInt32();
@@ -45,25 +45,29 @@ public static class TestConfig
             return ReadTokenFromEnvFile();
         }
     }
+
     public static string GitHubTestRepo => GitHub.GetProperty("TestRepo").GetString()!;
     public static string GitHubTestUserId => GitHub.GetProperty("TestUserId").GetString()!;
 
     private static string ReadTokenFromEnvFile()
     {
         var dir = AppContext.BaseDirectory;
-        while (dir != null)
+        while (dir is not null)
         {
             var envFile = Path.Combine(dir, ".env");
-            if (File.Exists(envFile))
+            if (!File.Exists(envFile))
             {
-                var line = File.ReadAllLines(envFile).FirstOrDefault(l => l.StartsWith("GITHUB_PAT="));
-                if (line != null)
-                {
-                    return line["GITHUB_PAT=".Length..];
-                }
-                break;
+                dir = Directory.GetParent(dir)?.FullName;
+                continue;
             }
-            dir = Directory.GetParent(dir)?.FullName;
+
+            var line = File.ReadAllLines(envFile).FirstOrDefault(l => l.StartsWith("GITHUB_PAT="));
+            if (line is not null)
+            {
+                return line["GITHUB_PAT=".Length..];
+            }
+
+            break;
         }
 
         return string.Empty;

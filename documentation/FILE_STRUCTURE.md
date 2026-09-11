@@ -27,6 +27,7 @@ Gredja/
 │   │   └── gh-pr-create.ps1
 │   └── skills/
 │       ├── api-test-gen/SKILL.md
+│       ├── audit/SKILL.md
 │       ├── commit/SKILL.md
 │       ├── gredja-rules/SKILL.md
 │       ├── review/SKILL.md

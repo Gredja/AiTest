@@ -1,4 +1,4 @@
-﻿namespace Core.Config;
+namespace Core.Config;
 
 public static class JsonPlaceholderEndpoints
 {
@@ -10,6 +10,7 @@ public static class JsonPlaceholderEndpoints
     public static int ExpectedCommentCount => TestConfig.ExpectedCommentCount;
     public static int ExpectedPhotoCount => TestConfig.ExpectedPhotoCount;
     public static int ExpectedUserCount => TestConfig.JsonPlaceholderExpectedUserCount;
+
     public const int TestPostId = 1;
     public const int TestUserId = 1;
     public const int TestAlbumId = 1;

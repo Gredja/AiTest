@@ -1,8 +1,10 @@
-﻿using Core.Models.Generic;
+using System.Text.Json.Serialization;
+using Core.Models.Generic;
 
 namespace Core.Models.JsonPlaceholder;
 
 public class TodoModel : UserOwnedModel
 {
-    public bool Completed { get; set; }
+    [JsonPropertyName("completed")]
+    public bool IsCompleted { get; set; }
 }

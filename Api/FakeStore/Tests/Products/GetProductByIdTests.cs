@@ -33,7 +33,8 @@ public class GetProductByIdTests : RequestHelper
     {
         var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
 
-        response.ShouldBeOkWithData();
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
     }
 
     [Test]

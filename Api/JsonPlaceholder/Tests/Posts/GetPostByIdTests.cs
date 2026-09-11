@@ -35,7 +35,8 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<PostModel>(JsonPlaceholderEndpoints.PostsById, Method.Get,
             PostIdParam(JsonPlaceholderEndpoints.TestPostId));
 
-        response.ShouldBeOkWithData();
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
     }
 
     [Test]

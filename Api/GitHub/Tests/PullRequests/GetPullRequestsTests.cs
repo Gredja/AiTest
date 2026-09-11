@@ -38,7 +38,7 @@ public class GetPullRequestsTests : GitHubTestBase
 
         response.Data.Should().NotBeNull();
         var pr = response.Data!.FirstOrDefault();
-        if (pr != null)
+        if (pr is not null)
         {
             pr.Id.Should().BeGreaterThan(0);
             pr.Title.Should().NotBeNullOrWhiteSpace();

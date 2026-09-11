@@ -1,4 +1,4 @@
-﻿namespace Core.Config;
+namespace Core.Config;
 
 public static class FakeStoreEndpoints
 {
@@ -10,6 +10,7 @@ public static class FakeStoreEndpoints
     public static int ExpectedCategoryCount => TestConfig.ExpectedCategoryCount;
     public static int ExpectedProductsInCategoryCount => TestConfig.ExpectedProductsInCategoryCount;
     public static string TestCategoryName => TestConfig.TestCategoryName;
+
     public const int TestProductId = 1;
     public const int TestUserId = 1;
 
