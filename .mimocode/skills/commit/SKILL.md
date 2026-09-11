@@ -85,6 +85,7 @@ Otherwise: `git push -u origin HEAD`
 - Files changed
 - Commit message
 - Push status (pushed / skipped)
+- Backup sync status (synced / skipped with reason)
 - Review findings (if any)
 
 ---

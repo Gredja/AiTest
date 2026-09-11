@@ -16,13 +16,6 @@ Gredja/
 ├── .graphifyignore
 ├── .mimocode/
 │   ├── mimocode.jsonc
-│   ├── commands/
-│   │   ├── api-test-gen.md
-│   │   ├── commit.md
-│   │   ├── review.md
-│   │   ├── review-commit.md
-│   │   ├── review-pr.md
-│   │   └── test.md
 │   ├── hooks/
 │   │   └── safety-commit.ts
 │   ├── node_modules/             # not tracked
