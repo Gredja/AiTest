@@ -84,4 +84,17 @@ public class GetBranchesTests : GitHubTestBase
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
     }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("4.6 Pagination with per_page=1 returns at most 1 branch")]
+    public async Task GetBranches_PaginationPerOne()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+            [.. RepoParam(owner, repo), .. PaginationParams(1, 1)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Count.Should().BeLessThanOrEqualTo(1);
+    }
 }

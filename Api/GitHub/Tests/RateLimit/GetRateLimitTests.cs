@@ -3,6 +3,7 @@ using RestSharp;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
+using System.Text.Json;
 using FluentAssertions;
 using TestAdapter;
 
@@ -60,5 +61,19 @@ public class GetRateLimitTests : GitHubTestBase
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("6.5 Rate limit response has core and resources sections")]
+    public async Task GetRateLimit_HasAllSections()
+    {
+        var response = await Get<JsonElement>(GitHubEndpoints.RateLimit, Method.Get);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.TryGetProperty("resources", out var resources).Should().BeTrue();
+        resources.TryGetProperty("core", out _).Should().BeTrue();
+        resources.TryGetProperty("search", out _).Should().BeTrue();
+        response.Data.TryGetProperty("rate", out _).Should().BeTrue();
     }
 }

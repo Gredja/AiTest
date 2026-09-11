@@ -85,4 +85,33 @@ public class GetIssuesTests : GitHubTestBase
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
     }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("3.6 Filter by state=open returns only open issues")]
+    public async Task GetIssues_FilterByStateOpen()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+            [.. RepoParam(owner, repo), .. StateParam("open")]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().OnlyContain(i => i.State == "open");
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("3.7 Filter by state=closed returns only closed issues")]
+    public async Task GetIssues_FilterByStateClosed()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+            [.. RepoParam(owner, repo), .. StateParam("closed")]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        if (response.Data!.Count > 0)
+        {
+            response.Data.Should().OnlyContain(i => i.State == "closed");
+        }
+    }
 }

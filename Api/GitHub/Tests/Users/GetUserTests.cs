@@ -60,4 +60,15 @@ public class GetUserTests : GitHubTestBase
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.5 Non-existent user returns 404")]
+    public async Task GetUser_NonExistentUser_ReturnsNotFound()
+    {
+        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get,
+            UsernameParam(GitHubEndpoints.NonExistentUser));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
 }

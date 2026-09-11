@@ -67,4 +67,15 @@ public class GetRepositoryTests : GitHubTestBase
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("1.5 Non-existent repo returns 404")]
+    public async Task GetRepository_NonExistentRepo_ReturnsNotFound()
+    {
+        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+            RepoParam(GitHubEndpoints.TestUserId, GitHubEndpoints.NonExistentRepo));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
 }

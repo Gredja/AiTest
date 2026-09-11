@@ -85,4 +85,36 @@ public class GetPullRequestsTests : GitHubTestBase
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
     }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("5.6 Filter by state=open returns only open pull requests")]
+    public async Task GetPullRequests_FilterByStateOpen()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+            [.. RepoParam(owner, repo), .. StateParam("open")]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        if (response.Data!.Count > 0)
+        {
+            response.Data.Should().OnlyContain(pr => pr.State == "open");
+        }
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("5.7 Filter by state=closed returns only closed pull requests")]
+    public async Task GetPullRequests_FilterByStateClosed()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+            [.. RepoParam(owner, repo), .. StateParam("closed")]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        if (response.Data!.Count > 0)
+        {
+            response.Data.Should().OnlyContain(pr => pr.State == "closed");
+        }
+    }
 }
