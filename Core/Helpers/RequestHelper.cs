@@ -22,7 +22,7 @@ public class RequestHelper
     public async Task<RestResponse<T>> Get<T>(
         string endpoint,
         Method method,
-        List<RequestDictionaryModel> additionalParams = null)
+        List<RequestDictionaryModel>? additionalParams = null)
     {
         var request = new RestRequest(endpoint, method)
         {
@@ -43,21 +43,21 @@ public class RequestHelper
     public async Task<RestResponse<TResponse>> Post<TRequest, TResponse>(
         string endpoint,
         TRequest body,
-        List<RequestDictionaryModel> additionalParams = null)
+        List<RequestDictionaryModel>? additionalParams = null)
         where TRequest : class =>
         await Send<TRequest, TResponse>(endpoint, Method.Post, body, additionalParams);
 
     public async Task<RestResponse<TResponse>> Put<TRequest, TResponse>(
         string endpoint,
         TRequest body,
-        List<RequestDictionaryModel> additionalParams = null)
+        List<RequestDictionaryModel>? additionalParams = null)
         where TRequest : class =>
         await Send<TRequest, TResponse>(endpoint, Method.Put, body, additionalParams);
 
     public async Task<RestResponse<TResponse>> Patch<TRequest, TResponse>(
         string endpoint,
         TRequest body,
-        List<RequestDictionaryModel> additionalParams = null)
+        List<RequestDictionaryModel>? additionalParams = null)
         where TRequest : class =>
         await Send<TRequest, TResponse>(endpoint, Method.Patch, body, additionalParams);
 
@@ -65,7 +65,7 @@ public class RequestHelper
         string endpoint,
         Method method,
         TRequest body,
-        List<RequestDictionaryModel> additionalParams = null)
+        List<RequestDictionaryModel>? additionalParams = null)
         where TRequest : class
     {
         var request = new RestRequest(endpoint, method)
@@ -87,7 +87,7 @@ public class RequestHelper
 
     public async Task<RestResponse<T>> Delete<T>(
         string endpoint,
-        List<RequestDictionaryModel> additionalParams = null)
+        List<RequestDictionaryModel>? additionalParams = null)
     {
         var request = new RestRequest(endpoint, Method.Delete)
         {
@@ -128,7 +128,7 @@ public class RequestHelper
             switch (param.Type)
             {
                 case ParamType.Header:
-                    request.AddHeader(param.Key, param.Value?.ToString());
+                    request.AddHeader(param.Key, param.Value?.ToString() ?? string.Empty);
                     break;
                 case ParamType.Parameter:
                     request.AddParameter(param.Key, param.Value?.ToString());

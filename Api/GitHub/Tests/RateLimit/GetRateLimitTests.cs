@@ -2,6 +2,7 @@ using NUnit.Framework;
 using RestSharp;
 using Core.Config;
 using Core.Helpers;
+using Core.Helpers.GitHub;
 using System.Net;
 using System.Text.Json;
 using FluentAssertions;

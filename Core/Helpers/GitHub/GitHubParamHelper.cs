@@ -1,6 +1,6 @@
 using Core.Models;
 
-namespace Api.GitHub.Helpers;
+namespace Core.Helpers.GitHub;
 
 public static class GitHubParamHelper
 {

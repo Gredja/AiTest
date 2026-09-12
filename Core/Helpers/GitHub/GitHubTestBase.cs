@@ -1,7 +1,6 @@
 using Core.Config;
-using Core.Helpers;
 
-namespace Api.GitHub;
+namespace Core.Helpers.GitHub;
 
 public abstract class GitHubTestBase : GitHubRequestHelper
 {

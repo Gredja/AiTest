@@ -55,6 +55,9 @@ Core/
 │   └── TestConfig.cs             # reads common settings from testsettings.json
 ├── Helpers/
 │   ├── AssertHelper.cs           # Generic assertions
+│   ├── GitHub/
+│   │   ├── GitHubParamHelper.cs  # RepoParam(), IssueNumberParam(), PaginationParams()
+│   │   └── GitHubTestBase.cs     # Base class for GitHub tests
 │   ├── GitHubRequestHelper.cs    # RequestHelper for GitHub API
 │   ├── JsonPlaceholderRequestHelper.cs  # RequestHelper for JSONPlaceholder
 │   └── RequestHelper.cs          # HTTP request wrapper (Get/Post/Put/Patch/Delete)
@@ -130,9 +133,6 @@ Api/
 │           ├── GetAllTodosTests.cs       # 7 tests
 │           └── GetTodosByUserIdTests.cs  # 5 tests
 └── GitHub/
-    ├── GitHubTestBase.cs                # Base class for GitHub tests
-    ├── Helpers/
-    │   └── GitHubParamHelper.cs         # RepoParam(), IssueNumberParam(), PaginationParams()
     └── Tests/
         ├── Branches/
         │   └── GetBranchesTests.cs      # 5 tests
@@ -162,14 +162,16 @@ TestAdapter/
     └── AllureTestResultBuilder.cs
 ```
 
-## Ui/
+## E2E/
 
 ```
-Ui/
-├── Ui.csproj
+E2E/
+├── E2E.csproj
 ├── AllureGlobalSetup.cs
-└── Tests/
-    └── DummyTests.cs
+└── GitHub/
+    ├── GitHubE2ETestBase.cs
+    └── Tests/
+        └── SampleTests.cs        # 1 test (placeholder)
 ```
 
 ## Rules/
@@ -194,13 +196,13 @@ Rules/
 ```
 documentation/
 ├── FILE_STRUCTURE.md
+├── GitHubTestPlan.md             # GitHub API + E2E test plan
 ├── JSONPlaceholder-PLAN.md       # plan for adding JSONPlaceholder API
 ├── Katas/
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md
 │   └── maturity-gap-analysis.md
 ├── README.md
-├── TestPlan.md
 └── token-budget.md
 ```
 

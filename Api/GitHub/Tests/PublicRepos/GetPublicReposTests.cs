@@ -4,10 +4,11 @@ using Core.Models;
 using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
+using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
-using static Api.GitHub.Helpers.GitHubParamHelper;
+using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.PublicRepos;
 

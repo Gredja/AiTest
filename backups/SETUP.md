@@ -221,7 +221,7 @@ Gredja/
 │   ├── FakeStore/Tests/          # Тесты FakeStoreAPI
 │   ├── JsonPlaceholder/Tests/    # Тесты JSONPlaceholder
 │   └── GitHub/Tests/             # Тесты GitHub API
-├── Ui/                           # Playwright UI-тесты
+├── E2E/                          # E2E тесты (цепочки связей)
 ├── TestAdapter/                  # Allure-адаптер
 ├── Scripts/                      # Скрипты (allure-report.ps1)
 ├── Rules/                        # Правила кодирования
@@ -234,8 +234,6 @@ Gredja/
 - **FakeStoreAPI** — интернет-магазин (20 товаров, IDs 1-20)
 - **JSONPlaceholder** — фейковый REST API (посты, комментарии, пользователи)
 - **GitHub API** — реальный GitHub (репозитории, Issues, PR, Branches)
-
-Плюс UI-тесты на Playwright.
 
 ---
 

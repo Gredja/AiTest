@@ -1,6 +1,6 @@
-﻿<Solution>
+<Solution>
   <Project Path="Core/Core.csproj" />
   <Project Path="TestAdapter/TestAdapter.csproj" />
+  <Project Path="E2E/E2E.csproj" />
   <Project Path="Api/Api.csproj" />
-  <Project Path="Ui/Ui.csproj" />
 </Solution>
