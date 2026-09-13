@@ -15,6 +15,7 @@ Gredja/
 ├── .gitignore
 ├── .graphifyignore
 ├── .mimocode/
+│   ├── .gitignore
 │   ├── mimocode.jsonc
 │   ├── hooks/
 │   │   └── safety-commit.ts
@@ -35,8 +36,14 @@ Gredja/
 │       ├── review-pr/SKILL.md
 │       ├── test/SKILL.md
 │       └── test-report/SKILL.md
-└── Scripts/
-    └── allure-report.ps1
+├── Scripts/
+│   └── allure-report.ps1
+├── black-white-cat/
+└── backups/
+    ├── SETUP.md
+    ├── mimocode-project.jsonc
+    └── Prompts-templates/
+        └── api-test-generation.md
 ```
 
 ## Core/
@@ -92,12 +99,20 @@ Core/
 │   ├── GitHub/
 │   │   ├── BranchCommitModel.cs
 │   │   ├── BranchModel.cs
+│   │   ├── CommentModel.cs
+│   │   ├── CommitAuthorModel.cs
+│   │   ├── CommitInfoModel.cs
+│   │   ├── CommitModel.cs
+│   │   ├── ContributorModel.cs
 │   │   ├── CreateCommentRequest.cs
 │   │   ├── CreateIssueRequest.cs
 │   │   ├── IssueModel.cs
 │   │   ├── LabelModel.cs
+│   │   ├── PullRequestBranchModel.cs
 │   │   ├── PullRequestModel.cs
+│   │   ├── ReleaseModel.cs
 │   │   ├── RepositoryModel.cs
+│   │   ├── TagModel.cs
 │   │   └── UserModel.cs
 │   ├── ParamType.cs              # enum: Header, Parameter, UrlSegment
 │   └── RequestDictionaryModel.cs # dynamic request params
@@ -134,18 +149,27 @@ Api/
 │           └── GetTodosByUserIdTests.cs  # 5 tests
 └── GitHub/
     └── Tests/
+        ├── AuthRepos/
+        │   └── GetAuthenticatedUserReposTests.cs
         ├── Branches/
-        │   └── GetBranchesTests.cs      # 5 tests
+        │   └── GetBranchesTests.cs
+        ├── IssueComments/
+        │   └── GetIssueCommentsTests.cs
         ├── Issues/
-        │   └── GetIssuesTests.cs        # 5 tests
+        │   ├── GetIssueByIdTests.cs
+        │   └── GetIssuesTests.cs
+        ├── PublicRepos/
+        │   └── GetPublicReposTests.cs
         ├── PullRequests/
-        │   └── GetPullRequestsTests.cs  # 5 tests
+        │   └── GetPullRequestsTests.cs
         ├── RateLimit/
-        │   └── GetRateLimitTests.cs     # 4 tests
+        │   └── GetRateLimitTests.cs
         ├── Repos/
-        │   └── GetRepositoryTests.cs    # 4 tests
+        │   └── GetRepositoryTests.cs
+        ├── UserRepos/
+        │   └── GetUserReposTests.cs
         └── Users/
-            └── GetUserTests.cs          # 4 tests
+            └── GetUserTests.cs
 ```
 
 ## TestAdapter/
@@ -154,12 +178,13 @@ Api/
 TestAdapter/
 ├── TestAdapter.csproj
 └── Helpers/
-    ├── AllureGlobalSetup.cs
+    ├── AllureConstants.cs
     ├── AllureHelper.cs
     ├── AllureJsonWriter.cs
     ├── AllureNUnitAttribute.cs
     ├── AllureSkippedTestWriter.cs
-    └── AllureTestResultBuilder.cs
+    ├── AllureTestResultBuilder.cs
+    └── TestResultParams.cs
 ```
 
 ## E2E/
@@ -197,7 +222,6 @@ Rules/
 documentation/
 ├── FILE_STRUCTURE.md
 ├── GitHubTestPlan.md             # GitHub API + E2E test plan
-├── JSONPlaceholder-PLAN.md       # plan for adding JSONPlaceholder API
 ├── Katas/
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md

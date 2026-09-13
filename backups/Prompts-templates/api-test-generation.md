@@ -1,4 +1,4 @@
-﻿# Prompt Template: API Endpoint Test Generation
+# Prompt Template: API Endpoint Test Generation
 
 Use this prompt to generate a complete test class for any FakeStoreAPI endpoint. Fill in the placeholders and send to the AI.
 
@@ -30,7 +30,7 @@ Generate a test class for the endpoint: {METHOD} {ENDPOINT_PATH}
 
 ### Class structure
 - `[TestFixture]` + `[AllureNUnit]` + `[Category("{SERVICE}")]` class named `{CLASS_NAME}`
-- `{SERVICE}` = `FakeStore`, `JsonPlaceholder`, or `Ui`
+- `{SERVICE}` = `FakeStore`, `JsonPlaceholder`, or `GitHub`
 - Private field: `private RestClient _client = null!;`
 - `[SetUp]`: `_client = new RestClient(Endpoints.BaseUrl);`
 - `[TearDown]`: `_client?.Dispose();`
@@ -105,7 +105,7 @@ GetProductByIdTests:
 ### Test categories (cover ALL applicable)
 
 Every test MUST have `[Category]` attributes. See `Rules/categories.md` for full rules:
-- Service category on class (`FakeStore` / `JsonPlaceholder` / `Ui`)
+- Service category on class (`FakeStore` / `JsonPlaceholder` / `GitHub`)
 - Check-type category on method (`HealthCheck` / `Smoke` / `Regression` / `Negative` / `Performance`)
 - Category-to-test mapping table
 
@@ -201,7 +201,7 @@ Generate the complete test file content only. No explanations, no markdown wrapp
 | `{CLASS_NAME}` | Test class name | GetProductByIdTests |
 | `{START_NUMBER}` | First test number prefix | 2 (if products list is 1) |
 | `{EXPECTED_STATUS}` | Expected HTTP status code | 200, 201, 404 |
-| `{SERVICE}` | Service category for [Category] | FakeStore, JsonPlaceholder, Ui |
+| `{SERVICE}` | Service category for [Category] | FakeStore, JsonPlaceholder, GitHub |
 | `{ALL_ITEMS_CONSTANT}` | Constant for list endpoint | Products |
 | `{BY_ID_CONSTANT}` | Constant for by-ID endpoint | ProductsById |
 | `{N}` | Test number prefix in descriptions | 2 |

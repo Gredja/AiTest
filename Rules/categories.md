@@ -11,7 +11,7 @@ Add exactly one service category to the `[TestFixture]` class:
 | FakeStore API | `[Category("FakeStore")]` |
 | JSONPlaceholder API | `[Category("JsonPlaceholder")]` |
 | GitHub API | `[Category("GitHub")]` |
-| UI tests | `[Category("Ui")]` |
+| GitHub E2E | `[Category("GitHubE2E")]` |
 
 ```csharp
 [TestFixture]
