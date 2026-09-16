@@ -50,3 +50,32 @@ When adding or changing endpoints, keep these documents in sync:
 - `documentation/{Service}TestPlan.md` — coverage tracking (which endpoints have tests, status)
 - `Rules/*.md` — shared rules for all services (assertions, patterns, cleanup)
 - If Observable Behaviour changes → update Test Plan status; if Test Plan adds endpoints → update Observable Behaviour
+
+## Seed methodology for test generation
+
+When generating tests for an endpoint, use the Seed → Expand → Review approach:
+
+**Step 1: Write 5 seeds** (1 sentence each)
+- 2 happy path variations (different input combinations)
+- 2 known failure modes (different error conditions)
+- 1 edge case (boundary, special chars, or unusual input)
+
+**Step 2: Expand via AI** — for each seed generate:
+- 1 happy-path variation (different assertion focus)
+- 1 edge-case variation (boundary/stress)
+- 1 negative variation (different error code/message)
+- Tag each with category (HealthCheck/Smoke/Regression/Negative/Performance) + priority
+
+**Step 3: Review and clean**
+- Delete clearly wrong cases
+- Deduplicate near-duplicates
+- Re-tag mis-categorised tests
+
+**Step 4: Enforce negative floor** — minimum 5 negatives per endpoint
+- If fewer than 5: generate more, each exercising a different failure mode
+- Failure modes: no auth, invalid token, wrong scope, missing required field, non-existent resource, invalid value, boundary value
+
+**Step 5: Save** — target ~15-20 unique test cases per endpoint
+
+**Expected yield per endpoint:** ~8-14 tests (5-6 happy, 5-6 negative, 2-3 edge)
+**Never:** less than 3 tests per endpoint, less than 5 negatives per endpoint

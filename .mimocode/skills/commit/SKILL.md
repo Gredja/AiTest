@@ -63,7 +63,13 @@ If ANY tests fail: report the failures and STOP. Do not commit.
 Check if any of the following were changed in this commit:
 - `.mimocode/mimocode.jsonc` → update `backups/mimocode-project.jsonc`
 - `Rules/*.md` or `Prompts/templates/*` affecting test generation → update `backups/Prompts-templates/`
-- Anything affecting new user setup (permissions, tools, env vars) → update `backups/SETUP.md`
+- **ALWAYS check `backups/SETUP.md`** — update if any of these changed:
+  - Skills (`*.mimocode/skills/`)
+  - Rules (`Rules/*.md`)
+  - Project structure (new directories, moved files)
+  - Observable Behaviour documents
+  - Config files (endpoints, env vars)
+  - AGENTS.md or documentation/README.md
 - Structural changes (new files, moved files, deleted files) → update `documentation/FILE_STRUCTURE.md`
 
 If nothing changed — skip. If something changed — update the corresponding backup file.

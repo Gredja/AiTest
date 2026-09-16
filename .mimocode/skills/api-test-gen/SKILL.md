@@ -106,6 +106,12 @@ If models already exist — verify they match current API response.
 
 ### Step 4: Generate Tests
 
+**Seed methodology** — before writing code, plan test cases using Seed → Expand → Review:
+1. Write 5 seeds per endpoint (2 happy, 2 failure, 1 edge) — see `Rules/test-practices.md` → "Seed methodology"
+2. Expand each seed to 3 variations (happy/edge/negative)
+3. Enforce minimum 5 negatives per endpoint
+4. Target ~15-20 unique test cases per endpoint
+
 **Base class** — check if `{Service}RequestHelper` exists in `Core/Helpers/`. If not, create it extending `RequestHelper`. If it exists, use it.
 
 **Param helpers** — use shared helpers for URL segments and query parameters:

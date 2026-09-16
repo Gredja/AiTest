@@ -226,6 +226,11 @@ Gredja/
 ├── Scripts/                      # Скрипты (allure-report.ps1)
 ├── Rules/                        # Правила кодирования
 ├── documentation/                # Документация
+│   ├── GitHubTestPlan.md         # План тестирования GitHub API
+│   ├── GitHubTestingStructure.md # Структура тестирования
+│   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
+│   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
+│   └── README.md                 # Обзор проекта
 ├── Prompts/                      # Шаблоны промптов
 └── .mimocode/skills/             # Скиллы для MiMoCode
 ```
@@ -266,7 +271,7 @@ MiMoCode:
 | `/commit` | Форматирование + ревью + тесты + синк бэкапов + коммит + пуш |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
-| `/api-test-gen` | Генерирует шаблон теста для нового API endpoint |
+| `/api-test-gen` | Генерирует тесты для нового API endpoint (читает Observable Behaviour) |
 | `/gredja-rules` | Показывает правила проекта |
 
 Просто напиши `/test` в чате с MiMoCode — и он запустит тесты.
@@ -277,6 +282,8 @@ MiMoCode:
 2. **MiMoCode показывает план перед работой** — для каждой задачи он предложит план, подождёт одобрения, потом выполнит.
 3. **Работа в ветках** — все изменения делаются в ветках `features/<topic>`, не в `main`.
 4. **Файлы с `.env` секретами** — никогда не коммить файл `.env`.
+5. **Observable Behaviour — source of truth** — при генерации тестов MiMoCode читает `{Service}ObservableBehaviour.md` и генерирует тесты по описанным полям и типам.
+6. **Document sync** — при изменении эндпоинтов обновляй Observable Behaviour ↔ Test Plan ↔ Rules.
 
 ---
 
@@ -332,11 +339,14 @@ git checkout -b features/add-user-tests
 
 **Тесты:**
 - 1 endpoint = 1 тестовый класс
+- Seed-методология: 5 seeds → expand → enforce 5+ negatives → ~15-20 тестов на endpoint
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
-- Категории: тип сервиса (FakeStore/JsonPlaceholder/GitHub/Ui) + тип проверки (HealthCheck/Smoke/Regression/Negative/Performance)
+- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
+- Категории: тип сервиса (FakeStore/JsonPlaceholder/GitHub) + тип проверки (HealthCheck/Smoke/Regression/Negative/Performance)
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно
+- После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`
 
 **Workflow:**
 - План → одобение → изменения → отчёт
@@ -350,8 +360,8 @@ git checkout -b features/add-user-tests
 ### "Добавить тест для нового endpoint"
 
 1. Напиши в MiMoCode: "Создай тест для GET /comments"
-2. Он прочитает шаблон в `Prompts/templates/api-test-generation.md`
-3. Напишет тестовый класс по правилам проекта
+2. Он прочитает `documentation/{Service}ObservableBehaviour.md` (или создаст из шаблона)
+3. Напишет тестовый класс по правилам проекта с seed-методологией (5 seeds → ~15-20 тестов)
 4. Ты проверяешь и говоришь "закоммить" или вносишь правки
 
 ### "Запустить тесты и посмотреть отчёт"
@@ -369,6 +379,10 @@ git checkout -b features/add-user-tests
 ### "Что-то сломалось"
 
 Напиши что сломалось и покажи ошибку. MiMoCode найдёт проблему и предложит исправление.
+
+### "Посмотреть покрытие API"
+
+Напиши "проанализируй покрытие" — MiMoCode проверит какие эндпоинты имеют тесты, сколько тестов на каждый, и покажет нехватку по seed-методологии.
 
 ---
 
@@ -402,6 +416,12 @@ dotnet build
 - FakeStoreAPI и JSONPlaceholder — фейковые API, проблемы с интернетом
 - GitHub API — нужен `.env` с `GITHUB_TOKEN` (см. Часть 4)
 
+**Тесты падают с 401/403**
+
+- Проверь что `.env` содержит валидный `GITHUB_TOKEN`
+- Токен должен иметь scope `public_repo` (read) или `repo` (read + write)
+- Проверь что токен не истёк: GitHub → Settings → Developer settings → Personal access tokens
+
 ### Allure не генерируется
 
 **"allure is not recognized"**
@@ -433,6 +453,9 @@ dotnet build
 - **FakeStoreAPI:** https://fakestoreapi.com/docs
 - **JSONPlaceholder:** https://jsonplaceholder.typicode.com
 - **GitHub API:** https://docs.github.com/en/rest
+- **Observable Behaviour:** `documentation/GitHubObservableBehaviour.md` — source of truth для тестов GitHub
+- **Test Plan:** `documentation/GitHubTestPlan.md` — покрытие и статусы
+- **Правила:** `Rules/*.md` — код,斷言, тест-практики
 
 ---
 
@@ -454,4 +477,6 @@ dotnet build
 
 **Рекомендовано:**
 - [ ] Установлена Visual Studio Community (или VS Code) для удобной работы с кодом
-- [ ] Подана заявка на MiMo Desktop (https://mimocode.mi.com)
+- [ ] Подана заявка на MiMo Desktop (https://mimocode.mi.mi.com)
+- [ ] Прочитал `documentation/GitHubObservableBehaviour.md` — понимаешь структуру документа
+- [ ] Прочитал `Rules/test-practices.md` — знаешь seed-методологию
