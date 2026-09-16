@@ -280,3 +280,4 @@ Show:
 | 1.1 | 2026-06-25 | Added Purpose, Variable Placeholders table, Output Format Instruction, Peer Review | Алексей |
 | 1.2 | 2026-06-25 | Made service-agnostic: removed hardcoded FakeStore/JsonPlaceholder, added File Convention table, dynamic base class discovery | Алексей |
 | 1.3 | 2026-02-21 | Added Observable Behaviour document check in Step 1 — read `documentation/{Service}ObservableBehaviour.md` as primary source for test design | Алексей |
+| 1.4 | 2026-02-21 | Added Observable Behaviour template reference, auto-create from template if missing, document sync rule in test-practices.md | Алексей |
