@@ -64,7 +64,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
 
-        response.Data.Should().OnlyContain(pr => pr.State == "open" || pr.State == "closed");
+        response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateOpen || pr.State == GitHubEndpoints.StateClosed);
     }
 
     [Test]
@@ -73,7 +73,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
-            RepoParam(GitHubEndpoints.NonExistentUser, "nonexistent"));
+            RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -124,12 +124,12 @@ public class GetPullRequestsTests : GitHubTestBase
     {
         var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
-            [.. RepoParam(owner, repo), .. StateParam("open")]);
+            [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateOpen)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        if (response.Data!.Count > 0)
+        if (response.Data!.Any())
         {
-            response.Data.Should().OnlyContain(pr => pr.State == "open");
+            response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateOpen);
         }
     }
 
@@ -140,12 +140,12 @@ public class GetPullRequestsTests : GitHubTestBase
     {
         var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
-            [.. RepoParam(owner, repo), .. StateParam("closed")]);
+            [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateClosed)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        if (response.Data!.Count > 0)
+        if (response.Data!.Any())
         {
-            response.Data.Should().OnlyContain(pr => pr.State == "closed");
+            response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateClosed);
         }
     }
 }

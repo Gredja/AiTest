@@ -131,7 +131,7 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
-            RepoParam(GitHubEndpoints.NonExistentUser, "nonexistent"));
+            RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

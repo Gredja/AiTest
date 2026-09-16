@@ -98,7 +98,7 @@ public class GetIssueCommentsTests : GitHubTestBase
     public async Task GetIssueComments_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<List<CommentModel>>(GitHubEndpoints.RepoIssueComments, Method.Get,
-            [.. RepoParam(GitHubEndpoints.NonExistentUser, "nonexistent"), .. IssueNumberParam(1)]);
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName), .. IssueNumberParam(1)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

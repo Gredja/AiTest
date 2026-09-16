@@ -35,7 +35,7 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
         var response = await Get<List<RepositoryModel>>(GitHubEndpoints.AuthenticatedUserRepos, Method.Get);
 
         response.Data.Should().NotBeNull();
-        if (response.Data!.Count > 0)
+        if (response.Data!.Any())
         {
             var repo = response.Data.First();
             repo.Name.Should().NotBeNullOrWhiteSpace();

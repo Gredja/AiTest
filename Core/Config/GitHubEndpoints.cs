@@ -7,6 +7,9 @@ public static class GitHubEndpoints
 
     public const string NonExistentRepo = "this-repo-definitely-does-not-exist-12345";
     public const string NonExistentUser = "this-user-definitely-does-not-exist-12345";
+    public const string NonExistentRepoName = "nonexistent";
+    public const string StateOpen = "open";
+    public const string StateClosed = "closed";
 
     public const string Repos = "/repos";
     public const string Repositories = "/repositories";
