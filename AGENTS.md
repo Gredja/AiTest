@@ -8,10 +8,11 @@ FakeStoreAPI, 20 товаров (IDs 1-20).
 - `Api/Tests/` — NUnit API-тесты
 - `Ui/` — Playwright UI-тесты
 - `Core/Models/` — модели ответов/запросов
-- `Core/Config/FakeStoreEndpoints.cs` и `Core/Config/JsonPlaceholderEndpoints.cs` — URL и пути эндпоинтов
+- `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
 - `Prompts/` — шаблоны промптов
 - `Rules/` — полные правила (здесь — краткая сводка)
 - `documentation/` — документация проекта (Katas, TestPlan, FILE_STRUCTURE.md)
+- `documentation/*ObservableBehaviour.md` — наблюдаемое поведение API (актуальные состояния, типы полей, негативные кейсы). **Читать при генерации и review тестов.**
 - `.mimocode/skills/` — скиллы для AI-агентов
 
 ## Rules

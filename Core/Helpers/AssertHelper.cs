@@ -30,6 +30,34 @@ public static class AssertHelper
         }
     }
 
+    public static void ShouldMatchRequest<TRequest, TResponse>(this TResponse response, TRequest request)
+        where TRequest : class
+        where TResponse : class
+    {
+        response.Should().NotBeNull();
+        request.Should().NotBeNull();
+
+        var requestProps = typeof(TRequest).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var responseProps = typeof(TResponse).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+        foreach (var reqProp in requestProps)
+        {
+            var reqValue = reqProp.GetValue(request);
+            if (reqValue is null)
+            {
+                continue;
+            }
+
+            var resProp = responseProps.FirstOrDefault(p =>
+                p.Name.Equals(reqProp.Name, StringComparison.OrdinalIgnoreCase));
+
+            resProp.Should().NotBeNull($"response should have property '{reqProp.Name}' matching request");
+
+            var resValue = resProp!.GetValue(response);
+            resValue.Should().Be(reqValue, $"response.{resProp.Name} should match request.{reqProp.Name}");
+        }
+    }
+
     private static void ValidateProperty(string name, object? value, Attribute attr)
     {
         switch (attr)

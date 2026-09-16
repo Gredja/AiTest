@@ -1,4 +1,4 @@
-﻿---
+---
 name: api-test-gen
 description: Use when the user wants to generate API tests for any service endpoint. Trigger on mentions of "api test gen", "generate API tests", "/api-test-gen", or testing a new endpoint.
 ---
@@ -40,6 +40,7 @@ All paths use `{Service}` as the service name (PascalCase, matches directory nam
 
 | What | Path pattern |
 |---|---|
+| Observable Behaviour | `documentation/{Service}ObservableBehaviour.md` |
 | Endpoints config | `Core/Config/{Service}Endpoints.cs` |
 | Models | `Core/Models/{Service}/` |
 | Tests | `Api/{Service}/Tests/{Endpoint}Tests.cs` |
@@ -54,10 +55,11 @@ Before generating — verify that `Core/Config/{Service}Endpoints.cs` exists. If
 
 ### Step 1: Research the endpoint
 
-1. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
-2. Analyze the response structure — what fields, what types, what's nullable
-3. Check for sub-endpoints: `/{endpoint}/{id}`, nested resources
-4. Count total items (needed for `ExpectedCount`)
+1. **Check Observable Behaviour** — if `documentation/{Service}ObservableBehaviour.md` exists, read it first. It contains: expected status codes, response types, field definitions with types, pagination, filtering, and negative cases. Use it as the primary source for test design.
+2. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
+3. Analyze the response structure — what fields, what types, what's nullable
+4. Check for sub-endpoints: `/{endpoint}/{id}`, nested resources
+5. Count total items (needed for `ExpectedCount`)
 
 ### Step 2: Add constants to Endpoints file
 
@@ -210,17 +212,17 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 
 ### Step 5: Follow All Rules
 
-- **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers or strings
-- **Categories:** `[Category("{Service}")]` on class; `[Category("HealthCheck|Smoke|Regression|Negative|Performance")]` on every method — see `Rules/categories.md`
-- **Non-existent IDs:** Dynamic only — GET all → `maxId + 1`. Never static 999 or any hardcoded number
-- **Assertions:** FluentAssertions only. Use `ShouldHaveValidFields()` via attributes — not per-field helpers
-- **Attributes on separate lines above properties**, not inline
-- **Config:** Use `{Service}Endpoints.*` from appropriate Endpoints file — never hardcode URLs
-- **Comments:** No comments unless regex or non-obvious WHY
-- **Models:** pure data containers, no constructors, no validation logic. Check for shared base classes
-- **Negative tests:** `[Ignore]` attribute with explanation for API known bugs
-- **Access modifiers:** narrowest possible — private > protected > public
-- **Params:** Use `ParamType` enum for request parameters — never magic strings
+- **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers or strings — see `Rules/code.md`
+- **Code style:** error handling, LINQ, strings, null safety — see `Rules/code-style.md`
+- **Categories:** `[Category("{Service}")]` on class; test category on every method — see `Rules/categories.md`
+- **Non-existent IDs:** Dynamic only — GET all → `maxId + 1` — see `Rules/test-practices.md`
+- **Assertions:** FluentAssertions only — see `Rules/assertions.md`
+- **Models:** suffix Model/Request, attributes on separate lines, pure data containers — see `Rules/models.md`
+- **Config:** Use `{Service}Endpoints.*` from Endpoints file — see `Rules/config.md`
+- **Comments:** No comments unless regex or non-obvious WHY — see `Rules/comments.md`
+- **Negative tests:** `[Ignore]` with explanation for API known bugs — see `Rules/test-practices.md`
+- **Access modifiers:** narrowest possible — private > protected > public — see `Rules/code.md`
+- **Request/Response comparison:** Use `ShouldMatchRequest()` for POST/PATCH — see `Rules/assertions.md`
 
 ### Step 6: Safety Check
 
@@ -275,3 +277,4 @@ Show:
 | 1.0 | 2026-06-25 | Initial commit | Алексей |
 | 1.1 | 2026-06-25 | Added Purpose, Variable Placeholders table, Output Format Instruction, Peer Review | Алексей |
 | 1.2 | 2026-06-25 | Made service-agnostic: removed hardcoded FakeStore/JsonPlaceholder, added File Convention table, dynamic base class discovery | Алексей |
+| 1.3 | 2026-02-21 | Added Observable Behaviour document check in Step 1 — read `documentation/{Service}ObservableBehaviour.md` as primary source for test design | Алексей |

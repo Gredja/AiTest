@@ -221,7 +221,9 @@ Rules/
 ```
 documentation/
 ├── FILE_STRUCTURE.md
+├── GitHubObservableBehaviour.md  # Observable behaviour for GitHub API GET endpoints
 ├── GitHubTestPlan.md             # GitHub API + E2E test plan
+├── GitHubTestingStructure.md     # Testing structure: scope, risks, entry/exit criteria
 ├── Katas/
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md
