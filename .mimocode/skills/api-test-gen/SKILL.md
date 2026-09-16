@@ -218,6 +218,26 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 - Never hardcode 999 or any static number
 - If API returns 200 instead of 404 — use `[Ignore]` with explanation
 
+**Optional Setup/Teardown for efficiency:**
+- Use `[OneTimeSetUp]` to fetch shared data once (e.g. `maxId` for dynamic negatives, item list for field validation)
+- Store in `private` fields — reuse across tests in the class
+- Avoids repeated `GET all` calls in every negative test
+- Example:
+```csharp
+private List<{Endpoint}Model> _allItems;
+private int _maxId;
+
+[OneTimeSetUp]
+public async Task OneTimeSetup()
+{
+    var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+    _allItems = response.Data!;
+    _maxId = _allItems.Max(x => x.Id);
+}
+```
+- Do NOT use `[SetUp]`/`[TearDown]` for read-only tests — each test should be independent
+- `[SetUp]`/`[TearDown]` are for E2E tests with write operations — see `/e2e-test-gen`
+
 ### Step 5: Follow All Rules
 
 - **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers or strings — see `Rules/code.md`
