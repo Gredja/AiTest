@@ -24,6 +24,13 @@ FluentAssertions (not NUnit Assert).
 - Check response time: `stopwatch.ElapsedMilliseconds.Should().BeLessThan(MaxResponseTimeMs)`
 - Check error message: `response.Data!.Message.Should().Be("Not Found")` — for 404 responses
 
+## JSON response parsing
+
+- Always parse JSON responses into typed models — never use `JsonElement` + `TryGetProperty` in tests
+- Create a model class for every JSON response structure (e.g. `RateLimitModel`, `RateLimitSection`)
+- Models live in `Core/Models/{Service}/` with proper nesting for nested JSON objects
+- Use `response.Data!.Property` to assert — not raw JSON navigation
+
 ## Request/Response comparison
 
 - Use `AssertHelper.ShouldMatchRequest<TRequest, TResponse>()` after POST/PATCH

@@ -111,6 +111,9 @@ Core/
 │   │   ├── LabelModel.cs
 │   │   ├── PullRequestBranchModel.cs
 │   │   ├── PullRequestModel.cs
+│   │   ├── RateLimitModel.cs
+│   │   ├── RateLimitResources.cs
+│   │   ├── RateLimitSection.cs
 │   │   ├── ReleaseModel.cs
 │   │   ├── RepositoryModel.cs
 │   │   ├── TagModel.cs

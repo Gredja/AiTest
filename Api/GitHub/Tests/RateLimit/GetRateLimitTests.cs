@@ -2,8 +2,8 @@ using RestSharp;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
+using Core.Models.GitHub;
 using System.Net;
-using System.Text.Json;
 using FluentAssertions;
 using TestAdapter;
 
@@ -19,22 +19,19 @@ public class GetRateLimitTests : GitHubTestBase
     [Description("6.1 GET /rate_limit returns 200 OK")]
     public async Task GetRateLimit_ReturnsOk()
     {
-        var response = await Get<object>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
     [Category("Regression")]
-    [Description("6.2 Response has rate limit remaining > 0")]
+    [Description("6.2 Rate limit remaining is positive")]
     public async Task GetRateLimit_RemainingIsPositive()
     {
-        var response = await Get<object>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
 
-        var remaining = response.Headers!.FirstOrDefault(h => h.Name == "X-RateLimit-Remaining");
-        remaining.Should().NotBeNull();
-        var remainingValue = remaining!.Value!.ToString()!;
-        int.Parse(remainingValue).Should().BeGreaterThan(0);
+        response.Data!.Rate.Remaining.Should().BeGreaterThan(0);
     }
 
     [Test]
@@ -42,12 +39,9 @@ public class GetRateLimitTests : GitHubTestBase
     [Description("6.3 Rate limit reset is a future timestamp")]
     public async Task GetRateLimit_ResetIsFuture()
     {
-        var response = await Get<object>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
 
-        var reset = response.Headers!.FirstOrDefault(h => h.Name == "X-RateLimit-Reset");
-        reset.Should().NotBeNull();
-        var resetValue = reset!.Value!.ToString()!;
-        var resetTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(resetValue));
+        var resetTime = DateTimeOffset.FromUnixTimeSeconds(response.Data!.Rate.Reset);
         resetTime.Should().BeAfter(DateTimeOffset.UtcNow);
     }
 
@@ -57,7 +51,7 @@ public class GetRateLimitTests : GitHubTestBase
     public async Task GetRateLimit_ResponseTimeIsAcceptable()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<object>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -68,12 +62,22 @@ public class GetRateLimitTests : GitHubTestBase
     [Description("6.5 Rate limit response has core and resources sections")]
     public async Task GetRateLimit_HasAllSections()
     {
-        var response = await Get<JsonElement>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.TryGetProperty("resources", out var resources).Should().BeTrue();
-        resources.TryGetProperty("core", out _).Should().BeTrue();
-        resources.TryGetProperty("search", out _).Should().BeTrue();
-        response.Data.TryGetProperty("rate", out _).Should().BeTrue();
+        response.Data.Should().NotBeNull();
+        response.Data!.Resources.Should().NotBeNull();
+        response.Data.Resources.Core.Should().NotBeNull();
+        response.Data.Resources.Search.Should().NotBeNull();
+        response.Data.Rate.Should().NotBeNull();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("6.6 Rate limit used is non-negative")]
+    public async Task GetRateLimit_UsedIsNonNegative()
+    {
+        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
+
+        response.Data!.Rate.Used.Should().BeGreaterThanOrEqualTo(0);
     }
 }

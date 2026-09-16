@@ -245,6 +245,7 @@ public async Task OneTimeSetup()
 - **Categories:** `[Category("{Service}")]` on class; test category on every method — see `Rules/categories.md`
 - **Non-existent IDs:** Dynamic only — GET all → `maxId + 1` — see `Rules/test-practices.md`
 - **Assertions:** FluentAssertions only — see `Rules/assertions.md`
+- **JSON parsing:** Always parse responses into typed models — never use `JsonElement` + `TryGetProperty` in tests. Create model for every nested JSON structure — see `Rules/assertions.md`
 - **Models:** suffix Model/Request, attributes on separate lines, pure data containers — see `Rules/models.md`
 - **Config:** Use `{Service}Endpoints.*` from Endpoints file — see `Rules/config.md`
 - **Comments:** No comments unless regex or non-obvious WHY — see `Rules/comments.md`
