@@ -80,4 +80,36 @@ public class GetAllProductsTests : RequestHelper
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount(FakeStoreEndpoints.ExpectedProductCount);
     }
+
+    [Test]
+    [Category("Regression")]
+    [Description("1.7 Each product has rating with rate between 0 and 5")]
+    public async Task GetAllProducts_EachProductHasValidRating()
+    {
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
+
+        response.Data.Should().OnlyContain(p => p.Rating.Rate >= FakeStoreEndpoints.RatingMin && p.Rating.Rate <= FakeStoreEndpoints.RatingMax);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("1.8 All product IDs are unique")]
+    public async Task GetAllProducts_AllIdsAreUnique()
+    {
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
+
+        var ids = response.Data!.Select(p => p.Id).ToList();
+        ids.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("1.9 Products contain all categories")]
+    public async Task GetAllProducts_ContainsAllCategories()
+    {
+        var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
+
+        var categories = response.Data!.Select(p => p.Category).Distinct().ToList();
+        categories.Should().HaveCount(FakeStoreEndpoints.ExpectedCategoryCount2);
+    }
 }

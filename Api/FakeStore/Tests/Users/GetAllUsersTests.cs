@@ -80,4 +80,15 @@ public class GetAllUsersTests : RequestHelper
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount(FakeStoreEndpoints.ExpectedUserCount);
     }
+
+    [Test]
+    [Category("Regression")]
+    [Description("3.7 All user IDs are unique")]
+    public async Task GetAllUsers_AllIdsAreUnique()
+    {
+        var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
+
+        var ids = response.Data!.Select(u => u.Id).ToList();
+        ids.Should().OnlyHaveUniqueItems();
+    }
 }

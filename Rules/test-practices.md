@@ -85,6 +85,7 @@ Priority: `1` = must have, `2` = nice to have
 - Delete clearly wrong cases
 - Deduplicate near-duplicates
 - Re-tag mis-categorised tests
+- **Check for magic numbers/strings** — extract to constants in `{Service}Endpoints.cs` before writing test code (see `Rules/code.md`, `Rules/code-style.md`)
 
 **Step 4: Enforce negative floor** — minimum 5 negatives per endpoint
 - If fewer than 5: generate more, each exercising a different failure mode
@@ -94,3 +95,5 @@ Priority: `1` = must have, `2` = nice to have
 
 **Expected yield per endpoint:** ~8-14 tests (5-6 happy, 5-6 negative, 2-3 edge)
 **Never:** less than 3 tests per endpoint, less than 5 negatives per endpoint
+
+**Don't duplicate attribute checks:** `ShouldHaveValidFields()` covers `[RequiredField]`, `[PositiveId]`, `[ValueRange]`. Per-field assertions only for things attributes CAN'T cover: unique IDs, boundary values, idempotency, cross-field invariants, category counts.

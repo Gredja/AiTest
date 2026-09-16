@@ -91,4 +91,42 @@ public class GetProductByIdTests : RequestHelper
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
+
+    [Test]
+    [Category("Regression")]
+    [Description("2.8 Get product by ID = 5 returns valid product")]
+    public async Task GetProductById_Id5_ReturnsValidProduct()
+    {
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.BoundaryProductId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.Id.Should().Be(FakeStoreEndpoints.BoundaryProductId);
+        response.Data!.ShouldHaveValidFields();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("2.9 Get product by ID = 20 (last) returns valid product")]
+    public async Task GetProductById_Id20_ReturnsValidProduct()
+    {
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.LastProductId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.Id.Should().Be(FakeStoreEndpoints.LastProductId);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("2.10 Get product by ID = 1 returns same product on repeated calls")]
+    public async Task GetProductById_RepeatedCalls_ReturnSameProduct()
+    {
+        var response1 = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
+        var response2 = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
+
+        response1.Data!.Id.Should().Be(response2.Data!.Id);
+        response1.Data!.Title.Should().Be(response2.Data!.Title);
+        response1.Data!.Price.Should().Be(response2.Data!.Price);
+    }
 }

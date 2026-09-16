@@ -80,4 +80,41 @@ public class GetUserByIdTests : RequestHelper
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
+
+    [Test]
+    [Category("Regression")]
+    [Description("4.7 Get user by ID = 5 returns valid user")]
+    public async Task GetUserById_Id5_ReturnsValidUser()
+    {
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.BoundaryUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Id.Should().Be(FakeStoreEndpoints.BoundaryUserId);
+        response.Data!.ShouldHaveValidFields();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("4.8 Get user by ID = 10 (last) returns valid user")]
+    public async Task GetUserById_Id10_ReturnsValidUser()
+    {
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.LastUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Id.Should().Be(FakeStoreEndpoints.LastUserId);
+        response.Data!.ShouldHaveValidFields();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("4.9 User by ID = 1 returns same user on repeated calls")]
+    public async Task GetUserById_RepeatedCalls_ReturnSameUser()
+    {
+        var response1 = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.TestUserId));
+        var response2 = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.TestUserId));
+
+        response1.Data!.Id.Should().Be(response2.Data!.Id);
+        response1.Data!.Email.Should().Be(response2.Data!.Email);
+        response1.Data!.Username.Should().Be(response2.Data!.Username);
+    }
 }
