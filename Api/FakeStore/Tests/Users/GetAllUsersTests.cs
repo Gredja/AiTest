@@ -14,6 +14,7 @@ namespace Api.FakeStore.Users;
 [Category("FakeStore")]
 public class GetAllUsersTests : RequestHelper
 {
+    private const int ExpectedUserCount = 10;
     [Test]
     [Category("HealthCheck")]
     [Description("3.1 Status code is 200")]
@@ -78,7 +79,7 @@ public class GetAllUsersTests : RequestHelper
         var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(FakeStoreEndpoints.ExpectedUserCount);
+        response.Data.Should().HaveCount(ExpectedUserCount);
     }
 
     [Test]

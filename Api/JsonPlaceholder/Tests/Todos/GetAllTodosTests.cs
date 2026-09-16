@@ -14,6 +14,7 @@ namespace Api.JsonPlaceholder.Todos;
 [Category("JsonPlaceholder")]
 public class GetAllTodosTests : JsonPlaceholderRequestHelper
 {
+    private const int ExpectedTodoCount = 200;
     [Test]
     [Category("HealthCheck")]
     [Description("7.1 Status code is 200")]
@@ -78,6 +79,17 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(JsonPlaceholderEndpoints.ExpectedTodoCount);
+        response.Data.Should().HaveCount(ExpectedTodoCount);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("7.7 All todo IDs are unique")]
+    public async Task GetAllTodos_AllIdsAreUnique()
+    {
+        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
+
+        var ids = response.Data!.Select(t => t.Id).ToList();
+        ids.Should().OnlyHaveUniqueItems();
     }
 }

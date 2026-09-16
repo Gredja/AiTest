@@ -11,13 +11,6 @@ public static class JsonPlaceholderEndpoints
     public static int ExpectedPhotoCount => TestConfig.ExpectedPhotoCount;
     public static int ExpectedUserCount => TestConfig.JsonPlaceholderExpectedUserCount;
 
-    public const int TestPostId = 1;
-    public const int TestUserId = 1;
-    public const int TestAlbumId = 1;
-    public const int TestTodoId = 1;
-    public const int TestCommentId = 1;
-    public const int TestPhotoId = 1;
-
     public const string Posts = "/posts";
     public const string PostsById = "/posts/{id}";
     public const string PostsByUser = "/posts?userId={userId}";

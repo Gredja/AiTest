@@ -14,13 +14,14 @@ namespace Api.JsonPlaceholder.Posts;
 [Category("JsonPlaceholder")]
 public class DeletePostTests : JsonPlaceholderRequestHelper
 {
+    private const int TestPostId = 1;
     [Test]
     [Category("HealthCheck")]
     [Description("6.1 DELETE returns 200 OK")]
     public async Task DeletePost_ReturnsOk()
     {
         var response = await Delete<PostModel>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(JsonPlaceholderEndpoints.TestPostId));
+            PostIdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -31,8 +32,35 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     public async Task DeletePost_ReturnsEmptyObject()
     {
         var response = await Delete<PostModel>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(JsonPlaceholderEndpoints.TestPostId));
+            PostIdParam(TestPostId));
 
         response.Data.Should().NotBeNull();
+    }
+
+    [Test]
+    [Ignore("JsonPlaceholder mock: DELETE returns 200 but does not actually delete — GET still returns the resource")]
+    [Category("Regression")]
+    [Description("6.3 Deleted post returns 404 on subsequent GET")]
+    public async Task DeletePost_DeletedPostReturnsNotFound()
+    {
+        var deleteResponse = await Delete<PostModel>(JsonPlaceholderEndpoints.PostsById,
+            PostIdParam(TestPostId));
+
+        var getResponse = await Get<PostModel>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+            PostIdParam(TestPostId));
+
+        getResponse.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Ignore("JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent")]
+    [Category("Negative")]
+    [Description("6.4 DELETE non-existent ID returns error")]
+    public async Task DeletePost_NonExistentId_ReturnsError()
+    {
+        var response = await Delete<PostModel>(JsonPlaceholderEndpoints.PostsById,
+            PostIdParam(0));
+
+        ((int)response.StatusCode).Should().BeGreaterThanOrEqualTo(400);
     }
 }

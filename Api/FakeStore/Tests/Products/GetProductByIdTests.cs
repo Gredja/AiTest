@@ -14,12 +14,15 @@ namespace Api.FakeStore.Products;
 [Category("FakeStore")]
 public class GetProductByIdTests : RequestHelper
 {
+    private const int TestProductId = 1;
+    private const int BoundaryProductId = 5;
+    private const int LastProductId = 20;
     [Test]
     [Category("HealthCheck")]
     [Description("2.1 Get product by ID = 1 — status code 200")]
     public async Task GetProductById_ValidId_ReturnsOk()
     {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(TestProductId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -29,7 +32,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.2 Response body is not empty")]
     public async Task GetProductById_ValidId_ReturnsNonEmptyBody()
     {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(TestProductId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -40,7 +43,7 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.3 Response has all expected fields")]
     public async Task GetProductById_ValidId_HasAllExpectedFields()
     {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(TestProductId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -50,9 +53,9 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.4 `id` in response matches requested ID")]
     public async Task GetProductById_ValidId_IdMatchesRequested()
     {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(TestProductId));
 
-        response.Data!.Id.Should().Be(FakeStoreEndpoints.TestProductId);
+        response.Data!.Id.Should().Be(TestProductId);
     }
 
     [Test]
@@ -97,11 +100,11 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.8 Get product by ID = 5 returns valid product")]
     public async Task GetProductById_Id5_ReturnsValidProduct()
     {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.BoundaryProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(BoundaryProductId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
-        response.Data!.Id.Should().Be(FakeStoreEndpoints.BoundaryProductId);
+        response.Data!.Id.Should().Be(BoundaryProductId);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -110,11 +113,11 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.9 Get product by ID = 20 (last) returns valid product")]
     public async Task GetProductById_Id20_ReturnsValidProduct()
     {
-        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.LastProductId));
+        var response = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(LastProductId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
-        response.Data!.Id.Should().Be(FakeStoreEndpoints.LastProductId);
+        response.Data!.Id.Should().Be(LastProductId);
     }
 
     [Test]
@@ -122,8 +125,8 @@ public class GetProductByIdTests : RequestHelper
     [Description("2.10 Get product by ID = 1 returns same product on repeated calls")]
     public async Task GetProductById_RepeatedCalls_ReturnSameProduct()
     {
-        var response1 = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
-        var response2 = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(FakeStoreEndpoints.TestProductId));
+        var response1 = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(TestProductId));
+        var response2 = await Get<ProductModel>(FakeStoreEndpoints.ProductsById, Method.Get, IdParam(TestProductId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);

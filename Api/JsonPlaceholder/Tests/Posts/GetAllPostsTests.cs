@@ -14,6 +14,7 @@ namespace Api.JsonPlaceholder.Posts;
 [Category("JsonPlaceholder")]
 public class GetAllPostsTests : JsonPlaceholderRequestHelper
 {
+    private const int ExpectedPostCount = 100;
     [Test]
     [Category("HealthCheck")]
     [Description("1.1 Status code is 200")]
@@ -78,6 +79,27 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(JsonPlaceholderEndpoints.ExpectedPostCount);
+        response.Data.Should().HaveCount(ExpectedPostCount);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("1.10 All post IDs are unique")]
+    public async Task GetAllPosts_AllIdsAreUnique()
+    {
+        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+
+        var ids = response.Data!.Select(p => p.Id).ToList();
+        ids.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("1.11 Each post has userId > 0")]
+    public async Task GetAllPosts_EachPostHasValidUserId()
+    {
+        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+
+        response.Data.Should().OnlyContain(p => p.UserId > 0);
     }
 }

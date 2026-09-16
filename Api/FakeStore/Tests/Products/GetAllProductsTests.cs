@@ -14,6 +14,9 @@ namespace Api.FakeStore.Products;
 [Category("FakeStore")]
 public class GetAllProductsTests : RequestHelper
 {
+    private const double RatingMin = 0;
+    private const double RatingMax = 5;
+    private const int ExpectedCategoryCount = 4;
     [Test]
     [Category("HealthCheck")]
     [Description("1.1 Status code is 200")]
@@ -88,7 +91,7 @@ public class GetAllProductsTests : RequestHelper
     {
         var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
-        response.Data.Should().OnlyContain(p => p.Rating.Rate >= FakeStoreEndpoints.RatingMin && p.Rating.Rate <= FakeStoreEndpoints.RatingMax);
+        response.Data.Should().OnlyContain(p => p.Rating.Rate >= RatingMin && p.Rating.Rate <= RatingMax);
     }
 
     [Test]
@@ -110,6 +113,6 @@ public class GetAllProductsTests : RequestHelper
         var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         var categories = response.Data!.Select(p => p.Category).Distinct().ToList();
-        categories.Should().HaveCount(FakeStoreEndpoints.ExpectedCategoryCount2);
+        categories.Should().HaveCount(ExpectedCategoryCount);
     }
 }

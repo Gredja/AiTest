@@ -13,7 +13,8 @@ namespace Api.JsonPlaceholder.Posts;
 [Category("JsonPlaceholder")]
 public class CreatePostTests : JsonPlaceholderRequestHelper
 {
-    private static readonly PostRequest _testPost = new() { UserId = JsonPlaceholderEndpoints.TestUserId, Title = "Test Post", Body = "Test Body" };
+    private const int TestUserId = 1;
+    private static readonly PostRequest _testPost = new() { UserId = TestUserId, Title = "Test Post", Body = "Test Body" };
 
     [Test]
     [Category("HealthCheck")]
@@ -44,7 +45,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
 
         response.Data!.Title.Should().Be("Test Post");
         response.Data!.Body.Should().Be("Test Body");
-        response.Data!.UserId.Should().Be(JsonPlaceholderEndpoints.TestUserId);
+        response.Data!.UserId.Should().Be(TestUserId);
     }
 
     [Test]
@@ -55,5 +56,49 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
         var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
 
         response.Data!.Id.Should().BeGreaterThan(0);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("4.5 Response userId matches request")]
+    public async Task CreatePost_UserIdMatchesRequest()
+    {
+        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
+
+        response.Data!.UserId.Should().Be(TestUserId);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("4.6 Response matches request via ShouldMatchRequest")]
+    public async Task CreatePost_ShouldMatchRequest()
+    {
+        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
+
+        response.Data!.ShouldMatchRequest(_testPost);
+    }
+
+    [Test]
+    [Ignore("JsonPlaceholder mock: accepts any body, returns 201 even for empty request")]
+    [Category("Negative")]
+    [Description("4.7 Empty body returns error")]
+    public async Task CreatePost_EmptyBody_ReturnsError()
+    {
+        var emptyPost = new PostRequest();
+        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, emptyPost);
+
+        ((int)response.StatusCode).Should().BeGreaterThanOrEqualTo(400);
+    }
+
+    [Test]
+    [Category("Edge")]
+    [Description("4.8 Special chars in title are accepted")]
+    public async Task CreatePost_SpecialCharsInTitle_ReturnsCreated()
+    {
+        var specialPost = new PostRequest { UserId = TestUserId, Title = "Test <html>&\"chars\"", Body = "Body" };
+        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, specialPost);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
+        response.Data!.Title.Should().Be("Test <html>&\"chars\"");
     }
 }

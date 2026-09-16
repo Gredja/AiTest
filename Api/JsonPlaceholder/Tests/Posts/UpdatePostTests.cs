@@ -14,7 +14,9 @@ namespace Api.JsonPlaceholder.Posts;
 [Category("JsonPlaceholder")]
 public class UpdatePostTests : JsonPlaceholderRequestHelper
 {
-    private static readonly PostRequest _putBody = new() { UserId = JsonPlaceholderEndpoints.TestUserId, Title = "Updated Title", Body = "Updated Body" };
+    private const int TestPostId = 1;
+    private const int TestUserId = 1;
+    private static readonly PostRequest _putBody = new() { UserId = TestUserId, Title = "Updated Title", Body = "Updated Body" };
     private static readonly PostRequest _patchBody = new() { Title = "Patched Title" };
 
     [Test]
@@ -23,7 +25,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Put_ReturnsOk()
     {
         var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _putBody,
-            PostIdParam(JsonPlaceholderEndpoints.TestPostId));
+            PostIdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -34,7 +36,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Put_HasValidFields()
     {
         var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _putBody,
-            PostIdParam(JsonPlaceholderEndpoints.TestPostId));
+            PostIdParam(TestPostId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -45,7 +47,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Patch_ReturnsOk()
     {
         var response = await Patch<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _patchBody,
-            PostIdParam(JsonPlaceholderEndpoints.TestPostId));
+            PostIdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -56,8 +58,54 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Patch_ReturnsUpdatedTitle()
     {
         var response = await Patch<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _patchBody,
-            PostIdParam(JsonPlaceholderEndpoints.TestPostId));
+            PostIdParam(TestPostId));
 
         response.Data!.Title.Should().Be("Patched Title");
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("5.5 PUT response matches request via ShouldMatchRequest")]
+    public async Task UpdatePost_Put_ShouldMatchRequest()
+    {
+        var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _putBody,
+            PostIdParam(TestPostId));
+
+        response.Data!.ShouldMatchRequest(_putBody);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("5.6 PUT preserves original ID")]
+    public async Task UpdatePost_Put_PreservesOriginalId()
+    {
+        var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _putBody,
+            PostIdParam(TestPostId));
+
+        response.Data!.Id.Should().Be(TestPostId);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("5.7 PUT non-existent ID returns error")]
+    public async Task UpdatePost_Put_NonExistentId_ReturnsError()
+    {
+        var response = await Put<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _putBody,
+            PostIdParam(0));
+
+        ((int)response.StatusCode).Should().BeGreaterThanOrEqualTo(400);
+    }
+
+    [Test]
+    [Ignore("JsonPlaceholder mock: PATCH does not merge with existing data — returns only sent fields + ID, rest is null")]
+    [Category("Regression")]
+    [Description("5.8 PATCH only changes specified fields")]
+    public async Task UpdatePost_Patch_OnlyChangesSpecifiedFields()
+    {
+        var response = await Patch<PostRequest, PostModel>(JsonPlaceholderEndpoints.PostsById, _patchBody,
+            PostIdParam(TestPostId));
+
+        response.Data!.Title.Should().Be("Patched Title");
+        response.Data!.Body.Should().NotBeNull();
     }
 }

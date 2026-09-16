@@ -14,13 +14,14 @@ namespace Api.JsonPlaceholder.Todos;
 [Category("JsonPlaceholder")]
 public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 {
+    private const int TestUserId = 1;
     [Test]
     [Category("HealthCheck")]
     [Description("8.1 Status code is 200")]
     public async Task GetTodosByUserId_ReturnsOk()
     {
         var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.TodosByUser, Method.Get,
-            UserIdParam(JsonPlaceholderEndpoints.TestUserId));
+            UserIdParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -31,7 +32,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     public async Task GetTodosByUserId_ReturnsNonEmptyList()
     {
         var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.TodosByUser, Method.Get,
-            UserIdParam(JsonPlaceholderEndpoints.TestUserId));
+            UserIdParam(TestUserId));
 
         response.Data.Should().NotBeEmpty();
     }
@@ -42,7 +43,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     public async Task GetTodosByUserId_EachItemHasValidFields()
     {
         var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.TodosByUser, Method.Get,
-            UserIdParam(JsonPlaceholderEndpoints.TestUserId));
+            UserIdParam(TestUserId));
 
         foreach (var todo in response.Data!)
         {
@@ -56,9 +57,9 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     public async Task GetTodosByUserId_AllBelongToSameUser()
     {
         var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.TodosByUser, Method.Get,
-            UserIdParam(JsonPlaceholderEndpoints.TestUserId));
+            UserIdParam(TestUserId));
 
-        response.Data!.Should().OnlyContain(t => t.UserId == JsonPlaceholderEndpoints.TestUserId);
+        response.Data!.Should().OnlyContain(t => t.UserId == TestUserId);
     }
 
     [Test]
@@ -72,6 +73,33 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 
         var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.TodosByUser, Method.Get,
             UserIdParam(nonExistentUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().BeEmpty();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("8.6 UserId=5 returns different subset than UserId=1")]
+    public async Task GetTodosByUserId_DifferentUser_ReturnsDifferentSubset()
+    {
+        var response1 = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.TodosByUser, Method.Get,
+            UserIdParam(TestUserId));
+        var response5 = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.TodosByUser, Method.Get,
+            UserIdParam(5));
+
+        var ids1 = response1.Data!.Select(t => t.Id).ToList();
+        var ids5 = response5.Data!.Select(t => t.Id).ToList();
+        ids1.Should().NotBeEquivalentTo(ids5);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8.7 UserId=0 returns empty list")]
+    public async Task GetTodosByUserId_ZeroUserId_ReturnsEmpty()
+    {
+        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.TodosByUser, Method.Get,
+            UserIdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();

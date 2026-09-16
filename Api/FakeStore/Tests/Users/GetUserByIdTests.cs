@@ -14,12 +14,15 @@ namespace Api.FakeStore.Users;
 [Category("FakeStore")]
 public class GetUserByIdTests : RequestHelper
 {
+    private const int TestUserId = 1;
+    private const int BoundaryUserId = 5;
+    private const int LastUserId = 10;
     [Test]
     [Category("HealthCheck")]
     [Description("4.1 Get user by ID = 1 — status code 200")]
     public async Task GetUserById_ValidId_ReturnsOk()
     {
-        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -29,7 +32,7 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.2 Response has all expected fields")]
     public async Task GetUserById_ValidId_HasAllExpectedFields()
     {
-        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(TestUserId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -39,9 +42,9 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.3 `id` in response matches requested ID")]
     public async Task GetUserById_ValidId_IdMatchesRequested()
     {
-        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.TestUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(TestUserId));
 
-        response.Data!.Id.Should().Be(FakeStoreEndpoints.TestUserId);
+        response.Data!.Id.Should().Be(TestUserId);
     }
 
     [Test]
@@ -86,10 +89,10 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.7 Get user by ID = 5 returns valid user")]
     public async Task GetUserById_Id5_ReturnsValidUser()
     {
-        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.BoundaryUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(BoundaryUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Id.Should().Be(FakeStoreEndpoints.BoundaryUserId);
+        response.Data!.Id.Should().Be(BoundaryUserId);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -98,10 +101,10 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.8 Get user by ID = 10 (last) returns valid user")]
     public async Task GetUserById_Id10_ReturnsValidUser()
     {
-        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.LastUserId));
+        var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(LastUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Id.Should().Be(FakeStoreEndpoints.LastUserId);
+        response.Data!.Id.Should().Be(LastUserId);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -110,8 +113,8 @@ public class GetUserByIdTests : RequestHelper
     [Description("4.9 User by ID = 1 returns same user on repeated calls")]
     public async Task GetUserById_RepeatedCalls_ReturnSameUser()
     {
-        var response1 = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.TestUserId));
-        var response2 = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(FakeStoreEndpoints.TestUserId));
+        var response1 = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(TestUserId));
+        var response2 = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, IdParam(TestUserId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Email.Should().Be(response2.Data!.Email);

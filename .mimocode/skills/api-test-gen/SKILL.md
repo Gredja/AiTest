@@ -129,7 +129,7 @@ new() { Type = ParamType.Parameter, Key = "userId", Value = userId }
 private static readonly PostModel TestPost = new() { UserId = 1, Title = "Test Post", Body = "Test Body" };
 ```
 
-**Pattern:** Use `ShouldHaveValidFields()` via attributes — NOT per-field helpers.
+**Pattern:** Use `ShouldHaveValidFields()` via attributes — NOT per-field helpers. Use `ShouldMatchRequest()` for request/response comparison — replaces manual field-by-field assertions.
 
 ```csharp
 using NUnit.Framework;

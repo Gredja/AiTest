@@ -11,17 +11,6 @@ public static class FakeStoreEndpoints
     public static int ExpectedProductsInCategoryCount => TestConfig.ExpectedProductsInCategoryCount;
     public static string TestCategoryName => TestConfig.TestCategoryName;
 
-    public const int TestProductId = 1;
-    public const int TestUserId = 1;
-
-    public const int LastProductId = 20;
-    public const int LastUserId = 10;
-    public const int BoundaryProductId = 5;
-    public const int BoundaryUserId = 5;
-    public const int ExpectedCategoryCount2 = 4;
-    public const double RatingMin = 0;
-    public const double RatingMax = 5;
-
     public const string Products = "/products";
     public const string ProductsById = "/products/{id}";
     public const string ProductsCategories = "/products/categories";

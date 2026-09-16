@@ -272,6 +272,7 @@ MiMoCode:
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
 | `/api-test-gen` | Генерирует тесты для нового API endpoint (читает Observable Behaviour) |
+| `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations |
 | `/gredja-rules` | Показывает правила проекта |
 
 Просто напиши `/test` в чате с MiMoCode — и он запустит тесты.
@@ -363,6 +364,13 @@ git checkout -b features/add-user-tests
 2. Он прочитает `documentation/{Service}ObservableBehaviour.md` (или создаст из шаблона)
 3. Напишет тестовый класс по правилам проекта с seed-методологией (5 seeds → ~15-20 тестов)
 4. Ты проверяешь и говоришь "закоммить" или вносишь правки
+
+### "Добавить E2E тест для write operations"
+
+1. Напиши в MiMoCode: "Создай E2E тесты для POST /repos/{owner}/{repo}/issues"
+2. Он прочитает Observable Behaviour (POST/PATCH/DELETE секции)
+3. Сгенерирует тесты с Setup (создание ресурса) и Teardown (удаление)
+4. Каждый тест независим — создаёт свой ресурс и удаляет после себя
 
 ### "Запустить тесты и посмотреть отчёт"
 
