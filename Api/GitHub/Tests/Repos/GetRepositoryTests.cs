@@ -22,7 +22,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_ReturnsOk()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -34,7 +34,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_HasValidFields()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
 
         response.Data!.ShouldHaveValidFields();
@@ -48,7 +48,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_ContentTypeIsJson()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
@@ -61,7 +61,7 @@ public class GetRepositoryTests : GitHubTestBase
     {
         var (owner, repo) = ParseRepo();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
         stopwatch.Stop();
 
@@ -73,7 +73,7 @@ public class GetRepositoryTests : GitHubTestBase
     [Description("1.5 Non-existent repo returns 404")]
     public async Task GetRepository_NonExistentRepo_ReturnsNotFound()
     {
-        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(TestUserId, GitHubEndpoints.NonExistentRepo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -84,7 +84,7 @@ public class GetRepositoryTests : GitHubTestBase
     [Description("1.6 Non-existent owner returns 404")]
     public async Task GetRepository_NonExistentOwner_ReturnsNotFound()
     {
-        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(GitHubEndpoints.NonExistentUser, "AiTest"));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -96,7 +96,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_NameMatchesRequest()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
 
         response.Data!.Name.Should().Be(repo);
@@ -109,9 +109,9 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_RepeatedCalls_ReturnSameData()
     {
         var (owner, repo) = ParseRepo();
-        var response1 = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response1 = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
-        var response2 = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+        var response2 = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);

@@ -20,7 +20,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     [Description("7.1 Status code is 200")]
     public async Task GetAllTodos_ReturnsOk()
     {
-        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -30,7 +30,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     [Description("7.2 Content-Type is application/json")]
     public async Task GetAllTodos_ContentTypeIsJson()
     {
-        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos, Method.Get);
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -40,7 +40,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     [Description("7.3 Response body is not empty")]
     public async Task GetAllTodos_ReturnsNonEmptyList()
     {
-        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -51,7 +51,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     [Description("7.4 Each item has valid fields")]
     public async Task GetAllTodos_EachItemHasValidFields()
     {
-        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos, Method.Get);
 
         foreach (var todo in response.Data!)
         {
@@ -65,7 +65,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     public async Task GetAllTodos_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos, Method.Get);
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -76,7 +76,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     [Description("7.6 Returns exactly 200 todos")]
     public async Task GetAllTodos_ReturnsExpectedCount()
     {
-        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount(ExpectedTodoCount);
@@ -87,7 +87,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     [Description("7.7 All todo IDs are unique")]
     public async Task GetAllTodos_AllIdsAreUnique()
     {
-        var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos, Method.Get);
 
         var ids = response.Data!.Select(t => t.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();

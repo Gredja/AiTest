@@ -14,14 +14,14 @@ namespace Api.JsonPlaceholder.Posts;
 public class CreatePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
-    private static readonly PostRequest _testPost = new() { UserId = TestUserId, Title = "Test Post", Body = "Test Body" };
+    private static readonly PostModelRequest _testPost = new() { UserId = TestUserId, Title = "Test Post", Body = "Test Body" };
 
     [Test]
     [Category("HealthCheck")]
     [Description("4.1 POST returns 201 Created")]
     public async Task CreatePost_ReturnsCreated()
     {
-        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
     }
@@ -31,7 +31,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.2 Response has valid fields")]
     public async Task CreatePost_HasValidFields()
     {
-        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -41,7 +41,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.3 Response contains correct data")]
     public async Task CreatePost_ReturnsCorrectData()
     {
-        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
         response.Data!.Title.Should().Be("Test Post");
         response.Data!.Body.Should().Be("Test Body");
@@ -53,7 +53,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.4 Response has generated ID")]
     public async Task CreatePost_HasGeneratedId()
     {
-        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
         response.Data!.Id.Should().BeGreaterThan(0);
     }
@@ -63,7 +63,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.5 Response userId matches request")]
     public async Task CreatePost_UserIdMatchesRequest()
     {
-        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
         response.Data!.UserId.Should().Be(TestUserId);
     }
@@ -73,7 +73,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.6 Response matches request via ShouldMatchRequest")]
     public async Task CreatePost_ShouldMatchRequest()
     {
-        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
         response.Data!.ShouldMatchRequest(_testPost);
     }
@@ -84,8 +84,8 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.7 Empty body returns error")]
     public async Task CreatePost_EmptyBody_ReturnsError()
     {
-        var emptyPost = new PostRequest();
-        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, emptyPost);
+        var emptyPost = new PostModelRequest();
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, emptyPost);
 
         ((int)response.StatusCode).Should().BeGreaterThanOrEqualTo(400);
     }
@@ -97,8 +97,8 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.8 Special chars in title are accepted")]
     public async Task CreatePost_SpecialCharsInTitle_ReturnsCreated()
     {
-        var specialPost = new PostRequest { UserId = TestUserId, Title = SpecialCharsTitle, Body = "Body" };
-        var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, specialPost);
+        var specialPost = new PostModelRequest { UserId = TestUserId, Title = SpecialCharsTitle, Body = "Body" };
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, specialPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.Title.Should().Be(SpecialCharsTitle);

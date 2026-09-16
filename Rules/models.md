@@ -1,22 +1,29 @@
-﻿# Rules: Models
+# Rules: Models
 
 ## Types by purpose
 
-### Response models — suffix `Model`
+### Response models — suffix `ModelResponse`
 
 Describe JSON that the API **returns**. Used for deserialization of API responses.
 
 - Always includes `Id` field (server-generated)
-- May include nested models (e.g. `RatingModel` inside `ProductModel`)
+- May include nested models (e.g. `Rating` inside `ProductModelResponse`)
 - Match the full JSON structure from the API response
 
-### Request models — suffix `Request`
+### Request models — suffix `ModelRequest`
 
 Describe JSON that we **send** to the API. Used as request body for POST/PUT.
 
 - No `Id` field (server generates it)
 - Only fields the client must provide
 - For PUT — may include `Id` if the endpoint expects it in the body
+
+### Nested/supporting models — no suffix
+
+Models that are referenced by other models but not used directly in tests.
+
+- No `Model` suffix, no `Request`/`Response` suffix
+- Example: `Rating`, `UserName`, `Address`, `Geo`, `Commit`, `Label`
 
 ## Property rules
 
@@ -29,7 +36,8 @@ How to decide for value types: check the actual JSON response from the API. If t
 
 ## Naming
 
-- Model suffix for responses, Request suffix for requests
+- `ModelResponse` suffix for responses, `ModelRequest` suffix for requests
+- No suffix for nested/supporting models
 - No abbreviations in class names
 - **Readable property names**: If a JSON field name is ambiguous or requires domain knowledge to understand (e.g. `bs`, `pk`, `ts`), rename the C# property to a meaningful name and add `[JsonPropertyName("original")]` for deserialization. Well-known abbreviations (`Lat`, `Lng`, `Url`, `Id`) — keep as-is. Example: `Bs` → `BusinessSlogan` + `[JsonPropertyName("bs")]`
 

@@ -19,7 +19,7 @@ public class GetRateLimitTests : GitHubTestBase
     [Description("6.1 GET /rate_limit returns 200 OK")]
     public async Task GetRateLimit_ReturnsOk()
     {
-        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -29,7 +29,7 @@ public class GetRateLimitTests : GitHubTestBase
     [Description("6.2 Rate limit remaining is positive")]
     public async Task GetRateLimit_RemainingIsPositive()
     {
-        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit, Method.Get);
 
         response.Data!.Rate.Remaining.Should().BeGreaterThan(0);
     }
@@ -39,7 +39,7 @@ public class GetRateLimitTests : GitHubTestBase
     [Description("6.3 Rate limit reset is a future timestamp")]
     public async Task GetRateLimit_ResetIsFuture()
     {
-        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit, Method.Get);
 
         var resetTime = DateTimeOffset.FromUnixTimeSeconds(response.Data!.Rate.Reset);
         resetTime.Should().BeAfter(DateTimeOffset.UtcNow);
@@ -51,7 +51,7 @@ public class GetRateLimitTests : GitHubTestBase
     public async Task GetRateLimit_ResponseTimeIsAcceptable()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit, Method.Get);
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -62,7 +62,7 @@ public class GetRateLimitTests : GitHubTestBase
     [Description("6.5 Rate limit response has core and resources sections")]
     public async Task GetRateLimit_HasAllSections()
     {
-        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit, Method.Get);
 
         response.Data.Should().NotBeNull();
         response.Data!.Resources.Should().NotBeNull();
@@ -76,7 +76,7 @@ public class GetRateLimitTests : GitHubTestBase
     [Description("6.6 Rate limit used is non-negative")]
     public async Task GetRateLimit_UsedIsNonNegative()
     {
-        var response = await Get<RateLimitModel>(GitHubEndpoints.RateLimit, Method.Get);
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit, Method.Get);
 
         response.Data!.Rate.Used.Should().BeGreaterThanOrEqualTo(0);
     }

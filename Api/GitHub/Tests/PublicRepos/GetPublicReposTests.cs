@@ -20,7 +20,7 @@ public class GetPublicReposTests : GitHubTestBase
     [Description("8.1 GET /repositories returns 200 OK")]
     public async Task GetPublicRepos_ReturnsOk()
     {
-        var response = await Get<List<RepositoryModel>>(GitHubEndpoints.Repositories, Method.Get);
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -30,7 +30,7 @@ public class GetPublicReposTests : GitHubTestBase
     [Description("8.2 Each public repo has valid fields")]
     public async Task GetPublicRepos_HasValidFields()
     {
-        var response = await Get<List<RepositoryModel>>(GitHubEndpoints.Repositories, Method.Get);
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories, Method.Get);
 
         foreach (var repo in response.Data!)
         {
@@ -43,7 +43,7 @@ public class GetPublicReposTests : GitHubTestBase
     [Description("8.3 Pagination with since param limits results")]
     public async Task GetPublicRepos_PaginationWorks()
     {
-        var response = await Get<List<RepositoryModel>>(GitHubEndpoints.Repositories, Method.Get,
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories, Method.Get,
             new() { new() { Type = ParamType.Parameter, Key = "since", Value = 1 } });
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);

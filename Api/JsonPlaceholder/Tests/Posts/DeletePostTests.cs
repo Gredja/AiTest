@@ -20,7 +20,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     [Description("6.1 DELETE returns 200 OK")]
     public async Task DeletePost_ReturnsOk()
     {
-        var response = await Delete<PostModel>(JsonPlaceholderEndpoints.PostsById,
+        var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -31,7 +31,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     [Description("6.2 DELETE response is empty object")]
     public async Task DeletePost_ReturnsEmptyObject()
     {
-        var response = await Delete<PostModel>(JsonPlaceholderEndpoints.PostsById,
+        var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
 
         response.Data.Should().NotBeNull();
@@ -43,10 +43,10 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     [Description("6.3 Deleted post returns 404 on subsequent GET")]
     public async Task DeletePost_DeletedPostReturnsNotFound()
     {
-        var deleteResponse = await Delete<PostModel>(JsonPlaceholderEndpoints.PostsById,
+        var deleteResponse = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
 
-        var getResponse = await Get<PostModel>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var getResponse = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
             PostIdParam(TestPostId));
 
         getResponse.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -58,7 +58,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     [Description("6.4 DELETE non-existent ID returns error")]
     public async Task DeletePost_NonExistentId_ReturnsError()
     {
-        var response = await Delete<PostModel>(JsonPlaceholderEndpoints.PostsById,
+        var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(0));
 
         ((int)response.StatusCode).Should().BeGreaterThanOrEqualTo(400);

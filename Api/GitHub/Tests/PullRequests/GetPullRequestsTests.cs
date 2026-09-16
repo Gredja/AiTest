@@ -21,7 +21,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_ReturnsOk()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -33,7 +33,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_HasValidFields()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
 
         foreach (var pr in response.Data!)
@@ -48,7 +48,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_AllIdsAreUnique()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
 
         var ids = response.Data!.Select(pr => pr.Id).ToList();
@@ -61,7 +61,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_EachPRHasValidState()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
 
         response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateOpen || pr.State == GitHubEndpoints.StateClosed);
@@ -72,7 +72,7 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.10 Non-existent repo returns 404")]
     public async Task GetPullRequests_NonExistentRepo_ReturnsNotFound()
     {
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -84,7 +84,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_ContentTypeIsJson()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
@@ -96,7 +96,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_PaginationWorks()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             [.. RepoParam(owner, repo), .. PaginationParams(1, 5)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -110,7 +110,7 @@ public class GetPullRequestsTests : GitHubTestBase
     {
         var (owner, repo) = ParseRepo();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
         stopwatch.Stop();
 
@@ -123,7 +123,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_FilterByStateOpen()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateOpen)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -139,7 +139,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_FilterByStateClosed()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateClosed)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);

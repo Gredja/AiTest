@@ -1,7 +1,6 @@
-﻿namespace Core.Models.Generic;
+namespace Core.Models.Generic;
 
-public class IdNameModel<T>
+public class IdNameModel<TId> : IdModel<TId>
 {
-    public T Id { get; set; }
     public string Name { get; set; }
 }

@@ -21,7 +21,7 @@ public class GetUserReposTests : GitHubTestBase
     [Description("7.1 GET /users/{username}/repos returns 200 OK")]
     public async Task GetUserRepos_ReturnsOk()
     {
-        var response = await Get<List<RepositoryModel>>(GitHubEndpoints.UsersRepos, Method.Get,
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos, Method.Get,
             UsernameParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -32,7 +32,7 @@ public class GetUserReposTests : GitHubTestBase
     [Description("7.2 Each user repo has valid fields")]
     public async Task GetUserRepos_HasValidFields()
     {
-        var response = await Get<List<RepositoryModel>>(GitHubEndpoints.UsersRepos, Method.Get,
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos, Method.Get,
             UsernameParam(TestUserId));
 
         foreach (var repo in response.Data!)
@@ -46,7 +46,7 @@ public class GetUserReposTests : GitHubTestBase
     [Description("7.3 Non-existent user repos returns 404")]
     public async Task GetUserRepos_NonExistentUser_ReturnsNotFound()
     {
-        var response = await Get<List<RepositoryModel>>(GitHubEndpoints.UsersRepos, Method.Get,
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos, Method.Get,
             UsernameParam(GitHubEndpoints.NonExistentUser));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -57,7 +57,7 @@ public class GetUserReposTests : GitHubTestBase
     [Description("7.4 Pagination with per_page=5 returns at most 5 repos")]
     public async Task GetUserRepos_PaginationWorks()
     {
-        var response = await Get<List<RepositoryModel>>(GitHubEndpoints.UsersRepos, Method.Get,
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos, Method.Get,
             [.. UsernameParam(TestUserId), .. PaginationParams(1, 5)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);

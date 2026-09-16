@@ -21,7 +21,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_ReturnsOk()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             RepoParam(owner, repo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -33,7 +33,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_HasValidFields()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             RepoParam(owner, repo));
 
         foreach (var issue in response.Data!)
@@ -48,7 +48,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_AllIdsAreUnique()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             RepoParam(owner, repo));
 
         var ids = response.Data!.Select(i => i.Id).ToList();
@@ -61,7 +61,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_EachIssueHasValidState()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             RepoParam(owner, repo));
 
         response.Data.Should().OnlyContain(i => i.State == GitHubEndpoints.StateOpen || i.State == GitHubEndpoints.StateClosed);
@@ -72,7 +72,7 @@ public class GetIssuesTests : GitHubTestBase
     [Description("3.10 Non-existent repo returns 404")]
     public async Task GetIssues_NonExistentRepo_ReturnsNotFound()
     {
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -84,7 +84,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_InvalidState_Returns422()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             [.. RepoParam(owner, repo), .. StateParam("invalid")]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -96,7 +96,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_ContentTypeIsJson()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             RepoParam(owner, repo));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
@@ -108,7 +108,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_PaginationWorks()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             [.. RepoParam(owner, repo), .. PaginationParams(1, 5)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -122,7 +122,7 @@ public class GetIssuesTests : GitHubTestBase
     {
         var (owner, repo) = ParseRepo();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             RepoParam(owner, repo));
         stopwatch.Stop();
 
@@ -135,7 +135,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_FilterByStateOpen()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateOpen)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -148,7 +148,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_FilterByStateClosed()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, Method.Get,
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateClosed)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);

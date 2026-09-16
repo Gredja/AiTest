@@ -25,7 +25,7 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_ReturnsOk()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(owner, repo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -37,7 +37,7 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_HasValidFields()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(owner, repo));
 
         foreach (var branch in response.Data!)
@@ -52,7 +52,7 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_ContentTypeIsJson()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(owner, repo));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
@@ -64,7 +64,7 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_PaginationWorks()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             [.. RepoParam(owner, repo), .. PaginationParams(1, 2)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -78,7 +78,7 @@ public class GetBranchesTests : GitHubTestBase
     {
         var (owner, repo) = ParseRepo();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(owner, repo));
         stopwatch.Stop();
 
@@ -91,7 +91,7 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_PaginationPerOne()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             [.. RepoParam(owner, repo), .. PaginationParams(1, 1)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -104,7 +104,7 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_AllNamesAreUnique()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(owner, repo));
 
         var names = response.Data!.Select(b => b.Name).ToList();
@@ -117,7 +117,7 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_EachCommitShaIsValid()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(owner, repo));
 
         response.Data.Should().OnlyContain(b =>
@@ -130,7 +130,7 @@ public class GetBranchesTests : GitHubTestBase
     [Description("4.9 Non-existent repo returns 404")]
     public async Task GetBranches_NonExistentRepo_ReturnsNotFound()
     {
-        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);

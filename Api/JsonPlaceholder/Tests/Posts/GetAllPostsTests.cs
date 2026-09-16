@@ -20,7 +20,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     [Description("1.1 Status code is 200")]
     public async Task GetAllPosts_ReturnsOk()
     {
-        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -30,7 +30,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     [Description("1.2 Response body is not empty")]
     public async Task GetAllPosts_ReturnsNonEmptyList()
     {
-        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -41,7 +41,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     [Description("1.3 Content-Type is application/json")]
     public async Task GetAllPosts_ContentTypeIsJson()
     {
-        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -51,7 +51,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     [Description("1.4 Each item has valid required fields (via attributes)")]
     public async Task GetAllPosts_EachItemHasValidFields()
     {
-        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
         foreach (var post in response.Data!)
         {
@@ -65,7 +65,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     public async Task GetAllPosts_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -76,7 +76,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     [Description("1.9 Returns exactly 100 posts")]
     public async Task GetAllPosts_ReturnsExpectedCount()
     {
-        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount(ExpectedPostCount);
@@ -87,7 +87,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     [Description("1.10 All post IDs are unique")]
     public async Task GetAllPosts_AllIdsAreUnique()
     {
-        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
         var ids = response.Data!.Select(p => p.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
@@ -98,7 +98,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     [Description("1.11 Each post has userId > 0")]
     public async Task GetAllPosts_EachPostHasValidUserId()
     {
-        var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
 
         response.Data.Should().OnlyContain(p => p.UserId > 0);
     }
