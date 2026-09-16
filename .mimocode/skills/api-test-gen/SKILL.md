@@ -41,6 +41,7 @@ All paths use `{Service}` as the service name (PascalCase, matches directory nam
 | What | Path pattern |
 |---|---|
 | Observable Behaviour | `documentation/{Service}ObservableBehaviour.md` |
+| Observable Behaviour Template | `documentation/ObservableBehaviourTemplate.md` |
 | Endpoints config | `Core/Config/{Service}Endpoints.cs` |
 | Models | `Core/Models/{Service}/` |
 | Tests | `Api/{Service}/Tests/{Endpoint}Tests.cs` |
@@ -56,10 +57,11 @@ Before generating — verify that `Core/Config/{Service}Endpoints.cs` exists. If
 ### Step 1: Research the endpoint
 
 1. **Check Observable Behaviour** — if `documentation/{Service}ObservableBehaviour.md` exists, read it first. It contains: expected status codes, response types, field definitions with types, pagination, filtering, and negative cases. Use it as the primary source for test design.
-2. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
-3. Analyze the response structure — what fields, what types, what's nullable
-4. Check for sub-endpoints: `/{endpoint}/{id}`, nested resources
-5. Count total items (needed for `ExpectedCount`)
+2. **Create Observable Behaviour if missing** — if `documentation/{Service}ObservableBehaviour.md` does not exist, create it from `documentation/ObservableBehaviourTemplate.md`. Fill in: endpoint sections, field definitions, negative cases, validation rules, risk framing. This document is the source of truth for test generation.
+3. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
+4. Analyze the response structure — what fields, what types, what's nullable
+5. Check for sub-endpoints: `/{endpoint}/{id}`, nested resources
+6. Count total items (needed for `ExpectedCount`)
 
 ### Step 2: Add constants to Endpoints file
 

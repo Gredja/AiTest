@@ -4,6 +4,29 @@
 **API Under Test:** GitHub REST API v3 (https://api.github.com)
 **Date:** 2026-02-21
 **Scope:** GET (Phase 1) + POST/PATCH/DELETE (Phase 2 E2E)
+**Test Plan:** [GitHubTestPlan.md](GitHubTestPlan.md)
+
+---
+
+## What AI does
+
+When generating or reviewing GitHub API tests, the AI agent:
+
+1. **Reads this document first** — before any code generation or review, loads the relevant endpoint section
+2. **Uses Positive bullets as assertions** — each `- Object has: \`field\` (type)` becomes a `.Should().Be()` / `.Should().NotBeNull()` / `.Should().BeGreaterThan()` call
+3. **Uses Negative bullets as test cases** — each negative bullet = one `[Category("Negative")]` test method
+4. **Uses Validation Rules for model generation** — Response Field Constraints map directly to C# model properties with attributes (`[PositiveId]`, `[RequiredField]`, `[ValueRange]`)
+5. **Uses Request Body table for POST/PATCH tests** — required fields → mandatory assertions, optional fields → conditional assertions
+6. **Uses State transitions for E2E chains** — e.g. "state: open → closed" maps to PATCH test that verifies `state` changed
+7. **Uses Endpoint Priority for coverage ordering** — P0 first, P3 last when generating incrementally
+8. **Never invents fields** — only asserts fields listed in this document; if a field is missing from the response, reports it as a discrepancy
+
+| Priority | Endpoints | Rationale |
+|---|---|---|
+| **P0 — Core** | Issues (CRUD), Issue Comments (CRUD), PRs (CRUD + merge) | Ядро GitHub — то, ради чего люди используют платформу. Баги здесь критичны. |
+| **P1 — Important** | Repos (read), Branches (CRUD), Rate Limit | Инфраструктура для Issues/PRs. Без репозиториев и веток E2E-цепочки не работают. |
+| **P2 — Useful** | Contributors, Languages, Topics, Tags | Метаданные репозитория. Полезны для мониторинга и аналитики, но не блокируют основной workflow. |
+| **P3 — Reference** | Users, User Repos, Auth Repos, Public Repos | Справочная информация. Критична для аутентификации и авторизации, но реже используется в E2E-тестах. |
 
 ---
 
@@ -585,3 +608,11 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - **Branch protection rules** — if `main` has protection rules (required reviews, status checks), PUT /pulls/{n}/merge will fail with 405.
 - **Race conditions** — parallel E2E runs creating issues/PRs in the same repo may interfere with each other's state assertions.
 - **Ref deletion safety** — DELETE /git/refs/{ref} cannot delete the default branch. Attempt returns 403.
+
+---
+
+## Authoring Method
+
+- **Structure + fields:** AI-drafted from GitHub API docs
+- **Edge cases + gotchas:** Human-reviewed from production incidents
+- **Risk framing:** Human-owned (business context)

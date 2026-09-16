@@ -3,6 +3,7 @@
 **Project:** Gredja (.NET 10.0)
 **API Under Test:** GitHub REST API v3 (https://api.github.com)
 **Sandbox:** Gredja/AiTest
+**Observable Behaviour:** [GitHubObservableBehaviour.md](GitHubObservableBehaviour.md)
 
 ---
 

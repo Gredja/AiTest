@@ -42,3 +42,11 @@
 - Use `ShouldHaveValidFields()` for attribute-based validation — not per-field assertions
 - Use `ShouldMatchRequest()` for request/response comparison — not manual field mapping
 - All helpers live in `Core/Helpers/AssertHelper.cs`
+
+## Document sync
+
+When adding or changing endpoints, keep these documents in sync:
+- `documentation/{Service}ObservableBehaviour.md` — source of truth for test design (fields, types, negatives)
+- `documentation/{Service}TestPlan.md` — coverage tracking (which endpoints have tests, status)
+- `Rules/*.md` — shared rules for all services (assertions, patterns, cleanup)
+- If Observable Behaviour changes → update Test Plan status; if Test Plan adds endpoints → update Observable Behaviour
