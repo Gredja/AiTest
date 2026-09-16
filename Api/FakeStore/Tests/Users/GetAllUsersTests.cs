@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using RestSharp;
 using Core.Models.FakeStore;
 using Core.Config;

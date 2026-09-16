@@ -1,9 +1,6 @@
-using NUnit.Framework;
 using RestSharp;
 using Core.Config;
 using Core.Helpers;
-using Core.Helpers.GitHub;
-using FluentAssertions;
 using TestAdapter;
 using System.Net;
 using static Core.Helpers.GitHub.GitHubParamHelper;

@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using RestSharp;
 using Core.Models.GitHub;
 using Core.Config;

@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using RestSharp;
 using Core.Models;
 using Core.Models.GitHub;
@@ -8,7 +7,6 @@ using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
-using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.PublicRepos;
 

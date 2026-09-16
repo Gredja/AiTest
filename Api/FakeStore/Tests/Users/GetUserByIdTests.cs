@@ -1,6 +1,4 @@
-using NUnit.Framework;
 using RestSharp;
-using Core.Models;
 using Core.Models.FakeStore;
 using Core.Config;
 using Core.Helpers;

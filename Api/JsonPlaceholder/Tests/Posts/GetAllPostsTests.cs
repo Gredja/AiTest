@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using RestSharp;
 using Core.Models.JsonPlaceholder;
 using Core.Config;
