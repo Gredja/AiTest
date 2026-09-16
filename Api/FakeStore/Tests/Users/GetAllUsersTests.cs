@@ -68,7 +68,7 @@ public class GetAllUsersTests : RequestHelper
         var response = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(FakeStoreEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]

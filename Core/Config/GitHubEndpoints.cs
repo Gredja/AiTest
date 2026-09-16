@@ -4,10 +4,6 @@ public static class GitHubEndpoints
 {
     public static string BaseUrl => TestConfig.GitHubBaseUrl;
     public static string Token => TestConfig.GitHubToken;
-    public static int MaxResponseTimeMs => TestConfig.MaxResponseTimeMs;
-
-    public static string TestRepo => TestConfig.GitHubTestRepo;
-    public static string TestUserId => TestConfig.GitHubTestUserId;
 
     public const string NonExistentRepo = "this-repo-definitely-does-not-exist-12345";
     public const string NonExistentUser = "this-user-definitely-does-not-exist-12345";

@@ -70,7 +70,7 @@ public class GetAllProductsTests : RequestHelper
         var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(FakeStoreEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]
@@ -81,7 +81,7 @@ public class GetAllProductsTests : RequestHelper
         var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products, Method.Get);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(FakeStoreEndpoints.ExpectedProductCount);
+        response.Data.Should().HaveCount(TestConfig.ExpectedProductCount);
     }
 
     [Test]

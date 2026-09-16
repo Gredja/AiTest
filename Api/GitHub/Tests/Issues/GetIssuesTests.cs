@@ -36,15 +36,58 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
             RepoParam(owner, repo));
 
-        response.Data.Should().NotBeNull();
-        if (response.Data!.Count > 0)
+        foreach (var issue in response.Data!)
         {
-            var issue = response.Data.First();
-            issue.Id.Should().BeGreaterThan(0);
-            issue.Title.Should().NotBeNullOrWhiteSpace();
-            issue.State.Should().NotBeNullOrWhiteSpace();
-            issue.User.Should().NotBeNull();
+            issue.ShouldHaveValidFields();
         }
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("3.8 All issue IDs are unique")]
+    public async Task GetIssues_AllIdsAreUnique()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+            RepoParam(owner, repo));
+
+        var ids = response.Data!.Select(i => i.Id).ToList();
+        ids.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("3.9 Each issue has non-empty state")]
+    public async Task GetIssues_EachIssueHasValidState()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+            RepoParam(owner, repo));
+
+        response.Data.Should().OnlyContain(i => i.State == "open" || i.State == "closed");
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("3.10 Non-existent repo returns 404")]
+    public async Task GetIssues_NonExistentRepo_ReturnsNotFound()
+    {
+        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+            RepoParam(GitHubEndpoints.NonExistentUser, "nonexistent"));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("3.11 Invalid state param returns 422")]
+    public async Task GetIssues_InvalidState_Returns422()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<IssueModel>>(GitHubEndpoints.RepoIssues, Method.Get,
+            [.. RepoParam(owner, repo), .. StateParam("invalid")]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
 
     [Test]
@@ -83,7 +126,7 @@ public class GetIssuesTests : GitHubTestBase
             RepoParam(owner, repo));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]

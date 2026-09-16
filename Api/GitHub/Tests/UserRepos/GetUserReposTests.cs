@@ -15,13 +15,14 @@ namespace Api.GitHub.UserRepos;
 [Category("GitHub")]
 public class GetUserReposTests : GitHubTestBase
 {
+    private const string TestUserId = "Gredja";
     [Test]
     [Category("HealthCheck")]
     [Description("7.1 GET /users/{username}/repos returns 200 OK")]
     public async Task GetUserRepos_ReturnsOk()
     {
         var response = await Get<List<RepositoryModel>>(GitHubEndpoints.UsersRepos, Method.Get,
-            UsernameParam(GitHubEndpoints.TestUserId));
+            UsernameParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -32,15 +33,11 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_HasValidFields()
     {
         var response = await Get<List<RepositoryModel>>(GitHubEndpoints.UsersRepos, Method.Get,
-            UsernameParam(GitHubEndpoints.TestUserId));
+            UsernameParam(TestUserId));
 
-        response.Data.Should().NotBeNull();
-        if (response.Data!.Count > 0)
+        foreach (var repo in response.Data!)
         {
-            var repo = response.Data.First();
-            repo.Name.Should().NotBeNullOrWhiteSpace();
-            repo.Owner.Should().NotBeNull();
-            repo.HtmlUrl.Should().NotBeNullOrWhiteSpace();
+            repo.ShouldHaveValidFields();
         }
     }
 
@@ -61,7 +58,7 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModel>>(GitHubEndpoints.UsersRepos, Method.Get,
-            [.. UsernameParam(GitHubEndpoints.TestUserId), .. PaginationParams(1, 5)]);
+            [.. UsernameParam(TestUserId), .. PaginationParams(1, 5)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Count.Should().BeLessThanOrEqualTo(5);

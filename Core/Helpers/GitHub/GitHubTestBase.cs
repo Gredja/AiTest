@@ -4,7 +4,9 @@ namespace Core.Helpers.GitHub;
 
 public abstract class GitHubTestBase : GitHubRequestHelper
 {
-    protected static (string Owner, string Repo) ParseRepo() => ParseRepo(GitHubEndpoints.TestRepo);
+    private const string TestRepo = "Gredja/AiTest";
+
+    protected static (string Owner, string Repo) ParseRepo() => ParseRepo(TestRepo);
 
     private static (string Owner, string Repo) ParseRepo(string fullName)
     {

@@ -1,4 +1,4 @@
-﻿# Rules: Comments
+# Rules: Comments
 
 ## Default: no comments
 
@@ -6,7 +6,7 @@ Code must speak for itself through clear names and structure.
 
 ## When comments ARE needed
 
-- **Regex** — explain what the pattern matches
+- **Regex** — extract pattern to `private static readonly Regex` field with `RegexOptions.Compiled`; never inline in test assertions
 - **TODO** — during development only, must be removed before merge to main
 - **Non-obvious WHY** — workaround for a specific bug, hidden business constraint
 

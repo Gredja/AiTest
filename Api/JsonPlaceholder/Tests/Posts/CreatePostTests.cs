@@ -90,15 +90,17 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
         ((int)response.StatusCode).Should().BeGreaterThanOrEqualTo(400);
     }
 
+    private const string SpecialCharsTitle = "Test special chars: <>&\"";
+
     [Test]
-    [Category("Edge")]
+    [Category("Smoke")]
     [Description("4.8 Special chars in title are accepted")]
     public async Task CreatePost_SpecialCharsInTitle_ReturnsCreated()
     {
-        var specialPost = new PostRequest { UserId = TestUserId, Title = "Test <html>&\"chars\"", Body = "Body" };
+        var specialPost = new PostRequest { UserId = TestUserId, Title = SpecialCharsTitle, Body = "Body" };
         var response = await Post<PostRequest, PostModel>(JsonPlaceholderEndpoints.Posts, specialPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
-        response.Data!.Title.Should().Be("Test <html>&\"chars\"");
+        response.Data!.Title.Should().Be(SpecialCharsTitle);
     }
 }

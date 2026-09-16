@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using RestSharp;
 using Core.Models.GitHub;
 using Core.Config;
@@ -15,6 +16,9 @@ namespace Api.GitHub.Branches;
 [Category("GitHub")]
 public class GetBranchesTests : GitHubTestBase
 {
+    private const int ShaHexLength = 40;
+    private static readonly Regex ShaHexPattern = new("^[0-9a-f]+$", RegexOptions.Compiled);
+
     [Test]
     [Category("HealthCheck")]
     [Description("4.1 GET /repos/{owner}/{repo}/branches returns 200 OK")]
@@ -36,13 +40,9 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
             RepoParam(owner, repo));
 
-        response.Data.Should().NotBeNull();
-        if (response.Data!.Count > 0)
+        foreach (var branch in response.Data!)
         {
-            var branch = response.Data.First();
-            branch.Name.Should().NotBeNullOrWhiteSpace();
-            branch.Commit.Should().NotBeNull();
-            branch.Commit.Sha.Should().NotBeNullOrWhiteSpace();
+            branch.ShouldHaveValidFields();
         }
     }
 
@@ -82,7 +82,7 @@ public class GetBranchesTests : GitHubTestBase
             RepoParam(owner, repo));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]
@@ -96,5 +96,43 @@ public class GetBranchesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Count.Should().BeLessThanOrEqualTo(1);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("4.7 All branch names are unique")]
+    public async Task GetBranches_AllNamesAreUnique()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+            RepoParam(owner, repo));
+
+        var names = response.Data!.Select(b => b.Name).ToList();
+        names.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("4.8 Each branch commit SHA is 40 hex chars")]
+    public async Task GetBranches_EachCommitShaIsValid()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+            RepoParam(owner, repo));
+
+        response.Data.Should().OnlyContain(b =>
+            b.Commit.Sha.Length == ShaHexLength &&
+            ShaHexPattern.IsMatch(b.Commit.Sha));
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("4.9 Non-existent repo returns 404")]
+    public async Task GetBranches_NonExistentRepo_ReturnsNotFound()
+    {
+        var response = await Get<List<BranchModel>>(GitHubEndpoints.RepoBranches, Method.Get,
+            RepoParam(GitHubEndpoints.NonExistentUser, "nonexistent"));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

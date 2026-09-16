@@ -18,6 +18,7 @@ public class GetIssueByIdTests : GitHubTestBase
     private const string RepoOwner = "Gredja";
     private const string RepoName = "AiTest";
     private const int ExistingIssueNumber = 5;
+    private const int NonExistentIssueNumber = 99999;
 
     [Test]
     [Category("HealthCheck")]
@@ -38,10 +39,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var response = await Get<IssueModel>(GitHubEndpoints.RepoIssueById, Method.Get,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
 
-        response.Data.Should().NotBeNull();
-        response.Data!.Title.Should().NotBeNullOrWhiteSpace();
-        response.Data.State.Should().NotBeNullOrWhiteSpace();
-        response.Data.User.Should().NotBeNull();
+        response.Data!.ShouldHaveValidFields();
     }
 
     [Test]
@@ -50,8 +48,55 @@ public class GetIssueByIdTests : GitHubTestBase
     public async Task GetIssueById_NonExistentIssue_ReturnsNotFound()
     {
         var response = await Get<IssueModel>(GitHubEndpoints.RepoIssueById, Method.Get,
-            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(99999)]);
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(NonExistentIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("10.4 Issue number 0 returns 404")]
+    public async Task GetIssueById_ZeroIssueNumber_ReturnsNotFound()
+    {
+        var response = await Get<IssueModel>(GitHubEndpoints.RepoIssueById, Method.Get,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(0)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("10.5 Negative issue number returns 404")]
+    public async Task GetIssueById_NegativeIssueNumber_ReturnsNotFound()
+    {
+        var response = await Get<IssueModel>(GitHubEndpoints.RepoIssueById, Method.Get,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(-1)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("10.6 Title matches expected issue")]
+    public async Task GetIssueById_TitleIsNotEmpty()
+    {
+        var response = await Get<IssueModel>(GitHubEndpoints.RepoIssueById, Method.Get,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        response.Data!.Title.Should().NotBeNullOrWhiteSpace();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("10.7 Repeated calls return same data")]
+    public async Task GetIssueById_RepeatedCalls_ReturnSameData()
+    {
+        var response1 = await Get<IssueModel>(GitHubEndpoints.RepoIssueById, Method.Get,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+        var response2 = await Get<IssueModel>(GitHubEndpoints.RepoIssueById, Method.Get,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        response1.Data!.Id.Should().Be(response2.Data!.Id);
+        response1.Data!.Title.Should().Be(response2.Data!.Title);
     }
 }

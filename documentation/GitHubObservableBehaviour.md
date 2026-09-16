@@ -125,7 +125,7 @@ When generating or reviewing GitHub API tests, the AI agent:
 
 **Negative:**
 - Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
-- Invalid `?state=invalid` → 200 OK, returns default (open + closed mixed)
+- Invalid `?state=invalid` → 422 UnprocessableEntity
 
 ---
 
@@ -179,7 +179,7 @@ When generating or reviewing GitHub API tests, the AI agent:
 
 **Negative:**
 - Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
-- Invalid `?state=invalid` → 200 OK, returns default (open + closed mixed)
+- Invalid `?state=invalid` → 422 UnprocessableEntity
 - Repo with no PRs → 200 OK, empty array `[]`
 
 ---
@@ -570,7 +570,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - **Private repos return 404, not 403** — if a repo is private and no auth is provided, GitHub returns 404 (not 403). This is by design to avoid leaking repo existence.
 - **Topics require special Accept header** — `GET /repos/{owner}/{repo}/topics` needs `Accept: application/vnd.github.mercy-preview+json`. Without it, response may differ.
 - **`merged_at` is nullable** — on Pull Requests, `merged_at` is `null` for open and closed-but-not-merged PRs. Tests must handle this.
-- **Invalid query params are ignored** — e.g. `?state=invalid` does not return 400; it returns default results silently.
+- **Invalid query params return 422** — e.g. `?state=invalid` returns 422 UnprocessableEntity, not 200.
 - **`per_page=0` is not an error** — GitHub treats it as default (30), not as a bad request.
 
 ### Rate Limit Impact

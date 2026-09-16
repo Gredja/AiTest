@@ -3,13 +3,6 @@ namespace Core.Config;
 public static class JsonPlaceholderEndpoints
 {
     public static string BaseUrl => TestConfig.JsonPlaceholderBaseUrl;
-    public static int MaxResponseTimeMs => TestConfig.MaxResponseTimeMs;
-    public static int ExpectedPostCount => TestConfig.ExpectedPostCount;
-    public static int ExpectedTodoCount => TestConfig.ExpectedTodoCount;
-    public static int ExpectedAlbumCount => TestConfig.ExpectedAlbumCount;
-    public static int ExpectedCommentCount => TestConfig.ExpectedCommentCount;
-    public static int ExpectedPhotoCount => TestConfig.ExpectedPhotoCount;
-    public static int ExpectedUserCount => TestConfig.JsonPlaceholderExpectedUserCount;
 
     public const string Posts = "/posts";
     public const string PostsById = "/posts/{id}";

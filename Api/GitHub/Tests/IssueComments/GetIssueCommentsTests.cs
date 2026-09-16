@@ -18,6 +18,7 @@ public class GetIssueCommentsTests : GitHubTestBase
     private const string RepoOwner = "Gredja";
     private const string RepoName = "AiTest";
     private const int ExistingIssueNumber = 5;
+    private const int NonExistentIssueNumber = 99999;
 
     [Test]
     [Category("HealthCheck")]
@@ -52,5 +53,53 @@ public class GetIssueCommentsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Count.Should().BeLessThanOrEqualTo(2);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("11.4 Each comment has valid fields")]
+    public async Task GetIssueComments_HasValidFields()
+    {
+        var response = await Get<List<CommentModel>>(GitHubEndpoints.RepoIssueComments, Method.Get,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        foreach (var comment in response.Data!)
+        {
+            comment.ShouldHaveValidFields();
+        }
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("11.5 All comment IDs are unique")]
+    public async Task GetIssueComments_AllIdsAreUnique()
+    {
+        var response = await Get<List<CommentModel>>(GitHubEndpoints.RepoIssueComments, Method.Get,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        var ids = response.Data!.Select(c => c.Id).ToList();
+        ids.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("11.6 Non-existent issue returns 404")]
+    public async Task GetIssueComments_NonExistentIssue_ReturnsNotFound()
+    {
+        var response = await Get<List<CommentModel>>(GitHubEndpoints.RepoIssueComments, Method.Get,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(NonExistentIssueNumber)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("11.7 Non-existent repo returns 404")]
+    public async Task GetIssueComments_NonExistentRepo_ReturnsNotFound()
+    {
+        var response = await Get<List<CommentModel>>(GitHubEndpoints.RepoIssueComments, Method.Get,
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, "nonexistent"), .. IssueNumberParam(1)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

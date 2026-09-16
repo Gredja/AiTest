@@ -68,7 +68,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModel>>(JsonPlaceholderEndpoints.Todos, Method.Get);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(JsonPlaceholderEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]

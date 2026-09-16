@@ -36,15 +36,46 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
             RepoParam(owner, repo));
 
-        response.Data.Should().NotBeNull();
-        var pr = response.Data!.FirstOrDefault();
-        if (pr is not null)
+        foreach (var pr in response.Data!)
         {
-            pr.Id.Should().BeGreaterThan(0);
-            pr.Title.Should().NotBeNullOrWhiteSpace();
-            pr.State.Should().NotBeNullOrWhiteSpace();
-            pr.User.Should().NotBeNull();
+            pr.ShouldHaveValidFields();
         }
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("5.8 All PR IDs are unique")]
+    public async Task GetPullRequests_AllIdsAreUnique()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+            RepoParam(owner, repo));
+
+        var ids = response.Data!.Select(pr => pr.Id).ToList();
+        ids.Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("5.9 Each PR has valid state")]
+    public async Task GetPullRequests_EachPRHasValidState()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+            RepoParam(owner, repo));
+
+        response.Data.Should().OnlyContain(pr => pr.State == "open" || pr.State == "closed");
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("5.10 Non-existent repo returns 404")]
+    public async Task GetPullRequests_NonExistentRepo_ReturnsNotFound()
+    {
+        var response = await Get<List<PullRequestModel>>(GitHubEndpoints.RepoPullRequests, Method.Get,
+            RepoParam(GitHubEndpoints.NonExistentUser, "nonexistent"));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Test]
@@ -83,7 +114,7 @@ public class GetPullRequestsTests : GitHubTestBase
             RepoParam(owner, repo));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]

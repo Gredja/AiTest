@@ -15,6 +15,7 @@ namespace Api.GitHub.Repos;
 [Category("GitHub")]
 public class GetRepositoryTests : GitHubTestBase
 {
+    private const string TestUserId = "Gredja";
     [Test]
     [Category("HealthCheck")]
     [Description("1.1 GET /repos/{owner}/{repo} returns 200 OK")]
@@ -36,9 +37,8 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
             RepoParam(owner, repo));
 
-        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidFields();
         response.Data!.Name.Should().Be(repo);
-        response.Data.Owner.Should().NotBeNull();
         response.Data.Owner.Login.Should().Be(owner);
     }
 
@@ -65,7 +65,7 @@ public class GetRepositoryTests : GitHubTestBase
             RepoParam(owner, repo));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]
@@ -74,8 +74,47 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
-            RepoParam(GitHubEndpoints.TestUserId, GitHubEndpoints.NonExistentRepo));
+            RepoParam(TestUserId, GitHubEndpoints.NonExistentRepo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("1.6 Non-existent owner returns 404")]
+    public async Task GetRepository_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+            RepoParam(GitHubEndpoints.NonExistentUser, "AiTest"));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("1.7 Repository name matches request")]
+    public async Task GetRepository_NameMatchesRequest()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+            RepoParam(owner, repo));
+
+        response.Data!.Name.Should().Be(repo);
+        response.Data.Owner.Login.Should().Be(owner);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("1.8 Repeated calls return same data")]
+    public async Task GetRepository_RepeatedCalls_ReturnSameData()
+    {
+        var (owner, repo) = ParseRepo();
+        var response1 = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+            RepoParam(owner, repo));
+        var response2 = await Get<RepositoryModel>(GitHubEndpoints.ReposById, Method.Get,
+            RepoParam(owner, repo));
+
+        response1.Data!.Id.Should().Be(response2.Data!.Id);
+        response1.Data!.Name.Should().Be(response2.Data!.Name);
     }
 }

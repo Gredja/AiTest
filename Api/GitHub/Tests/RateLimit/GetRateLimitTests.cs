@@ -60,7 +60,7 @@ public class GetRateLimitTests : GitHubTestBase
         var response = await Get<object>(GitHubEndpoints.RateLimit, Method.Get);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]

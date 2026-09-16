@@ -28,6 +28,8 @@
 - Single-use domain constants go in the class that uses them
 - Fallback/default values (`"Tests"`, `"Unknown"`) stay inline — they are self-explanatory
 - Don't extract strings that are just "initialize + read in the same method" — that's one logical usage
+- Extract regex patterns to `private static readonly Regex` fields — never inline `Regex.IsMatch()` in test assertions
+- Extract test data with special chars (HTML, Unicode, etc.) to named constants — never inline in test code
 
 ## Null safety
 

@@ -68,7 +68,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PostModel>>(JsonPlaceholderEndpoints.Posts, Method.Get);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(JsonPlaceholderEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]

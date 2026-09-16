@@ -17,7 +17,7 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
 {
     [Test]
     [Category("HealthCheck")]
-    [Ignore("TODO: investigate 404 — RestSharp URL construction issue with /user/repos")]
+    [Ignore("Known issue: RestSharp URL construction fails for /user/repos — returns 404")]
     [Description("9.1 GET /user/repos returns 200 OK")]
     public async Task GetAuthenticatedUserRepos_ReturnsOk()
     {
@@ -28,7 +28,7 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Ignore("TODO: investigate 404 — RestSharp URL construction issue with /user/repos")]
+    [Ignore("Known issue: RestSharp URL construction fails for /user/repos — returns 404")]
     [Description("9.2 Each authenticated user repo has valid fields")]
     public async Task GetAuthenticatedUserRepos_HasValidFields()
     {
@@ -46,7 +46,7 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Ignore("TODO: investigate 404 — RestSharp URL construction issue with /user/repos")]
+    [Ignore("Known issue: RestSharp URL construction fails for /user/repos — returns 404")]
     [Description("9.3 Pagination with per_page=5 returns at most 5 repos")]
     public async Task GetAuthenticatedUserRepos_PaginationWorks()
     {

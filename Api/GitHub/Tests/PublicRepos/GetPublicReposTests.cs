@@ -32,13 +32,9 @@ public class GetPublicReposTests : GitHubTestBase
     {
         var response = await Get<List<RepositoryModel>>(GitHubEndpoints.Repositories, Method.Get);
 
-        response.Data.Should().NotBeNull();
-        if (response.Data!.Count > 0)
+        foreach (var repo in response.Data!)
         {
-            var repo = response.Data.First();
-            repo.Name.Should().NotBeNullOrWhiteSpace();
-            repo.Owner.Should().NotBeNull();
-            repo.HtmlUrl.Should().NotBeNullOrWhiteSpace();
+            repo.ShouldHaveValidFields();
         }
     }
 

@@ -15,7 +15,8 @@ namespace Api.GitHub.Users;
 [Category("GitHub")]
 public class GetUserTests : GitHubTestBase
 {
-    private static readonly string _username = GitHubEndpoints.TestUserId;
+    private const string TestUserId = "Gredja";
+    private static readonly string _username = TestUserId;
 
     [Test]
     [Category("HealthCheck")]
@@ -34,9 +35,8 @@ public class GetUserTests : GitHubTestBase
     {
         var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
 
-        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidFields();
         response.Data!.Login.Should().Be(_username);
-        response.Data.Id.Should().BeGreaterThan(0);
     }
 
     [Test]
@@ -58,7 +58,7 @@ public class GetUserTests : GitHubTestBase
         var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(GitHubEndpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]
@@ -70,5 +70,27 @@ public class GetUserTests : GitHubTestBase
             UsernameParam(GitHubEndpoints.NonExistentUser));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("2.6 Login matches request username")]
+    public async Task GetUser_LoginMatchesRequest()
+    {
+        var response = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+
+        response.Data!.Login.Should().Be(_username);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("2.7 Repeated calls return same data")]
+    public async Task GetUser_RepeatedCalls_ReturnSameData()
+    {
+        var response1 = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+        var response2 = await Get<UserModel>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+
+        response1.Data!.Id.Should().Be(response2.Data!.Id);
+        response1.Data!.Login.Should().Be(response2.Data!.Login);
     }
 }
