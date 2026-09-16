@@ -21,6 +21,12 @@
 - One blank line between members
 - No trailing whitespace
 
+## Cleanup
+
+- **Remove unused usings** — when generating or modifying code, always clean up unused `using` directives in the same turn. Never leave dead imports behind.
+- **NUnit globally imported** — `Api.csproj` and `E2E.csproj` have `<Using Include="NUnit.Framework" />`. Never add explicit `using NUnit.Framework;` in these projects.
+- **Check inheritance** — before removing a `using`, verify the type isn't needed for base class resolution (e.g. `using Core.Helpers.GitHub;` may be needed for `: GitHubTestBase`).
+
 ## Methods
 
 - Keep methods short and focused — one responsibility
