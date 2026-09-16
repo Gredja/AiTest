@@ -108,7 +108,7 @@ If models already exist — verify they match current API response.
 
 **Seed methodology** — before writing code, plan test cases using Seed → Expand → Review:
 1. Write 5 seeds per endpoint (2 happy, 2 failure, 1 edge) — see `Rules/test-practices.md` → "Seed methodology"
-2. Expand each seed to 3 variations (happy/edge/negative)
+2. Expand to table: `# | Case | Category | Priority | Source seed` — with concrete example for the endpoint
 3. Enforce minimum 5 negatives per endpoint
 4. Target ~15-20 unique test cases per endpoint
 

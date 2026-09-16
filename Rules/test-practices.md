@@ -60,11 +60,26 @@ When generating tests for an endpoint, use the Seed → Expand → Review approa
 - 2 known failure modes (different error conditions)
 - 1 edge case (boundary, special chars, or unusual input)
 
-**Step 2: Expand via AI** — for each seed generate:
-- 1 happy-path variation (different assertion focus)
-- 1 edge-case variation (boundary/stress)
-- 1 negative variation (different error code/message)
-- Tag each with category (HealthCheck/Smoke/Regression/Negative/Performance) + priority
+**Step 2: Expand via AI** — for each seed generate variations and output as a table:
+
+| # | Case | Category | Priority | Source seed |
+|---|------|----------|----------|-------------|
+| 1 | Happy: title only → 201, state="open" | smoke | 1 | Seed 1 |
+| 2 | Happy: title + body + labels → 201, all fields in response | critical-path | 1 | Seed 1 |
+| 3 | Happy: generated id > 0, created_at within 1 min | regression | 1 | Seed 1 |
+| 4 | Happy: ShouldMatchRequest for title and body | regression | 1 | Seed 1 |
+| 5 | Negative: no auth → 401 | critical-path | 1 | Seed 3 |
+| 6 | Negative: empty title → 422 | critical-path | 1 | Seed 3 |
+| 7 | Negative: invalid token → 401 | regression | 2 | Seed 3 |
+| 8 | Negative: wrong scope → 403 | regression | 2 | Seed 4 |
+| 9 | Negative: non-existent repo → 404 | regression | 1 | Seed 4 |
+| 10 | Negative: missing title field → 422 | critical-path | 1 | Seed 4 |
+| 11 | Edge: title = 65536 chars → 201 or 422 | edge | 2 | Seed 5 |
+| 12 | Edge: special chars in body (markdown/HTML) → 201 | edge | 2 | Seed 5 |
+| 13 | Edge: double-click POST sends only one request | edge | 1 | Seed 2 |
+
+Categories: `smoke` | `critical-path` | `regression` | `edge` | `negative`
+Priority: `1` = must have, `2` = nice to have
 
 **Step 3: Review and clean**
 - Delete clearly wrong cases
