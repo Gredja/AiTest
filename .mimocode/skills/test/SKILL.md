@@ -1,4 +1,4 @@
-﻿---
+---
 name: test
 description: Use when the user says "test", "/test", or wants to run all tests. Runs ALL tests (no category filter, no Allure report). Fast check.
 ---
@@ -33,10 +33,24 @@ Working dir: {working_dir}
    - Run `dotnet test --verbosity minimal`
    - Capture output: passed/failed/skipped counts
 
-3. Report:
+3. Coverage check:
+   - Read `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`
+   - Count total endpoints per service (exclude constants like NonExistentRepo, StateOpen, BaseUrl, Token)
+   - Count test files per service: `Api/{Service}/Tests/**/*.cs`
+   - For each service list: tested endpoints + untested endpoints
+
+4. Report:
    - Branch name
    - Test results: passed / failed / skipped counts
    - Failed test details (name + error) if any
+   - Coverage per service:
+     ```
+     | Service | Endpoints | Tested | Coverage |
+     |---------|-----------|--------|----------|
+     | FakeStore | 8 | 4 | 50% |
+     | ... | ... | ... | ... |
+     ```
+   - List of untested endpoints per service
 ```
 
 ## Step 3: Deliver result (main agent)

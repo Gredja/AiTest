@@ -12,6 +12,7 @@ Gredja/
 ├── allureConfig.json
 ├── testsettings.json
 ├── .env                          # secrets (not tracked)
+├── .gitattributes                # line ending normalization
 ├── .gitignore
 ├── .graphifyignore
 ├── .mimocode/
@@ -57,69 +58,69 @@ Core/
 │   ├── RequiredFieldAttribute.cs
 │   └── ValueRangeAttribute.cs
 ├── Config/
-│   ├── FakeStoreEndpoints.cs     # FakeStoreAPI endpoints
-│   ├── GitHubEndpoints.cs        # GitHub API endpoints
-│   ├── JsonPlaceholderEndpoints.cs  # JSONPlaceholder endpoints
-│   └── TestConfig.cs             # reads common settings from testsettings.json
+│   ├── FakeStoreEndpoints.cs
+│   ├── GitHubEndpoints.cs
+│   ├── JsonPlaceholderEndpoints.cs
+│   └── TestConfig.cs
 ├── Helpers/
-│   ├── AssertHelper.cs           # Generic assertions
+│   ├── AssertHelper.cs           # ShouldHaveValidContract, ShouldHaveValidFields, etc.
 │   ├── GitHub/
-│   │   ├── GitHubParamHelper.cs  # RepoParam(), IssueNumberParam(), PaginationParams()
-│   │   └── GitHubTestBase.cs     # Base class for GitHub tests
-│   ├── GitHubRequestHelper.cs    # RequestHelper for GitHub API
-│   ├── JsonPlaceholderRequestHelper.cs  # RequestHelper for JSONPlaceholder
-│   └── RequestHelper.cs          # HTTP request wrapper (Get/Post/Put/Patch/Delete)
+│   │   ├── GitHubParamHelper.cs
+│   │   └── GitHubTestBase.cs
+│   ├── GitHubRequestHelper.cs
+│   ├── JsonPlaceholderRequestHelper.cs
+│   └── RequestHelper.cs
 ├── Models/
 │   ├── Generic/
-│   │   ├── IdNameModel.cs
+│   │   ├── IdModel.cs
 │   │   └── UserOwnedModel.cs
 │   ├── FakeStore/
-│   │   ├── AddressModel.cs
-│   │   ├── AuthRequest.cs
-│   │   ├── CartModel.cs
-│   │   ├── CartProductModel.cs
-│   │   ├── CartRequest.cs
-│   │   ├── GeolocationModel.cs
-│   │   ├── ProductModel.cs
-│   │   ├── ProductRequest.cs
-│   │   ├── RatingModel.cs
-│   │   ├── UserModel.cs
-│   │   ├── UserNameModel.cs
-│   │   └── UserRequest.cs
+│   │   ├── Address.cs
+│   │   ├── AuthModelRequest.cs
+│   │   ├── CartModelResponse.cs
+│   │   ├── CartModelRequest.cs
+│   │   ├── CartProduct.cs
+│   │   ├── Geolocation.cs
+│   │   ├── ProductModelResponse.cs
+│   │   ├── ProductModelRequest.cs
+│   │   ├── Rating.cs
+│   │   ├── UserModelResponse.cs
+│   │   ├── UserModelRequest.cs
+│   │   └── UserName.cs
 │   ├── JsonPlaceholder/
-│   │   ├── AlbumModel.cs
-│   │   ├── CommentModel.cs
-│   │   ├── CompanyModel.cs
-│   │   ├── GeoModel.cs
-│   │   ├── JsonPlaceholderAddressModel.cs
-│   │   ├── JsonPlaceholderUserModel.cs
-│   │   ├── PhotoModel.cs
-│   │   ├── PostModel.cs
-│   │   ├── PostRequest.cs
-│   │   └── TodoModel.cs
+│   │   ├── AlbumModelResponse.cs
+│   │   ├── Comment.cs
+│   │   ├── Company.cs
+│   │   ├── Geo.cs
+│   │   ├── JsonPlaceholderAddress.cs
+│   │   ├── JsonPlaceholderUser.cs
+│   │   ├── PhotoModelResponse.cs
+│   │   ├── PostModelResponse.cs
+│   │   ├── PostModelRequest.cs
+│   │   └── TodoModelResponse.cs
 │   ├── GitHub/
-│   │   ├── BranchCommitModel.cs
-│   │   ├── BranchModel.cs
-│   │   ├── CommentModel.cs
-│   │   ├── CommitAuthorModel.cs
-│   │   ├── CommitInfoModel.cs
-│   │   ├── CommitModel.cs
-│   │   ├── ContributorModel.cs
-│   │   ├── CreateCommentRequest.cs
-│   │   ├── CreateIssueRequest.cs
-│   │   ├── IssueModel.cs
-│   │   ├── LabelModel.cs
-│   │   ├── PullRequestBranchModel.cs
-│   │   ├── PullRequestModel.cs
-│   │   ├── RateLimitModel.cs
+│   │   ├── BranchCommit.cs
+│   │   ├── BranchModelResponse.cs
+│   │   ├── CommentModelResponse.cs
+│   │   ├── CommitAuthor.cs
+│   │   ├── CommitInfo.cs
+│   │   ├── CommitModelResponse.cs
+│   │   ├── ContributorModelResponse.cs
+│   │   ├── CreateCommentModelRequest.cs
+│   │   ├── CreateIssueModelRequest.cs
+│   │   ├── IssueModelResponse.cs
+│   │   ├── Label.cs
+│   │   ├── PullRequestBranch.cs
+│   │   ├── PullRequestModelResponse.cs
+│   │   ├── RateLimitModelResponse.cs
 │   │   ├── RateLimitResources.cs
 │   │   ├── RateLimitSection.cs
-│   │   ├── ReleaseModel.cs
-│   │   ├── RepositoryModel.cs
-│   │   ├── TagModel.cs
-│   │   └── UserModel.cs
-│   ├── ParamType.cs              # enum: Header, Parameter, UrlSegment
-│   └── RequestDictionaryModel.cs # dynamic request params
+│   │   ├── ReleaseModelResponse.cs
+│   │   ├── RepositoryModelResponse.cs
+│   │   ├── TagModelResponse.cs
+│   │   └── UserModelResponse.cs
+│   ├── ParamType.cs
+│   └── RequestDictionaryModel.cs
 ```
 
 ## Api/
@@ -130,27 +131,27 @@ Api/
 ├── AllureGlobalSetup.cs
 ├── FakeStore/
 │   ├── Helpers/
-│   │   └── FakeStoreParamHelper.cs      # IdParam()
+│   │   └── FakeStoreParamHelper.cs
 │   └── Tests/
 │       ├── Products/
-│       │   ├── GetAllProductsTests.cs    # 6 tests
-│       │   └── GetProductByIdTests.cs    # 7 tests (4 active + 3 Ignore)
+│       │   ├── GetAllProductsTests.cs
+│       │   └── GetProductByIdTests.cs
 │       └── Users/
-│           ├── GetAllUsersTests.cs       # 6 tests
-│           └── GetUserByIdTests.cs       # 6 tests
+│           ├── GetAllUsersTests.cs
+│           └── GetUserByIdTests.cs
 ├── JsonPlaceholder/
 │   ├── Helpers/
-│   │   └── JsonPlaceholderParamHelper.cs # PostIdParam(), UserIdParam()
+│   │   └── JsonPlaceholderParamHelper.cs
 │   └── Tests/
 │       ├── Posts/
-│       │   ├── CreatePostTests.cs        # 4 tests
-│       │   ├── DeletePostTests.cs        # 2 tests
-│       │   ├── GetAllPostsTests.cs       # 6 tests
-│       │   ├── GetPostByIdTests.cs       # 7 tests
-│       │   └── UpdatePostTests.cs        # 4 tests
+│       │   ├── CreatePostTests.cs
+│       │   ├── DeletePostTests.cs
+│       │   ├── GetAllPostsTests.cs
+│       │   ├── GetPostByIdTests.cs
+│       │   └── UpdatePostTests.cs
 │       └── Todos/
-│           ├── GetAllTodosTests.cs       # 7 tests
-│           └── GetTodosByUserIdTests.cs  # 5 tests
+│           ├── GetAllTodosTests.cs
+│           └── GetTodosByUserIdTests.cs
 └── GitHub/
     └── Tests/
         ├── AuthRepos/
@@ -200,7 +201,7 @@ E2E/
 └── GitHub/
     ├── GitHubE2ETestBase.cs
     └── Tests/
-        └── SampleTests.cs        # 1 test (placeholder)
+        └── SampleTests.cs
 ```
 
 ## Rules/
@@ -225,10 +226,10 @@ Rules/
 ```
 documentation/
 ├── FILE_STRUCTURE.md
-├── GitHubObservableBehaviour.md  # Observable behaviour for GitHub API GET endpoints
-├── GitHubTestPlan.md             # GitHub API + E2E test plan
-├── GitHubTestingStructure.md     # Testing structure: scope, risks, entry/exit criteria
-├── ObservableBehaviourTemplate.md # Template for creating new Observable Behaviour docs
+├── GitHubObservableBehaviour.md
+├── GitHubTestPlan.md
+├── GitHubTestingStructure.md
+├── ObservableBehaviourTemplate.md
 ├── Katas/
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md

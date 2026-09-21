@@ -56,6 +56,11 @@ Working dir: {working_dir}
    - Branch name
    - Test results: passed / failed / skipped counts
    - Failed test details (name + error) if any
+   - Coverage check:
+     - Read `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`
+     - Count total endpoints per service (exclude constants like NonExistentRepo, StateOpen, BaseUrl, Token)
+     - Count test files per service: `Api/{Service}/Tests/**/*.cs`
+     - List: tested endpoints + untested endpoints per service
 ```
 
 Wait for test subagent to complete. Collect test results from its output.
@@ -76,6 +81,14 @@ Combine outputs:
 - Branch name
 - Test results: passed / failed / skipped counts
 - Failed test details (name + error) if any
+- Coverage per service:
+  ```
+  | Service | Endpoints | Tested | Coverage |
+  |---------|-----------|--------|----------|
+  | FakeStore | 8 | 4 | 50% |
+  | ... | ... | ... | ... |
+  ```
+- List of untested endpoints per service
 - Allure report URL: http://localhost:9090
 
 ---
