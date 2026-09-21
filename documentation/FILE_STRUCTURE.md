@@ -29,6 +29,7 @@ Gredja/
 │   │   └── gh-pr-create.ps1
 │   └── skills/
 │       ├── api-test-gen/SKILL.md
+│       ├── coverage/SKILL.md
 │       ├── e2e-test-gen/SKILL.md
 │       ├── audit/SKILL.md
 │       ├── commit/SKILL.md
@@ -37,9 +38,11 @@ Gredja/
 │       ├── review-commit/SKILL.md
 │       ├── review-pr/SKILL.md
 │       ├── test/SKILL.md
-│       └── test-report/SKILL.md
+│       ├── test-report/SKILL.md
+│       └── update-docs/SKILL.md
 ├── Scripts/
-│   └── allure-report.ps1
+│   ├── allure-report.ps1
+│   └── test-coverage.ps1
 ├── black-white-cat/
 └── backups/
     ├── SETUP.md

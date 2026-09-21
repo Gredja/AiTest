@@ -273,6 +273,8 @@ MiMoCode:
 | `/review-pr` | Ревью pull request |
 | `/api-test-gen` | Генерирует тесты для нового API endpoint (читает Observable Behaviour) |
 | `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations |
+| `/coverage` | Запускает тесты + считает code coverage (coverlet) + file coverage (endpoint→test) |
+| `/update-docs` | Обновляет .md файлы проекта после структурных изменений |
 | `/gredja-rules` | Показывает правила проекта |
 
 Просто напиши `/test` в чате с MiMoCode — и он запустит тесты.

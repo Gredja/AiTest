@@ -7,8 +7,9 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 - .NET 10.0
 - NUnit 4.6.1
 - RestSharp 114.0.0
-- FluentAssertions 8.10.0
+- FluentAssertions 8.11.0
 - Allure (via custom TestAdapter)
+- Coverlet (code coverage)
 
 ## APIs Under Test
 
@@ -39,6 +40,7 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 dotnet test Api/Api.csproj
 dotnet test E2E/E2E.csproj
 dotnet test --filter Category=HealthCheck
+./Scripts/test-coverage.ps1  # run tests + coverage report
 ```
 
 ## Documentation
@@ -48,6 +50,12 @@ dotnet test --filter Category=HealthCheck
 - `documentation/GitHubObservableBehaviour.md` — observable behaviour for GitHub API
 - `documentation/ObservableBehaviourTemplate.md` — template for new services
 - `Rules/` — project rules (code, assertions, test practices, etc.)
+
+## Coverage
+
+```bash
+./Scripts/test-coverage.ps1  # code coverage + file coverage
+```
 
 ## Deadline
 
