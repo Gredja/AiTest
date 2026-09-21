@@ -32,8 +32,21 @@ public class GetIssueByIdTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("10.2 Response matches expected contract")]
+    public async Task GetIssueById_ResponseMatchesContract()
+    {
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("10.2 Response has valid issue fields")]
+    [Description("10.3 Response has valid issue fields")]
     public async Task GetIssueById_HasValidFields()
     {
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
@@ -44,7 +57,7 @@ public class GetIssueByIdTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("10.3 Non-existent issue returns 404")]
+    [Description("10.4 Non-existent issue returns 404")]
     public async Task GetIssueById_NonExistentIssue_ReturnsNotFound()
     {
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
@@ -55,7 +68,7 @@ public class GetIssueByIdTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("10.4 Issue number 0 returns 404")]
+    [Description("10.5 Issue number 0 returns 404")]
     public async Task GetIssueById_ZeroIssueNumber_ReturnsNotFound()
     {
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
@@ -66,7 +79,7 @@ public class GetIssueByIdTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("10.5 Negative issue number returns 404")]
+    [Description("10.6 Negative issue number returns 404")]
     public async Task GetIssueById_NegativeIssueNumber_ReturnsNotFound()
     {
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
@@ -77,7 +90,7 @@ public class GetIssueByIdTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("10.6 Title matches expected issue")]
+    [Description("10.7 Title matches expected issue")]
     public async Task GetIssueById_TitleIsNotEmpty()
     {
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
@@ -88,7 +101,7 @@ public class GetIssueByIdTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("10.7 Repeated calls return same data")]
+    [Description("10.8 Repeated calls return same data")]
     public async Task GetIssueById_RepeatedCalls_ReturnSameData()
     {
         var response1 = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,

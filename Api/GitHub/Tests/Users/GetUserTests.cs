@@ -29,8 +29,20 @@ public class GetUserTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("2.2 Response matches expected contract")]
+    public async Task GetUser_ResponseMatchesContract()
+    {
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("2.2 Response contains valid user fields")]
+    [Description("2.3 Response contains valid user fields")]
     public async Task GetUser_HasValidFields()
     {
         var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
@@ -41,7 +53,7 @@ public class GetUserTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("2.3 Content-Type is application/json")]
+    [Description("2.4 Content-Type is application/json")]
     public async Task GetUser_ContentTypeIsJson()
     {
         var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
@@ -51,7 +63,7 @@ public class GetUserTests : GitHubTestBase
 
     [Test]
     [Category("Performance")]
-    [Description("2.4 Response time < 5 seconds")]
+    [Description("2.5 Response time < 5 seconds")]
     public async Task GetUser_ResponseTimeIsAcceptable()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -63,7 +75,7 @@ public class GetUserTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("2.5 Non-existent user returns 404")]
+    [Description("2.6 Non-existent user returns 404")]
     public async Task GetUser_NonExistentUser_ReturnsNotFound()
     {
         var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById,
@@ -74,7 +86,7 @@ public class GetUserTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("2.6 Login matches request username")]
+    [Description("2.7 Login matches request username")]
     public async Task GetUser_LoginMatchesRequest()
     {
         var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
@@ -84,7 +96,7 @@ public class GetUserTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("2.7 Repeated calls return same data")]
+    [Description("2.8 Repeated calls return same data")]
     public async Task GetUser_RepeatedCalls_ReturnSameData()
     {
         var response1 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));

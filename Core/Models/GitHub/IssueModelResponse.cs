@@ -14,6 +14,9 @@ public class IssueModelResponse : IdModel<long>
     [RequiredField]
     public string State { get; set; }
 
+    [PositiveId]
+    public int Number { get; set; }
+
     [RequiredField]
     public UserModelResponse User { get; set; }
 

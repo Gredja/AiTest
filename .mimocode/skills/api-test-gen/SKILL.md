@@ -231,19 +231,36 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 
 **Optional Setup/Teardown for efficiency:**
 - Use `[OneTimeSetUp]` to fetch shared data once (e.g. `maxId` for dynamic negatives, item list for field validation)
+- **Guarantee Data:** if GET returns empty → POST create → track ID for cleanup
 - Store in `private` fields — reuse across tests in the class
-- Avoids repeated `GET all` calls in every negative test
+- `[OneTimeTearDown]` deletes created resources
 - Example:
 ```csharp
 private List<{Endpoint}Model> _allItems;
 private int _maxId;
+private int? _createdId;
 
 [OneTimeSetUp]
 public async Task OneTimeSetup()
 {
-    var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+    var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
     _allItems = response.Data!;
     _maxId = _allItems.Max(x => x.Id);
+
+    if (_allItems.Count == 0)
+    {
+        var create = await Post<{Endpoint}Request, {Endpoint}Model>(
+            {Service}Endpoints.{Endpoint}, TestData);
+        _createdId = create.Data!.Id;
+        _allItems = (await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint})).Data!;
+    }
+}
+
+[OneTimeTearDown]
+public async Task OneTimeTearDown()
+{
+    if (_createdId.HasValue)
+        await Delete<object>($"{Service}Endpoints.{Endpoint}/{_createdId}");
 }
 ```
 - Do NOT use `[SetUp]`/`[TearDown]` for read-only tests — each test should be independent

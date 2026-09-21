@@ -32,8 +32,22 @@ public class GetBranchesTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("4.2 Response matches expected contract")]
+    public async Task GetBranches_ResponseMatchesContract()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
+            RepoParam(owner, repo));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("4.2 Each branch has valid fields")]
+    [Description("4.3 Each branch has valid fields")]
     public async Task GetBranches_HasValidFields()
     {
         var (owner, repo) = ParseRepo();
@@ -48,7 +62,7 @@ public class GetBranchesTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("4.3 Content-Type is application/json")]
+    [Description("4.4 Content-Type is application/json")]
     public async Task GetBranches_ContentTypeIsJson()
     {
         var (owner, repo) = ParseRepo();
@@ -60,7 +74,7 @@ public class GetBranchesTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("4.4 Pagination works with per_page param")]
+    [Description("4.5 Pagination works with per_page param")]
     public async Task GetBranches_PaginationWorks()
     {
         var (owner, repo) = ParseRepo();
@@ -73,7 +87,7 @@ public class GetBranchesTests : GitHubTestBase
 
     [Test]
     [Category("Performance")]
-    [Description("4.5 Response time < 5 seconds")]
+    [Description("4.6 Response time < 5 seconds")]
     public async Task GetBranches_ResponseTimeIsAcceptable()
     {
         var (owner, repo) = ParseRepo();
@@ -87,7 +101,7 @@ public class GetBranchesTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("4.6 Pagination with per_page=1 returns at most 1 branch")]
+    [Description("4.7 Pagination with per_page=1 returns at most 1 branch")]
     public async Task GetBranches_PaginationPerOne()
     {
         var (owner, repo) = ParseRepo();
@@ -100,7 +114,7 @@ public class GetBranchesTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("4.7 All branch names are unique")]
+    [Description("4.8 All branch names are unique")]
     public async Task GetBranches_AllNamesAreUnique()
     {
         var (owner, repo) = ParseRepo();
@@ -113,7 +127,7 @@ public class GetBranchesTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("4.8 Each branch commit SHA is 40 hex chars")]
+    [Description("4.9 Each branch commit SHA is 40 hex chars")]
     public async Task GetBranches_EachCommitShaIsValid()
     {
         var (owner, repo) = ParseRepo();
@@ -127,7 +141,7 @@ public class GetBranchesTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("4.9 Non-existent repo returns 404")]
+    [Description("4.10 Non-existent repo returns 404")]
     public async Task GetBranches_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,

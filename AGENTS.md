@@ -64,6 +64,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - FakeStoreAPI: ровно 20 товаров (IDs 1-20)
 - Seed methodology: 5 seeds → expand → enforce 5+ negatives → see `Rules/test-practices.md`
 - Document sync: Observable Behaviour ↔ Test Plan ↔ Rules — always in sync
+- Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
 
 ## Detailed Rules (Rules/)
 

@@ -29,8 +29,21 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("2.2 Response matches expected contract")]
+    public async Task GetPostById_ResponseMatchesContract()
+    {
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
+            PostIdParam(TestPostId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Smoke")]
-    [Description("2.2 Response body is not null")]
+    [Description("2.3 Response body is not null")]
     public async Task GetPostById_ReturnsNonNull()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
@@ -42,7 +55,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("2.3 Each field has valid attributes")]
+    [Description("2.4 Each field has valid attributes")]
     public async Task GetPostById_HasValidFields()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
@@ -53,7 +66,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("2.4 Response contains correct ID")]
+    [Description("2.5 Response contains correct ID")]
     public async Task GetPostById_ReturnsCorrectId()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
@@ -64,7 +77,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Negative")]
-    [Description("2.5 Returns 404 for non-existent ID")]
+    [Description("2.6 Returns 404 for non-existent ID")]
     public async Task GetPostById_NonExistentId_ReturnsNotFound()
     {
         var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
@@ -79,7 +92,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Negative")]
-    [Description("2.6 Returns 404 for ID 0")]
+    [Description("2.7 Returns 404 for ID 0")]
     public async Task GetPostById_ZeroId_ReturnsNotFound()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
@@ -90,7 +103,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Negative")]
-    [Description("2.7 Returns 404 for negative ID")]
+    [Description("2.8 Returns 404 for negative ID")]
     public async Task GetPostById_NegativeId_ReturnsNotFound()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
@@ -101,7 +114,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("2.8 Get post by ID = 50 returns valid post")]
+    [Description("2.9 Get post by ID = 50 returns valid post")]
     public async Task GetPostById_BoundaryId_ReturnsValidPost()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
@@ -114,7 +127,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("2.9 Get post by ID = 100 (last) returns valid post")]
+    [Description("2.10 Get post by ID = 100 (last) returns valid post")]
     public async Task GetPostById_LastId_ReturnsValidPost()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
@@ -126,7 +139,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("2.10 Repeated calls return same data")]
+    [Description("2.11 Repeated calls return same data")]
     public async Task GetPostById_RepeatedCalls_ReturnSameData()
     {
         var response1 = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,

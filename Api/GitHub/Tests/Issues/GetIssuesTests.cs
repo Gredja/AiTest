@@ -15,6 +15,37 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class GetIssuesTests : GitHubTestBase
 {
+    private const string TestTitle = "Test issue for contract check";
+    private int? _createdIssueNumber;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            RepoParam(owner, repo));
+
+        if (response.Data!.Count == 0)
+        {
+            var create = await Post<CreateIssueModelRequest, IssueModelResponse>(
+                GitHubEndpoints.RepoIssues,
+                new CreateIssueModelRequest { Title = TestTitle },
+                RepoParam(owner, repo));
+            _createdIssueNumber = create.Data!.Number;
+        }
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdIssueNumber.HasValue)
+        {
+            var (owner, repo) = ParseRepo();
+            await Delete<object>($"{GitHubEndpoints.RepoIssues}/{_createdIssueNumber}",
+                RepoParam(owner, repo));
+        }
+    }
+
     [Test]
     [Category("HealthCheck")]
     [Description("3.1 GET /repos/{owner}/{repo}/issues returns 200 OK")]
@@ -28,8 +59,23 @@ public class GetIssuesTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("3.2 Response matches expected contract")]
+    public async Task GetIssues_ResponseMatchesContract()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            RepoParam(owner, repo));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data.Should().NotBeEmpty("Setup should have guaranteed at least one issue");
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("3.2 Each issue has valid fields")]
+    [Description("3.3 Each issue has valid fields")]
     public async Task GetIssues_HasValidFields()
     {
         var (owner, repo) = ParseRepo();
@@ -44,7 +90,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("3.8 All issue IDs are unique")]
+    [Description("3.4 All issue IDs are unique")]
     public async Task GetIssues_AllIdsAreUnique()
     {
         var (owner, repo) = ParseRepo();
@@ -57,7 +103,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("3.9 Each issue has non-empty state")]
+    [Description("3.5 Each issue has non-empty state")]
     public async Task GetIssues_EachIssueHasValidState()
     {
         var (owner, repo) = ParseRepo();
@@ -69,7 +115,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("3.10 Non-existent repo returns 404")]
+    [Description("3.6 Non-existent repo returns 404")]
     public async Task GetIssues_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
@@ -80,7 +126,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("3.11 Invalid state param returns 422")]
+    [Description("3.7 Invalid state param returns 422")]
     public async Task GetIssues_InvalidState_Returns422()
     {
         var (owner, repo) = ParseRepo();
@@ -92,7 +138,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("3.3 Content-Type is application/json")]
+    [Description("3.8 Content-Type is application/json")]
     public async Task GetIssues_ContentTypeIsJson()
     {
         var (owner, repo) = ParseRepo();
@@ -104,7 +150,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("3.4 Pagination works with per_page and page params")]
+    [Description("3.9 Pagination works with per_page and page params")]
     public async Task GetIssues_PaginationWorks()
     {
         var (owner, repo) = ParseRepo();
@@ -117,7 +163,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Performance")]
-    [Description("3.5 Response time < 5 seconds")]
+    [Description("3.10 Response time < 5 seconds")]
     public async Task GetIssues_ResponseTimeIsAcceptable()
     {
         var (owner, repo) = ParseRepo();
@@ -131,7 +177,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("3.6 Filter by state=open returns only open issues")]
+    [Description("3.11 Filter by state=open returns only open issues")]
     public async Task GetIssues_FilterByStateOpen()
     {
         var (owner, repo) = ParseRepo();
@@ -144,7 +190,7 @@ public class GetIssuesTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("3.7 Filter by state=closed returns only closed issues")]
+    [Description("3.12 Filter by state=closed returns only closed issues")]
     public async Task GetIssues_FilterByStateClosed()
     {
         var (owner, repo) = ParseRepo();
@@ -152,9 +198,6 @@ public class GetIssuesTests : GitHubTestBase
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateClosed)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        if (response.Data!.Any())
-        {
-            response.Data.Should().OnlyContain(i => i.State == GitHubEndpoints.StateClosed);
-        }
+        response.Data.Should().OnlyContain(i => i.State == GitHubEndpoints.StateClosed);
     }
 }

@@ -348,6 +348,7 @@ git checkout -b features/add-user-tests
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`
+- Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
 
 **Workflow:**
 - План → одобение → изменения → отчёт

@@ -28,8 +28,24 @@ public class GetPullRequestsTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Ignore("Creating PR requires branch + commit — too complex for Setup")]
+    [Description("5.2 Response matches expected contract")]
+    public async Task GetPullRequests_ResponseMatchesContract()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
+            RepoParam(owner, repo));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data.Should().NotBeEmpty("Repo should have PRs for contract check");
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("5.2 Each pull request has valid fields")]
+    [Description("5.3 Each pull request has valid fields")]
     public async Task GetPullRequests_HasValidFields()
     {
         var (owner, repo) = ParseRepo();
@@ -44,7 +60,7 @@ public class GetPullRequestsTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("5.8 All PR IDs are unique")]
+    [Description("5.4 All PR IDs are unique")]
     public async Task GetPullRequests_AllIdsAreUnique()
     {
         var (owner, repo) = ParseRepo();
@@ -57,7 +73,7 @@ public class GetPullRequestsTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("5.9 Each PR has valid state")]
+    [Description("5.5 Each PR has valid state")]
     public async Task GetPullRequests_EachPRHasValidState()
     {
         var (owner, repo) = ParseRepo();
@@ -69,7 +85,7 @@ public class GetPullRequestsTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("5.10 Non-existent repo returns 404")]
+    [Description("5.6 Non-existent repo returns 404")]
     public async Task GetPullRequests_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
@@ -80,7 +96,7 @@ public class GetPullRequestsTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("5.3 Content-Type is application/json")]
+    [Description("5.7 Content-Type is application/json")]
     public async Task GetPullRequests_ContentTypeIsJson()
     {
         var (owner, repo) = ParseRepo();
@@ -92,7 +108,7 @@ public class GetPullRequestsTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("5.4 Pagination works with per_page param")]
+    [Description("5.8 Pagination works with per_page param")]
     public async Task GetPullRequests_PaginationWorks()
     {
         var (owner, repo) = ParseRepo();
@@ -105,7 +121,7 @@ public class GetPullRequestsTests : GitHubTestBase
 
     [Test]
     [Category("Performance")]
-    [Description("5.5 Response time < 5 seconds")]
+    [Description("5.9 Response time < 5 seconds")]
     public async Task GetPullRequests_ResponseTimeIsAcceptable()
     {
         var (owner, repo) = ParseRepo();
@@ -119,7 +135,7 @@ public class GetPullRequestsTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("5.6 Filter by state=open returns only open pull requests")]
+    [Description("5.10 Filter by state=open returns only open pull requests")]
     public async Task GetPullRequests_FilterByStateOpen()
     {
         var (owner, repo) = ParseRepo();
@@ -127,15 +143,12 @@ public class GetPullRequestsTests : GitHubTestBase
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateOpen)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        if (response.Data!.Any())
-        {
-            response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateOpen);
-        }
+        response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateOpen);
     }
 
     [Test]
     [Category("Smoke")]
-    [Description("5.7 Filter by state=closed returns only closed pull requests")]
+    [Description("5.11 Filter by state=closed returns only closed pull requests")]
     public async Task GetPullRequests_FilterByStateClosed()
     {
         var (owner, repo) = ParseRepo();
@@ -143,9 +156,6 @@ public class GetPullRequestsTests : GitHubTestBase
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateClosed)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        if (response.Data!.Any())
-        {
-            response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateClosed);
-        }
+        response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateClosed);
     }
 }

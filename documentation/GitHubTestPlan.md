@@ -12,40 +12,40 @@
 ### 1.1 Repositories
 | # | Endpoint | Tests | Status |
 |---|----------|-------|--------|
-| 1.1.1 | GET /repos/{owner}/{repo} | Status, fields, Content-Type, response time, 404 for non-existent | Done |
-| 1.1.2 | GET /repositories | Status, pagination | Done |
-| 1.1.3 | GET /user/repos | Auth required, pagination | Ignore (RestSharp URL bug) |
+| 1.1.1 | GET /repos/{owner}/{repo} | Status, contract, fields, Content-Type, response time, 404 for non-existent | Done |
+| 1.1.2 | GET /repositories | Status, contract, pagination | Done |
+| 1.1.3 | GET /user/repos | Auth, contract, pagination | Done |
 
 ### 1.2 Issues
 | # | Endpoint | Tests | Status |
 |---|----------|-------|--------|
-| 1.2.1 | GET /repos/{owner}/{repo}/issues | Status, fields, pagination, state filter | Done |
-| 1.2.2 | GET /repos/{owner}/{repo}/issues/{issue_number} | Status, fields | Done |
-| 1.2.3 | GET /repos/{owner}/{repo}/issues/{issue_number}/comments | Status, fields | Done |
+| 1.2.1 | GET /repos/{owner}/{repo}/issues | Status, contract, fields, pagination, state filter | Done |
+| 1.2.2 | GET /repos/{owner}/{repo}/issues/{issue_number} | Status, contract, fields | Done |
+| 1.2.3 | GET /repos/{owner}/{repo}/issues/{issue_number}/comments | Status, contract, fields | Done |
 
 ### 1.3 Pull Requests
 | # | Endpoint | Tests | Status |
 |---|----------|-------|--------|
-| 1.3.1 | GET /repos/{owner}/{repo}/pulls | Status, fields, pagination, state filter | Done |
+| 1.3.1 | GET /repos/{owner}/{repo}/pulls | Status, contract, fields, pagination, state filter | Done |
 | 1.3.2 | GET /repos/{owner}/{repo}/pulls/{pull_number}/files | Status | TODO |
 | 1.3.3 | GET /repos/{owner}/{repo}/pulls/{pull_number}/commits | Status | TODO |
 
 ### 1.4 Branches
 | # | Endpoint | Tests | Status |
 |---|----------|-------|--------|
-| 1.4.1 | GET /repos/{owner}/{repo}/branches | Status, fields | Done |
+| 1.4.1 | GET /repos/{owner}/{repo}/branches | Status, contract, fields | Done |
 | 1.4.2 | GET /repos/{owner}/{repo}/branches/{branch} | Status, fields | TODO |
 
 ### 1.5 Users
 | # | Endpoint | Tests | Status |
 |---|----------|-------|--------|
-| 1.5.1 | GET /users/{username} | Status, fields | Done |
-| 1.5.2 | GET /users/{username}/repos | Status, pagination | Done |
+| 1.5.1 | GET /users/{username} | Status, contract, fields | Done |
+| 1.5.2 | GET /users/{username}/repos | Status, contract, pagination | Done |
 
 ### 1.6 Misc
 | # | Endpoint | Tests | Status |
 |---|----------|-------|--------|
-| 1.6.1 | GET /rate_limit | Status, remaining > 0, reset is future, sections exist | Done |
+| 1.6.1 | GET /rate_limit | Status, contract, remaining > 0, reset is future, sections exist | Done |
 | 1.6.2 | GET /repos/{owner}/{repo}/contributors | Status, fields | TODO |
 | 1.6.3 | GET /repos/{owner}/{repo}/languages | Status | TODO |
 | 1.6.4 | GET /repos/{owner}/{repo}/topics | Status | TODO |
@@ -53,6 +53,7 @@
 
 ### Test Categories
 - `HealthCheck` — endpoint returns 200
+- `ContractCheck` — response matches expected model (JSON round-trip + attribute validation)
 - `Regression` — valid fields, data integrity
 - `Smoke` — Content-Type, pagination, filters
 - `Negative` — 404 for non-existent resources

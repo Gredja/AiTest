@@ -26,8 +26,20 @@ public class GetPublicReposTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("8.2 Response matches expected contract")]
+    public async Task GetPublicRepos_ResponseMatchesContract()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("8.2 Each public repo has valid fields")]
+    [Description("8.3 Each public repo has valid fields")]
     public async Task GetPublicRepos_HasValidFields()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories);
@@ -40,7 +52,7 @@ public class GetPublicReposTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("8.3 Pagination with since param limits results")]
+    [Description("8.4 Pagination with since param limits results")]
     public async Task GetPublicRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,

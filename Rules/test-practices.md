@@ -98,3 +98,37 @@ Priority: `1` = must have, `2` = nice to have
 **Never:** less than 3 tests per endpoint, less than 5 negatives per endpoint
 
 **Don't duplicate attribute checks:** `ShouldHaveValidFields()` covers `[RequiredField]`, `[PositiveId]`, `[ValueRange]`. Per-field assertions only for things attributes CAN'T cover: unique IDs, boundary values, idempotency, cross-field invariants, category counts.
+
+## Guarantee Data
+
+When a GET endpoint may return an empty list, don't silently skip the test. Guarantee data exists via `[OneTimeSetUp]`.
+
+**Pattern:**
+```csharp
+private int? _createdId;
+
+[OneTimeSetUp]
+public async Task OneTimeSetup()
+{
+    var response = await Get<List<T>>(Endpoint);
+    if (response.Data!.Count == 0)
+    {
+        var create = await Post<Request, Response>(Endpoint, TestData);
+        _createdId = create.Data!.Id;
+    }
+}
+
+[OneTimeTearDown]
+public async Task OneTimeTearDown()
+{
+    if (_createdId.HasValue)
+        await Delete($"{Endpoint}/{_createdId}");
+}
+```
+
+**Rules:**
+- POST only in `[OneTimeSetUp]`, never in `[Test]` methods
+- Track created resource ID for cleanup
+- `[OneTimeTearDown]` deletes created resources
+- If POST is unavailable — use `[Ignore]` with explanation, not `Inconclusive`
+- Never use `if (Data.Any())` to skip assertions — data must exist before assertion runs

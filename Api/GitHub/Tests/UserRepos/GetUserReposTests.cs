@@ -28,8 +28,21 @@ public class GetUserReposTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("7.2 Response matches expected contract")]
+    public async Task GetUserRepos_ResponseMatchesContract()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
+            UsernameParam(TestUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("7.2 Each user repo has valid fields")]
+    [Description("7.3 Each user repo has valid fields")]
     public async Task GetUserRepos_HasValidFields()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
@@ -43,7 +56,7 @@ public class GetUserReposTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("7.3 Non-existent user repos returns 404")]
+    [Description("7.4 Non-existent user repos returns 404")]
     public async Task GetUserRepos_NonExistentUser_ReturnsNotFound()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
@@ -54,7 +67,7 @@ public class GetUserReposTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("7.4 Pagination with per_page=5 returns at most 5 repos")]
+    [Description("7.5 Pagination with per_page=5 returns at most 5 repos")]
     public async Task GetUserRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,

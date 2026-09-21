@@ -29,8 +29,22 @@ public class GetRepositoryTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("1.2 Response matches expected contract")]
+    public async Task GetRepository_ResponseMatchesContract()
+    {
+        var (owner, repo) = ParseRepo();
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
+            RepoParam(owner, repo));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("1.2 Response contains valid repository fields")]
+    [Description("1.3 Response contains valid repository fields")]
     public async Task GetRepository_HasValidFields()
     {
         var (owner, repo) = ParseRepo();
@@ -44,7 +58,7 @@ public class GetRepositoryTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("1.3 Content-Type is application/json")]
+    [Description("1.4 Content-Type is application/json")]
     public async Task GetRepository_ContentTypeIsJson()
     {
         var (owner, repo) = ParseRepo();
@@ -56,7 +70,7 @@ public class GetRepositoryTests : GitHubTestBase
 
     [Test]
     [Category("Performance")]
-    [Description("1.4 Response time < 5 seconds")]
+    [Description("1.5 Response time < 5 seconds")]
     public async Task GetRepository_ResponseTimeIsAcceptable()
     {
         var (owner, repo) = ParseRepo();
@@ -70,7 +84,7 @@ public class GetRepositoryTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("1.5 Non-existent repo returns 404")]
+    [Description("1.6 Non-existent repo returns 404")]
     public async Task GetRepository_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
@@ -81,7 +95,7 @@ public class GetRepositoryTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("1.6 Non-existent owner returns 404")]
+    [Description("1.7 Non-existent owner returns 404")]
     public async Task GetRepository_NonExistentOwner_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
@@ -92,7 +106,7 @@ public class GetRepositoryTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("1.7 Repository name matches request")]
+    [Description("1.8 Repository name matches request")]
     public async Task GetRepository_NameMatchesRequest()
     {
         var (owner, repo) = ParseRepo();
@@ -105,7 +119,7 @@ public class GetRepositoryTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("1.8 Repeated calls return same data")]
+    [Description("1.9 Repeated calls return same data")]
     public async Task GetRepository_RepeatedCalls_ReturnSameData()
     {
         var (owner, repo) = ParseRepo();

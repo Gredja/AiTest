@@ -19,6 +19,36 @@ public class GetIssueCommentsTests : GitHubTestBase
     private const string RepoName = "AiTest";
     private const int ExistingIssueNumber = 5;
     private const int NonExistentIssueNumber = 99999;
+    private const string TestComment = "Test comment for contract check";
+
+    private long? _createdCommentId;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        if (response.Data!.Count == 0)
+        {
+            var create = await Post<CreateCommentModelRequest, Comment>(
+                GitHubEndpoints.RepoIssueComments,
+                new CreateCommentModelRequest { Body = TestComment },
+                [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+            _createdCommentId = create.Data!.Id;
+        }
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdCommentId.HasValue)
+        {
+            await Delete<object>(
+                $"{GitHubEndpoints.RepoIssueComments}/{_createdCommentId}",
+                RepoParam(RepoOwner, RepoName));
+        }
+    }
 
     [Test]
     [Category("HealthCheck")]
@@ -32,8 +62,22 @@ public class GetIssueCommentsTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("11.2 Response matches expected contract")]
+    public async Task GetIssueComments_ResponseMatchesContract()
+    {
+        var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data.Should().NotBeEmpty("Setup should have guaranteed at least one comment");
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("11.2 Response is an array")]
+    [Description("11.3 Response is an array")]
     public async Task GetIssueComments_ReturnsArray()
     {
         var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
@@ -45,7 +89,7 @@ public class GetIssueCommentsTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("11.3 Pagination with per_page=2 returns at most 2 comments")]
+    [Description("11.4 Pagination with per_page=2 returns at most 2 comments")]
     public async Task GetIssueComments_PaginationWorks()
     {
         var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
@@ -57,7 +101,7 @@ public class GetIssueCommentsTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("11.4 Each comment has valid fields")]
+    [Description("11.5 Each comment has valid fields")]
     public async Task GetIssueComments_HasValidFields()
     {
         var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
@@ -71,7 +115,7 @@ public class GetIssueCommentsTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("11.5 All comment IDs are unique")]
+    [Description("11.6 All comment IDs are unique")]
     public async Task GetIssueComments_AllIdsAreUnique()
     {
         var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
@@ -83,7 +127,7 @@ public class GetIssueCommentsTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("11.6 Non-existent issue returns 404")]
+    [Description("11.7 Non-existent issue returns 404")]
     public async Task GetIssueComments_NonExistentIssue_ReturnsNotFound()
     {
         var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
@@ -94,7 +138,7 @@ public class GetIssueCommentsTests : GitHubTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("11.7 Non-existent repo returns 404")]
+    [Description("11.8 Non-existent repo returns 404")]
     public async Task GetIssueComments_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,

@@ -15,6 +15,31 @@ namespace Api.JsonPlaceholder.Todos;
 public class GetAllTodosTests : JsonPlaceholderRequestHelper
 {
     private const int ExpectedTodoCount = 200;
+    private const int TestUserId = 1;
+    private static readonly PostModelRequest _testTodo = new() { UserId = TestUserId, Title = "Test Todo for contract" };
+    private int? _createdTodoId;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        if (response.Data!.Count == 0)
+        {
+            var create = await Post<PostModelRequest, TodoModelResponse>(JsonPlaceholderEndpoints.Todos, _testTodo);
+            _createdTodoId = create.Data!.Id;
+        }
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdTodoId.HasValue)
+        {
+            await Delete<object>($"{JsonPlaceholderEndpoints.Todos}/{_createdTodoId}");
+        }
+    }
+
     [Test]
     [Category("HealthCheck")]
     [Description("7.1 Status code is 200")]
@@ -26,8 +51,20 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("7.2 Response matches expected contract")]
+    public async Task GetAllTodos_ResponseMatchesContract()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Smoke")]
-    [Description("7.2 Content-Type is application/json")]
+    [Description("7.3 Content-Type is application/json")]
     public async Task GetAllTodos_ContentTypeIsJson()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
@@ -37,7 +74,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Smoke")]
-    [Description("7.3 Response body is not empty")]
+    [Description("7.4 Response body is not empty")]
     public async Task GetAllTodos_ReturnsNonEmptyList()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
@@ -48,7 +85,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("7.4 Each item has valid fields")]
+    [Description("7.5 Each item has valid fields")]
     public async Task GetAllTodos_EachItemHasValidFields()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
@@ -61,7 +98,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Performance")]
-    [Description("7.5 Response time < 5 seconds")]
+    [Description("7.6 Response time < 5 seconds")]
     public async Task GetAllTodos_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
@@ -73,7 +110,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Smoke")]
-    [Description("7.6 Returns exactly 200 todos")]
+    [Description("7.7 Returns exactly 200 todos")]
     public async Task GetAllTodos_ReturnsExpectedCount()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
@@ -84,7 +121,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("7.7 All todo IDs are unique")]
+    [Description("7.8 All todo IDs are unique")]
     public async Task GetAllTodos_AllIdsAreUnique()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);

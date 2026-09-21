@@ -26,25 +26,34 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("9.2 Response matches expected contract")]
+    public async Task GetAuthenticatedUserRepos_ResponseMatchesContract()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("9.2 Each authenticated user repo has valid fields")]
+    [Description("9.3 Each authenticated user repo has valid fields")]
     public async Task GetAuthenticatedUserRepos_HasValidFields()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos);
 
         response.Data.Should().NotBeNull();
-        if (response.Data!.Any())
-        {
-            var repo = response.Data.First();
-            repo.Name.Should().NotBeNullOrWhiteSpace();
-            repo.Owner.Should().NotBeNull();
-            repo.HtmlUrl.Should().NotBeNullOrWhiteSpace();
-        }
+        var repo = response.Data!.First();
+        repo.Name.Should().NotBeNullOrWhiteSpace();
+        repo.Owner.Should().NotBeNull();
+        repo.HtmlUrl.Should().NotBeNullOrWhiteSpace();
     }
 
     [Test]
     [Category("Smoke")]
-    [Description("9.3 Pagination with per_page=5 returns at most 5 repos")]
+    [Description("9.4 Pagination with per_page=5 returns at most 5 repos")]
     public async Task GetAuthenticatedUserRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos,

@@ -15,6 +15,31 @@ namespace Api.JsonPlaceholder.Todos;
 public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
+    private static readonly PostModelRequest _testTodo = new() { UserId = TestUserId, Title = "Test Todo for contract" };
+    private int? _createdTodoId;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
+            UserIdParam(TestUserId));
+
+        if (response.Data!.Count == 0)
+        {
+            var create = await Post<PostModelRequest, TodoModelResponse>(JsonPlaceholderEndpoints.Todos, _testTodo);
+            _createdTodoId = create.Data!.Id;
+        }
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdTodoId.HasValue)
+        {
+            await Delete<object>($"{JsonPlaceholderEndpoints.Todos}/{_createdTodoId}");
+        }
+    }
+
     [Test]
     [Category("HealthCheck")]
     [Description("8.1 Status code is 200")]
@@ -27,8 +52,21 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("8.2 Response matches expected contract")]
+    public async Task GetTodosByUserId_ResponseMatchesContract()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
+            UserIdParam(TestUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Smoke")]
-    [Description("8.2 Response body is not empty")]
+    [Description("8.3 Response body is not empty")]
     public async Task GetTodosByUserId_ReturnsNonEmptyList()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
@@ -39,7 +77,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("8.3 Each item has valid fields")]
+    [Description("8.4 Each item has valid fields")]
     public async Task GetTodosByUserId_EachItemHasValidFields()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
@@ -53,7 +91,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Smoke")]
-    [Description("8.4 All items belong to same user")]
+    [Description("8.5 All items belong to same user")]
     public async Task GetTodosByUserId_AllBelongToSameUser()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
@@ -64,7 +102,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Negative")]
-    [Description("8.5 Returns empty list for non-existent user")]
+    [Description("8.6 Returns empty list for non-existent user")]
     public async Task GetTodosByUserId_NonExistentUser_ReturnsEmpty()
     {
         var allUsers = await Get<List<JsonPlaceholderUser>>(JsonPlaceholderEndpoints.Users);
@@ -80,7 +118,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("8.6 UserId=5 returns different subset than UserId=1")]
+    [Description("8.7 UserId=5 returns different subset than UserId=1")]
     public async Task GetTodosByUserId_DifferentUser_ReturnsDifferentSubset()
     {
         var response1 = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
@@ -95,7 +133,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Negative")]
-    [Description("8.7 UserId=0 returns empty list")]
+    [Description("8.8 UserId=0 returns empty list")]
     public async Task GetTodosByUserId_ZeroUserId_ReturnsEmpty()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,

@@ -25,8 +25,20 @@ public class GetRateLimitTests : GitHubTestBase
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("6.2 Response matches expected contract")]
+    public async Task GetRateLimit_ResponseMatchesContract()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Regression")]
-    [Description("6.2 Rate limit remaining is positive")]
+    [Description("6.3 Rate limit remaining is positive")]
     public async Task GetRateLimit_RemainingIsPositive()
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
@@ -36,7 +48,7 @@ public class GetRateLimitTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("6.3 Rate limit reset is a future timestamp")]
+    [Description("6.4 Rate limit reset is a future timestamp")]
     public async Task GetRateLimit_ResetIsFuture()
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
@@ -47,7 +59,7 @@ public class GetRateLimitTests : GitHubTestBase
 
     [Test]
     [Category("Performance")]
-    [Description("6.4 Response time < 5 seconds")]
+    [Description("6.5 Response time < 5 seconds")]
     public async Task GetRateLimit_ResponseTimeIsAcceptable()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
@@ -59,7 +71,7 @@ public class GetRateLimitTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("6.5 Rate limit response has core and resources sections")]
+    [Description("6.6 Rate limit response has core and resources sections")]
     public async Task GetRateLimit_HasAllSections()
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
@@ -73,7 +85,7 @@ public class GetRateLimitTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("6.6 Rate limit used is non-negative")]
+    [Description("6.7 Rate limit used is non-negative")]
     public async Task GetRateLimit_UsedIsNonNegative()
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
