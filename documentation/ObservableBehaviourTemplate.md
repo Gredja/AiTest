@@ -24,6 +24,21 @@ When generating or reviewing {Service} API tests, the AI agent:
 
 ---
 
+## Test Categories
+
+Full definitions and rules: `Rules/categories.md`. One service category on class, one check-type category on method.
+
+| Category | Applies to | Example test name pattern |
+|----------|-----------|---------------------------|
+| `HealthCheck` | Status code checks only | `*_ReturnsOk`, `*_ReturnsCreated` |
+| `ContractCheck` | Response/request schema matches expected models — response always, request only for POST/PATCH | `*_ReturnsExpectedFields`, `*_RequestMatchesModel` |
+| `Smoke` | Basic functionality — not empty, correct count, content-type | `*_ReturnsNonEmptyList`, `*_ContentTypeIsJson` |
+| `Regression` | Schema / field validation via attributes | `*_EachItemHasValidFields`, `*_HasValidFields` |
+| `Negative` | Error handling — non-existent ID, bad input, missing auth | `*_NonExistentId_*`, `*_ZeroId_*` |
+| `Performance` | Response time (GET list endpoints only) | `*_ResponseTimeIsAcceptable` |
+
+---
+
 ## Endpoint Priority (by business value)
 
 | Priority | Endpoints | Rationale |

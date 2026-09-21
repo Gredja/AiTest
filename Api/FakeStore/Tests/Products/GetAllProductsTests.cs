@@ -22,17 +22,29 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.1 Status code is 200")]
     public async Task GetAllProducts_ReturnsOk()
     {
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("1.2 Response matches expected contract")]
+    public async Task GetAllProducts_ResponseMatchesContract()
+    {
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Smoke")]
-    [Description("1.2 Response body is not empty")]
+    [Description("1.3 Response body is not empty")]
     public async Task GetAllProducts_ReturnsNonEmptyList()
     {
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -40,20 +52,20 @@ public class GetAllProductsTests : RequestHelper
 
     [Test]
     [Category("Smoke")]
-    [Description("1.3 Content-Type is application/json")]
+    [Description("1.4 Content-Type is application/json")]
     public async Task GetAllProducts_ContentTypeIsJson()
     {
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]
     [Category("Regression")]
-    [Description("1.4 Each item has valid required fields (via attributes)")]
+    [Description("1.5 Each item has valid required fields (via attributes)")]
     public async Task GetAllProducts_EachItemHasValidFields()
     {
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         foreach (var product in response.Data!)
         {
@@ -63,11 +75,11 @@ public class GetAllProductsTests : RequestHelper
 
     [Test]
     [Category("Performance")]
-    [Description("1.5 Response time < 5 seconds")]
+    [Description("1.6 Response time < 5 seconds")]
     public async Task GetAllProducts_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -75,10 +87,10 @@ public class GetAllProductsTests : RequestHelper
 
     [Test]
     [Category("Smoke")]
-    [Description("1.6 Returns exactly 20 products")]
+    [Description("1.7 Returns exactly 20 products")]
     public async Task GetAllProducts_ReturnsExpectedCount()
     {
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount(TestConfig.ExpectedProductCount);
@@ -86,20 +98,20 @@ public class GetAllProductsTests : RequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("1.7 Each product has rating with rate between 0 and 5")]
+    [Description("1.8 Each product has rating with rate between 0 and 5")]
     public async Task GetAllProducts_EachProductHasValidRating()
     {
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         response.Data.Should().OnlyContain(p => p.Rating.Rate >= RatingMin && p.Rating.Rate <= RatingMax);
     }
 
     [Test]
     [Category("Regression")]
-    [Description("1.8 All product IDs are unique")]
+    [Description("1.9 All product IDs are unique")]
     public async Task GetAllProducts_AllIdsAreUnique()
     {
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         var ids = response.Data!.Select(p => p.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
@@ -107,10 +119,10 @@ public class GetAllProductsTests : RequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("1.9 Products contain all categories")]
+    [Description("1.10 Products contain all categories")]
     public async Task GetAllProducts_ContainsAllCategories()
     {
-        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products, Method.Get);
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         var categories = response.Data!.Select(p => p.Category).Distinct().ToList();
         categories.Should().HaveCount(ExpectedCategoryCount);

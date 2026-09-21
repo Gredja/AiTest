@@ -20,17 +20,29 @@ public class GetAllUsersTests : RequestHelper
     [Description("3.1 Status code is 200")]
     public async Task GetAllUsers_ReturnsOk()
     {
-        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users, Method.Get);
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("3.2 Response matches expected contract")]
+    public async Task GetAllUsers_ResponseMatchesContract()
+    {
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
     [Category("Smoke")]
-    [Description("3.2 Response body is not empty")]
+    [Description("3.3 Response body is not empty")]
     public async Task GetAllUsers_ReturnsNonEmptyList()
     {
-        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users, Method.Get);
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -38,20 +50,20 @@ public class GetAllUsersTests : RequestHelper
 
     [Test]
     [Category("Smoke")]
-    [Description("3.3 Content-Type is application/json")]
+    [Description("3.5 Content-Type is application/json")]
     public async Task GetAllUsers_ContentTypeIsJson()
     {
-        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users, Method.Get);
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]
     [Category("Regression")]
-    [Description("3.4 Each item has valid required fields (via attributes)")]
+    [Description("3.6 Each item has valid required fields (via attributes)")]
     public async Task GetAllUsers_EachItemHasValidFields()
     {
-        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users, Method.Get);
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
 
         foreach (var user in response.Data!)
         {
@@ -61,11 +73,11 @@ public class GetAllUsersTests : RequestHelper
 
     [Test]
     [Category("Performance")]
-    [Description("3.5 Response time < 5 seconds")]
+    [Description("3.7 Response time < 5 seconds")]
     public async Task GetAllUsers_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users, Method.Get);
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -73,10 +85,10 @@ public class GetAllUsersTests : RequestHelper
 
     [Test]
     [Category("Smoke")]
-    [Description("3.6 Returns exactly 10 users")]
+    [Description("3.8 Returns exactly 10 users")]
     public async Task GetAllUsers_ReturnsExpectedCount()
     {
-        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users, Method.Get);
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount(ExpectedUserCount);
@@ -84,10 +96,10 @@ public class GetAllUsersTests : RequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("3.7 All user IDs are unique")]
+    [Description("3.9 All user IDs are unique")]
     public async Task GetAllUsers_AllIdsAreUnique()
     {
-        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users, Method.Get);
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
 
         var ids = response.Data!.Select(u => u.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();

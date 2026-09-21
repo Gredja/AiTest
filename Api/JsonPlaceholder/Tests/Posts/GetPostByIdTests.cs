@@ -22,7 +22,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.1 Status code is 200 for valid ID")]
     public async Task GetPostById_ReturnsOk()
     {
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -33,7 +33,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.2 Response body is not null")]
     public async Task GetPostById_ReturnsNonNull()
     {
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -45,7 +45,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.3 Each field has valid attributes")]
     public async Task GetPostById_HasValidFields()
     {
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
 
         response.Data!.ShouldHaveValidFields();
@@ -56,7 +56,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.4 Response contains correct ID")]
     public async Task GetPostById_ReturnsCorrectId()
     {
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
 
         response.Data!.Id.Should().Be(TestPostId);
@@ -67,11 +67,11 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.5 Returns 404 for non-existent ID")]
     public async Task GetPostById_NonExistentId_ReturnsNotFound()
     {
-        var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts, Method.Get);
+        var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
         var maxPostId = allPosts.Data!.Max(p => p.Id);
         var nonExistentId = maxPostId + 1;
 
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -82,7 +82,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.6 Returns 404 for ID 0")]
     public async Task GetPostById_ZeroId_ReturnsNotFound()
     {
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -93,7 +93,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.7 Returns 404 for negative ID")]
     public async Task GetPostById_NegativeId_ReturnsNotFound()
     {
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -104,7 +104,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.8 Get post by ID = 50 returns valid post")]
     public async Task GetPostById_BoundaryId_ReturnsValidPost()
     {
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(BoundaryPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -117,7 +117,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.9 Get post by ID = 100 (last) returns valid post")]
     public async Task GetPostById_LastId_ReturnsValidPost()
     {
-        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(LastPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -129,9 +129,9 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     [Description("2.10 Repeated calls return same data")]
     public async Task GetPostById_RepeatedCalls_ReturnSameData()
     {
-        var response1 = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response1 = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
-        var response2 = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, Method.Get,
+        var response2 = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             PostIdParam(TestPostId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);

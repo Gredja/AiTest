@@ -27,6 +27,7 @@ Each test method gets ONE primary category based on what it verifies:
 | Category | Applies to | Description |
 |----------|-----------|-------------|
 | `HealthCheck` | Status code checks only | Endpoint is alive, returns expected HTTP status (200, 201, etc.) |
+| `ContractCheck` | Response/request schema matches expected models | Use `ShouldHaveValidContract()` (JSON round-trip + attribute validation) |
 | `Smoke` | Basic functionality | Response not empty, correct count, content-type is JSON, correct data values |
 | `Regression` | Schema / field validation | Each field present and valid, `id` matches requested, `ShouldHaveValidFields()` |
 | `Negative` | Error handling | Non-existent ID, ID=0, negative ID, wrong data — all edge cases that should fail |
@@ -39,6 +40,11 @@ Each test method gets ONE primary category based on what it verifies:
 public async Task GetAllProducts_ReturnsOk()
 
 [Test]
+[Category("ContractCheck")]
+[Description("1.2 Response matches expected model schema")]
+public async Task GetAllProducts_ReturnsExpectedFields()
+
+[Test]
 [Category("Regression")]
 [Description("1.4 Each item has valid required fields")]
 public async Task GetAllProducts_EachItemHasValidFields()
@@ -49,6 +55,7 @@ public async Task GetAllProducts_EachItemHasValidFields()
 | Test name pattern | Category |
 |-------------------|----------|
 | `*_ReturnsOk`, `*_ReturnsCreated`, `*_ReturnsDeleted` | `HealthCheck` |
+| `*_ReturnsExpectedFields`, `*_ModelMatchesResponse`, `*_HasExpectedSchema` | `ContractCheck` |
 | `*_ReturnsNonEmptyList`, `*_ReturnsExpectedCount`, `*_ContentTypeIsJson` | `Smoke` |
 | `*_ReturnsNonEmptyBody`, `*_ReturnsNonNull` | `Smoke` |
 | `*_ReturnsCorrectData`, `*_ReturnsCorrectId`, `*_HasGeneratedId` | `Smoke` |

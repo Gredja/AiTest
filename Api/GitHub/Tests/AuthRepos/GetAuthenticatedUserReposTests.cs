@@ -17,22 +17,20 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
 {
     [Test]
     [Category("HealthCheck")]
-    [Ignore("Known issue: RestSharp URL construction fails for /user/repos — returns 404")]
     [Description("9.1 GET /user/repos returns 200 OK")]
     public async Task GetAuthenticatedUserRepos_ReturnsOk()
     {
-        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos, Method.Get);
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
     [Category("Regression")]
-    [Ignore("Known issue: RestSharp URL construction fails for /user/repos — returns 404")]
     [Description("9.2 Each authenticated user repo has valid fields")]
     public async Task GetAuthenticatedUserRepos_HasValidFields()
     {
-        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos, Method.Get);
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos);
 
         response.Data.Should().NotBeNull();
         if (response.Data!.Any())
@@ -46,11 +44,10 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
 
     [Test]
     [Category("Smoke")]
-    [Ignore("Known issue: RestSharp URL construction fails for /user/repos — returns 404")]
     [Description("9.3 Pagination with per_page=5 returns at most 5 repos")]
     public async Task GetAuthenticatedUserRepos_PaginationWorks()
     {
-        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos, Method.Get,
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos,
             PaginationParams(1, 5));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);

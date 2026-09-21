@@ -14,7 +14,8 @@ FluentAssertions (not NUnit Assert).
 - `collection.Should().OnlyContain(p => ...)` — all items match predicate
 - `x.Should().NotBeEmpty()` — collection not empty
 - `response.ShouldHaveStatusCode(HttpStatusCode.OK)` — extension from `AssertHelper`
-- `item.ShouldHaveValidFields()` — validates `[RequiredField]`, `[PositiveId]`, `[ValueRange]` attributes
+- `item.ShouldHaveValidContract()` — JSON serializable + validates `[RequiredField]`, `[PositiveId]`, `[ValueRange]` attributes (use for ContractCheck)
+- `item.ShouldHaveValidFields()` — validates attributes only (use when JSON serialization is already covered)
 - `response.Data!.ShouldMatchRequest(_testBody)` — compare request fields against response
 
 ## HTTP response assertions

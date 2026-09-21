@@ -39,7 +39,8 @@
 ## Assertion helpers
 
 - Use `ShouldHaveStatusCode()` for HTTP status checks — not `.Should().Be(HttpStatusCode.OK)`
-- Use `ShouldHaveValidFields()` for attribute-based validation — not per-field assertions
+- Use `ShouldHaveValidContract()` for ContractCheck tests (JSON round-trip + attribute validation)
+- Use `ShouldHaveValidFields()` for Regression tests (attribute validation only)
 - Use `ShouldMatchRequest()` for request/response comparison — not manual field mapping
 - All helpers live in `Core/Helpers/AssertHelper.cs`
 

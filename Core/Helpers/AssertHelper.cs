@@ -13,6 +13,12 @@ public static class AssertHelper
     public static void ShouldHaveStatusCode<T>(this RestResponse<T> response, HttpStatusCode expected) =>
         response.StatusCode.Should().Be(expected);
 
+    public static void ShouldHaveValidContract<T>(this T entity) where T : class
+    {
+        entity.Should().BeJsonSerializable();
+        entity.ShouldHaveValidFields();
+    }
+
     public static void ShouldHaveValidFields<T>(this T entity) where T : class
     {
         entity.Should().NotBeNull();

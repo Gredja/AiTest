@@ -129,7 +129,7 @@ new() { Type = ParamType.Parameter, Key = "userId", Value = userId }
 private static readonly PostModel TestPost = new() { UserId = 1, Title = "Test Post", Body = "Test Body" };
 ```
 
-**Pattern:** Use `ShouldHaveValidFields()` via attributes — NOT per-field helpers. Use `ShouldMatchRequest()` for request/response comparison — replaces manual field-by-field assertions.
+**Pattern:** Use `ShouldHaveValidContract()` for ContractCheck (JSON round-trip + attribute validation). Use `ShouldHaveValidFields()` for Regression (attributes only). Use `ShouldMatchRequest()` for request/response comparison — replaces manual field-by-field assertions.
 
 ```csharp
 using NUnit.Framework;
@@ -160,8 +160,19 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("1.2 Response matches expected model schema")]
+    public async Task GetAll{Endpoint}_ResponseMatchesModel()
+    {
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidFields();
+    }
+
+    [Test]
     [Category("Smoke")]
-    [Description("1.2 Content-Type is application/json")]
+    [Description("1.3 Content-Type is application/json")]
     public async Task GetAll{Endpoint}_ContentTypeIsJson()
     {
         var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
@@ -170,7 +181,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 
     [Test]
     [Category("Smoke")]
-    [Description("1.3 Response body is not empty")]
+    [Description("1.4 Response body is not empty")]
     public async Task GetAll{Endpoint}_ReturnsNonEmptyList()
     {
         var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
@@ -180,7 +191,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 
     [Test]
     [Category("Regression")]
-    [Description("1.4 Each item has valid required fields (via attributes)")]
+    [Description("1.5 Each item has valid required fields (via attributes)")]
     public async Task GetAll{Endpoint}_EachItemHasValidFields()
     {
         var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
@@ -192,7 +203,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 
     [Test]
     [Category("Performance")]
-    [Description("1.5 Response time < 5 seconds")]
+    [Description("1.6 Response time < 5 seconds")]
     public async Task GetAll{Endpoint}_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
@@ -203,7 +214,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 
     [Test]
     [Category("Smoke")]
-    [Description("1.6 Returns expected count")]
+    [Description("1.7 Returns expected count")]
     public async Task GetAll{Endpoint}_ReturnsExpectedCount()
     {
         var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);

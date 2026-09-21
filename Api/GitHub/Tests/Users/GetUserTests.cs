@@ -23,7 +23,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.1 GET /users/{username} returns 200 OK")]
     public async Task GetUser_ReturnsOk()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -33,7 +33,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.2 Response contains valid user fields")]
     public async Task GetUser_HasValidFields()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
 
         response.Data!.ShouldHaveValidFields();
         response.Data!.Login.Should().Be(_username);
@@ -44,7 +44,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.3 Content-Type is application/json")]
     public async Task GetUser_ContentTypeIsJson()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -55,7 +55,7 @@ public class GetUserTests : GitHubTestBase
     public async Task GetUser_ResponseTimeIsAcceptable()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -66,7 +66,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.5 Non-existent user returns 404")]
     public async Task GetUser_NonExistentUser_ReturnsNotFound()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, Method.Get,
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById,
             UsernameParam(GitHubEndpoints.NonExistentUser));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -77,7 +77,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.6 Login matches request username")]
     public async Task GetUser_LoginMatchesRequest()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
 
         response.Data!.Login.Should().Be(_username);
     }
@@ -87,8 +87,8 @@ public class GetUserTests : GitHubTestBase
     [Description("2.7 Repeated calls return same data")]
     public async Task GetUser_RepeatedCalls_ReturnSameData()
     {
-        var response1 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
-        var response2 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, Method.Get, UsernameParam(_username));
+        var response1 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
+        var response2 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_username));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Login.Should().Be(response2.Data!.Login);

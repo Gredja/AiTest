@@ -343,8 +343,8 @@ git checkout -b features/add-user-tests
 - Seed-методология: 5 seeds → expand → enforce 5+ negatives → ~15-20 тестов на endpoint
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
-- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
-- Категории: тип сервиса (FakeStore/JsonPlaceholder/GitHub) + тип проверки (HealthCheck/Smoke/Regression/Negative/Performance)
+- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
+- Категории: тип сервиса (FakeStore/JsonPlaceholder/GitHub) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`

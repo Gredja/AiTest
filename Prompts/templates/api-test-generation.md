@@ -98,7 +98,8 @@ GetProductByIdTests:
 - Use custom helpers when available:
   - `response.ShouldHaveStatusCode(HttpStatusCode.OK)` — from AssertHelper
   - `response.ShouldBeOk()` — status 200 + data not null
-  - `response.Data!.ShouldHaveValidFields()` — validates via model attributes
+  - `response.Data!.ShouldHaveValidContract()` — JSON round-trip + validates via model attributes (use for ContractCheck)
+  - `response.Data!.ShouldHaveValidFields()` — validates via model attributes only (use for Regression)
   - `list.ShouldAllHaveValidProducts()` — validates all ProductModel items (only for product lists)
 - For nested objects: `response.Data!.Field.Should().NotBeNull(); response.Data.Field.Prop.Should()...`
 
@@ -106,7 +107,7 @@ GetProductByIdTests:
 
 Every test MUST have `[Category]` attributes. See `Rules/categories.md` for full rules:
 - Service category on class (`FakeStore` / `JsonPlaceholder` / `GitHub`)
-- Check-type category on method (`HealthCheck` / `Smoke` / `Regression` / `Negative` / `Performance`)
+- Check-type category on method (`HealthCheck` / `ContractCheck` / `Smoke` / `Regression` / `Negative` / `Performance`)
 - Category-to-test mapping table
 
 ### Non-existent ID test pattern (for GET /{id} endpoints)

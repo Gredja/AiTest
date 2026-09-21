@@ -21,10 +21,9 @@ public class RequestHelper
 
     public async Task<RestResponse<T>> Get<T>(
         string endpoint,
-        Method method,
         List<RequestDictionaryModel>? additionalParams = null)
     {
-        var request = new RestRequest(endpoint, method)
+        var request = new RestRequest(endpoint, Method.Get)
         {
             RequestFormat = DataFormat.Json
         };

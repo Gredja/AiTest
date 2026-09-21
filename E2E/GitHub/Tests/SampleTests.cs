@@ -19,7 +19,7 @@ public class SampleTests : GitHubE2ETestBase
     public async Task SandboxRepo_IsAccessible()
     {
         var (owner, repo) = ParseRepo();
-        var response = await Get<object>(GitHubEndpoints.ReposById, Method.Get,
+        var response = await Get<object>(GitHubEndpoints.ReposById,
             RepoParam(owner, repo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);

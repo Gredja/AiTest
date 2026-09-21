@@ -25,7 +25,7 @@ public class GetIssueByIdTests : GitHubTestBase
     [Description("10.1 GET /repos/{owner}/{repo}/issues/{number} returns 200 OK")]
     public async Task GetIssueById_ReturnsOk()
     {
-        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById, Method.Get,
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -36,7 +36,7 @@ public class GetIssueByIdTests : GitHubTestBase
     [Description("10.2 Response has valid issue fields")]
     public async Task GetIssueById_HasValidFields()
     {
-        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById, Method.Get,
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response.Data!.ShouldHaveValidFields();
@@ -47,7 +47,7 @@ public class GetIssueByIdTests : GitHubTestBase
     [Description("10.3 Non-existent issue returns 404")]
     public async Task GetIssueById_NonExistentIssue_ReturnsNotFound()
     {
-        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById, Method.Get,
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(NonExistentIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -58,7 +58,7 @@ public class GetIssueByIdTests : GitHubTestBase
     [Description("10.4 Issue number 0 returns 404")]
     public async Task GetIssueById_ZeroIssueNumber_ReturnsNotFound()
     {
-        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById, Method.Get,
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(0)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -69,7 +69,7 @@ public class GetIssueByIdTests : GitHubTestBase
     [Description("10.5 Negative issue number returns 404")]
     public async Task GetIssueById_NegativeIssueNumber_ReturnsNotFound()
     {
-        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById, Method.Get,
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(-1)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -80,7 +80,7 @@ public class GetIssueByIdTests : GitHubTestBase
     [Description("10.6 Title matches expected issue")]
     public async Task GetIssueById_TitleIsNotEmpty()
     {
-        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById, Method.Get,
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response.Data!.Title.Should().NotBeNullOrWhiteSpace();
@@ -91,9 +91,9 @@ public class GetIssueByIdTests : GitHubTestBase
     [Description("10.7 Repeated calls return same data")]
     public async Task GetIssueById_RepeatedCalls_ReturnSameData()
     {
-        var response1 = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById, Method.Get,
+        var response1 = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
-        var response2 = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById, Method.Get,
+        var response2 = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);

@@ -42,7 +42,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 ### Assertions
 - FluentAssertions (не NUnit Assert)
 - Ключевые: `.Should().Be()`, `.NotBeNull()`, `.NotBeNullOrWhiteSpace()`, `.BeGreaterThan()`, `.BeInRange()`, `.OnlyContain()`
-- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()` — в `AssertHelper.cs`
+- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()` — в `AssertHelper.cs`
 
 ### Comments
 - По умолчанию: без комментариев. Код говорит сам за себя.
