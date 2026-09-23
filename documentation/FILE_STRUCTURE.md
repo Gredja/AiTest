@@ -154,15 +154,33 @@ Api/
 │   ├── Helpers/
 │   │   └── JsonPlaceholderParamHelper.cs
 │   └── Tests/
+│       ├── Albums/
+│       │   ├── GetAllAlbumsTests.cs
+│       │   ├── GetAlbumByIdTests.cs
+│       │   └── GetAlbumsByUserTests.cs
+│       ├── Comments/
+│       │   ├── GetAllCommentsTests.cs
+│       │   ├── GetCommentByIdTests.cs
+│       │   └── GetCommentsByPostTests.cs
+│       ├── Photos/
+│       │   ├── GetAllPhotosTests.cs
+│       │   ├── GetPhotoByIdTests.cs
+│       │   └── GetPhotosByAlbumTests.cs
 │       ├── Posts/
 │       │   ├── CreatePostTests.cs
 │       │   ├── DeletePostTests.cs
 │       │   ├── GetAllPostsTests.cs
 │       │   ├── GetPostByIdTests.cs
 │       │   └── UpdatePostTests.cs
-│       └── Todos/
-│           ├── GetAllTodosTests.cs
-│           └── GetTodosByUserIdTests.cs
+│       ├── Todos/
+│       │   ├── GetAllTodosTests.cs
+│       │   └── GetTodosByUserIdTests.cs
+│       └── Users/
+│           ├── GetAllUsersTests.cs
+│           ├── GetUserByIdTests.cs
+│           ├── GetUserPostsTests.cs
+│           ├── GetUserTodosTests.cs
+│           └── GetUserAlbumsTests.cs
 └── GitHub/
     └── Tests/
         ├── AuthRepos/
@@ -238,17 +256,22 @@ Rules/
 documentation/
 ├── BugReportTemplate.md
 ├── Bugs/
-│   └── FakeStore/
-│       ├── FS-001-products-non-existent-id-returns-200.md
-│       ├── FS-002-products-id-zero-returns-200.md
-│       ├── FS-003-products-negative-id-returns-200.md
-│       ├── FS-004-users-non-existent-id-returns-200.md
-│       ├── FS-005-users-id-zero-returns-200.md
-│       ├── FS-006-users-negative-id-returns-200.md
-│       ├── FS-007-carts-non-existent-id-returns-200.md
-│       ├── FS-008-carts-id-zero-returns-200.md
-│       ├── FS-009-carts-negative-id-returns-200.md
-│       └── FS-010-list-endpoints-invalid-params-return-200.md
+│   ├── FakeStore/
+│   │   ├── FS-001-products-non-existent-id-returns-200.md
+│   │   ├── FS-002-products-id-zero-returns-200.md
+│   │   ├── FS-003-products-negative-id-returns-200.md
+│   │   ├── FS-004-users-non-existent-id-returns-200.md
+│   │   ├── FS-005-users-id-zero-returns-200.md
+│   │   ├── FS-006-users-negative-id-returns-200.md
+│   │   ├── FS-007-carts-non-existent-id-returns-200.md
+│   │   ├── FS-008-carts-id-zero-returns-200.md
+│   │   ├── FS-009-carts-negative-id-returns-200.md
+│   │   └── FS-010-list-endpoints-invalid-params-return-200.md
+│   └── JsonPlaceholder/
+│       ├── JP-001-create-post-accepts-empty-body.md
+│       ├── JP-002-delete-post-does-not-actually-delete.md
+│       ├── JP-003-delete-post-returns-200-for-non-existent-id.md
+│       └── JP-004-patch-post-does-not-merge-with-existing-data.md
 ├── FILE_STRUCTURE.md
 ├── GitHubObservableBehaviour.md
 ├── GitHubTestPlan.md

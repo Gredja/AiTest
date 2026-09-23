@@ -38,7 +38,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: DELETE returns 200 but does not actually delete — GET still returns the resource")]
+    [Ignore("JsonPlaceholder mock: DELETE returns 200 but does not actually delete — GET still returns the resource — Bug: documentation/Bugs/JsonPlaceholder/JP-002-delete-post-does-not-actually-delete.md")]
     [Category("Regression")]
     [Description("6.3 Deleted post returns 404 on subsequent GET")]
     public async Task DeletePost_DeletedPostReturnsNotFound()
@@ -53,7 +53,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent")]
+    [Ignore("JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-003-delete-post-returns-200-for-non-existent-id.md")]
     [Category("Negative")]
     [Description("6.4 DELETE non-existent ID returns error")]
     public async Task DeletePost_NonExistentId_ReturnsError()

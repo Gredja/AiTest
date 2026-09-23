@@ -97,7 +97,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: PATCH does not merge with existing data — returns only sent fields + ID, rest is null")]
+    [Ignore("JsonPlaceholder mock: PATCH does not merge with existing data — returns only sent fields + ID, rest is null — Bug: documentation/Bugs/JsonPlaceholder/JP-004-patch-post-does-not-merge-with-existing-data.md")]
     [Category("Regression")]
     [Description("5.8 PATCH only changes specified fields")]
     public async Task UpdatePost_Patch_OnlyChangesSpecifiedFields()

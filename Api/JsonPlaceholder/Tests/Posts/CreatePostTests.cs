@@ -79,7 +79,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: accepts any body, returns 201 even for empty request")]
+    [Ignore("JsonPlaceholder mock: accepts any body, returns 201 even for empty request — Bug: documentation/Bugs/JsonPlaceholder/JP-001-create-post-accepts-empty-body.md")]
     [Category("Negative")]
     [Description("4.7 Empty body returns error")]
     public async Task CreatePost_EmptyBody_ReturnsError()

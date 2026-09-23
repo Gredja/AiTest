@@ -220,12 +220,21 @@ Gredja/
 ├── Api/
 │   ├── FakeStore/Tests/          # Тесты FakeStoreAPI
 │   ├── JsonPlaceholder/Tests/    # Тесты JSONPlaceholder
+│   │   ├── Albums/               # Тесты альбомов
+│   │   ├── Comments/             # Тесты комментариев
+│   │   ├── Photos/               # Тесты фотографий
+│   │   ├── Posts/                # Тесты постов
+│   │   ├── Todos/                # Тесты задач
+│   │   └── Users/                # Тесты пользователей
 │   └── GitHub/Tests/             # Тесты GitHub API
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── TestAdapter/                  # Allure-адаптер
 ├── Scripts/                      # Скрипты (allure-report.ps1)
 ├── Rules/                        # Правила кодирования
 ├── documentation/                # Документация
+│   ├── Bugs/                     # Баг-репорты
+│   │   ├── FakeStore/            # Баги FakeStoreAPI
+│   │   └── JsonPlaceholder/      # Баги JsonPlaceholder
 │   ├── GitHubTestPlan.md         # План тестирования GitHub API
 │   ├── GitHubTestingStructure.md # Структура тестирования
 │   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
