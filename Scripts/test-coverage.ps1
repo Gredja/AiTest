@@ -90,8 +90,172 @@ foreach ($service in $services) {
 Write-Host ""
 Write-Host "=== Done ===" -ForegroundColor Green
 
-# Open HTML report in browser
+# Per-service code coverage (lines covered by namespace)
+Write-Host ""
+Write-Host "=== Per-Service Code Coverage ===" -ForegroundColor Cyan
+Write-Host ""
+
+$serviceNamespaces = @{
+    "FakeStore"      = @("Core/Models/FakeStore", "Api/FakeStore")
+    "JsonPlaceholder" = @("Core/Models/JsonPlaceholder", "Api/JsonPlaceholder")
+    "GitHub"         = @("Core/Models/GitHub", "Api/GitHub")
+}
+
+$serviceResults = @{}
+
+foreach ($file in $coverageFiles) {
+    [xml]$xml = Get-Content $file.FullName
+
+    foreach ($package in $xml.coverage.packages.package) {
+        foreach ($class in $package.classes.class) {
+            $filename = $class.filename
+
+            foreach ($service in $serviceNamespaces.Keys) {
+                $matched = $false
+                foreach ($ns in $serviceNamespaces[$service]) {
+                    if ($filename -like "$ns*") {
+                        $matched = $true
+                        break
+                    }
+                }
+
+                if ($matched) {
+                    if (-not $serviceResults.ContainsKey($service)) {
+                        $serviceResults[$service] = @{ Covered = 0; Total = 0 }
+                    }
+                    $totalLines = $class.lines.line.Count
+                    $coveredLines = ($class.lines.line | Where-Object { [int]$_.hits -gt 0 }).Count
+                    $serviceResults[$service].Covered += $coveredLines
+                    $serviceResults[$service].Total += $totalLines
+                }
+            }
+        }
+    }
+}
+
+foreach ($service in @("FakeStore", "JsonPlaceholder", "GitHub")) {
+    if ($serviceResults.ContainsKey($service)) {
+        $covered = $serviceResults[$service].Covered
+        $total = $serviceResults[$service].Total
+        $pct = if ($total -gt 0) { [math]::Round($covered / $total * 100, 1) } else { 0 }
+        $color = if ($pct -ge 70) { "Green" } elseif ($pct -ge 50) { "Yellow" } else { "Red" }
+        Write-Host ("{0,-15} Lines: {1,-5} / {2,-5} ({3}%)" -f $service, $covered, $total, $pct) -ForegroundColor $color
+    } else {
+        Write-Host ("{0,-15} Lines: 0 / 0 (0%)" -f $service) -ForegroundColor Red
+    }
+}
+
+# Generate per-service HTML report
+$serviceHtmlPath = "$reportPath/service-coverage.html"
+$html = @"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Gredja — Per-Service Coverage</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 40px; background: #f5f5f5; }
+        h1 { color: #333; }
+        table { border-collapse: collapse; width: 100%; max-width: 800px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background: #2c3e50; color: white; }
+        tr:hover { background: #f9f9f9; }
+        .high { color: #27ae60; font-weight: bold; }
+        .mid { color: #f39c12; font-weight: bold; }
+        .low { color: #e74c3c; font-weight: bold; }
+        .section { margin-top: 30px; }
+        .section h2 { color: #555; border-bottom: 2px solid #3498db; padding-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <h1>Gredja — Per-Service Coverage Report</h1>
+    <p>Generated: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")</p>
+
+    <div class="section">
+        <h2>Endpoint Coverage (tests per API endpoint)</h2>
+        <table>
+            <tr><th>Service</th><th>Endpoints</th><th>Tested</th><th>Coverage</th></tr>
+"@
+
+foreach ($service in @("FakeStore", "JsonPlaceholder", "GitHub")) {
+    $endpointsFile = "Core/Config/${service}Endpoints.cs"
+    if (-not (Test-Path $endpointsFile)) { continue }
+    $content = Get-Content $endpointsFile -Raw
+    $pattern = 'public const string (\w+) = "(/[^"]+)"'
+    $endpoints = [regex]::Matches($content, $pattern).Count
+    $testDir = "Api/$service/Tests"
+    $testFiles = 0
+    if (Test-Path $testDir) {
+        $testFiles = (Get-ChildItem -Path $testDir -Recurse -Filter "*Tests.cs").Count
+    }
+    $pct = if ($endpoints -gt 0) { [math]::Round($testFiles / $endpoints * 100) } else { 0 }
+    $cls = if ($pct -ge 70) { "high" } elseif ($pct -ge 50) { "mid" } else { "low" }
+    $html += "            <tr><td>$service</td><td>$endpoints</td><td>$testFiles</td><td class=`"$cls`">$pct%</td></tr>`n"
+}
+
+$html += @"
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Per-Service Code Coverage (model lines)</h2>
+        <table>
+            <tr><th>Service</th><th>Lines Covered</th><th>Lines Total</th><th>Coverage</th></tr>
+"@
+
+foreach ($service in @("FakeStore", "JsonPlaceholder", "GitHub")) {
+    if ($serviceResults.ContainsKey($service)) {
+        $covered = $serviceResults[$service].Covered
+        $total = $serviceResults[$service].Total
+        $pct = if ($total -gt 0) { [math]::Round($covered / $total * 100, 1) } else { 0 }
+    } else {
+        $covered = 0; $total = 0; $pct = 0
+    }
+    $cls = if ($pct -ge 70) { "high" } elseif ($pct -ge 50) { "mid" } else { "low" }
+    $html += "            <tr><td>$service</td><td>$covered</td><td>$total</td><td class=`"$cls`">$pct%</td></tr>`n"
+}
+
+$html += @"
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Overall Code Coverage (by module)</h2>
+        <table>
+            <tr><th>Module</th><th>Lines</th><th>Branches</th></tr>
+"@
+
+foreach ($file in $coverageFiles) {
+    [xml]$xml = Get-Content $file.FullName
+    $lineRate = [math]::Round([double]$xml.coverage.'line-rate' * 100, 1)
+    $branchRate = [math]::Round([double]$xml.coverage.'branch-rate' * 100, 1)
+    $linesCovered = $xml.coverage.'lines-covered'
+    $linesValid = $xml.coverage.'lines-valid'
+    $branchesCovered = $xml.coverage.'branches-covered'
+    $branchesValid = $xml.coverage.'branches-valid'
+    $html += "            <tr><td>Lines</td><td>$linesCovered / $linesValid ($lineRate%)</td><td>$branchesCovered / $branchesValid ($branchRate%)</td></tr>`n"
+}
+
+$html += @"
+        </table>
+    </div>
+</body>
+</html>
+"@
+
+$html | Out-File -FilePath $serviceHtmlPath -Encoding UTF8
+Write-Host ""
+Write-Host "Per-service report: $serviceHtmlPath" -ForegroundColor Cyan
+
+Write-Host ""
+Write-Host "=== Done ===" -ForegroundColor Green
+
+# Open HTML reports in browser
 $htmlReport = Join-Path $reportPath "index.html"
+$serviceReport = Join-Path $reportPath "service-coverage.html"
 if (Test-Path $htmlReport) {
     Start-Process $htmlReport
+}
+if (Test-Path $serviceReport) {
+    Start-Process $serviceReport
 }

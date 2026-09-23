@@ -237,6 +237,18 @@ Rules/
 ```
 documentation/
 ├── BugReportTemplate.md
+├── Bugs/
+│   └── FakeStore/
+│       ├── FS-001-products-non-existent-id-returns-200.md
+│       ├── FS-002-products-id-zero-returns-200.md
+│       ├── FS-003-products-negative-id-returns-200.md
+│       ├── FS-004-users-non-existent-id-returns-200.md
+│       ├── FS-005-users-id-zero-returns-200.md
+│       ├── FS-006-users-negative-id-returns-200.md
+│       ├── FS-007-carts-non-existent-id-returns-200.md
+│       ├── FS-008-carts-id-zero-returns-200.md
+│       ├── FS-009-carts-negative-id-returns-200.md
+│       └── FS-010-list-endpoints-invalid-params-return-200.md
 ├── FILE_STRUCTURE.md
 ├── GitHubObservableBehaviour.md
 ├── GitHubTestPlan.md

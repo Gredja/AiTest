@@ -143,4 +143,15 @@ public class GetAllUsersTests : RequestHelper
         var ids = response.Data!.Select(u => u.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
+
+    [Test]
+    [Ignore("FakeStoreAPI: GET /users returns 200 for query with invalid params — Bug: documentation/Bugs/FakeStore/FS-010-list-endpoints-invalid-params-return-200.md")]
+    [Category("Negative")]
+    [Description("3.10 GET /users with invalid query param returns 400")]
+    public async Task GetAllUsers_InvalidQueryParam_ReturnsBadRequest()
+    {
+        var response = await Get<List<UserModelResponse>>("/users?invalid=true");
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }

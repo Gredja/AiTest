@@ -103,7 +103,7 @@ public class GetProductByIdTests : RequestHelper
     }
 
     [Test]
-    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for non-existent IDs")]
+    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for non-existent IDs — Bug: documentation/Bugs/FakeStore/FS-001-products-non-existent-id-returns-200.md")]
     [Category("Negative")]
     [Description("2.7 Get product by non-existent ID (maxId + 1) — status code 404")]
     public async Task GetProductById_NonExistentId_ReturnsNotFound()
@@ -118,7 +118,7 @@ public class GetProductByIdTests : RequestHelper
     }
 
     [Test]
-    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for ID=0")]
+    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for ID=0 — Bug: documentation/Bugs/FakeStore/FS-002-products-id-zero-returns-200.md")]
     [Category("Negative")]
     [Description("2.8 Get product by ID = 0 — status code 404")]
     public async Task GetProductById_ZeroId_ReturnsNotFound()
@@ -129,7 +129,7 @@ public class GetProductByIdTests : RequestHelper
     }
 
     [Test]
-    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for negative IDs")]
+    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for negative IDs — Bug: documentation/Bugs/FakeStore/FS-003-products-negative-id-returns-200.md")]
     [Category("Negative")]
     [Description("2.9 Get product by negative ID (-1) — status code 404")]
     public async Task GetProductById_NegativeId_ReturnsNotFound()

@@ -159,4 +159,15 @@ public class GetAllProductsTests : RequestHelper
         var categories = response.Data!.Select(p => p.Category).Distinct().ToList();
         categories.Should().HaveCount(ExpectedCategoryCount);
     }
+
+    [Test]
+    [Ignore("FakeStoreAPI: GET /products returns 200 for query with invalid params — Bug: documentation/Bugs/FakeStore/FS-010-list-endpoints-invalid-params-return-200.md")]
+    [Category("Negative")]
+    [Description("1.11 GET /products with invalid query param returns 400")]
+    public async Task GetAllProducts_InvalidQueryParam_ReturnsBadRequest()
+    {
+        var response = await Get<List<ProductModelResponse>>("/products?invalid=true");
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
 }

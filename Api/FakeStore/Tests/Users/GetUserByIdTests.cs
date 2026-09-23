@@ -99,7 +99,7 @@ public class GetUserByIdTests : RequestHelper
     }
 
     [Test]
-    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for non-existent IDs")]
+    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for non-existent IDs — Bug: documentation/Bugs/FakeStore/FS-004-users-non-existent-id-returns-200.md")]
     [Category("Negative")]
     [Description("4.5 Get user by non-existent ID (maxId + 1) — status code 404")]
     public async Task GetUserById_NonExistentId_ReturnsNotFound()
@@ -114,7 +114,7 @@ public class GetUserByIdTests : RequestHelper
     }
 
     [Test]
-    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for ID=0")]
+    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for ID=0 — Bug: documentation/Bugs/FakeStore/FS-005-users-id-zero-returns-200.md")]
     [Category("Negative")]
     [Description("4.6 Get user by ID = 0 — status code 404")]
     public async Task GetUserById_ZeroId_ReturnsNotFound()
@@ -125,7 +125,7 @@ public class GetUserByIdTests : RequestHelper
     }
 
     [Test]
-    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for negative IDs")]
+    [Ignore("FakeStoreAPI returns 200 OK instead of 404 for negative IDs — Bug: documentation/Bugs/FakeStore/FS-006-users-negative-id-returns-200.md")]
     [Category("Negative")]
     [Description("4.7 Get user by negative ID (-1) — status code 404")]
     public async Task GetUserById_NegativeId_ReturnsNotFound()
