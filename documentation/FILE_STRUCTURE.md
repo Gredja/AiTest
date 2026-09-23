@@ -228,6 +228,7 @@ Rules/
 
 ```
 documentation/
+├── BugReportTemplate.md
 ├── FILE_STRUCTURE.md
 ├── GitHubObservableBehaviour.md
 ├── GitHubTestPlan.md

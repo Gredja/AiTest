@@ -17,6 +17,31 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     private const int TestPostId = 1;
     private const int BoundaryPostId = 50;
     private const int LastPostId = 100;
+    private const int TestUserId = 1;
+    private static readonly PostModelRequest _testPost = new() { UserId = TestUserId, Title = "Test Post for contract", Body = "Guarantee data" };
+    private int? _createdPostId;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
+
+        if (response.Data!.Count == 0)
+        {
+            var create = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+            _createdPostId = create.Data!.Id;
+        }
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdPostId.HasValue)
+        {
+            await Delete<object>($"{JsonPlaceholderEndpoints.Posts}/{_createdPostId}");
+        }
+    }
+
     [Test]
     [Category("HealthCheck")]
     [Description("2.1 Status code is 200 for valid ID")]

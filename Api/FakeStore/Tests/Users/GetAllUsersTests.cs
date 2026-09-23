@@ -15,6 +15,45 @@ namespace Api.FakeStore.Users;
 public class GetAllUsersTests : RequestHelper
 {
     private const int ExpectedUserCount = 10;
+    private static readonly UserRequest _testUser = new()
+    {
+        Email = "test@example.com",
+        Username = "testuser",
+        Password = "password123",
+        Name = new UserName { Firstname = "Test", Lastname = "User" },
+        Address = new Address
+        {
+            City = "Test City",
+            Street = "Test Street",
+            Number = 1,
+            Zipcode = "12345",
+            Geolocation = new Geolocation { Lat = "0.0", Longitude = "0.0" }
+        }
+    };
+    private int? _createdUserId;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
+
+        if (response.Data!.Count == 0)
+        {
+            var create = await Post<UserRequest, UserModelResponse>(
+                FakeStoreEndpoints.Users, _testUser);
+            _createdUserId = create.Data!.Id;
+        }
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdUserId.HasValue)
+        {
+            await Delete<object>($"{FakeStoreEndpoints.Users}/{_createdUserId}");
+        }
+    }
+
     [Test]
     [Category("HealthCheck")]
     [Description("3.1 Status code is 200")]

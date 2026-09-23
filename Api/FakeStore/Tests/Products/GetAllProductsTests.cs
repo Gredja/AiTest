@@ -17,6 +17,38 @@ public class GetAllProductsTests : RequestHelper
     private const double RatingMin = 0;
     private const double RatingMax = 5;
     private const int ExpectedCategoryCount = 4;
+    private static readonly ProductModelRequest _testProduct = new()
+    {
+        Title = "Test Product for contract",
+        Price = 9.99m,
+        Description = "Guarantee data",
+        Category = "electronics",
+        Image = "https://test.com/image.jpg"
+    };
+    private int? _createdProductId;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
+
+        if (response.Data!.Count == 0)
+        {
+            var create = await Post<ProductModelRequest, ProductModelResponse>(
+                FakeStoreEndpoints.Products, _testProduct);
+            _createdProductId = create.Data!.Id;
+        }
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdProductId.HasValue)
+        {
+            await Delete<object>($"{FakeStoreEndpoints.Products}/{_createdProductId}");
+        }
+    }
+
     [Test]
     [Category("HealthCheck")]
     [Description("1.1 Status code is 200")]
