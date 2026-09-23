@@ -80,6 +80,7 @@ Core/
 │   ├── FakeStore/
 │   │   ├── Address.cs
 │   │   ├── AuthModelRequest.cs
+│   │   ├── AuthModelResponse.cs
 │   │   ├── CartModelResponse.cs
 │   │   ├── CartModelRequest.cs
 │   │   ├── CartProduct.cs
@@ -136,9 +137,16 @@ Api/
 │   ├── Helpers/
 │   │   └── FakeStoreParamHelper.cs
 │   └── Tests/
+│       ├── Auth/
+│       │   └── LoginTests.cs
+│       ├── Carts/
+│       │   ├── GetAllCartsTests.cs
+│       │   └── GetCartByIdTests.cs
 │       ├── Products/
 │       │   ├── GetAllProductsTests.cs
-│       │   └── GetProductByIdTests.cs
+│       │   ├── GetProductByIdTests.cs
+│       │   ├── GetProductCategoriesTests.cs
+│       │   └── GetProductsByCategoryTests.cs
 │       └── Users/
 │           ├── GetAllUsersTests.cs
 │           └── GetUserByIdTests.cs

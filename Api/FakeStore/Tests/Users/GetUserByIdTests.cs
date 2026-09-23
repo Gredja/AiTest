@@ -171,4 +171,27 @@ public class GetUserByIdTests : RequestHelper
         response1.Data!.Email.Should().Be(response2.Data!.Email);
         response1.Data!.Username.Should().Be(response2.Data!.Username);
     }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("4.11 Response body is not null")]
+    public async Task GetUserById_ValidId_ReturnsNonNull()
+    {
+        var response = await Get<UserModelResponse>(FakeStoreEndpoints.UsersById, IdParam(TestUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+    }
+
+    [Test]
+    [Category("Performance")]
+    [Description("4.12 Response time < 5 seconds")]
+    public async Task GetUserById_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await Get<UserModelResponse>(FakeStoreEndpoints.UsersById, IdParam(TestUserId));
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
 }

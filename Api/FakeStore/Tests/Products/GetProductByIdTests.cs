@@ -176,4 +176,16 @@ public class GetProductByIdTests : RequestHelper
         response1.Data!.Title.Should().Be(response2.Data!.Title);
         response1.Data!.Price.Should().Be(response2.Data!.Price);
     }
+
+    [Test]
+    [Category("Performance")]
+    [Description("2.13 Response time < 5 seconds")]
+    public async Task GetProductById_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await Get<ProductModelResponse>(FakeStoreEndpoints.ProductsById, IdParam(TestProductId));
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
 }
