@@ -56,7 +56,7 @@ public class GetPublicReposTests : GitHubTestBase
     public async Task GetPublicRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
-            new() { new() { Type = ParamType.Parameter, Key = "since", Value = 1 } });
+            [new() { Type = ParamType.Parameter, Key = "since", Value = 1 }]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();

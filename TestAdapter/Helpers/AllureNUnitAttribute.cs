@@ -121,7 +121,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             {
                 Uuid = containerUuid,
                 Name = className,
-                Children = new List<string>()
+                Children = []
             };
         }
 
@@ -150,6 +150,6 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     {
         public string Uuid { get; set; } = "";
         public string Name { get; set; } = "";
-        public List<string> Children { get; set; } = new();
+        public List<string> Children { get; set; } = [];
     }
 }
