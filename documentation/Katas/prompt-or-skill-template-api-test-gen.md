@@ -1,4 +1,4 @@
-﻿---
+---
 name: api-test-gen
 description: Use when the user wants to generate API tests for a FakeStoreAPI or JSONPlaceholder endpoint. Trigger on mentions of "api test gen", "generate API tests", "/api-test-gen", or testing a new endpoint.
 ---
@@ -131,7 +131,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.1 Status code is 200")]
     public async Task GetAll{Endpoint}_ReturnsOk()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
@@ -139,7 +139,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.2 Response body is not empty")]
     public async Task GetAll{Endpoint}_ReturnsNonEmptyList()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
@@ -148,7 +148,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.3 Content-Type is application/json")]
     public async Task GetAll{Endpoint}_ContentTypeIsJson()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint});
         response.ContentType.Should().Contain("application/json");
     }
 
@@ -156,7 +156,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.4 Each item has valid required fields (via attributes)")]
     public async Task GetAll{Endpoint}_EachItemHasValidFields()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint});
         foreach (var item in response.Data!)
         {
             item.ShouldHaveValidFields();
@@ -168,7 +168,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     public async Task GetAll{Endpoint}_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint});
         stopwatch.Stop();
         stopwatch.ElapsedMilliseconds.Should().BeLessThan({Endpoints}.MaxResponseTimeMs);
     }
@@ -177,7 +177,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.6 Returns expected count")]
     public async Task GetAll{Endpoint}_ReturnsExpectedCount()
     {
-        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Endpoints}.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount({Endpoints}.Expected{Endpoint}Count);
     }

@@ -132,3 +132,38 @@ public async Task OneTimeTearDown()
 - `[OneTimeTearDown]` deletes created resources
 - If POST is unavailable — use `[Ignore]` with explanation, not `Inconclusive`
 - Never use `if (Data.Any())` to skip assertions — data must exist before assertion runs
+
+## Read-after-write visibility (GET + POST)
+
+Extends Guarantee Data: the created record must be **visible to GET**, not just exist. Catches non-persisting writes, caching, lost/duplicated inserts.
+
+```csharp
+private List<{Endpoint}Model> _baseline;
+private {Endpoint}Model _created;
+
+[OneTimeSetUp]
+public async Task OneTimeSetup()
+{
+    _baseline = (await Get<List<{Endpoint}Model>>(Endpoint)).Data!;
+    var create = await Post<{Endpoint}Request, {Endpoint}Model>(Endpoint, TestData);
+    _created = create.Data!;
+}
+
+[OneTimeTearDown]
+public async Task OneTimeTearDown()
+{
+    await Delete<object>($"{Endpoint}/{_created.Id}");
+}
+```
+
+**Assertions (split into two tests — one check-type category each):**
+- `*_ReturnsCreatedRecord` (`Smoke`) — second GET: `HaveCount(_baseline.Count + 1)` and set-difference of Ids (`current - baseline`) equals exactly `{ _created.Id }`
+- `*_CreatedRecordMatchesRequest` (`Regression`) — `record.ShouldMatchRequest(TestData)` for ALL fields, not only Id (POST may return a valid Id while persisting fields wrong)
+
+**Rules:**
+- Baseline GET + POST go in `[OneTimeSetUp]`; tests only read and assert; `[OneTimeTearDown]` deletes the created record — cleanup is mandatory
+- Cleanup failure must not fail the run — log warning and continue (transient errors, rate limits)
+- Set-diff by Id is the primary invariant; exact `+1` only holds in a controlled sandbox — parallel runs on shared public APIs break counts
+- If POST does not persist (fake APIs, e.g. JSONPlaceholder) — `[Ignore]` with explanation of documented behavior
+- If this pattern always POSTs, count-based tests (`ExpectedCount`) must use a dynamic baseline, not a constant
+- GitHub: Phase 1 is read-only — apply this pattern in Phase 2 E2E (skill `/e2e-test-gen`)

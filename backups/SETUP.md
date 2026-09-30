@@ -360,6 +360,7 @@ git checkout -b features/add-user-tests
 - Проверяй HTTP status и body отдельно
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
+- Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure)
 
 **Workflow:**
 - План → одобение → изменения → отчёт
@@ -499,4 +500,4 @@ dotnet build
 - [ ] Установлена Visual Studio Community (или VS Code) для удобной работы с кодом
 - [ ] Подана заявка на MiMo Desktop (https://mimocode.mi.mi.com)
 - [ ] Прочитал `documentation/GitHubObservableBehaviour.md` — понимаешь структуру документа
-- [ ] Прочитал `Rules/test-practices.md` — знаешь seed-методологию
+- [ ] Прочитал `Rules/test-practices.md` — знаешь seed-методологию и read-after-write visibility

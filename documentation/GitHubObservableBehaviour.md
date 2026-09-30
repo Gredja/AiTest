@@ -201,6 +201,44 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ---
 
+## 9a. GET /repos/{owner}/{repo}/pulls/{pull_number}/files
+
+- Response status is 200 OK
+- Response body is a JSON array
+- Each object has: `sha` (string, 40 hex chars), `filename` (string, non-empty), `status` (string: "added" | "modified" | "removed" | "renamed" | "changed"), `additions` (integer ≥ 0), `deletions` (integer ≥ 0), `changes` (integer ≥ 0), `blob_url` (url), `raw_url` (url), `contents_url` (url), `patch` (string or null)
+- No top-level `id` field — models must not inherit `IdModel<T>`
+- Content-Type is application/json
+- Response time < 5s
+
+**Negative:**
+- Non-existent PR → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- PR number 0 → 404, body has `message` (string: "Not Found")
+- Negative PR number → 404, body has `message` (string: "Not Found")
+- Non-existent repo → 404, body has `message` (string: "Not Found")
+- Non-existent owner → 404, body has `message` (string: "Not Found")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+
+---
+
+## 9b. GET /repos/{owner}/{repo}/pulls/{pull_number}/commits
+
+- Response status is 200 OK
+- Response body is a JSON array
+- Each object has: `sha` (string, 40 hex chars, unique per list), `commit` (object with `message` non-empty string, `author` object with `name`/`email`/`date`), `html_url` (url starting with `https://github.com/`), `author` (object with `login` or null for unattributed commits), `committer` (object or null), `parents` (array)
+- No top-level `id` field — models must not inherit `IdModel<T>`
+- Content-Type is application/json
+- Response time < 5s
+
+**Negative:**
+- Non-existent PR → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- PR number 0 → 404, body has `message` (string: "Not Found")
+- Negative PR number → 404, body has `message` (string: "Not Found")
+- Non-existent repo → 404, body has `message` (string: "Not Found")
+- Non-existent owner → 404, body has `message` (string: "Not Found")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+
+---
+
 ## 10. GET /repos/{owner}/{repo}/branches
 
 - Response status is 200 OK
@@ -599,8 +637,9 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 ### Data Dependencies
 
-- Tests depend on specific existing resources: repo `Gredja/AiTest`, issue #5, user `Gredja`.
+- Tests depend on specific existing resources: repo `Gredja/AiTest`, issue #5, PR #5 (files/commits), branch `main`, user `Gredja`.
 - If repo is renamed, deleted, or issue #5 is closed/deleted — tests will fail with false negatives.
+- If all PRs are deleted — PR files/commits tests fall back via `[OneTimeSetUp]` dynamic lookup (max PR number); empty PR list must be handled.
 - Dynamic non-existent IDs (`maxId + 1`) depend on at least one item existing in the collection.
 - Empty collections (e.g. repo with no tags, no contributors) return 200 with `[]` — tests must handle this gracefully.
 

@@ -14,12 +14,13 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 ## APIs Under Test
 
 ### FakeStoreAPI — https://fakestoreapi.com
-- Products — GET (list, by ID)
-- Users — GET (list, by ID)
+- Products — GET (list, by ID, by category, categories)
+- Users, Carts — GET (list, by ID)
+- Auth — POST (login)
 
 ### JSONPlaceholder — https://jsonplaceholder.typicode.com
 - Posts — GET, POST, PUT, PATCH, DELETE
-- Todos — GET (all, by user)
+- Comments, Albums, Photos, Todos, Users — GET (all, by parent/ID)
 
 ### GitHub REST API v3 — https://api.github.com
 - Repos, Issues, PRs, Branches, Users, Rate Limit — GET

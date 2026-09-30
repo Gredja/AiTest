@@ -155,7 +155,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.1 Status code is 200")]
     public async Task GetAll{Endpoint}_ReturnsOk()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
@@ -164,7 +164,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.2 Response matches expected model schema")]
     public async Task GetAll{Endpoint}_ResponseMatchesModel()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
         response.Data!.First().ShouldHaveValidFields();
@@ -175,7 +175,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.3 Content-Type is application/json")]
     public async Task GetAll{Endpoint}_ContentTypeIsJson()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ContentType.Should().Contain("application/json");
     }
 
@@ -184,7 +184,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.4 Response body is not empty")]
     public async Task GetAll{Endpoint}_ReturnsNonEmptyList()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
@@ -194,7 +194,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.5 Each item has valid required fields (via attributes)")]
     public async Task GetAll{Endpoint}_EachItemHasValidFields()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         foreach (var item in response.Data!)
         {
             item.ShouldHaveValidFields();
@@ -207,7 +207,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     public async Task GetAll{Endpoint}_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         stopwatch.Stop();
         stopwatch.ElapsedMilliseconds.Should().BeLessThan({Service}Endpoints.MaxResponseTimeMs);
     }
@@ -217,7 +217,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.7 Returns expected count")]
     public async Task GetAll{Endpoint}_ReturnsExpectedCount()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount({Service}Endpoints.Expected{Endpoint}Count);
     }
@@ -265,6 +265,10 @@ public async Task OneTimeTearDown()
 ```
 - Do NOT use `[SetUp]`/`[TearDown]` for read-only tests — each test should be independent
 - `[SetUp]`/`[TearDown]` are for E2E tests with write operations — see `/e2e-test-gen`
+
+**Read-after-write visibility (when the endpoint's service supports POST):**
+- Extend the setup into an assertion: baseline GET → POST in `[OneTimeSetUp]` → tests assert the collection grew by exactly 1, set-diff by Id equals the created Id, and `ShouldMatchRequest()` compares the POST request against the new record in the GET response (all fields, not only Id) → `[OneTimeTearDown]` deletes the record (cleanup failure = warning, not test failure)
+- Full pattern: `Rules/test-practices.md` → "Read-after-write visibility (GET + POST)"
 
 ### Step 5: Follow All Rules
 
@@ -336,3 +340,5 @@ Show:
 | 1.2 | 2026-06-25 | Made service-agnostic: removed hardcoded FakeStore/JsonPlaceholder, added File Convention table, dynamic base class discovery | Алексей |
 | 1.3 | 2026-02-21 | Added Observable Behaviour document check in Step 1 — read `documentation/{Service}ObservableBehaviour.md` as primary source for test design | Алексей |
 | 1.4 | 2026-02-21 | Added Observable Behaviour template reference, auto-create from template if missing, document sync rule in test-practices.md | Алексей |
+| 1.5 | 2026-09-30 | Added Read-after-write visibility reference in Step 4 (GET+POST pattern) | MiMo |
+| 1.6 | 2026-09-30 | Fixed stale `Get<T>` signature in Step 4 template — removed `Method.Get` argument | MiMo |

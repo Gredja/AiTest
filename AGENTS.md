@@ -73,7 +73,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Rules/code-principles.md` — SOLID, general principles
 - `Rules/models.md` — model building rules (Model/Request, properties, naming)
 - `Rules/assertions.md` — FluentAssertions, key patterns, HTTP response assertions, request/response comparison
-- `Rules/test-practices.md` — test isolation, API patterns, non-existent IDs, E2E cleanup, seed methodology, document sync
+- `Rules/test-practices.md` — test isolation, API patterns, non-existent IDs, E2E cleanup, seed methodology, document sync, read-after-write visibility
 - `Rules/comments.md` — when comments are needed in code
 - `Rules/config.md` — endpoints, configuration
 - `Rules/git.md` — remote, commits, secrets

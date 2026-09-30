@@ -155,7 +155,7 @@ public class {Endpoint}Tests : {Service}E2ETestBase
         // Resource already created in Setup
         // Verify it exists
         var response = await Get<ResponseModel>(
-            {Service}Endpoints.{Endpoint}ById, Method.Get, IdParam(_createdId));
+            {Service}Endpoints.{Endpoint}ById, IdParam(_createdId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(_createdId);
@@ -229,3 +229,4 @@ private async Task CleanupComments(int issueNumber)
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 1.0 | 2026-02-21 | Initial commit | Алексей |
+| 1.1 | 2026-09-30 | Fixed stale `Get<T>` signature in Setup example — removed `Method.Get` argument | MiMo |

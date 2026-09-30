@@ -24,37 +24,34 @@ Generate a test class for the endpoint: {METHOD} {ENDPOINT_PATH}
 ## Rules (ALL must be followed)
 
 ### File structure
-- One test class per endpoint, file: `Api/Tests/{CLASS_NAME}.cs`
-- File-scoped namespace: `namespace Api.Tests;`
-- Usings at top: NUnit.Framework, RestSharp, Core.Models, Core.Config, Core.Helpers, System.Threading.Tasks, FluentAssertions, plus any needed (System.Net, System.Diagnostics, Api.Helpers)
+- One test class per endpoint, file: `Api/{SERVICE}/Tests/{ENDPOINT_FOLDER}/{CLASS_NAME}.cs`
+- File-scoped namespace: `namespace Api.{SERVICE}.{ENDPOINT_FOLDER};`
+- Usings at top: NUnit.Framework, RestSharp, Core.Models, Core.Config, Core.Helpers, System.Threading.Tasks, FluentAssertions, plus any needed (System.Net, System.Diagnostics, TestAdapter, `using static ...{SERVICE}ParamHelper;`)
 
 ### Class structure
 - `[TestFixture]` + `[AllureNUnit]` + `[Category("{SERVICE}")]` class named `{CLASS_NAME}`
 - `{SERVICE}` = `FakeStore`, `JsonPlaceholder`, or `GitHub`
-- Private field: `private RestClient _client = null!;`
-- `[SetUp]`: `_client = new RestClient(Endpoints.BaseUrl);`
-- `[TearDown]`: `_client?.Dispose();`
+- Inherit the service base: `{SERVICE}RequestHelper` (GitHub — `GitHubTestBase`) — client, auth headers and base URL live there; never create your own `RestClient`
+- Read-only tests: no `[SetUp]`/`[TearDown]`; shared fixture data via `[OneTimeSetUp]` only
 
 ### Async rules (MANDATORY)
 - Every test method MUST be `public async Task MethodName()` — never `void`
-- All API requests MUST use async methods: `await _client.ExecuteAsync<T>(request)`
-- NEVER use synchronous methods: `Execute`, `Execute<T>`, `Get<T>` — they block the thread
-- Every `await` must be on an async method — no `.Result` or `.GetAwaiter().GetResult()`
-- Setup/TearDown stay synchronous (RestSharp client creation/disposal is sync)
+- All API requests go through the request helpers: `await Get<T>(endpoint, params)`, `Post<TRequest, TResponse>(endpoint, body)`, `Put`, `Patch`, `Delete<T>(endpoint, params)` — they call `ExecuteAsync` internally
+- `Get<T>` implies GET — never pass a `Method` argument
+- NEVER use raw RestSharp in tests (`new RestRequest(...)`, `_client.ExecuteAsync<T>(...)`) or sync calls (`.Result`, `.GetAwaiter().GetResult()`)
 
 ```csharp
-// CORRECT — async
+// CORRECT — async via helper
 public async Task GetAllProducts_ReturnsOk()
 {
-    var request = new RestRequest(Endpoints.Products, Method.Get);
-    var response = await _client.ExecuteAsync<List<ProductModel>>(request);
+    var response = await Get<List<ProductModel>>(FakeStoreEndpoints.Products);
     response.ShouldHaveStatusCode(HttpStatusCode.OK);
 }
 
-// WRONG — sync, will be rejected
+// WRONG — sync raw client, will be rejected
 public void GetAllProducts_ReturnsOk()
 {
-    var request = new RestRequest(Endpoints.Products, Method.Get);
+    var request = new RestRequest(FakeStoreEndpoints.Products);
     var response = _client.Execute<List<ProductModel>>(request);  // blocks!
     response.ShouldHaveStatusCode(HttpStatusCode.OK);
 }
@@ -118,15 +115,10 @@ Every test MUST have `[Category]` attributes. See `Rules/categories.md` for full
 [Description("{N}.1 Get by non-existent ID (maxId + 1) — status code 404")]
 public async Task {ClassName}_NonExistentId_ReturnsNotFound()
 {
-    var getAllRequest = new RestRequest(Endpoints.{ALL_ITEMS_CONSTANT}, Method.Get);
-    var allItems = await _client.ExecuteAsync<List<{Model}>>(getAllRequest);
+    var allItems = await Get<List<{Model}>>({SERVICE}Endpoints.{ALL_ITEMS_CONSTANT});
     var maxId = allItems.Data!.Max(p => p.Id);
-    var nonExistentId = maxId + 1;
 
-    var request = new RestRequest(Endpoints.{BY_ID_CONSTANT}, Method.Get);
-    request.AddUrlSegment("id", nonExistentId);
-
-    var response = await _client.ExecuteAsync<{Model}>(request);
+    var response = await Get<{Model}>({SERVICE}Endpoints.{BY_ID_CONSTANT}, IdParam(maxId + 1));
 
     response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
 }
@@ -144,10 +136,7 @@ public async Task {ClassName}_ValidData_ReturnsOk()
         // fill with valid test data
     };
 
-    var request = new RestRequest(Endpoints.{ENDPOINT}, Method.Post);
-    request.AddJsonBody(body);
-
-    var response = await _client.ExecuteAsync<{ResponseModel}>(request);
+    var response = await Post<{RequestModel}, {ResponseModel}>({SERVICE}Endpoints.{ENDPOINT}, body);
 
     response.ShouldHaveStatusCode(HttpStatusCode.OK);
 }
@@ -160,10 +149,7 @@ public async Task {ClassName}_ValidData_ReturnsOk()
 [Description("{N}.1 Delete {entity} by ID — status code 200")]
 public async Task {ClassName}_ValidId_ReturnsOk()
 {
-    var request = new RestRequest(Endpoints.{BY_ID_CONSTANT}, Method.Delete);
-    request.AddUrlSegment("id", {validId});
-
-    var response = await _client.ExecuteAsync<{ResponseModel}>(request);
+    var response = await Delete<{ResponseModel}>({SERVICE}Endpoints.{BY_ID_CONSTANT}, IdParam({validId}));
 
     response.ShouldHaveStatusCode(HttpStatusCode.OK);
 }
@@ -182,7 +168,7 @@ Generate the complete test file content only. No explanations, no markdown wrapp
 2. Fill in the placeholders in the prompt above
 3. Send the filled prompt to the AI
 4. Review the generated test class against project rules
-5. Save to `Api/Tests/{ClassName}.cs`
+5. Save to `Api/{SERVICE}/Tests/{ENDPOINT_FOLDER}/{ClassName}.cs`
 6. Run `dotnet build` and `dotnet test` to verify
 7. Update `FILE_STRUCTURE.md` with the new file
 
