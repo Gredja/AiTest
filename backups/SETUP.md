@@ -231,6 +231,7 @@ Gredja/
 ├── TestAdapter/                  # Allure-адаптер
 ├── Scripts/                      # Скрипты (allure-report.ps1)
 ├── Rules/                        # Правила кодирования
+├── metrics.md                    # Метрики AI-использования (tests/time/cost)
 ├── documentation/                # Документация
 │   ├── Bugs/                     # Баг-репорты
 │   │   ├── FakeStore/            # Баги FakeStoreAPI
@@ -295,7 +296,7 @@ MiMoCode:
 3. **Работа в ветках** — все изменения делаются в ветках `features/<topic>`, не в `main`.
 4. **Файлы с `.env` секретами** — никогда не коммить файл `.env`.
 5. **Observable Behaviour — source of truth** — при генерации тестов MiMoCode читает `{Service}ObservableBehaviour.md` и генерирует тесты по описанным полям и типам.
-6. **Document sync** — при изменении эндпоинтов обновляй Observable Behaviour ↔ Test Plan ↔ Rules.
+6. **Document sync** — при изменении эндпоинтов обновляй Observable Behaviour ↔ Test Plan ↔ Rules. Каждый Top-3 риск плана покрывается ≥1 тест-кейсом (risk-coverage check).
 
 ---
 

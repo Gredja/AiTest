@@ -80,6 +80,18 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Rules/workflow.md` — plan → approval → changes → report
 - `Rules/categories.md` — test categories
 
+## AI Onboarding (для новичка)
+
+Чтобы начать работать с AI в этом проекте без объяснений:
+
+1. Прочитай `AGENTS.md` целиком и `Rules/test-practices.md` — там базовые правила и seed-методология
+2. `/api-test-gen <service> <endpoint>` — сгенерировать тесты для нового эндпоинта (скилл сам прочитает Observable Behaviour и правила)
+3. `/test` — запустить весь тест-сьют, `/test-report` — запуск + Allure-отчёт
+4. `/review-commit` — проверить незакоммиченные изменения по правилам проекта
+5. `/commit` — форматирование + HealthCheck + коммит + пуш
+
+Полный список скиллов: `.mimocode/skills/`. Все изменения следуют циклу: план → одобрение → изменения → отчёт (`Rules/workflow.md`).
+
 ## Knowledge Graph
 
 ```bash

@@ -56,6 +56,7 @@ Before generating — verify that `Core/Config/{Service}Endpoints.cs` exists. If
 
 ### Step 1: Research the endpoint
 
+0. **Read the existing code FIRST** — Glob/Grep for the endpoint's existing test class, models, and constants. Extend what exists; NEVER create duplicate files (both models failed this in `documentation/Katas/model-selection-note.md` — they generated new files instead of working with existing ones because they didn't read the project code first)
 1. **Check Observable Behaviour** — if `documentation/{Service}ObservableBehaviour.md` exists, read it first. It contains: expected status codes, response types, field definitions with types, pagination, filtering, and negative cases. Use it as the primary source for test design.
 2. **Create Observable Behaviour if missing** — if `documentation/{Service}ObservableBehaviour.md` does not exist, create it from `documentation/ObservableBehaviourTemplate.md`. Fill in: endpoint sections, field definitions, negative cases, validation rules, risk framing. This document is the source of truth for test generation.
 3. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
@@ -342,3 +343,4 @@ Show:
 | 1.4 | 2026-02-21 | Added Observable Behaviour template reference, auto-create from template if missing, document sync rule in test-practices.md | Алексей |
 | 1.5 | 2026-09-30 | Added Read-after-write visibility reference in Step 4 (GET+POST pattern) | MiMo |
 | 1.6 | 2026-09-30 | Fixed stale `Get<T>` signature in Step 4 template — removed `Method.Get` argument | MiMo |
+| 1.7 | 2026-09-30 | Step 1: added "read existing code first — never duplicate files" (from model-selection-note katka) | MiMo |

@@ -4,6 +4,7 @@
 **API Under Test:** GitHub REST API v3 (https://api.github.com)
 **Sandbox:** Gredja/AiTest
 **Observable Behaviour:** [GitHubObservableBehaviour.md](GitHubObservableBehaviour.md)
+**Scope, Top-3 risks, Entry/Exit criteria:** [GitHubTestingStructure.md](GitHubTestingStructure.md)
 
 **Status legend:** `Done` — tests implemented and passing · `TODO` — designed (see Phase 1 Test Design), not yet implemented
 

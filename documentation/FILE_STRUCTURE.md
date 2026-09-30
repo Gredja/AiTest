@@ -7,6 +7,7 @@
 ```
 Gredja/
 ├── AGENTS.md
+├── metrics.md                      # AI usage tracking (Gap 1)
 ├── Gredja.slnx
 ├── Directory.Build.props
 ├── allureConfig.json
@@ -278,6 +279,8 @@ documentation/
 ├── GitHubTestingStructure.md
 ├── ObservableBehaviourTemplate.md
 ├── Katas/
+│   ├── 00-test-plan.md
+│   ├── 01-test-cases.md
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md
 │   └── maturity-gap-analysis.md
