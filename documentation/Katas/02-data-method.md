@@ -1,0 +1,9 @@
+# 02-data-method — как генерировались тест-данные
+
+1. **Инструмент:** MiMo AI chat (MiMo V2.5 Pro), серия из двух промптов; ручное редактирование только для подсчёта SKU в E02.
+2. **Промпт realistic:** «Generate 5 realistic Click & Collect records for Meridian's 22-country footprint — fields customer_id, order_id, store_id, payment_method, loyalty_number (+ case-derived: customer_name, items, pickup_offset_minutes, identity_state, loyalty_valid_until); ≥1 record per market band (IT, DE, JP, UK, US); vary ≥3 fields per record; fully fictional values».
+3. **Промпт edge:** «Generate 10 edge-case records: boundary (empty customer_id, pickup 0 and 2879 = 47h59, expired loyalty 2019), max-length name (~250 chars) + max multi-item (20), special chars (Italian accents, German ß, Japanese kana with full-width parens, Arabic RTL), cross-region IT customer → DE store, PSD2 methods (Postepay/Satispay/Klarna split-pay), merged identity (one loyalty → two customer_ids), impossible store_id».
+4. **Обфусцированные поля (GDPR Art. 30):** `customer_name` — полностью вымышленные имена по рынку; `loyalty_number`, `customer_id`, `order_id` — синтетические токены. Форма полей сохранена, значения не матчатся с продом; поле не удалялось, только заменялось.
+5. **Размерности вариативности:** страна/рынок (5 bands), платёж (Postepay / Satispay / Klarna-split / PayPay / Visa-token / Mastercard-token), письменность (латиница с accents/ß, кана, арабский = 3+), состояние identity (unique / conflict), окно получения (0–2879 мин), размер заказа (1–20 items).
+6. **Намеренно пропущено:** e-mail/телефон/адреса (нет во входных полях кейсов), регионы вне Phase 1, реальные SKU/ID из прода, данные из продакшн-выгрузок.
+7. **Проверка:** нет generic-заглушек (`user@example.com`, `store-001`); в каждой realistic-записи варьируются ≥3 поля; все 15 записей PII-safe.

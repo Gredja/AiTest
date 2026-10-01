@@ -281,6 +281,8 @@ documentation/
 ├── Katas/
 │   ├── 00-test-plan.md
 │   ├── 01-test-cases.md
+│   ├── 02-test-data.json
+│   ├── 02-data-method.md
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md
 │   └── maturity-gap-analysis.md

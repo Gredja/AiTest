@@ -362,6 +362,7 @@ git checkout -b features/add-user-tests
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
 - Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure)
+- Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности, обфускация заменой, метод-нота для сложных наборов
 
 **Workflow:**
 - План → одобение → изменения → отчёт

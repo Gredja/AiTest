@@ -1,0 +1,191 @@
+{
+  "realistic": [
+    {
+      "customer_id": "C-IT-48219",
+      "order_id": "ORD-2026-IT-77401",
+      "store_id": "MIL-DUOMO-014",
+      "payment_method": "Postepay",
+      "loyalty_number": "IT-L-9930-4471",
+      "loyalty_valid_until": "2027-03-31",
+      "customer_name": "Giulia Ferrante",
+      "items": ["SKU-KETTLE-8821"],
+      "pickup_offset_minutes": 1440,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-DE-10937",
+      "order_id": "ORD-2026-DE-22198",
+      "store_id": "BER-MITTE-007",
+      "payment_method": "Klarna-split",
+      "loyalty_number": "DE-L-5518-2290",
+      "loyalty_valid_until": "2028-11-30",
+      "customer_name": "Jonas Großmann",
+      "items": ["SKU-TOASTER-3310", "SKU-MUG-1105"],
+      "pickup_offset_minutes": 720,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-JP-83452",
+      "order_id": "ORD-2026-JP-60214",
+      "store_id": "TYO-SHIBUYA-022",
+      "payment_method": "PayPay",
+      "loyalty_number": "JP-L-7742-8853",
+      "loyalty_valid_until": "2027-08-15",
+      "customer_name": "山田 翼",
+      "items": ["SKU-HEADPHONE-9042"],
+      "pickup_offset_minutes": 600,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-UK-56201",
+      "order_id": "ORD-2026-UK-41872",
+      "store_id": "LON-SHOREDITCH-003",
+      "payment_method": "Visa-token",
+      "loyalty_number": "UK-L-3390-1176",
+      "loyalty_valid_until": "2029-01-20",
+      "customer_name": "Charlotte Fitzgerald",
+      "items": ["SKU-LAMP-2207", "SKU-BULB-4410", "SKU-CABLE-1198"],
+      "pickup_offset_minutes": 1380,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-US-71648",
+      "order_id": "ORD-2026-US-90556",
+      "store_id": "NYC-CHELSEA-019",
+      "payment_method": "Mastercard-token",
+      "loyalty_number": "US-L-6604-9928",
+      "loyalty_valid_until": "2028-04-30",
+      "customer_name": "Marcus Whitfield",
+      "items": ["SKU-RUCKSACK-5580"],
+      "pickup_offset_minutes": 480,
+      "identity_state": "unique"
+    }
+  ],
+  "edge": [
+    {
+      "customer_id": "",
+      "order_id": "ORD-2026-IT-00000",
+      "store_id": "MIL-DUOMO-014",
+      "payment_method": "Postepay",
+      "loyalty_number": "LOY-EXPIRED-2019-0447",
+      "loyalty_valid_until": "2019-06-30",
+      "customer_name": "Boundary Customer",
+      "items": ["SKU-KETTLE-8821"],
+      "pickup_offset_minutes": 2879,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-DE-99998",
+      "order_id": "ORD-2026-DE-99901",
+      "store_id": "BER-MITTE-007",
+      "payment_method": "Klarna-split",
+      "loyalty_number": "DE-L-0000-9999",
+      "loyalty_valid_until": "2030-12-31",
+      "customer_name": "Maximiliana-Überallgemacht-von-und-zu-Schillersgasse-Knickpunkt-Verlängerung-Straßenbahn-Haltestellenbereich-Wiedervereinigungsstraße-Grundstücksverkehrsbereichsführungsamt-Donaudampfschifffahrtsgesellschaftskapitän",
+      "items": [
+        "SKU-BULK-01", "SKU-BULK-02", "SKU-BULK-03", "SKU-BULK-04", "SKU-BULK-05",
+        "SKU-BULK-06", "SKU-BULK-07", "SKU-BULK-08", "SKU-BULK-09", "SKU-BULK-10",
+        "SKU-BULK-11", "SKU-BULK-12", "SKU-BULK-13", "SKU-BULK-14", "SKU-BULK-15",
+        "SKU-BULK-16", "SKU-BULK-17", "SKU-BULK-18", "SKU-BULK-19", "SKU-BULK-20"
+      ],
+      "pickup_offset_minutes": 1440,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-IT-31044",
+      "order_id": "ORD-2026-IT-55120",
+      "store_id": "ROM-CENTRO-011",
+      "payment_method": "Satispay",
+      "loyalty_number": "IT-L-4471-8802",
+      "loyalty_valid_until": "2027-10-31",
+      "customer_name": "Nicoletta D'Amàrò-Quattroè",
+      "items": ["SKU-VASE-7741"],
+      "pickup_offset_minutes": 240,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-DE-45620",
+      "order_id": "ORD-2026-DE-71308",
+      "store_id": "MUC-ALTSTADT-005",
+      "payment_method": "Klarna-split",
+      "loyalty_number": "DE-L-8830-1149",
+      "loyalty_valid_until": "2028-02-29",
+      "customer_name": "Franziska Großmann-Weiß",
+      "items": ["SKU-LEDER-3390"],
+      "pickup_offset_minutes": 1200,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-JP-20417",
+      "order_id": "ORD-2026-JP-88503",
+      "store_id": "OSA-NAMBA-009",
+      "payment_method": "PayPay",
+      "loyalty_number": "JP-L-3312-6640",
+      "loyalty_valid_until": "2029-06-30",
+      "customer_name": "山田 優子（テスト）",
+      "items": ["SKU-FAN-2255"],
+      "pickup_offset_minutes": 900,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-UK-66731",
+      "order_id": "ORD-2026-UK-10942",
+      "store_id": "LON-SHOREDITCH-003",
+      "payment_method": "Visa-token",
+      "loyalty_number": "UK-L-5580-3321",
+      "loyalty_valid_until": "2027-12-31",
+      "customer_name": "نور الهدى بن عيسى",
+      "items": ["SKU-SCARF-6612"],
+      "pickup_offset_minutes": 1500,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-IT-55001",
+      "order_id": "ORD-2026-IT-64477",
+      "store_id": "BER-MITTE-007",
+      "payment_method": "Klarna-split",
+      "loyalty_number": "IT-L-7719-4408",
+      "loyalty_valid_until": "2028-08-31",
+      "customer_name": "Marco Pellegrino",
+      "items": ["SKU-KETTLE-8821", "SKU-MUG-1105"],
+      "pickup_offset_minutes": 660,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-IT-70288",
+      "order_id": "ORD-2026-IT-33640",
+      "store_id": "MIL-DUOMO-014",
+      "payment_method": "Postepay",
+      "loyalty_number": "IT-L-2204-9917",
+      "loyalty_valid_until": "2027-01-31",
+      "customer_name": "Chiara Bellini",
+      "items": ["SKU-CUP-1140"],
+      "pickup_offset_minutes": 0,
+      "identity_state": "unique"
+    },
+    {
+      "customer_id": "C-DE-00001",
+      "order_id": "ORD-2026-DE-10101",
+      "store_id": "BER-MITTE-007",
+      "payment_method": "Klarna-split",
+      "loyalty_number": "MERGE-DEMO-7742",
+      "loyalty_valid_until": "2028-05-31",
+      "customer_name": "Andreas Keller",
+      "items": ["SKU-TOASTER-3310"],
+      "pickup_offset_minutes": 300,
+      "identity_state": "conflict"
+    },
+    {
+      "customer_id": "C-DE-00002",
+      "order_id": "ORD-2026-DE-10102",
+      "store_id": "XX-IMPOSSIBLE-999",
+      "payment_method": "Klarna-split",
+      "loyalty_number": "MERGE-DEMO-7742",
+      "loyalty_valid_until": "2028-05-31",
+      "customer_name": "Andrea Keller",
+      "items": ["SKU-MUG-1105"],
+      "pickup_offset_minutes": 360,
+      "identity_state": "conflict"
+    }
+  ]
+}

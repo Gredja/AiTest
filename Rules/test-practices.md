@@ -168,3 +168,12 @@ public async Task OneTimeTearDown()
 - If POST does not persist (fake APIs, e.g. JSONPlaceholder) — `[Ignore]` with explanation of documented behavior
 - If this pattern always POSTs, count-based tests (`ExpectedCount`) must use a dynamic baseline, not a constant
 - GitHub: Phase 1 is read-only — apply this pattern in Phase 2 E2E (skill `/e2e-test-gen`)
+
+## Test data for write operations
+
+Derived from kata 6.W.3 (PII-safe test data). Applies to E2E and any POST/PATCH payloads.
+
+- **Fictional values only, never PII** — E2E writes into the public sandbox repo `Gredja/AiTest`; issue/PR bodies are publicly visible forever. Synthetic IDs, invented names, tokenized payments (see `documentation/Katas/02-test-data.json` for the pattern)
+- **Obfuscate by replacement, never by dropping** — keep the field shape, replace the value; dropping a field breaks e2e coverage
+- **Vary ≥2 dimensions across test payloads** — don't run every write test against one static body (country/language, order size, status, payment method). If one dataset is intentionally enough, document why in the test class
+- **Complex datasets get a method note** — which tool/prompts generated them, which fields are obfuscated, which dimensions are exercised, what is intentionally missing (pattern: `documentation/Katas/02-data-method.md`)
