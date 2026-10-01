@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.JsonPlaceholder;
 using Core.Config;
 using Core.Helpers;
@@ -24,7 +23,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.1 Status code is 200 for valid ID")]
     public async Task GetCommentById_ReturnsOk()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(TestCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -35,7 +34,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.2 Response matches expected contract")]
     public async Task GetCommentById_ResponseMatchesContract()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(TestCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -48,7 +47,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.3 Response body is not null")]
     public async Task GetCommentById_ReturnsNonNull()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(TestCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -60,7 +59,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.4 Each field has valid attributes")]
     public async Task GetCommentById_HasValidFields()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(TestCommentId));
 
         response.Data!.ShouldHaveValidFields();
@@ -71,7 +70,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.5 Response contains correct ID")]
     public async Task GetCommentById_ReturnsCorrectId()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(TestCommentId));
 
         response.Data!.Id.Should().Be(TestCommentId);
@@ -82,11 +81,11 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.6 Returns 404 for non-existent ID")]
     public async Task GetCommentById_NonExistentId_ReturnsNotFound()
     {
-        var allComments = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var allComments = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
         var maxCommentId = allComments.Data!.Max(comment => comment.Id);
         var nonExistentId = maxCommentId + 1;
 
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -97,7 +96,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.7 Returns 404 for ID 0")]
     public async Task GetCommentById_ZeroId_ReturnsNotFound()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -108,7 +107,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.8 Returns 404 for negative ID")]
     public async Task GetCommentById_NegativeId_ReturnsNotFound()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -119,7 +118,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.9 Get comment by ID = 250 returns valid comment")]
     public async Task GetCommentById_BoundaryId_ReturnsValidComment()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(BoundaryCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -132,7 +131,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.10 Get comment by ID = 500 (last) returns valid comment")]
     public async Task GetCommentById_LastId_ReturnsValidComment()
     {
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(LastCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -145,9 +144,9 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     [Description("2.11 Repeated calls return same data")]
     public async Task GetCommentById_RepeatedCalls_ReturnSameData()
     {
-        var response1 = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response1 = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(TestCommentId));
-        var response2 = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response2 = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(TestCommentId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
@@ -161,7 +160,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
             PostIdParam(TestCommentId));
         stopwatch.Stop();
 

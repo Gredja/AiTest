@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.FakeStore;
 using Core.Config;
 using Core.Helpers;
@@ -6,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.FakeStore.Helpers.FakeStoreParamHelper;
 
 namespace Api.FakeStore.Products;
 
@@ -20,7 +20,7 @@ public class GetProductsByCategoryTests : RequestHelper
     public async Task GetProductsByCategory_ValidCategory_ReturnsOk()
     {
         var response = await Get<List<ProductModelResponse>>(
-            $"/products/category/{TestConfig.TestCategoryName}");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam(TestConfig.TestCategoryName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -31,7 +31,7 @@ public class GetProductsByCategoryTests : RequestHelper
     public async Task GetProductsByCategory_ValidCategory_ResponseMatchesContract()
     {
         var response = await Get<List<ProductModelResponse>>(
-            $"/products/category/{TestConfig.TestCategoryName}");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam(TestConfig.TestCategoryName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -44,7 +44,7 @@ public class GetProductsByCategoryTests : RequestHelper
     public async Task GetProductsByCategory_ValidCategory_ContentTypeIsJson()
     {
         var response = await Get<List<ProductModelResponse>>(
-            $"/products/category/{TestConfig.TestCategoryName}");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam(TestConfig.TestCategoryName));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -55,7 +55,7 @@ public class GetProductsByCategoryTests : RequestHelper
     public async Task GetProductsByCategory_ValidCategory_ReturnsNonEmptyList()
     {
         var response = await Get<List<ProductModelResponse>>(
-            $"/products/category/{TestConfig.TestCategoryName}");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam(TestConfig.TestCategoryName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -67,7 +67,7 @@ public class GetProductsByCategoryTests : RequestHelper
     public async Task GetProductsByCategory_ValidCategory_AllItemsBelongToCategory()
     {
         var response = await Get<List<ProductModelResponse>>(
-            $"/products/category/{TestConfig.TestCategoryName}");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam(TestConfig.TestCategoryName));
 
         response.Data.Should().OnlyContain(product =>
             product.Category.Equals(TestConfig.TestCategoryName, StringComparison.OrdinalIgnoreCase));
@@ -79,7 +79,7 @@ public class GetProductsByCategoryTests : RequestHelper
     public async Task GetProductsByCategory_ValidCategory_EachItemHasValidFields()
     {
         var response = await Get<List<ProductModelResponse>>(
-            $"/products/category/{TestConfig.TestCategoryName}");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam(TestConfig.TestCategoryName));
 
         foreach (var product in response.Data!)
         {
@@ -93,7 +93,7 @@ public class GetProductsByCategoryTests : RequestHelper
     public async Task GetProductsByCategory_Electronics_ReturnsExpectedCount()
     {
         var response = await Get<List<ProductModelResponse>>(
-            $"/products/category/{TestConfig.TestCategoryName}");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam(TestConfig.TestCategoryName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount(TestConfig.ExpectedProductsInCategoryCount);
@@ -105,7 +105,7 @@ public class GetProductsByCategoryTests : RequestHelper
     public async Task GetProductsByCategory_NonExistentCategory_ReturnsEmpty()
     {
         var response = await Get<List<ProductModelResponse>>(
-            "/products/category/nonexistentcategory123");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam("nonexistentcategory123"));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();
@@ -118,7 +118,7 @@ public class GetProductsByCategoryTests : RequestHelper
     {
         var stopwatch = Stopwatch.StartNew();
         var response = await Get<List<ProductModelResponse>>(
-            $"/products/category/{TestConfig.TestCategoryName}");
+            FakeStoreEndpoints.ProductsByCategory, CategoryParam(TestConfig.TestCategoryName));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);

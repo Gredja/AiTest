@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Config;
 using Core.Helpers;
 using TestAdapter;

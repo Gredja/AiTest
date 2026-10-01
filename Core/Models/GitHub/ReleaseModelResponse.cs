@@ -14,7 +14,8 @@ public class ReleaseModelResponse : IdModel<long>
 
     public string Body { get; set; }
 
-    public bool Draft { get; set; }
+    [JsonPropertyName("draft")]
+    public bool IsDraft { get; set; }
 
     [JsonPropertyName("prerelease")]
     public bool IsPreRelease { get; set; }

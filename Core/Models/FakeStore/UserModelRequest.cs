@@ -1,6 +1,6 @@
 namespace Core.Models.FakeStore;
 
-public class UserRequest
+public class UserModelRequest
 {
     public string Email { get; set; }
 

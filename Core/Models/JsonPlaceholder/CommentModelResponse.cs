@@ -2,7 +2,7 @@ using Core.Attributes;
 
 namespace Core.Models.JsonPlaceholder;
 
-public class Comment
+public class CommentModelResponse
 {
     [PositiveId]
     public int Id { get; set; }

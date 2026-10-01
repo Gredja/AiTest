@@ -20,7 +20,7 @@ public class IssueModelResponse : IdModel<long>
     [RequiredField]
     public UserModelResponse User { get; set; }
 
-    public List<LabelModelResponse> Labels { get; set; }
+    public List<Label> Labels { get; set; }
 
     public UserModelResponse Assignee { get; set; }
 

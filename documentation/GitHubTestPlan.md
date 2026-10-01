@@ -213,7 +213,7 @@ Verified negative behavior: PR `0` / `-1` / `99999` → 404 · non-existent bran
 
 ## Phase 2: E2E Testing (write + chains)
 
-> E2E tests are in a separate project `E2E/` and use the sandbox repo `Gredja/GitHubApiTests`.
+> E2E tests are in a separate project `E2E/` and use the sandbox repo `Gredja/AiTest`.
 
 | # | Scenario | Steps | Status |
 |---|----------|-------|--------|
@@ -243,7 +243,7 @@ Verified negative behavior: PR `0` / `-1` / `99999` → 404 · non-existent bran
 
 ## Key Decisions
 
-- **Sandbox repo:** `Gredja/GitHubApiTests` for all write operations
+- **Sandbox repo:** `Gredja/AiTest` for all write operations
 - **E2E as separate project:** isolation from read-only tests, different risk profile
 - **Cleanup:** E2E tests clean up after themselves (delete created resources)
 - **Rate limiting:** E2E tests respect GitHub API limits (5000 req/hour with token)

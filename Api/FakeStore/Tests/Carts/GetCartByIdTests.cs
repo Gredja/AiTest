@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.FakeStore;
 using Core.Config;
 using Core.Helpers;

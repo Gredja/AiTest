@@ -1,4 +1,4 @@
-﻿---
+---
 name: gredja-rules
 description: Use when the user asks about Gredja project rules, coding standards, or conventions. Entry point for all Gredja project rules.
 ---
@@ -9,12 +9,12 @@ Entry point for all Gredja project rules. Overview + pointers to detailed rule f
 
 ## Project
 
-Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). FakeStoreAPI for API testing.
+Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). FakeStoreAPI, JSONPlaceholder, GitHub API.
 
 - Repo: https://github.com/Gredja/AiTest.git
 - Branch: `main`, changes in `features/<topic>`
-- Test base class: `ApiTestBase` in `Api/ApiTestBase.cs`
-- Endpoints: `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`
+- Test base classes: `RequestHelper` (FakeStore), `JsonPlaceholderRequestHelper`, `GitHubTestBase` (see `Core/Helpers/`)
+- Endpoints: `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`
 
 ## Rule Files
 
@@ -33,7 +33,8 @@ Read the relevant file before working on the corresponding entity:
 ## Key Rules (quick reference)
 
 - **FluentAssertions only** — no `Assert.That()`
-- **Models:** `Model` suffix (response), `Request` suffix (request), `Id` always non-nullable
+- **Models:** `ModelResponse` suffix (response), `ModelRequest` suffix (request), nested/supporting models without suffix, `Id` always non-nullable
+- **Lambda parameters:** readable singular noun (`product => product.Id`), never single-letter
 - **Reference types:** no `?`, no init. **Value types:** `?` if JSON field can be null
 - **No comments** unless regex pattern or non-obvious WHY
 - **No magic numbers** — extract to constants

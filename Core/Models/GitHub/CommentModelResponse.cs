@@ -4,7 +4,7 @@ using Core.Attributes;
 
 namespace Core.Models.GitHub;
 
-public class Comment : IdModel<long>
+public class CommentModelResponse : IdModel<long>
 {
     [RequiredField]
     public string Body { get; set; }

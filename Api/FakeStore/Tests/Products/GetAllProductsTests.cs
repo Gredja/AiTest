@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.FakeStore;
 using Core.Config;
 using Core.Helpers;
@@ -166,8 +165,8 @@ public class GetAllProductsTests : RequestHelper
     [Description("1.11 GET /products with invalid query param returns 400")]
     public async Task GetAllProducts_InvalidQueryParam_ReturnsBadRequest()
     {
-        var response = await Get<List<ProductModelResponse>>("/products?invalid=true");
+        var response = await Get<List<ProductModelResponse>>($"{FakeStoreEndpoints.Products}?invalid=true");
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }
 }

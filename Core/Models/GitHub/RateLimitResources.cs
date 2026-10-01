@@ -1,7 +1,7 @@
 namespace Core.Models.GitHub;
 
-public class RateLimitResourcesModel
+public class RateLimitResources
 {
-    public RateLimitSectionModel Core { get; set; }
-    public RateLimitSectionModel Search { get; set; }
+    public RateLimitSection Core { get; set; }
+    public RateLimitSection Search { get; set; }
 }

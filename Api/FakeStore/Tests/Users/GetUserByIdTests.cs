@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.FakeStore;
 using Core.Config;
 using Core.Helpers;
@@ -17,7 +16,7 @@ public class GetUserByIdTests : RequestHelper
     private const int TestUserId = 1;
     private const int BoundaryUserId = 5;
     private const int LastUserId = 10;
-    private static readonly UserRequest _testUser = new()
+    private static readonly UserModelRequest _testUser = new()
     {
         Email = "test@example.com",
         Username = "testuser",
@@ -41,7 +40,7 @@ public class GetUserByIdTests : RequestHelper
 
         if (response.Data!.Count == 0)
         {
-            var create = await Post<UserRequest, UserModelResponse>(
+            var create = await Post<UserModelRequest, UserModelResponse>(
                 FakeStoreEndpoints.Users, _testUser);
             _createdUserId = create.Data!.Id;
         }

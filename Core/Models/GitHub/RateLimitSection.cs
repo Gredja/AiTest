@@ -1,6 +1,6 @@
 namespace Core.Models.GitHub;
 
-public class RateLimitSectionModel
+public class RateLimitSection
 {
     public int Limit { get; set; }
     public int Remaining { get; set; }

@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.JsonPlaceholder;
 using Core.Config;
 using Core.Helpers;
@@ -21,7 +20,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     [Description("3.1 Status code is 200")]
     public async Task GetCommentsByPost_ReturnsOk()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -32,7 +31,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     [Description("3.2 Response matches expected contract")]
     public async Task GetCommentsByPost_ResponseMatchesContract()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -45,7 +44,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     [Description("3.3 Response body is not empty")]
     public async Task GetCommentsByPost_ReturnsNonEmptyList()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
         response.Data.Should().NotBeEmpty();
@@ -56,7 +55,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     [Description("3.4 Each item has valid fields")]
     public async Task GetCommentsByPost_EachItemHasValidFields()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
         foreach (var comment in response.Data!)
@@ -70,7 +69,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     [Description("3.5 All comments belong to same post")]
     public async Task GetCommentsByPost_AllBelongToSamePost()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
         response.Data!.Should().OnlyContain(comment => comment.PostId == TestPostId);
@@ -85,7 +84,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
         var maxPostId = allPosts.Data!.Max(post => post.Id);
         var nonExistentPostId = maxPostId + 1;
 
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(nonExistentPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -97,7 +96,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     [Description("3.7 Returns empty list for postId=0")]
     public async Task GetCommentsByPost_ZeroPostId_ReturnsEmpty()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);

@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.JsonPlaceholder;
 using Core.Config;
 using Core.Helpers;

@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.JsonPlaceholder;
 using Core.Config;
 using Core.Helpers;
@@ -21,7 +20,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     [Description("1.1 Status code is 200")]
     public async Task GetAllComments_ReturnsOk()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -31,7 +30,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     [Description("1.2 Response matches expected contract")]
     public async Task GetAllComments_ResponseMatchesContract()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -43,7 +42,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     [Description("1.3 Response body is not empty")]
     public async Task GetAllComments_ReturnsNonEmptyList()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -54,7 +53,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     [Description("1.4 Content-Type is application/json")]
     public async Task GetAllComments_ContentTypeIsJson()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -64,7 +63,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     [Description("1.5 Each item has valid required fields (via attributes)")]
     public async Task GetAllComments_EachItemHasValidFields()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         foreach (var comment in response.Data!)
         {
@@ -77,7 +76,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     [Description("1.6 Returns exactly 500 comments")]
     public async Task GetAllComments_ReturnsExpectedCount()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().HaveCount(ExpectedCommentCount);
@@ -88,7 +87,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     [Description("1.7 All comment IDs are unique")]
     public async Task GetAllComments_AllIdsAreUnique()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         var ids = response.Data!.Select(comment => comment.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
@@ -99,7 +98,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     [Description("1.8 Each comment has postId > 0")]
     public async Task GetAllComments_EachCommentHasValidPostId()
     {
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         response.Data.Should().OnlyContain(comment => comment.PostId > 0);
     }
@@ -110,7 +109,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     public async Task GetAllComments_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
+        var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);

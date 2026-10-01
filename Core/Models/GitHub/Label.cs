@@ -3,7 +3,7 @@ using Core.Attributes;
 
 namespace Core.Models.GitHub;
 
-public class LabelModelResponse : IdModel<long>
+public class Label : IdModel<long>
 {
     [RequiredField]
     public string Name { get; set; }

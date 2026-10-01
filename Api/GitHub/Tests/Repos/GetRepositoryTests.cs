@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
@@ -15,7 +14,8 @@ namespace Api.GitHub.Repos;
 [Category("GitHub")]
 public class GetRepositoryTests : GitHubTestBase
 {
-    private const string TestUserId = "Gredja";
+    private static readonly string TestUsername = TestConfig.GitHubTestUsername;
+
     [Test]
     [Category("HealthCheck")]
     [Description("1.1 GET /repos/{owner}/{repo} returns 200 OK")]
@@ -88,18 +88,18 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(TestUserId, GitHubEndpoints.NonExistentRepo));
+            RepoParam(TestUsername, GitHubEndpoints.NonExistentRepo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Negative")]
     [Description("1.7 Non-existent owner returns 404")]
     public async Task GetRepository_NonExistentOwner_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(GitHubEndpoints.NonExistentUser, "AiTest"));
+            RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
