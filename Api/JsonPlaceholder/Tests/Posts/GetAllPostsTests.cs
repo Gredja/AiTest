@@ -126,7 +126,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
-        var ids = response.Data!.Select(p => p.Id).ToList();
+        var ids = response.Data!.Select(post => post.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -137,6 +137,6 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
-        response.Data.Should().OnlyContain(p => p.UserId > 0);
+        response.Data.Should().OnlyContain(post => post.UserId > 0);
     }
 }

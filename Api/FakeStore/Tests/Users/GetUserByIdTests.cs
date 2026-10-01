@@ -105,7 +105,7 @@ public class GetUserByIdTests : RequestHelper
     public async Task GetUserById_NonExistentId_ReturnsNotFound()
     {
         var allUsers = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
-        var maxId = allUsers.Data!.Max(u => u.Id);
+        var maxId = allUsers.Data!.Max(user => user.Id);
         var nonExistentId = maxId + 1;
 
         var response = await Get<UserModelResponse>(FakeStoreEndpoints.UsersById, IdParam(nonExistentId));

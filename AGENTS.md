@@ -22,6 +22,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 
 ### Code
 - Naming: PascalCase (classes, methods, properties, constants), camelCase (locals, params), `_camelCase` (private fields)
+- Lambda parameters: readable singular noun (`product => product.Id`), не однобуквенные (`p =>`)
 - Без аббревиатур (`response`, не `resp`). Boolean: `Is`, `Has`, `Can`, `Should`
 - File-scoped namespaces, one class per file, explicit types > var (unless obvious)
 - Methods: short, one responsibility, max ~30 lines, max 5 params

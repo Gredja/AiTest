@@ -97,7 +97,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(TestUserId));
 
-        response.Data!.Should().OnlyContain(t => t.UserId == TestUserId);
+        response.Data!.Should().OnlyContain(todo => todo.UserId == TestUserId);
     }
 
     [Test]
@@ -106,7 +106,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     public async Task GetTodosByUserId_NonExistentUser_ReturnsEmpty()
     {
         var allUsers = await Get<List<JsonPlaceholderUser>>(JsonPlaceholderEndpoints.Users);
-        var maxUserId = allUsers.Data!.Max(u => u.Id);
+        var maxUserId = allUsers.Data!.Max(user => user.Id);
         var nonExistentUserId = maxUserId + 1;
 
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
@@ -126,8 +126,8 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response5 = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(5));
 
-        var ids1 = response1.Data!.Select(t => t.Id).ToList();
-        var ids5 = response5.Data!.Select(t => t.Id).ToList();
+        var ids1 = response1.Data!.Select(todo => todo.Id).ToList();
+        var ids5 = response5.Data!.Select(todo => todo.Id).ToList();
         ids1.Should().NotBeEquivalentTo(ids5);
     }
 

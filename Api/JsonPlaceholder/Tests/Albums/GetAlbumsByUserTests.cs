@@ -73,7 +73,7 @@ public class GetAlbumsByUserTests : JsonPlaceholderRequestHelper
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.AlbumsByUser,
             UserIdParam(TestUserId));
 
-        response.Data!.Should().OnlyContain(a => a.UserId == TestUserId);
+        response.Data!.Should().OnlyContain(album => album.UserId == TestUserId);
     }
 
     [Test]
@@ -81,8 +81,12 @@ public class GetAlbumsByUserTests : JsonPlaceholderRequestHelper
     [Description("3.6 Returns empty list for non-existent userId")]
     public async Task GetAlbumsByUser_NonExistentUserId_ReturnsEmpty()
     {
+        var allUsers = await Get<List<JsonPlaceholderUser>>(JsonPlaceholderEndpoints.Users);
+        var maxUserId = allUsers.Data!.Max(user => user.Id);
+        var nonExistentUserId = maxUserId + 1;
+
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.AlbumsByUser,
-            UserIdParam(999999));
+            UserIdParam(nonExistentUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();

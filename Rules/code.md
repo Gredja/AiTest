@@ -7,6 +7,7 @@
 - `_camelCase` for private fields
 - No abbreviations in names (`response` not `resp`, `productId` not `pid`)
 - Boolean variables/methods: prefix with `Is`, `Has`, `Can`, `Should`
+- Lambda parameters: readable singular noun matching the element type (`product => product.Id`, `comment => comment.PostId`), never single-letter (`p =>`, `c =>`)
 
 ## Types
 

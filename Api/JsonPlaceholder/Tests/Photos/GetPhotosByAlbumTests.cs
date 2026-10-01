@@ -73,7 +73,7 @@ public class GetPhotosByAlbumTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.PhotosByAlbum,
             AlbumIdQueryParam(TestAlbumId));
 
-        response.Data!.Should().OnlyContain(p => p.AlbumId == TestAlbumId);
+        response.Data!.Should().OnlyContain(photo => photo.AlbumId == TestAlbumId);
     }
 
     [Test]
@@ -81,8 +81,12 @@ public class GetPhotosByAlbumTests : JsonPlaceholderRequestHelper
     [Description("3.6 Returns empty list for non-existent albumId")]
     public async Task GetPhotosByAlbum_NonExistentAlbumId_ReturnsEmpty()
     {
+        var allAlbums = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
+        var maxAlbumId = allAlbums.Data!.Max(album => album.Id);
+        var nonExistentAlbumId = maxAlbumId + 1;
+
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.PhotosByAlbum,
-            UserIdParam(999999));
+            AlbumIdQueryParam(nonExistentAlbumId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();
@@ -94,7 +98,7 @@ public class GetPhotosByAlbumTests : JsonPlaceholderRequestHelper
     public async Task GetPhotosByAlbum_ZeroAlbumId_ReturnsEmpty()
     {
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.PhotosByAlbum,
-            UserIdParam(0));
+            AlbumIdQueryParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();

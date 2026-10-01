@@ -74,7 +74,7 @@ public class GetProductCategoriesTests : RequestHelper
     {
         var response = await Get<List<string>>(FakeStoreEndpoints.ProductsCategories);
 
-        response.Data.Should().OnlyContain(c => !string.IsNullOrWhiteSpace(c));
+        response.Data.Should().OnlyContain(category => !string.IsNullOrWhiteSpace(category));
     }
 
     [Test]

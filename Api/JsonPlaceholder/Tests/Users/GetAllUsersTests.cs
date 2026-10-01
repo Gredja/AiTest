@@ -90,7 +90,7 @@ public class GetAllUsersTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<JsonPlaceholderUser>>(JsonPlaceholderEndpoints.Users);
 
-        var ids = response.Data!.Select(u => u.Id).ToList();
+        var ids = response.Data!.Select(user => user.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -101,7 +101,7 @@ public class GetAllUsersTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<JsonPlaceholderUser>>(JsonPlaceholderEndpoints.Users);
 
-        response.Data.Should().OnlyContain(u => !string.IsNullOrWhiteSpace(u.Email));
+        response.Data.Should().OnlyContain(user => !string.IsNullOrWhiteSpace(user.Email));
     }
 
     [Test]

@@ -61,7 +61,7 @@ public static class TestConfig
                 continue;
             }
 
-            var line = File.ReadAllLines(envFile).FirstOrDefault(l => l.StartsWith("GITHUB_PAT="));
+            var line = File.ReadAllLines(envFile).FirstOrDefault(line => line.StartsWith("GITHUB_PAT="));
             if (line is not null)
             {
                 return line["GITHUB_PAT=".Length..];

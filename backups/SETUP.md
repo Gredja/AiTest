@@ -338,6 +338,7 @@ git checkout -b features/add-user-tests
 **Код:**
 - PascalCase для классов/методов/свойств, camelCase для локальных переменных
 - Без аббревиатур: `response`, не `resp`
+- Лямбды: читаемое имя (`product => product.Id`), не однобуквенные (`p =>`)
 - Все API-запросы async (`ExecuteAsync`)
 - Маленькие методы, одно действие, максимум ~30 строк
 - Конкретные исключения вместо `Exception`, без `null!`

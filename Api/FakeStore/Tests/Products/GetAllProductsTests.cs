@@ -135,7 +135,7 @@ public class GetAllProductsTests : RequestHelper
     {
         var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
-        response.Data.Should().OnlyContain(p => p.Rating.Rate >= RatingMin && p.Rating.Rate <= RatingMax);
+        response.Data.Should().OnlyContain(product => product.Rating.Rate >= RatingMin && product.Rating.Rate <= RatingMax);
     }
 
     [Test]
@@ -145,7 +145,7 @@ public class GetAllProductsTests : RequestHelper
     {
         var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
-        var ids = response.Data!.Select(p => p.Id).ToList();
+        var ids = response.Data!.Select(product => product.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -156,7 +156,7 @@ public class GetAllProductsTests : RequestHelper
     {
         var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
-        var categories = response.Data!.Select(p => p.Category).Distinct().ToList();
+        var categories = response.Data!.Select(product => product.Category).Distinct().ToList();
         categories.Should().HaveCount(ExpectedCategoryCount);
     }
 

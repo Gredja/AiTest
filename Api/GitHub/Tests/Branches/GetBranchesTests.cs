@@ -121,7 +121,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
             RepoParam(owner, repo));
 
-        var names = response.Data!.Select(b => b.Name).ToList();
+        var names = response.Data!.Select(branch => branch.Name).ToList();
         names.Should().OnlyHaveUniqueItems();
     }
 
@@ -134,9 +134,9 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
             RepoParam(owner, repo));
 
-        response.Data.Should().OnlyContain(b =>
-            b.Commit.Sha.Length == ShaHexLength &&
-            ShaHexPattern.IsMatch(b.Commit.Sha));
+        response.Data.Should().OnlyContain(branch =>
+            branch.Commit.Sha.Length == ShaHexLength &&
+            ShaHexPattern.IsMatch(branch.Commit.Sha));
     }
 
     [Test]

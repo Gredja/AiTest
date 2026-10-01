@@ -113,7 +113,7 @@ public class GetCartByIdTests : RequestHelper
     public async Task GetCartById_NonExistentId_ReturnsNotFound()
     {
         var allCarts = await Get<List<CartModelResponse>>(FakeStoreEndpoints.Carts);
-        var maxId = allCarts.Data!.Max(c => c.Id);
+        var maxId = allCarts.Data!.Max(cart => cart.Id);
         var nonExistentId = maxId + 1;
 
         var response = await Get<CartModelResponse>(FakeStoreEndpoints.CartsById, IdParam(nonExistentId));

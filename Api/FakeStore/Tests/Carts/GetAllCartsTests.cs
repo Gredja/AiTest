@@ -88,7 +88,7 @@ public class GetAllCartsTests : RequestHelper
     {
         var response = await Get<List<CartModelResponse>>(FakeStoreEndpoints.Carts);
 
-        var ids = response.Data!.Select(c => c.Id).ToList();
+        var ids = response.Data!.Select(cart => cart.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 

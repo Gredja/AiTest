@@ -13,6 +13,9 @@ public static class GitHubParamHelper
     public static List<RequestDictionaryModel> IssueNumberParam(int number) =>
         [new() { Type = ParamType.UrlSegment, Key = "issue_number", Value = number }];
 
+    public static List<RequestDictionaryModel> CommentIdParam(long id) =>
+        [new() { Type = ParamType.UrlSegment, Key = "comment_id", Value = id }];
+
     public static List<RequestDictionaryModel> PullNumberParam(int number) =>
         [new() { Type = ParamType.UrlSegment, Key = "pull_number", Value = number }];
 

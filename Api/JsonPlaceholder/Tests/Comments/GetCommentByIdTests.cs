@@ -83,7 +83,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_NonExistentId_ReturnsNotFound()
     {
         var allComments = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
-        var maxCommentId = allComments.Data!.Max(c => c.Id);
+        var maxCommentId = allComments.Data!.Max(comment => comment.Id);
         var nonExistentId = maxCommentId + 1;
 
         var response = await Get<Comment>(JsonPlaceholderEndpoints.CommentsById,

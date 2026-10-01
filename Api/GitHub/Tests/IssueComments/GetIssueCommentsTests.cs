@@ -18,7 +18,6 @@ public class GetIssueCommentsTests : GitHubTestBase
     private const string RepoOwner = "Gredja";
     private const string RepoName = "AiTest";
     private const int ExistingIssueNumber = 5;
-    private const int NonExistentIssueNumber = 99999;
     private const string TestComment = "Test comment for contract check";
 
     private long? _createdCommentId;
@@ -44,9 +43,23 @@ public class GetIssueCommentsTests : GitHubTestBase
     {
         if (_createdCommentId.HasValue)
         {
-            await Delete<object>(
-                $"{GitHubEndpoints.RepoIssueComments}/{_createdCommentId}",
-                RepoParam(RepoOwner, RepoName));
+            try
+            {
+                var delete = await Delete<object>(
+                    GitHubEndpoints.RepoIssueCommentById,
+                    [.. RepoParam(RepoOwner, RepoName), .. CommentIdParam(_createdCommentId.Value)]);
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: comment {_createdCommentId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete comment {_createdCommentId}: {exception.Message}");
+            }
         }
     }
 
@@ -121,7 +134,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
             [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(ExistingIssueNumber)]);
 
-        var ids = response.Data!.Select(c => c.Id).ToList();
+        var ids = response.Data!.Select(comment => comment.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -130,8 +143,13 @@ public class GetIssueCommentsTests : GitHubTestBase
     [Description("11.7 Non-existent issue returns 404")]
     public async Task GetIssueComments_NonExistentIssue_ReturnsNotFound()
     {
+        var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            [.. RepoParam(RepoOwner, RepoName), .. StateParam(GitHubEndpoints.StateAll)]);
+        var maxIssueNumber = issues.Data!.Max(issue => issue.Number);
+        var nonExistentIssueNumber = maxIssueNumber + 1;
+
         var response = await Get<List<Comment>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(NonExistentIssueNumber)]);
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(nonExistentIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

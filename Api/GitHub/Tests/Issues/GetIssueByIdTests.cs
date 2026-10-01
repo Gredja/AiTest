@@ -18,7 +18,6 @@ public class GetIssueByIdTests : GitHubTestBase
     private const string RepoOwner = "Gredja";
     private const string RepoName = "AiTest";
     private const int ExistingIssueNumber = 5;
-    private const int NonExistentIssueNumber = 99999;
 
     [Test]
     [Category("HealthCheck")]
@@ -60,8 +59,13 @@ public class GetIssueByIdTests : GitHubTestBase
     [Description("10.4 Non-existent issue returns 404")]
     public async Task GetIssueById_NonExistentIssue_ReturnsNotFound()
     {
+        var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            [.. RepoParam(RepoOwner, RepoName), .. StateParam(GitHubEndpoints.StateAll)]);
+        var maxIssueNumber = issues.Data!.Max(issue => issue.Number);
+        var nonExistentIssueNumber = maxIssueNumber + 1;
+
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(NonExistentIssueNumber)]);
+            [.. RepoParam(RepoOwner, RepoName), .. IssueNumberParam(nonExistentIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

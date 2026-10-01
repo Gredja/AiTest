@@ -69,8 +69,8 @@ public class GetProductsByCategoryTests : RequestHelper
         var response = await Get<List<ProductModelResponse>>(
             $"/products/category/{TestConfig.TestCategoryName}");
 
-        response.Data.Should().OnlyContain(p =>
-            p.Category.Equals(TestConfig.TestCategoryName, StringComparison.OrdinalIgnoreCase));
+        response.Data.Should().OnlyContain(product =>
+            product.Category.Equals(TestConfig.TestCategoryName, StringComparison.OrdinalIgnoreCase));
     }
 
     [Test]

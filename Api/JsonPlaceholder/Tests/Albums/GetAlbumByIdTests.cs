@@ -83,7 +83,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_NonExistentId_ReturnsNotFound()
     {
         var allAlbums = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
-        var maxAlbumId = allAlbums.Data!.Max(a => a.Id);
+        var maxAlbumId = allAlbums.Data!.Max(album => album.Id);
         var nonExistentId = maxAlbumId + 1;
 
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,

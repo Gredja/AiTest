@@ -8,7 +8,7 @@ public static class AllureTestResultBuilder
 
         if (resultParams.Categories is not null && resultParams.Categories.Count > 0)
         {
-            result["tags"] = resultParams.Categories.Select(c => new Dictionary<string, string> { ["name"] = c }).ToList();
+            result["tags"] = resultParams.Categories.Select(category => new Dictionary<string, string> { ["name"] = category }).ToList();
         }
 
         if (resultParams.StatusMessage is not null)

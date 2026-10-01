@@ -54,8 +54,8 @@ public static class AssertHelper
                 continue;
             }
 
-            var resProp = responseProps.FirstOrDefault(p =>
-                p.Name.Equals(reqProp.Name, StringComparison.OrdinalIgnoreCase));
+            var resProp = responseProps.FirstOrDefault(property =>
+                property.Name.Equals(reqProp.Name, StringComparison.OrdinalIgnoreCase));
 
             resProp.Should().NotBeNull($"response should have property '{reqProp.Name}' matching request");
 

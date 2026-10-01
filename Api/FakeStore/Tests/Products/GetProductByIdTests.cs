@@ -109,7 +109,7 @@ public class GetProductByIdTests : RequestHelper
     public async Task GetProductById_NonExistentId_ReturnsNotFound()
     {
         var allProducts = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
-        var maxId = allProducts.Data!.Max(p => p.Id);
+        var maxId = allProducts.Data!.Max(product => product.Id);
         var nonExistentId = maxId + 1;
 
         var response = await Get<ProductModelResponse>(FakeStoreEndpoints.ProductsById, IdParam(nonExistentId));

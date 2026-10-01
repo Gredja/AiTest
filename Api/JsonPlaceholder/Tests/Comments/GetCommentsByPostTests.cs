@@ -73,7 +73,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
         var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
-        response.Data!.Should().OnlyContain(c => c.PostId == TestPostId);
+        response.Data!.Should().OnlyContain(comment => comment.PostId == TestPostId);
     }
 
     [Test]
@@ -81,8 +81,12 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     [Description("3.6 Returns empty list for non-existent postId")]
     public async Task GetCommentsByPost_NonExistentPostId_ReturnsEmpty()
     {
+        var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
+        var maxPostId = allPosts.Data!.Max(post => post.Id);
+        var nonExistentPostId = maxPostId + 1;
+
         var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
-            UserIdParam(999999));
+            PostIdQueryParam(nonExistentPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();
@@ -94,7 +98,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     public async Task GetCommentsByPost_ZeroPostId_ReturnsEmpty()
     {
         var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.CommentsByPost,
-            UserIdParam(0));
+            PostIdQueryParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();

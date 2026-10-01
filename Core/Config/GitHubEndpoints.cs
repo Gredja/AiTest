@@ -10,6 +10,7 @@ public static class GitHubEndpoints
     public const string NonExistentRepoName = "nonexistent";
     public const string StateOpen = "open";
     public const string StateClosed = "closed";
+    public const string StateAll = "all";
 
     public const string Repos = "/repos";
     public const string Repositories = "/repositories";
@@ -18,6 +19,7 @@ public static class GitHubEndpoints
     public const string RepoIssues = "/repos/{owner}/{repo}/issues";
     public const string RepoIssueById = "/repos/{owner}/{repo}/issues/{issue_number}";
     public const string RepoIssueComments = "/repos/{owner}/{repo}/issues/{issue_number}/comments";
+    public const string RepoIssueCommentById = "/repos/{owner}/{repo}/issues/comments/{comment_id}";
 
     public const string RepoPullRequests = "/repos/{owner}/{repo}/pulls";
     public const string RepoPullRequestById = "/repos/{owner}/{repo}/pulls/{pull_number}";

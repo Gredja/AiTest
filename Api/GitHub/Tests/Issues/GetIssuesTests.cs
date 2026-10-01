@@ -97,7 +97,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             RepoParam(owner, repo));
 
-        var ids = response.Data!.Select(i => i.Id).ToList();
+        var ids = response.Data!.Select(issue => issue.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -110,7 +110,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             RepoParam(owner, repo));
 
-        response.Data.Should().OnlyContain(i => i.State == GitHubEndpoints.StateOpen || i.State == GitHubEndpoints.StateClosed);
+        response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateOpen || issue.State == GitHubEndpoints.StateClosed);
     }
 
     [Test]
@@ -185,7 +185,7 @@ public class GetIssuesTests : GitHubTestBase
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateOpen)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().OnlyContain(i => i.State == GitHubEndpoints.StateOpen);
+        response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateOpen);
     }
 
     [Test]
@@ -198,6 +198,6 @@ public class GetIssuesTests : GitHubTestBase
             [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateClosed)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().OnlyContain(i => i.State == GitHubEndpoints.StateClosed);
+        response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateClosed);
     }
 }

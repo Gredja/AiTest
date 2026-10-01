@@ -90,7 +90,7 @@ public class GetAllPhotosTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.Photos);
 
-        var ids = response.Data!.Select(p => p.Id).ToList();
+        var ids = response.Data!.Select(photo => photo.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -101,7 +101,7 @@ public class GetAllPhotosTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.Photos);
 
-        response.Data.Should().OnlyContain(p => p.AlbumId > 0);
+        response.Data.Should().OnlyContain(photo => photo.AlbumId > 0);
     }
 
     [Test]

@@ -90,7 +90,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
 
-        var ids = response.Data!.Select(c => c.Id).ToList();
+        var ids = response.Data!.Select(comment => comment.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -101,7 +101,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<Comment>>(JsonPlaceholderEndpoints.Comments);
 
-        response.Data.Should().OnlyContain(c => c.PostId > 0);
+        response.Data.Should().OnlyContain(comment => comment.PostId > 0);
     }
 
     [Test]
