@@ -73,3 +73,21 @@ summary (counts and percentages), with no agent involvement.
 - 2026-10-02 — decoupled from Allure: own results writer (`TestOutcomeAttribute` →
   `test-results-*.log`) and own `TestReportSetup` teardown; logging and the MD report
   are now two fully independent mechanisms with no Allure dependency
+
+---
+
+## 2. Research: is CI/CD needed for this project? — TODO
+
+**Wish (2026-10-02):** investigate whether CI/CD is needed for this project at all —
+if yes, what it would look like (trigger, gates, artifacts); if no, document why not.
+Research/decision first, implementation only if the answer is "yes".
+
+**Context (already in place, no work needed to support it):**
+- Test/report machinery is CI-ready: pure C#, no PowerShell dependency, no execution
+  policy, all paths resolved at runtime — nothing blocks a Linux runner today
+- CI only needs to archive `TestResults/` (reports) and optionally `allure-results/`
+- Current gates that CI would reuse: `dotnet format --verify-no-changes`,
+  `dotnet test --filter Category=HealthCheck`, full `dotnet test`
+
+**Status history:**
+- 2026-10-02 — `TODO`: added to backlog by user decision (research first, no implementation yet)
