@@ -286,9 +286,13 @@ documentation/
 │       ├── JP-005-put-post-accepts-missing-required-fields.md
 │       └── JP-006-patch-post-returns-200-for-any-id.md
 ├── FILE_STRUCTURE.md
+├── FakeStoreObservableBehaviour.md
+├── FakeStoreTestPlan.md
 ├── GitHubObservableBehaviour.md
 ├── GitHubTestPlan.md
 ├── GitHubTestingStructure.md
+├── JsonPlaceholderObservableBehaviour.md
+├── JsonPlaceholderTestPlan.md
 ├── ObservableBehaviourTemplate.md
 ├── Katas/
 │   ├── 00-test-plan.md

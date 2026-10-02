@@ -236,9 +236,13 @@ Gredja/
 │   ├── Bugs/                     # Баг-репорты
 │   │   ├── FakeStore/            # Баги FakeStoreAPI
 │   │   └── JsonPlaceholder/      # Баги JsonPlaceholder
+│   ├── FakeStoreObservableBehaviour.md # Наблюдаемое поведение FakeStore API
+│   ├── FakeStoreTestPlan.md       # План тестирования FakeStore API
 │   ├── GitHubTestPlan.md         # План тестирования GitHub API
 │   ├── GitHubTestingStructure.md # Структура тестирования
 │   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
+│   ├── JsonPlaceholderObservableBehaviour.md # Наблюдаемое поведение JP API
+│   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
 │   └── README.md                 # Обзор проекта
 ├── Prompts/                      # Шаблоны промптов
