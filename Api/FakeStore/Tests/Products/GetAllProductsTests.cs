@@ -12,7 +12,7 @@ namespace Api.FakeStore.Products;
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-public class GetAllProductsTests : RequestHelper
+public class GetAllProductsTests : FakeStoreRequestHelper
 {
     private const double RatingMin = 0;
     private const double RatingMax = 5;

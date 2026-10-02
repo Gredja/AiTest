@@ -4,7 +4,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
-using static Api.FakeStore.Helpers.FakeStoreParamHelper;
+using static Core.Helpers.ParamHelper;
 using static Api.FakeStore.Helpers.FakeStoreTestData;
 
 namespace Api.FakeStore.Users;
@@ -12,7 +12,7 @@ namespace Api.FakeStore.Users;
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-public class GetUserByIdTests : RequestHelper
+public class GetUserByIdTests : FakeStoreRequestHelper
 {
     private const int TestUserId = 1;
     private const int BoundaryUserId = 5;

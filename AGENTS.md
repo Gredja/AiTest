@@ -8,6 +8,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Api/` — NUnit API-тесты (FakeStore, JsonPlaceholder, GitHub)
 - `E2E/` — NUnit E2E тесты (GitHub write operations)
 - `Core/Models/` — модели ответов/запросов
+- `Core/Helpers/` — общие хелперы: request-инфраструктура (`RequestHelper`, `FakeStoreRequestHelper`, `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`) всегда здесь; нужны E2E → сюда (`GitHubTestBase`, `GitHubParamHelper`, `ParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
 - `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
 - `Prompts/` — шаблоны промптов
 - `Rules/` — полные правила (здесь — краткая сводка)

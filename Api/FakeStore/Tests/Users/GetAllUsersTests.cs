@@ -12,7 +12,7 @@ namespace Api.FakeStore.Users;
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-public class GetAllUsersTests : RequestHelper
+public class GetAllUsersTests : FakeStoreRequestHelper
 {
     private const int ExpectedUserCount = 10;
     private int? _createdUserId;

@@ -71,11 +71,13 @@ Core/
 │   └── TestConfig.cs
 ├── Helpers/
 │   ├── AssertHelper.cs           # ShouldHaveValidContract, ShouldHaveValidFields, etc.
+│   ├── FakeStoreRequestHelper.cs
 │   ├── GitHub/
 │   │   ├── GitHubParamHelper.cs
 │   │   └── GitHubTestBase.cs
 │   ├── GitHubRequestHelper.cs
 │   ├── JsonPlaceholderRequestHelper.cs
+│   ├── ParamHelper.cs             # shared IdParam + UrlSegment/Query primitives for param helpers
 │   └── RequestHelper.cs
 ├── Models/
 │   ├── Generic/

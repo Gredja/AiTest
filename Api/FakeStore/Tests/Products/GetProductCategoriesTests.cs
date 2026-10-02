@@ -10,7 +10,7 @@ namespace Api.FakeStore.Products;
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-public class GetProductCategoriesTests : RequestHelper
+public class GetProductCategoriesTests : FakeStoreRequestHelper
 {
     [Test]
     [Category("HealthCheck")]

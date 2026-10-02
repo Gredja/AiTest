@@ -21,6 +21,12 @@
 - One blank line between `using` block and namespace
 - One blank line between members
 - No trailing whitespace
+- **Helper placement** — `Api` and `E2E` both reference `Core`, but neither references the other:
+  - Request-infrastructure (`RequestHelper` + client layers `FakeStoreRequestHelper`, `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`) → always `Core/Helpers/`, regardless of E2E usage
+  - Used by E2E too (e.g. `GitHubTestBase`, `GitHubParamHelper`) → `Core/Helpers/` (or `Core/Helpers/<Service>/`)
+  - Used only by API tests (e.g. `FakeStoreParamHelper`, `JsonPlaceholderParamHelper`) → `Api/<Service>/Helpers/`
+  - Shared param-building primitives (`ParamHelper`: `IdParam`, `UrlSegment`, `Query`) → `Core/Helpers/ParamHelper.cs`
+  - Never place E2E-needed code in `Api/` — the E2E project has no reference to `Api`
 
 ## Cleanup
 

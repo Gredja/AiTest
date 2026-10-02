@@ -4,14 +4,14 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
-using static Api.FakeStore.Helpers.FakeStoreParamHelper;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.FakeStore.Carts;
 
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-public class GetCartByIdTests : RequestHelper
+public class GetCartByIdTests : FakeStoreRequestHelper
 {
     private const int TestCartId = 1;
     private const int BoundaryCartId = 4;

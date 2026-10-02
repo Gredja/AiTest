@@ -11,7 +11,7 @@ namespace Api.FakeStore.Carts;
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-public class GetAllCartsTests : RequestHelper
+public class GetAllCartsTests : FakeStoreRequestHelper
 {
     [Test]
     [Category("HealthCheck")]

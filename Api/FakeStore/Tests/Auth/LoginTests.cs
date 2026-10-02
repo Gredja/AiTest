@@ -10,7 +10,7 @@ namespace Api.FakeStore.Auth;
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-public class LoginTests : RequestHelper
+public class LoginTests : FakeStoreRequestHelper
 {
     private static readonly AuthModelRequest _validCredentials = new()
     {

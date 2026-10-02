@@ -6,31 +6,31 @@ public static class GitHubParamHelper
 {
     public static List<RequestDictionaryModel> RepoParam(string owner, string repo) =>
         [
-            new() { Type = ParamType.UrlSegment, Key = "owner", Value = owner },
-            new() { Type = ParamType.UrlSegment, Key = "repo", Value = repo }
+            ParamHelper.UrlSegment("owner", owner),
+            ParamHelper.UrlSegment("repo", repo)
         ];
 
     public static List<RequestDictionaryModel> IssueNumberParam(int number) =>
-        [new() { Type = ParamType.UrlSegment, Key = "issue_number", Value = number }];
+        [ParamHelper.UrlSegment("issue_number", number)];
 
     public static List<RequestDictionaryModel> CommentIdParam(long id) =>
-        [new() { Type = ParamType.UrlSegment, Key = "comment_id", Value = id }];
+        [ParamHelper.UrlSegment("comment_id", id)];
 
     public static List<RequestDictionaryModel> PullNumberParam(int number) =>
-        [new() { Type = ParamType.UrlSegment, Key = "pull_number", Value = number }];
+        [ParamHelper.UrlSegment("pull_number", number)];
 
     public static List<RequestDictionaryModel> BranchNameParam(string branch) =>
-        [new() { Type = ParamType.UrlSegment, Key = "branch", Value = branch }];
+        [ParamHelper.UrlSegment("branch", branch)];
 
     public static List<RequestDictionaryModel> PaginationParams(int page, int perPage) =>
         [
-            new() { Type = ParamType.Parameter, Key = "page", Value = page },
-            new() { Type = ParamType.Parameter, Key = "per_page", Value = perPage }
+            ParamHelper.Query("page", page),
+            ParamHelper.Query("per_page", perPage)
         ];
 
     public static List<RequestDictionaryModel> UsernameParam(string username) =>
-        [new() { Type = ParamType.UrlSegment, Key = "username", Value = username }];
+        [ParamHelper.UrlSegment("username", username)];
 
     public static List<RequestDictionaryModel> StateParam(string state) =>
-        [new() { Type = ParamType.Parameter, Key = "state", Value = state }];
+        [ParamHelper.Query("state", state)];
 }
