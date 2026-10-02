@@ -21,7 +21,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
     public async Task GetUserTodos_ReturnsOk()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
-            PostIdParam(TestUserId));
+            IdParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -32,7 +32,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
     public async Task GetUserTodos_ResponseMatchesContract()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
-            PostIdParam(TestUserId));
+            IdParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -45,7 +45,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
     public async Task GetUserTodos_ReturnsNonEmptyList()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
-            PostIdParam(TestUserId));
+            IdParam(TestUserId));
 
         response.Data.Should().NotBeEmpty();
     }
@@ -56,7 +56,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
     public async Task GetUserTodos_EachItemHasValidFields()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
-            PostIdParam(TestUserId));
+            IdParam(TestUserId));
 
         foreach (var todo in response.Data!)
         {
@@ -70,7 +70,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
     public async Task GetUserTodos_AllBelongToSameUser()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
-            PostIdParam(TestUserId));
+            IdParam(TestUserId));
 
         response.Data!.Should().OnlyContain(todo => todo.UserId == TestUserId);
     }
@@ -80,12 +80,12 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
     [Description("4.6 Returns empty list for non-existent userId")]
     public async Task GetUserTodos_NonExistentUserId_ReturnsEmpty()
     {
-        var allUsers = await Get<List<JsonPlaceholderUser>>(JsonPlaceholderEndpoints.Users);
+        var allUsers = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
         var maxUserId = allUsers.Data!.Max(user => user.Id);
         var nonExistentUserId = maxUserId + 1;
 
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
-            PostIdParam(nonExistentUserId));
+            IdParam(nonExistentUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();
@@ -97,7 +97,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
     public async Task GetUserTodos_ZeroUserId_ReturnsEmpty()
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
-            PostIdParam(0));
+            IdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().BeEmpty();

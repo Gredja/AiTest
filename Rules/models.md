@@ -43,7 +43,7 @@ How to decide for value types: check the actual JSON response from the API. If t
 
 ## Namespaces
 
-- Regular models: `Core.Models`
+- Regular models: `Core.Models.{Service}` (e.g. `Core.Models.FakeStore`, `Core.Models.GitHub`, `Core.Models.JsonPlaceholder`) — nested/supporting models live in the same service namespace
 - Reusable generics: `Core.Models.Generic`
 
 ## Generic models

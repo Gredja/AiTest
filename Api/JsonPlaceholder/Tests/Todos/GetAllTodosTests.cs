@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 
 namespace Api.JsonPlaceholder.Todos;
 
@@ -14,8 +15,6 @@ namespace Api.JsonPlaceholder.Todos;
 public class GetAllTodosTests : JsonPlaceholderRequestHelper
 {
     private const int ExpectedTodoCount = 200;
-    private const int TestUserId = 1;
-    private static readonly PostModelRequest _testTodo = new() { UserId = TestUserId, Title = "Test Todo for contract" };
     private int? _createdTodoId;
 
     [OneTimeSetUp]
@@ -25,7 +24,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
 
         if (response.Data!.Count == 0)
         {
-            var create = await Post<PostModelRequest, TodoModelResponse>(JsonPlaceholderEndpoints.Todos, _testTodo);
+            var create = await Post<TodoModelRequest, TodoModelResponse>(JsonPlaceholderEndpoints.Todos, TestTodo);
             _createdTodoId = create.Data!.Id;
         }
     }
@@ -35,7 +34,21 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     {
         if (_createdTodoId.HasValue)
         {
-            await Delete<object>($"{JsonPlaceholderEndpoints.Todos}/{_createdTodoId}");
+            try
+            {
+                var delete = await Delete<object>($"{JsonPlaceholderEndpoints.Todos}/{_createdTodoId}");
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: todo {_createdTodoId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete todo {_createdTodoId}: {exception.Message}");
+            }
         }
     }
 

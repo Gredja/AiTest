@@ -46,21 +46,21 @@ public static class AssertHelper
         var requestProps = typeof(TRequest).GetProperties(BindingFlags.Public | BindingFlags.Instance);
         var responseProps = typeof(TResponse).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-        foreach (var reqProp in requestProps)
+        foreach (var requestProperty in requestProps)
         {
-            var reqValue = reqProp.GetValue(request);
-            if (reqValue is null)
+            var requestValue = requestProperty.GetValue(request);
+            if (requestValue is null)
             {
                 continue;
             }
 
-            var resProp = responseProps.FirstOrDefault(property =>
-                property.Name.Equals(reqProp.Name, StringComparison.OrdinalIgnoreCase));
+            var responseProperty = responseProps.FirstOrDefault(property =>
+                property.Name.Equals(requestProperty.Name, StringComparison.OrdinalIgnoreCase));
 
-            resProp.Should().NotBeNull($"response should have property '{reqProp.Name}' matching request");
+            responseProperty.Should().NotBeNull($"response should have property '{requestProperty.Name}' matching request");
 
-            var resValue = resProp!.GetValue(response);
-            resValue.Should().Be(reqValue, $"response.{resProp.Name} should match request.{reqProp.Name}");
+            var responseValue = responseProperty!.GetValue(response);
+            responseValue.Should().Be(requestValue, $"response.{responseProperty.Name} should match request.{requestProperty.Name}");
         }
     }
 

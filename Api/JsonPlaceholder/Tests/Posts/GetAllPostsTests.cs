@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -14,8 +15,6 @@ namespace Api.JsonPlaceholder.Posts;
 public class GetAllPostsTests : JsonPlaceholderRequestHelper
 {
     private const int ExpectedPostCount = 100;
-    private const int TestUserId = 1;
-    private static readonly PostModelRequest _testPost = new() { UserId = TestUserId, Title = "Test Post for contract", Body = "Guarantee data" };
     private int? _createdPostId;
 
     [OneTimeSetUp]
@@ -25,7 +24,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
 
         if (response.Data!.Count == 0)
         {
-            var create = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+            var create = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, TestPost);
             _createdPostId = create.Data!.Id;
         }
     }
@@ -35,7 +34,21 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         if (_createdPostId.HasValue)
         {
-            await Delete<object>($"{JsonPlaceholderEndpoints.Posts}/{_createdPostId}");
+            try
+            {
+                var delete = await Delete<object>($"{JsonPlaceholderEndpoints.Posts}/{_createdPostId}");
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: post {_createdPostId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete post {_createdPostId}: {exception.Message}");
+            }
         }
     }
 

@@ -86,7 +86,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
         var emptyPost = new PostModelRequest();
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, emptyPost);
 
-        ((int)response.StatusCode).Should().BeGreaterThanOrEqualTo(400);
+        response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }
 
     private const string SpecialCharsTitle = "Test special chars: <>&\"";

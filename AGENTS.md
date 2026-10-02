@@ -24,7 +24,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - Naming: PascalCase (classes, methods, properties, constants), camelCase (locals, params), `_camelCase` (private fields)
 - Lambda parameters: readable singular noun (`product => product.Id`), не однобуквенные (`p =>`)
 - Без аббревиатур (`response`, не `resp`). Boolean: `Is`, `Has`, `Can`, `Should`
-- File-scoped namespaces, one class per file, explicit types > var (unless obvious)
+- File-scoped namespaces, one class per file, use `var` wherever possible (explicit type only when `var` is not applicable, e.g. `null`, tuples)
 - Methods: short, one responsibility, max ~30 lines, max 5 params
 - Все API-запросы async (`ExecuteAsync`, не `Execute`)
 - Нет модификатора = private. Нет magic numbers. Нет вложенных ternary. `nameof()` для exceptions
@@ -35,10 +35,10 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - SOLID: один класс — одна задача, зависимости через интерфейсы, расширяемость через наследование
 
 ### Models
-- Response: suffix `Model` (включает `Id`). Request: suffix `Request` (без `Id`)
+- Response: suffix `ModelResponse` (включает `Id`). Request: suffix `ModelRequest` (без `Id`). Вложенные/вспомогательные — без суффикса
 - Reference types (string, object, List): без `?`, без initializer
 - Value types (int, decimal, DateTime): `?` только если JSON-поле может быть null/absent
-- Namespace: `Core.Models`. Чистые контейнеры данных — без конструкторов, валидации, логики
+- Namespace: `Core.Models.{Service}` (например `Core.Models.FakeStore`). Чистые контейнеры данных — без конструкторов, валидации, логики
 
 ### Assertions
 - FluentAssertions (не NUnit Assert)
@@ -73,7 +73,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Rules/code.md` — naming, types, file structure, methods, async, access modifiers, cleanup
 - `Rules/code-style.md` — error handling, LINQ, strings, null safety
 - `Rules/code-principles.md` — SOLID, general principles
-- `Rules/models.md` — model building rules (Model/Request, properties, naming)
+- `Rules/models.md` — model building rules (ModelResponse/ModelRequest, properties, naming)
 - `Rules/assertions.md` — FluentAssertions, key patterns, HTTP response assertions, request/response comparison
 - `Rules/test-practices.md` — test isolation, API patterns, non-existent IDs, E2E cleanup, seed methodology, document sync, read-after-write visibility
 - `Rules/comments.md` — when comments are needed in code
@@ -100,6 +100,6 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 $env:PATH = "C:\Users\User\.local\bin;$env:PATH"
 graphify . --code-only --force
 graphify query "show all models"
-graphify path "ProductModel" "RatingModel"
-graphify explain "UserModel"
+graphify path "ProductModelResponse" "Rating"
+graphify explain "UserModelResponse"
 ```

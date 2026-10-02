@@ -85,10 +85,10 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
     private static string MapTestStatus(TestStatus outcome) => outcome switch
     {
-        TestStatus.Passed => "passed",
+        TestStatus.Passed => AllureConstants.StatusPassed,
         TestStatus.Failed => AllureConstants.StatusFailed,
         TestStatus.Skipped => AllureConstants.StatusSkipped,
-        _ => "broken"
+        _ => AllureConstants.StatusBroken
     };
 
     private static void AddToContainer(ITest test, string uuid)
@@ -134,6 +134,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     {
         using var sha = System.Security.Cryptography.SHA256.Create();
         var hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
+
         return new Guid(hash[..GuidByteLength]).ToString();
     }
 

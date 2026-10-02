@@ -23,8 +23,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.1 Status code is 200 for valid ID")]
     public async Task GetUserById_ReturnsOk()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(TestUserId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -34,8 +34,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.2 Response matches expected contract")]
     public async Task GetUserById_ResponseMatchesContract()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(TestUserId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -47,8 +47,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.3 Response body is not null")]
     public async Task GetUserById_ReturnsNonNull()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(TestUserId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -59,8 +59,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.4 Each field has valid attributes")]
     public async Task GetUserById_HasValidFields()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(TestUserId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(TestUserId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -70,8 +70,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.5 Response contains correct ID")]
     public async Task GetUserById_ReturnsCorrectId()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(TestUserId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(TestUserId));
 
         response.Data!.Id.Should().Be(TestUserId);
     }
@@ -81,12 +81,12 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.6 Returns 404 for non-existent ID")]
     public async Task GetUserById_NonExistentId_ReturnsNotFound()
     {
-        var allUsers = await Get<List<JsonPlaceholderUser>>(JsonPlaceholderEndpoints.Users);
+        var allUsers = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
         var maxUserId = allUsers.Data!.Max(user => user.Id);
         var nonExistentId = maxUserId + 1;
 
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(nonExistentId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -96,8 +96,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.7 Returns 404 for ID 0")]
     public async Task GetUserById_ZeroId_ReturnsNotFound()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(0));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -107,8 +107,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.8 Returns 404 for negative ID")]
     public async Task GetUserById_NegativeId_ReturnsNotFound()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(-1));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -118,8 +118,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.9 Get user by ID = 5 returns valid user")]
     public async Task GetUserById_BoundaryId_ReturnsValidUser()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(BoundaryUserId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(BoundaryUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(BoundaryUserId);
@@ -131,8 +131,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.10 Get user by ID = 10 (last) returns valid user")]
     public async Task GetUserById_LastId_ReturnsValidUser()
     {
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(LastUserId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(LastUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(LastUserId);
@@ -144,10 +144,10 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     [Description("2.11 Repeated calls return same data")]
     public async Task GetUserById_RepeatedCalls_ReturnSameData()
     {
-        var response1 = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(TestUserId));
-        var response2 = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(TestUserId));
+        var response1 = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(TestUserId));
+        var response2 = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(TestUserId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Name.Should().Be(response2.Data!.Name);
@@ -160,8 +160,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     public async Task GetUserById_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<JsonPlaceholderUser>(JsonPlaceholderEndpoints.UsersById,
-            PostIdParam(TestUserId));
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(TestUserId));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);

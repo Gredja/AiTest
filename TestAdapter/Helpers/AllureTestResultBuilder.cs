@@ -6,7 +6,7 @@ public static class AllureTestResultBuilder
     {
         var result = CreateBaseResult(resultParams);
 
-        if (resultParams.Categories is not null && resultParams.Categories.Count > 0)
+        if (resultParams.Categories is not null && resultParams.Categories.Any())
         {
             result["tags"] = resultParams.Categories.Select(category => new Dictionary<string, string> { ["name"] = category }).ToList();
         }
@@ -90,6 +90,13 @@ public static class AllureTestResultBuilder
             new() { ["name"] = AllureConstants.LabelSuite, ["value"] = resultParams.TestClassName ?? "Tests" }
         };
 
+        AddOptionalLabels(labels, resultParams);
+
+        return labels;
+    }
+
+    private static void AddOptionalLabels(List<Dictionary<string, string>> labels, TestResultParams resultParams)
+    {
         if (resultParams.Epic is not null)
         {
             labels.Add(new() { ["name"] = "epic", ["value"] = resultParams.Epic });
@@ -112,8 +119,6 @@ public static class AllureTestResultBuilder
                 labels.Add(new() { ["name"] = "tag", ["value"] = category });
             }
         }
-
-        return labels;
     }
 
     private static string ExtractServiceName(string? testClassName)

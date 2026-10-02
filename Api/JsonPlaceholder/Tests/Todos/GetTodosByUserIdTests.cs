@@ -5,6 +5,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 
 namespace Api.JsonPlaceholder.Todos;
 
@@ -14,7 +15,6 @@ namespace Api.JsonPlaceholder.Todos;
 public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
-    private static readonly PostModelRequest _testTodo = new() { UserId = TestUserId, Title = "Test Todo for contract" };
     private int? _createdTodoId;
 
     [OneTimeSetUp]
@@ -25,7 +25,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 
         if (response.Data!.Count == 0)
         {
-            var create = await Post<PostModelRequest, TodoModelResponse>(JsonPlaceholderEndpoints.Todos, _testTodo);
+            var create = await Post<TodoModelRequest, TodoModelResponse>(JsonPlaceholderEndpoints.Todos, TestTodo);
             _createdTodoId = create.Data!.Id;
         }
     }
@@ -35,7 +35,21 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     {
         if (_createdTodoId.HasValue)
         {
-            await Delete<object>($"{JsonPlaceholderEndpoints.Todos}/{_createdTodoId}");
+            try
+            {
+                var delete = await Delete<object>($"{JsonPlaceholderEndpoints.Todos}/{_createdTodoId}");
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: todo {_createdTodoId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete todo {_createdTodoId}: {exception.Message}");
+            }
         }
     }
 
@@ -104,7 +118,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     [Description("8.6 Returns empty list for non-existent user")]
     public async Task GetTodosByUserId_NonExistentUser_ReturnsEmpty()
     {
-        var allUsers = await Get<List<JsonPlaceholderUser>>(JsonPlaceholderEndpoints.Users);
+        var allUsers = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
         var maxUserId = allUsers.Data!.Max(user => user.Id);
         var nonExistentUserId = maxUserId + 1;
 

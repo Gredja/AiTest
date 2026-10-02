@@ -46,7 +46,7 @@ public static class AllureSkippedTestWriter
             Status: AllureConstants.StatusSkipped,
             StatusMessage: ignoreAttr.Reason ?? AllureConstants.DefaultIgnoreMessage,
             Description: description,
-            TestClassName: type.Namespace));
+            TestClassName: type.FullName));
 
         AllureJsonWriter.WriteResultFile(resultsDir, testResult);
     }

@@ -14,14 +14,14 @@ namespace Api.GitHub.Users;
 [Category("GitHub")]
 public class GetUserTests : GitHubTestBase
 {
-    private static readonly string TestUsername = TestConfig.GitHubTestUsername;
+    private static readonly string _testUsername = TestConfig.GitHubTestUsername;
 
     [Test]
     [Category("HealthCheck")]
     [Description("2.1 GET /users/{username} returns 200 OK")]
     public async Task GetUser_ReturnsOk()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -31,7 +31,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.2 Response matches expected contract")]
     public async Task GetUser_ResponseMatchesContract()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -43,10 +43,10 @@ public class GetUserTests : GitHubTestBase
     [Description("2.3 Response contains valid user fields")]
     public async Task GetUser_HasValidFields()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
         response.Data!.ShouldHaveValidFields();
-        response.Data!.Login.Should().Be(TestUsername);
+        response.Data!.Login.Should().Be(_testUsername);
     }
 
     [Test]
@@ -54,7 +54,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.4 Content-Type is application/json")]
     public async Task GetUser_ContentTypeIsJson()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -65,7 +65,7 @@ public class GetUserTests : GitHubTestBase
     public async Task GetUser_ResponseTimeIsAcceptable()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -87,9 +87,9 @@ public class GetUserTests : GitHubTestBase
     [Description("2.7 Login matches request username")]
     public async Task GetUser_LoginMatchesRequest()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
-        response.Data!.Login.Should().Be(TestUsername);
+        response.Data!.Login.Should().Be(_testUsername);
     }
 
     [Test]
@@ -97,8 +97,8 @@ public class GetUserTests : GitHubTestBase
     [Description("2.8 Repeated calls return same data")]
     public async Task GetUser_RepeatedCalls_ReturnSameData()
     {
-        var response1 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
-        var response2 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
+        var response1 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
+        var response2 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Login.Should().Be(response2.Data!.Login);

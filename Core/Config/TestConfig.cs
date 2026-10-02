@@ -16,7 +16,6 @@ public static class TestConfig
 
     public static string FakeStoreBaseUrl => FakeStore.GetProperty("BaseUrl").GetString()!;
     public static int ExpectedProductCount => FakeStore.GetProperty("ExpectedProductCount").GetInt32();
-    public static int ExpectedUserCount => FakeStore.GetProperty("ExpectedUserCount").GetInt32();
     public static int ExpectedCartCount => FakeStore.GetProperty("ExpectedCartCount").GetInt32();
     public static int ExpectedCategoryCount => FakeStore.GetProperty("ExpectedCategoryCount").GetInt32();
     public static int ExpectedProductsInCategoryCount => FakeStore.GetProperty("ExpectedProductsInCategoryCount").GetInt32();
@@ -25,12 +24,6 @@ public static class TestConfig
     public static string LoginPassword => FakeStore.GetProperty("Login").GetProperty("Password").GetString()!;
 
     public static string JsonPlaceholderBaseUrl => JsonPlaceholder.GetProperty("BaseUrl").GetString()!;
-    public static int ExpectedPostCount => JsonPlaceholder.GetProperty("ExpectedPostCount").GetInt32();
-    public static int ExpectedTodoCount => JsonPlaceholder.GetProperty("ExpectedTodoCount").GetInt32();
-    public static int ExpectedAlbumCount => JsonPlaceholder.GetProperty("ExpectedAlbumCount").GetInt32();
-    public static int ExpectedCommentCount => JsonPlaceholder.GetProperty("ExpectedCommentCount").GetInt32();
-    public static int ExpectedPhotoCount => JsonPlaceholder.GetProperty("ExpectedPhotoCount").GetInt32();
-    public static int JsonPlaceholderExpectedUserCount => JsonPlaceholder.GetProperty("ExpectedUserCount").GetInt32();
 
     public static string GitHubBaseUrl => GitHub.GetProperty("BaseUrl").GetString()!;
     public static string GitHubToken

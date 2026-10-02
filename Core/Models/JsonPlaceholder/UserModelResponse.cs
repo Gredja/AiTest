@@ -2,7 +2,7 @@ using Core.Attributes;
 
 namespace Core.Models.JsonPlaceholder;
 
-public class JsonPlaceholderUser
+public class UserModelResponse
 {
     [PositiveId]
     public int Id { get; set; }
@@ -17,7 +17,7 @@ public class JsonPlaceholderUser
     public string Email { get; set; }
 
     [RequiredField]
-    public JsonPlaceholderAddress Address { get; set; }
+    public Address Address { get; set; }
 
     [RequiredField]
     public string Phone { get; set; }

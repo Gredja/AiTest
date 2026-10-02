@@ -1,4 +1,3 @@
-using RestSharp;
 using Core.Models.FakeStore;
 using Core.Config;
 using Core.Helpers;
@@ -13,7 +12,7 @@ namespace Api.FakeStore.Auth;
 [Category("FakeStore")]
 public class LoginTests : RequestHelper
 {
-    private static readonly AuthModelRequest ValidCredentials = new()
+    private static readonly AuthModelRequest _validCredentials = new()
     {
         Username = TestConfig.LoginUsername,
         Password = TestConfig.LoginPassword
@@ -24,10 +23,7 @@ public class LoginTests : RequestHelper
     [Description("13.1 Login with valid credentials — status code 201")]
     public async Task Login_ValidCredentials_ReturnsCreated()
     {
-        var request = new RestRequest(FakeStoreEndpoints.Login, Method.Post);
-        request.AddJsonBody(ValidCredentials);
-
-        var response = await Client.ExecuteAsync<AuthModelResponse>(request);
+        var response = await Post<AuthModelRequest, AuthModelResponse>(FakeStoreEndpoints.Login, _validCredentials);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
     }
@@ -37,10 +33,7 @@ public class LoginTests : RequestHelper
     [Description("13.2 Login with valid credentials — returns token")]
     public async Task Login_ValidCredentials_ReturnsToken()
     {
-        var request = new RestRequest(FakeStoreEndpoints.Login, Method.Post);
-        request.AddJsonBody(ValidCredentials);
-
-        var response = await Client.ExecuteAsync<AuthModelResponse>(request);
+        var response = await Post<AuthModelRequest, AuthModelResponse>(FakeStoreEndpoints.Login, _validCredentials);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data.Should().NotBeNull();
@@ -52,10 +45,7 @@ public class LoginTests : RequestHelper
     [Description("13.3 Content-Type is application/json")]
     public async Task Login_ValidCredentials_ContentTypeIsJson()
     {
-        var request = new RestRequest(FakeStoreEndpoints.Login, Method.Post);
-        request.AddJsonBody(ValidCredentials);
-
-        var response = await Client.ExecuteAsync<AuthModelResponse>(request);
+        var response = await Post<AuthModelRequest, AuthModelResponse>(FakeStoreEndpoints.Login, _validCredentials);
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -65,10 +55,8 @@ public class LoginTests : RequestHelper
     [Description("13.4 Login with invalid username — status code 401")]
     public async Task Login_InvalidUsername_ReturnsUnauthorized()
     {
-        var request = new RestRequest(FakeStoreEndpoints.Login, Method.Post);
-        request.AddJsonBody(new AuthModelRequest { Username = "invalid_user", Password = TestConfig.LoginPassword });
-
-        var response = await Client.ExecuteAsync<AuthModelResponse>(request);
+        var credentials = new AuthModelRequest { Username = "invalid_user", Password = TestConfig.LoginPassword };
+        var response = await Post<AuthModelRequest, AuthModelResponse>(FakeStoreEndpoints.Login, credentials);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
@@ -78,10 +66,8 @@ public class LoginTests : RequestHelper
     [Description("13.5 Login with invalid password — status code 401")]
     public async Task Login_InvalidPassword_ReturnsUnauthorized()
     {
-        var request = new RestRequest(FakeStoreEndpoints.Login, Method.Post);
-        request.AddJsonBody(new AuthModelRequest { Username = TestConfig.LoginUsername, Password = "wrong_password" });
-
-        var response = await Client.ExecuteAsync<AuthModelResponse>(request);
+        var credentials = new AuthModelRequest { Username = TestConfig.LoginUsername, Password = "wrong_password" };
+        var response = await Post<AuthModelRequest, AuthModelResponse>(FakeStoreEndpoints.Login, credentials);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
@@ -91,10 +77,8 @@ public class LoginTests : RequestHelper
     [Description("13.6 Login with empty credentials — status code 400")]
     public async Task Login_EmptyCredentials_ReturnsBadRequest()
     {
-        var request = new RestRequest(FakeStoreEndpoints.Login, Method.Post);
-        request.AddJsonBody(new AuthModelRequest { Username = "", Password = "" });
-
-        var response = await Client.ExecuteAsync<AuthModelResponse>(request);
+        var credentials = new AuthModelRequest { Username = "", Password = "" };
+        var response = await Post<AuthModelRequest, AuthModelResponse>(FakeStoreEndpoints.Login, credentials);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }

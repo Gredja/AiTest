@@ -14,14 +14,15 @@ namespace Api.GitHub.UserRepos;
 [Category("GitHub")]
 public class GetUserReposTests : GitHubTestBase
 {
-    private static readonly string TestUsername = TestConfig.GitHubTestUsername;
+    private static readonly string _testUsername = TestConfig.GitHubTestUsername;
+
     [Test]
     [Category("HealthCheck")]
     [Description("7.1 GET /users/{username}/repos returns 200 OK")]
     public async Task GetUserRepos_ReturnsOk()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            UsernameParam(TestUsername));
+            UsernameParam(_testUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -32,7 +33,7 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_ResponseMatchesContract()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            UsernameParam(TestUsername));
+            UsernameParam(_testUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -45,7 +46,7 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_HasValidFields()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            UsernameParam(TestUsername));
+            UsernameParam(_testUsername));
 
         foreach (var repo in response.Data!)
         {
@@ -70,9 +71,9 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            [.. UsernameParam(TestUsername), .. PaginationParams(1, 5)]);
+            [.. UsernameParam(_testUsername), .. PaginationParams(FirstPage, DefaultPageSize)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Count.Should().BeLessThanOrEqualTo(5);
+        response.Data!.Count.Should().BeLessThanOrEqualTo(DefaultPageSize);
     }
 }

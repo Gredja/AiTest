@@ -24,7 +24,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_ReturnsOk()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(TestCommentId));
+            IdParam(TestCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -35,7 +35,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_ResponseMatchesContract()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(TestCommentId));
+            IdParam(TestCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -48,7 +48,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_ReturnsNonNull()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(TestCommentId));
+            IdParam(TestCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -60,7 +60,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_HasValidFields()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(TestCommentId));
+            IdParam(TestCommentId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -71,7 +71,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_ReturnsCorrectId()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(TestCommentId));
+            IdParam(TestCommentId));
 
         response.Data!.Id.Should().Be(TestCommentId);
     }
@@ -86,7 +86,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
         var nonExistentId = maxCommentId + 1;
 
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(nonExistentId));
+            IdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -97,7 +97,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_ZeroId_ReturnsNotFound()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(0));
+            IdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -108,7 +108,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_NegativeId_ReturnsNotFound()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(-1));
+            IdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -119,7 +119,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_BoundaryId_ReturnsValidComment()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(BoundaryCommentId));
+            IdParam(BoundaryCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(BoundaryCommentId);
@@ -132,7 +132,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_LastId_ReturnsValidComment()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(LastCommentId));
+            IdParam(LastCommentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(LastCommentId);
@@ -145,9 +145,9 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_RepeatedCalls_ReturnSameData()
     {
         var response1 = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(TestCommentId));
+            IdParam(TestCommentId));
         var response2 = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(TestCommentId));
+            IdParam(TestCommentId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Name.Should().Be(response2.Data!.Name);
@@ -161,7 +161,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     {
         var stopwatch = Stopwatch.StartNew();
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            PostIdParam(TestCommentId));
+            IdParam(TestCommentId));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);

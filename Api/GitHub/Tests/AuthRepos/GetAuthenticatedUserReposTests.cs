@@ -44,10 +44,10 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos);
 
         response.Data.Should().NotBeNull();
-        var repo = response.Data!.First();
-        repo.Name.Should().NotBeNullOrWhiteSpace();
-        repo.Owner.Should().NotBeNull();
-        repo.HtmlUrl.Should().NotBeNullOrWhiteSpace();
+        foreach (var repo in response.Data!)
+        {
+            repo.ShouldHaveValidFields();
+        }
     }
 
     [Test]
@@ -56,9 +56,9 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
     public async Task GetAuthenticatedUserRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos,
-            PaginationParams(1, 5));
+            PaginationParams(FirstPage, DefaultPageSize));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Count.Should().BeLessThanOrEqualTo(5);
+        response.Data!.Count.Should().BeLessThanOrEqualTo(DefaultPageSize);
     }
 }

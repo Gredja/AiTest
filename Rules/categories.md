@@ -31,7 +31,7 @@ Each test method gets ONE primary category based on what it verifies:
 | `Smoke` | Basic functionality | Response not empty, correct count, content-type is JSON, correct data values |
 | `Regression` | Schema / field validation | Each field present and valid, `id` matches requested, `ShouldHaveValidFields()` |
 | `Negative` | Error handling | Non-existent ID, ID=0, negative ID, wrong data — all edge cases that should fail |
-| `Performance` | Response time | `ResponseTimeIsAcceptable` tests (GET list endpoints only) |
+| `Performance` | Response time | `ResponseTimeIsAcceptable` tests (GET endpoints) |
 
 ```csharp
 [Test]
@@ -55,10 +55,10 @@ public async Task GetAllProducts_EachItemHasValidFields()
 | Test name pattern | Category |
 |-------------------|----------|
 | `*_ReturnsOk`, `*_ReturnsCreated`, `*_ReturnsDeleted` | `HealthCheck` |
-| `*_ReturnsExpectedFields`, `*_ModelMatchesResponse`, `*_HasExpectedSchema` | `ContractCheck` |
+| `*_ReturnsExpectedFields`, `*_ResponseMatchesContract`, `*_ModelMatchesResponse`, `*_HasExpectedSchema` | `ContractCheck` |
 | `*_ReturnsNonEmptyList`, `*_ReturnsExpectedCount`, `*_ContentTypeIsJson` | `Smoke` |
 | `*_ReturnsNonEmptyBody`, `*_ReturnsNonNull` | `Smoke` |
-| `*_ReturnsCorrectData`, `*_ReturnsCorrectId`, `*_HasGeneratedId` | `Smoke` |
+| `*_ReturnsCorrectData`, `*_HasGeneratedId` | `Smoke` |
 | `*_AllBelongToSameUser`, `*_ReturnsUpdatedTitle`, `*_ReturnsEmptyObject` | `Smoke` |
 | `*_EachItemHasValidFields`, `*_HasAllExpectedFields`, `*_HasValidFields` | `Regression` |
 | `*_IdMatchesRequested`, `*_ReturnsCorrectId` | `Regression` |

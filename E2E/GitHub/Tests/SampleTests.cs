@@ -2,7 +2,6 @@ using Core.Config;
 using Core.Helpers;
 using TestAdapter;
 using System.Net;
-using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace E2E.GitHub.Tests;
 
@@ -17,9 +16,8 @@ public class SampleTests : GitHubE2ETestBase
     [Description("E2E-1 Sandbox repo is accessible via API")]
     public async Task SandboxRepo_IsAccessible()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<object>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }

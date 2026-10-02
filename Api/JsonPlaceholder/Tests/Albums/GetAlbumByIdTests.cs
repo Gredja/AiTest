@@ -24,7 +24,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_ReturnsOk()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(TestAlbumId));
+            IdParam(TestAlbumId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -35,7 +35,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_ResponseMatchesContract()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(TestAlbumId));
+            IdParam(TestAlbumId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -48,7 +48,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_ReturnsNonNull()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(TestAlbumId));
+            IdParam(TestAlbumId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -60,7 +60,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_HasValidFields()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(TestAlbumId));
+            IdParam(TestAlbumId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -71,7 +71,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_ReturnsCorrectId()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(TestAlbumId));
+            IdParam(TestAlbumId));
 
         response.Data!.Id.Should().Be(TestAlbumId);
     }
@@ -86,7 +86,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
         var nonExistentId = maxAlbumId + 1;
 
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(nonExistentId));
+            IdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -97,7 +97,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_ZeroId_ReturnsNotFound()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(0));
+            IdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -108,7 +108,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_NegativeId_ReturnsNotFound()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(-1));
+            IdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -119,7 +119,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_BoundaryId_ReturnsValidAlbum()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(BoundaryAlbumId));
+            IdParam(BoundaryAlbumId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(BoundaryAlbumId);
@@ -132,7 +132,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_LastId_ReturnsValidAlbum()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(LastAlbumId));
+            IdParam(LastAlbumId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(LastAlbumId);
@@ -145,9 +145,9 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_RepeatedCalls_ReturnSameData()
     {
         var response1 = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(TestAlbumId));
+            IdParam(TestAlbumId));
         var response2 = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(TestAlbumId));
+            IdParam(TestAlbumId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
@@ -160,7 +160,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     {
         var stopwatch = Stopwatch.StartNew();
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            PostIdParam(TestAlbumId));
+            IdParam(TestAlbumId));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);

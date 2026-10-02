@@ -19,9 +19,8 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.1 GET /repos/{owner}/{repo}/pulls returns 200 OK")]
     public async Task GetPullRequests_ReturnsOk()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -32,9 +31,8 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.2 Response matches expected contract")]
     public async Task GetPullRequests_ResponseMatchesContract()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -47,13 +45,12 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.3 Each pull request has valid fields")]
     public async Task GetPullRequests_HasValidFields()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
-        foreach (var pr in response.Data!)
+        foreach (var pullRequest in response.Data!)
         {
-            pr.ShouldHaveValidFields();
+            pullRequest.ShouldHaveValidFields();
         }
     }
 
@@ -62,11 +59,10 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.4 All PR IDs are unique")]
     public async Task GetPullRequests_AllIdsAreUnique()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
-        var ids = response.Data!.Select(pr => pr.Id).ToList();
+        var ids = response.Data!.Select(pullRequest => pullRequest.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -75,11 +71,10 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.5 Each PR has valid state")]
     public async Task GetPullRequests_EachPRHasValidState()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
-        response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateOpen || pr.State == GitHubEndpoints.StateClosed);
+        response.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateOpen || pullRequest.State == GitHubEndpoints.StateClosed);
     }
 
     [Test]
@@ -98,9 +93,8 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.7 Content-Type is application/json")]
     public async Task GetPullRequests_ContentTypeIsJson()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -110,12 +104,11 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.8 Pagination works with per_page param")]
     public async Task GetPullRequests_PaginationWorks()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            [.. RepoParam(owner, repo), .. PaginationParams(1, 5)]);
+            [.. TestRepoParam(), .. PaginationParams(FirstPage, DefaultPageSize)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Count.Should().BeLessThanOrEqualTo(5);
+        response.Data!.Count.Should().BeLessThanOrEqualTo(DefaultPageSize);
     }
 
     [Test]
@@ -123,10 +116,9 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.9 Response time < 5 seconds")]
     public async Task GetPullRequests_ResponseTimeIsAcceptable()
     {
-        var (owner, repo) = ParseRepo();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            RepoParam(owner, repo));
+            TestRepoParam());
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -137,12 +129,11 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.10 Filter by state=open returns only open pull requests")]
     public async Task GetPullRequests_FilterByStateOpen()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateOpen)]);
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateOpen)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateOpen);
+        response.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateOpen);
     }
 
     [Test]
@@ -150,11 +141,10 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.11 Filter by state=closed returns only closed pull requests")]
     public async Task GetPullRequests_FilterByStateClosed()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateClosed)]);
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateClosed)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().OnlyContain(pr => pr.State == GitHubEndpoints.StateClosed);
+        response.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateClosed);
     }
 }

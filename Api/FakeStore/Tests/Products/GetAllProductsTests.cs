@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.FakeStore.Helpers.FakeStoreTestData;
 
 namespace Api.FakeStore.Products;
 
@@ -15,15 +16,6 @@ public class GetAllProductsTests : RequestHelper
 {
     private const double RatingMin = 0;
     private const double RatingMax = 5;
-    private const int ExpectedCategoryCount = 4;
-    private static readonly ProductModelRequest _testProduct = new()
-    {
-        Title = "Test Product for contract",
-        Price = 9.99m,
-        Description = "Guarantee data",
-        Category = "electronics",
-        Image = "https://test.com/image.jpg"
-    };
     private int? _createdProductId;
 
     [OneTimeSetUp]
@@ -34,7 +26,7 @@ public class GetAllProductsTests : RequestHelper
         if (response.Data!.Count == 0)
         {
             var create = await Post<ProductModelRequest, ProductModelResponse>(
-                FakeStoreEndpoints.Products, _testProduct);
+                FakeStoreEndpoints.Products, TestProduct);
             _createdProductId = create.Data!.Id;
         }
     }
@@ -44,7 +36,21 @@ public class GetAllProductsTests : RequestHelper
     {
         if (_createdProductId.HasValue)
         {
-            await Delete<object>($"{FakeStoreEndpoints.Products}/{_createdProductId}");
+            try
+            {
+                var delete = await Delete<object>($"{FakeStoreEndpoints.Products}/{_createdProductId}");
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: product {_createdProductId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete product {_createdProductId}: {exception.Message}");
+            }
         }
     }
 
@@ -156,7 +162,7 @@ public class GetAllProductsTests : RequestHelper
         var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
         var categories = response.Data!.Select(product => product.Category).Distinct().ToList();
-        categories.Should().HaveCount(ExpectedCategoryCount);
+        categories.Should().HaveCount(TestConfig.ExpectedCategoryCount);
     }
 
     [Test]

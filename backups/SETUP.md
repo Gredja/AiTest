@@ -347,8 +347,10 @@ git checkout -b features/add-user-tests
 - SOLID: один класс — одна задача, зависимости через интерфейсы
 
 **Модели:**
-- Response модели: суффикс `Model` (включает `Id`)
-- Request модели: суффикс `Request` (без `Id`)
+- Response модели: суффикс `ModelResponse` (включает `Id`)
+- Request модели: суффикс `ModelRequest` (без `Id`)
+- Вложенные/вспомогательные модели — без суффикса
+- Namespace: `Core.Models.{Service}` (например `Core.Models.FakeStore`)
 - Чистые контейнеры данных — без логики
 
 **Тесты:**

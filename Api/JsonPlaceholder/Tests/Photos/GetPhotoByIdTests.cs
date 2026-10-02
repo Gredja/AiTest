@@ -24,7 +24,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_ReturnsOk()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(TestPhotoId));
+            IdParam(TestPhotoId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -35,7 +35,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_ResponseMatchesContract()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(TestPhotoId));
+            IdParam(TestPhotoId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -48,7 +48,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_ReturnsNonNull()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(TestPhotoId));
+            IdParam(TestPhotoId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -60,7 +60,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_HasValidFields()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(TestPhotoId));
+            IdParam(TestPhotoId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -71,7 +71,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_ReturnsCorrectId()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(TestPhotoId));
+            IdParam(TestPhotoId));
 
         response.Data!.Id.Should().Be(TestPhotoId);
     }
@@ -86,7 +86,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
         var nonExistentId = maxPhotoId + 1;
 
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(nonExistentId));
+            IdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -97,7 +97,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_ZeroId_ReturnsNotFound()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(0));
+            IdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -108,7 +108,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_NegativeId_ReturnsNotFound()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(-1));
+            IdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -119,7 +119,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_BoundaryId_ReturnsValidPhoto()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(BoundaryPhotoId));
+            IdParam(BoundaryPhotoId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(BoundaryPhotoId);
@@ -132,7 +132,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_LastId_ReturnsValidPhoto()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(LastPhotoId));
+            IdParam(LastPhotoId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(LastPhotoId);
@@ -145,9 +145,9 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_RepeatedCalls_ReturnSameData()
     {
         var response1 = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(TestPhotoId));
+            IdParam(TestPhotoId));
         var response2 = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(TestPhotoId));
+            IdParam(TestPhotoId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
@@ -161,7 +161,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     {
         var stopwatch = Stopwatch.StartNew();
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            PostIdParam(TestPhotoId));
+            IdParam(TestPhotoId));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);

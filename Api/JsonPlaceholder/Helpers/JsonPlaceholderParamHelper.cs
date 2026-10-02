@@ -4,7 +4,7 @@ namespace Api.JsonPlaceholder.Helpers;
 
 public static class JsonPlaceholderParamHelper
 {
-    public static List<RequestDictionaryModel> PostIdParam(int id) =>
+    public static List<RequestDictionaryModel> IdParam(int id) =>
         [new() { Type = ParamType.UrlSegment, Key = "id", Value = id }];
 
     public static List<RequestDictionaryModel> UserIdParam(int userId) =>

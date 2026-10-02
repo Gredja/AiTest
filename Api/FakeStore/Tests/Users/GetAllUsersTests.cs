@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Api.FakeStore.Helpers.FakeStoreTestData;
 
 namespace Api.FakeStore.Users;
 
@@ -14,21 +15,6 @@ namespace Api.FakeStore.Users;
 public class GetAllUsersTests : RequestHelper
 {
     private const int ExpectedUserCount = 10;
-    private static readonly UserModelRequest _testUser = new()
-    {
-        Email = "test@example.com",
-        Username = "testuser",
-        Password = "password123",
-        Name = new UserName { Firstname = "Test", Lastname = "User" },
-        Address = new Address
-        {
-            City = "Test City",
-            Street = "Test Street",
-            Number = 1,
-            Zipcode = "12345",
-            Geolocation = new Geolocation { Lat = "0.0", Longitude = "0.0" }
-        }
-    };
     private int? _createdUserId;
 
     [OneTimeSetUp]
@@ -39,7 +25,7 @@ public class GetAllUsersTests : RequestHelper
         if (response.Data!.Count == 0)
         {
             var create = await Post<UserModelRequest, UserModelResponse>(
-                FakeStoreEndpoints.Users, _testUser);
+                FakeStoreEndpoints.Users, TestUser);
             _createdUserId = create.Data!.Id;
         }
     }
@@ -49,7 +35,21 @@ public class GetAllUsersTests : RequestHelper
     {
         if (_createdUserId.HasValue)
         {
-            await Delete<object>($"{FakeStoreEndpoints.Users}/{_createdUserId}");
+            try
+            {
+                var delete = await Delete<object>($"{FakeStoreEndpoints.Users}/{_createdUserId}");
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: user {_createdUserId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete user {_createdUserId}: {exception.Message}");
+            }
         }
     }
 

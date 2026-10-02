@@ -14,13 +14,14 @@ namespace Api.JsonPlaceholder.Posts;
 public class DeletePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestPostId = 1;
+
     [Test]
     [Category("HealthCheck")]
     [Description("6.1 DELETE returns 200 OK")]
     public async Task DeletePost_ReturnsOk()
     {
         var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -31,7 +32,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     public async Task DeletePost_ReturnsEmptyObject()
     {
         var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         response.Data.Should().NotBeNull();
     }
@@ -43,10 +44,10 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     public async Task DeletePost_DeletedPostReturnsNotFound()
     {
         var deleteResponse = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         var getResponse = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         getResponse.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -54,12 +55,12 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     [Test]
     [Ignore("JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-003-delete-post-returns-200-for-non-existent-id.md")]
     [Category("Negative")]
-    [Description("6.4 DELETE non-existent ID returns error")]
-    public async Task DeletePost_NonExistentId_ReturnsError()
+    [Description("6.4 DELETE with ID 0 returns error")]
+    public async Task DeletePost_ZeroId_ReturnsError()
     {
         var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(0));
+            IdParam(0));
 
-        ((int)response.StatusCode).Should().BeGreaterThanOrEqualTo(400);
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

@@ -14,16 +14,15 @@ namespace Api.GitHub.Repos;
 [Category("GitHub")]
 public class GetRepositoryTests : GitHubTestBase
 {
-    private static readonly string TestUsername = TestConfig.GitHubTestUsername;
+    private static readonly string _testUsername = TestConfig.GitHubTestUsername;
 
     [Test]
     [Category("HealthCheck")]
     [Description("1.1 GET /repos/{owner}/{repo} returns 200 OK")]
     public async Task GetRepository_ReturnsOk()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -33,9 +32,8 @@ public class GetRepositoryTests : GitHubTestBase
     [Description("1.2 Response matches expected contract")]
     public async Task GetRepository_ResponseMatchesContract()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -49,7 +47,7 @@ public class GetRepositoryTests : GitHubTestBase
     {
         var (owner, repo) = ParseRepo();
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.Data!.ShouldHaveValidFields();
         response.Data!.Name.Should().Be(repo);
@@ -61,9 +59,8 @@ public class GetRepositoryTests : GitHubTestBase
     [Description("1.4 Content-Type is application/json")]
     public async Task GetRepository_ContentTypeIsJson()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -73,10 +70,9 @@ public class GetRepositoryTests : GitHubTestBase
     [Description("1.5 Response time < 5 seconds")]
     public async Task GetRepository_ResponseTimeIsAcceptable()
     {
-        var (owner, repo) = ParseRepo();
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -88,7 +84,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(TestUsername, GitHubEndpoints.NonExistentRepo));
+            RepoParam(_testUsername, GitHubEndpoints.NonExistentRepo));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -111,7 +107,7 @@ public class GetRepositoryTests : GitHubTestBase
     {
         var (owner, repo) = ParseRepo();
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response.Data!.Name.Should().Be(repo);
         response.Data.Owner.Login.Should().Be(owner);
@@ -122,11 +118,10 @@ public class GetRepositoryTests : GitHubTestBase
     [Description("1.9 Repeated calls return same data")]
     public async Task GetRepository_RepeatedCalls_ReturnSameData()
     {
-        var (owner, repo) = ParseRepo();
         var response1 = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
         var response2 = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(owner, repo));
+            TestRepoParam());
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Name.Should().Be(response2.Data!.Name);

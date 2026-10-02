@@ -24,6 +24,7 @@ public static class AllureHelper
         var projectDir = FindProjectRoot();
         var resultsDir = Path.Combine(projectDir, "allure-results");
         Directory.CreateDirectory(resultsDir);
+
         return resultsDir;
     }
 

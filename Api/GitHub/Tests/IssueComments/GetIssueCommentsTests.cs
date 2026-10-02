@@ -22,16 +22,15 @@ public class GetIssueCommentsTests : GitHubTestBase
     [OneTimeSetUp]
     public async Task OneTimeSetup()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(owner, repo), .. IssueNumberParam(ExistingIssueNumber)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
         if (response.Data!.Count == 0)
         {
             var create = await Post<CreateCommentModelRequest, CommentModelResponse>(
                 GitHubEndpoints.RepoIssueComments,
                 new CreateCommentModelRequest { Body = TestComment },
-                [.. RepoParam(owner, repo), .. IssueNumberParam(ExistingIssueNumber)]);
+                [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
             _createdCommentId = create.Data!.Id;
         }
     }
@@ -41,12 +40,11 @@ public class GetIssueCommentsTests : GitHubTestBase
     {
         if (_createdCommentId.HasValue)
         {
-            var (owner, repo) = ParseRepo();
             try
             {
                 var delete = await Delete<object>(
                     GitHubEndpoints.RepoIssueCommentById,
-                    [.. RepoParam(owner, repo), .. CommentIdParam(_createdCommentId.Value)]);
+                    [.. TestRepoParam(), .. CommentIdParam(_createdCommentId.Value)]);
 
                 if (!delete.IsSuccessful)
                 {
@@ -67,9 +65,8 @@ public class GetIssueCommentsTests : GitHubTestBase
     [Description("11.1 GET /repos/{owner}/{repo}/issues/{number}/comments returns 200 OK")]
     public async Task GetIssueComments_ReturnsOk()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(owner, repo), .. IssueNumberParam(ExistingIssueNumber)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -79,9 +76,8 @@ public class GetIssueCommentsTests : GitHubTestBase
     [Description("11.2 Response matches expected contract")]
     public async Task GetIssueComments_ResponseMatchesContract()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(owner, repo), .. IssueNumberParam(ExistingIssueNumber)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -94,9 +90,8 @@ public class GetIssueCommentsTests : GitHubTestBase
     [Description("11.3 Response is an array")]
     public async Task GetIssueComments_ReturnsArray()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(owner, repo), .. IssueNumberParam(ExistingIssueNumber)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -107,12 +102,11 @@ public class GetIssueCommentsTests : GitHubTestBase
     [Description("11.4 Pagination with per_page=2 returns at most 2 comments")]
     public async Task GetIssueComments_PaginationWorks()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(owner, repo), .. IssueNumberParam(ExistingIssueNumber), .. PaginationParams(1, 2)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber), .. PaginationParams(FirstPage, SmallPageSize)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Count.Should().BeLessThanOrEqualTo(2);
+        response.Data!.Count.Should().BeLessThanOrEqualTo(SmallPageSize);
     }
 
     [Test]
@@ -120,9 +114,8 @@ public class GetIssueCommentsTests : GitHubTestBase
     [Description("11.5 Each comment has valid fields")]
     public async Task GetIssueComments_HasValidFields()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(owner, repo), .. IssueNumberParam(ExistingIssueNumber)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
         foreach (var comment in response.Data!)
         {
@@ -135,9 +128,8 @@ public class GetIssueCommentsTests : GitHubTestBase
     [Description("11.6 All comment IDs are unique")]
     public async Task GetIssueComments_AllIdsAreUnique()
     {
-        var (owner, repo) = ParseRepo();
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(owner, repo), .. IssueNumberParam(ExistingIssueNumber)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
         var ids = response.Data!.Select(comment => comment.Id).ToList();
         ids.Should().OnlyHaveUniqueItems();
@@ -148,14 +140,13 @@ public class GetIssueCommentsTests : GitHubTestBase
     [Description("11.7 Non-existent issue returns 404")]
     public async Task GetIssueComments_NonExistentIssue_ReturnsNotFound()
     {
-        var (owner, repo) = ParseRepo();
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
-            [.. RepoParam(owner, repo), .. StateParam(GitHubEndpoints.StateAll)]);
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         var maxIssueNumber = issues.Data!.Max(issue => issue.Number);
         var nonExistentIssueNumber = maxIssueNumber + 1;
 
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(owner, repo), .. IssueNumberParam(nonExistentIssueNumber)]);
+            [.. TestRepoParam(), .. IssueNumberParam(nonExistentIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

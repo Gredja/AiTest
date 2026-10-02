@@ -2,7 +2,7 @@ using Core.Attributes;
 
 namespace Core.Models.JsonPlaceholder;
 
-public class JsonPlaceholderAddress
+public class Address
 {
     [RequiredField]
     public string Street { get; set; }

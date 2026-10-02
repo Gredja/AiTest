@@ -1,4 +1,4 @@
-﻿---
+---
 name: review
 description: Use when the user says "review", "/review", or wants a full project review. Reviews the entire Gredja codebase against all project rules. NOT for uncommitted changes (use /review-commit) or PR reviews (use /review-pr).
 ---
@@ -51,7 +51,7 @@ Working dir: {working_dir}
    - Boolean prefixes: Is, Has, Can, Should
    - File-scoped namespaces
    - One class per file
-   - Explicit types > var (unless obvious)
+   - Use `var` wherever possible (explicit type only when `var` is not applicable)
    - Methods: short, one responsibility, max ~30 lines, max 5 params
    - All API requests async
    - No magic numbers
@@ -60,11 +60,11 @@ Working dir: {working_dir}
    - {} for all if blocks, even single-line
 
    Model rules (Rules/models.md):
-   - Response: suffix Model (includes Id)
-   - Request: suffix Request (no Id)
+   - Response: suffix ModelResponse (includes Id)
+   - Request: suffix ModelRequest (no Id)
    - Reference types: no ?, no initializer
    - Value types: ? only if JSON field can be null/absent
-   - Namespace: Core.Models
+   - Namespace: Core.Models.{Service}
    - Pure data containers — no constructors, validation, logic
 
    Assertion rules (Rules/assertions.md):

@@ -16,6 +16,9 @@ Gredja/
 ├── .gitattributes                # line ending normalization
 ├── .gitignore
 ├── .graphifyignore
+├── allure-results/              # not tracked
+├── TestResults/                 # not tracked
+├── .playwright-cli/             # not tracked
 ├── .mimocode/
 │   ├── .gitignore
 │   ├── mimocode.jsonc
@@ -83,7 +86,6 @@ Core/
 │   │   ├── AuthModelRequest.cs
 │   │   ├── AuthModelResponse.cs
 │   │   ├── CartModelResponse.cs
-│   │   ├── CartModelRequest.cs
 │   │   ├── CartProduct.cs
 │   │   ├── Geolocation.cs
 │   │   ├── ProductModelResponse.cs
@@ -93,16 +95,17 @@ Core/
 │   │   ├── UserModelRequest.cs
 │   │   └── UserName.cs
 │   ├── JsonPlaceholder/
+│   │   ├── Address.cs
 │   │   ├── AlbumModelResponse.cs
-│   │   ├── Comment.cs
+│   │   ├── CommentModelResponse.cs
 │   │   ├── Company.cs
 │   │   ├── Geo.cs
-│   │   ├── JsonPlaceholderAddress.cs
-│   │   ├── JsonPlaceholderUser.cs
 │   │   ├── PhotoModelResponse.cs
-│   │   ├── PostModelResponse.cs
 │   │   ├── PostModelRequest.cs
-│   │   └── TodoModelResponse.cs
+│   │   ├── PostModelResponse.cs
+│   │   ├── TodoModelRequest.cs
+│   │   ├── TodoModelResponse.cs
+│   │   └── UserModelResponse.cs
 │   ├── GitHub/
 │   │   ├── BranchCommit.cs
 │   │   ├── BranchModelResponse.cs
@@ -136,7 +139,8 @@ Api/
 ├── AllureGlobalSetup.cs
 ├── FakeStore/
 │   ├── Helpers/
-│   │   └── FakeStoreParamHelper.cs
+│   │   ├── FakeStoreParamHelper.cs
+│   │   └── FakeStoreTestData.cs
 │   └── Tests/
 │       ├── Auth/
 │       │   └── LoginTests.cs
@@ -153,7 +157,8 @@ Api/
 │           └── GetUserByIdTests.cs
 ├── JsonPlaceholder/
 │   ├── Helpers/
-│   │   └── JsonPlaceholderParamHelper.cs
+│   │   ├── JsonPlaceholderParamHelper.cs
+│   │   └── JsonPlaceholderTestData.cs
 │   └── Tests/
 │       ├── Albums/
 │       │   ├── GetAllAlbumsTests.cs

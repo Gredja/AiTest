@@ -5,6 +5,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -16,8 +17,6 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     private const int TestPostId = 1;
     private const int BoundaryPostId = 50;
     private const int LastPostId = 100;
-    private const int TestUserId = 1;
-    private static readonly PostModelRequest _testPost = new() { UserId = TestUserId, Title = "Test Post for contract", Body = "Guarantee data" };
     private int? _createdPostId;
 
     [OneTimeSetUp]
@@ -27,7 +26,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
 
         if (response.Data!.Count == 0)
         {
-            var create = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+            var create = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, TestPost);
             _createdPostId = create.Data!.Id;
         }
     }
@@ -37,7 +36,21 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     {
         if (_createdPostId.HasValue)
         {
-            await Delete<object>($"{JsonPlaceholderEndpoints.Posts}/{_createdPostId}");
+            try
+            {
+                var delete = await Delete<object>($"{JsonPlaceholderEndpoints.Posts}/{_createdPostId}");
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: post {_createdPostId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete post {_createdPostId}: {exception.Message}");
+            }
         }
     }
 
@@ -47,7 +60,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_ReturnsOk()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -58,7 +71,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_ResponseMatchesContract()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -71,7 +84,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_ReturnsNonNull()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -83,7 +96,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_HasValidFields()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         response.Data!.ShouldHaveValidFields();
     }
@@ -94,7 +107,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_ReturnsCorrectId()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         response.Data!.Id.Should().Be(TestPostId);
     }
@@ -109,7 +122,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
         var nonExistentId = maxPostId + 1;
 
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(nonExistentId));
+            IdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -120,7 +133,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_ZeroId_ReturnsNotFound()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(0));
+            IdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -131,7 +144,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_NegativeId_ReturnsNotFound()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(-1));
+            IdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -142,7 +155,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_BoundaryId_ReturnsValidPost()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(BoundaryPostId));
+            IdParam(BoundaryPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(BoundaryPostId);
@@ -155,7 +168,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_LastId_ReturnsValidPost()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(LastPostId));
+            IdParam(LastPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(LastPostId);
@@ -167,9 +180,9 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_RepeatedCalls_ReturnSameData()
     {
         var response1 = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
         var response2 = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            PostIdParam(TestPostId));
+            IdParam(TestPostId));
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
