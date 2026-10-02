@@ -193,7 +193,7 @@ private async Task CleanupComments(int issueNumber)
 - **Assertions:** ShouldHaveStatusCode, ShouldHaveValidFields, ShouldMatchRequest (reduces code vs manual field comparison) — see `Rules/assertions.md`
 - **Non-existent IDs:** dynamic (GET all → maxId + 1) — see `Rules/test-practices.md`
 - **Mock API behavior:** `[Ignore]` with explanation for known mock limitations — see `Rules/test-practices.md`
-- **Seed methodology:** 5 seeds → expand to table → enforce 5+ negatives — see `Rules/test-practices.md`
+- **Seed methodology:** 5 seeds → expand to table → enforce 5+ active negatives → one negative test per required request field (`*_Missing{Field}_*`, mandatory) — see `Rules/test-practices.md`
 
 ### Step 7: Safety Check
 
@@ -232,3 +232,4 @@ private async Task CleanupComments(int issueNumber)
 | 1.0 | 2026-02-21 | Initial commit | Алексей |
 | 1.1 | 2026-09-30 | Fixed stale `Get<T>` signature in Setup example — removed `Method.Get` argument | MiMo |
 | 1.2 | 2026-09-30 | Added test data rule reference (fictional values, vary dimensions) from kata 6.W.3 | MiMo |
+| 1.3 | 2026-10-02 | Seed methodology: active negatives only + one negative per required request field | MiMo |

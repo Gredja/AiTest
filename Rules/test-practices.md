@@ -89,14 +89,16 @@ Priority: `1` = must have, `2` = nice to have
 - Re-tag mis-categorised tests
 - **Check for magic numbers/strings** — extract to constants in `{Service}Endpoints.cs` before writing test code (see `Rules/code.md`, `Rules/code-style.md`)
 
-**Step 4: Enforce negative floor** — minimum 5 negatives per endpoint
+**Step 4: Enforce negative floor** — minimum 5 negatives per endpoint, counted as **active** tests (`[Ignore]`d tests don't count toward the floor)
 - If fewer than 5: generate more, each exercising a different failure mode
 - Failure modes: no auth, invalid token, wrong scope, missing required field, non-existent resource, invalid value, boundary value
+- **Missing-field rule (mandatory, ALL services)**: every required request field gets its OWN negative test that omits exactly that field (`*_Missing{Field}_*`); a single empty-body test does NOT replace per-field tests
+- **Mock-API exception**: list endpoints of mock services (FakeStore, JsonPlaceholder) silently ignore invalid input (unknown query params, any id) and cannot produce 5 distinct active failures — document the achieved count and stop; never pad with `[Ignore]`d tests just to hit the number
 
 **Step 5: Save** — target ~15-20 unique test cases per endpoint
 
 **Expected yield per endpoint:** ~8-14 tests (5-6 happy, 5-6 negative, 2-3 edge)
-**Never:** less than 3 tests per endpoint, less than 5 negatives per endpoint
+**Never:** less than 3 tests per endpoint, less than 5 active negatives per endpoint (mock-API list exception — see Step 4)
 
 **Don't duplicate attribute checks:** `ShouldHaveValidFields()` covers `[RequiredField]`, `[PositiveId]`, `[ValueRange]`. Per-field assertions only for things attributes CAN'T cover: unique IDs, boundary values, idempotency, cross-field invariants, category counts.
 

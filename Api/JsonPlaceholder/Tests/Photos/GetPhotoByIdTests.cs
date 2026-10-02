@@ -17,6 +17,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     private const int TestPhotoId = 1;
     private const int BoundaryPhotoId = 2500;
     private const int LastPhotoId = 5000;
+    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -165,5 +166,27 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.13 Returns 404 for non-numeric ID")]
+    public async Task GetPhotoById_InvalidSegment_ReturnsNotFound()
+    {
+        var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
+            [UrlSegment("id", NonNumericId)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.14 Returns 404 for int.MaxValue ID")]
+    public async Task GetPhotoById_IntMaxId_ReturnsNotFound()
+    {
+        var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
+            IdParam(int.MaxValue));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

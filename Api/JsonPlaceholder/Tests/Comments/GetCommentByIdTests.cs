@@ -17,6 +17,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     private const int TestCommentId = 1;
     private const int BoundaryCommentId = 250;
     private const int LastCommentId = 500;
+    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -165,5 +166,27 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.13 Returns 404 for non-numeric ID")]
+    public async Task GetCommentById_InvalidSegment_ReturnsNotFound()
+    {
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
+            [UrlSegment("id", NonNumericId)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.14 Returns 404 for int.MaxValue ID")]
+    public async Task GetCommentById_IntMaxId_ReturnsNotFound()
+    {
+        var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
+            IdParam(int.MaxValue));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

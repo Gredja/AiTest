@@ -355,7 +355,7 @@ git checkout -b features/add-user-tests
 
 **Тесты:**
 - 1 endpoint = 1 тестовый класс
-- Seed-методология: 5 seeds → expand → enforce 5+ negatives → ~15-20 тестов на endpoint
+- Seed-методология: 5 seeds → expand → enforce 5+ active negatives (mock-API list exception) → ~15-20 тестов на endpoint
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`

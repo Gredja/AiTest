@@ -17,6 +17,7 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     private const int TestUserId = 1;
     private const int BoundaryUserId = 5;
     private const int LastUserId = 10;
+    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -165,5 +166,27 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.13 Returns 404 for non-numeric ID")]
+    public async Task GetUserById_InvalidSegment_ReturnsNotFound()
+    {
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            [UrlSegment("id", NonNumericId)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.14 Returns 404 for int.MaxValue ID")]
+    public async Task GetUserById_IntMaxId_ReturnsNotFound()
+    {
+        var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
+            IdParam(int.MaxValue));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

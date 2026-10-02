@@ -15,6 +15,8 @@ namespace Api.GitHub.Repos;
 public class GetRepositoryTests : GitHubTestBase
 {
     private static readonly string _testUsername = TestConfig.GitHubTestUsername;
+    private const string InvalidOwnerName = "!invalid!";
+    private const string InvalidRepoName = "bad repo name";
 
     [Test]
     [Category("HealthCheck")]
@@ -125,5 +127,27 @@ public class GetRepositoryTests : GitHubTestBase
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Name.Should().Be(response2.Data!.Name);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("1.10 Owner with invalid characters returns 404")]
+    public async Task GetRepository_InvalidOwnerCharacters_ReturnsNotFound()
+    {
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
+            RepoParam(InvalidOwnerName, _testUsername));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("1.11 Repo name with spaces returns 404")]
+    public async Task GetRepository_RepoNameWithSpaces_ReturnsNotFound()
+    {
+        var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
+            RepoParam(_testUsername, InvalidRepoName));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

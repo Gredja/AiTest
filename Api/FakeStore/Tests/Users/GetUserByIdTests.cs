@@ -17,6 +17,7 @@ public class GetUserByIdTests : FakeStoreRequestHelper
     private const int TestUserId = 1;
     private const int BoundaryUserId = 5;
     private const int LastUserId = 10;
+    private const string NonNumericId = "abc";
     private int? _createdUserId;
 
     [OneTimeSetUp]
@@ -192,5 +193,15 @@ public class GetUserByIdTests : FakeStoreRequestHelper
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("4.13 Get user by non-numeric ID (abc) — status code 400")]
+    public async Task GetUserById_InvalidSegment_ReturnsBadRequest()
+    {
+        var response = await Get<UserModelResponse>(FakeStoreEndpoints.UsersById, [UrlSegment("id", NonNumericId)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }
 }

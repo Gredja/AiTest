@@ -16,6 +16,7 @@ public class GetCartByIdTests : FakeStoreRequestHelper
     private const int TestCartId = 1;
     private const int BoundaryCartId = 4;
     private const int LastCartId = 7;
+    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -165,5 +166,15 @@ public class GetCartByIdTests : FakeStoreRequestHelper
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("12.14 Get cart by non-numeric ID (abc) — status code 400")]
+    public async Task GetCartById_InvalidSegment_ReturnsBadRequest()
+    {
+        var response = await Get<CartModelResponse>(FakeStoreEndpoints.CartsById, [UrlSegment("id", NonNumericId)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }
 }

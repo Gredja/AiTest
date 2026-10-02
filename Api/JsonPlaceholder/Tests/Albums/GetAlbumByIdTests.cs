@@ -17,6 +17,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     private const int TestAlbumId = 1;
     private const int BoundaryAlbumId = 50;
     private const int LastAlbumId = 100;
+    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -164,5 +165,27 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.13 Returns 404 for non-numeric ID")]
+    public async Task GetAlbumById_InvalidSegment_ReturnsNotFound()
+    {
+        var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
+            [UrlSegment("id", NonNumericId)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.14 Returns 404 for int.MaxValue ID")]
+    public async Task GetAlbumById_IntMaxId_ReturnsNotFound()
+    {
+        var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
+            IdParam(int.MaxValue));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

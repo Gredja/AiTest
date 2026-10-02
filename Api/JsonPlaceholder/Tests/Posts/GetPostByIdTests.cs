@@ -17,6 +17,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     private const int TestPostId = 1;
     private const int BoundaryPostId = 50;
     private const int LastPostId = 100;
+    private const string NonNumericId = "abc";
     private int? _createdPostId;
 
     [OneTimeSetUp]
@@ -187,5 +188,27 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
         response1.Data!.Body.Should().Be(response2.Data!.Body);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.12 Returns 404 for non-numeric ID")]
+    public async Task GetPostById_InvalidSegment_ReturnsNotFound()
+    {
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
+            [UrlSegment("id", NonNumericId)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.13 Returns 404 for int.MaxValue ID")]
+    public async Task GetPostById_IntMaxId_ReturnsNotFound()
+    {
+        var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
+            IdParam(int.MaxValue));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

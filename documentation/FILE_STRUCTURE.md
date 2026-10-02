@@ -191,6 +191,8 @@ Api/
 │           └── GetUserAlbumsTests.cs
 └── GitHub/
     └── Tests/
+        ├── Auth/
+        │   └── AuthNegativeTests.cs
         ├── AuthRepos/
         │   └── GetAuthenticatedUserReposTests.cs
         ├── Branches/
@@ -279,7 +281,9 @@ documentation/
 │       ├── JP-001-create-post-accepts-empty-body.md
 │       ├── JP-002-delete-post-does-not-actually-delete.md
 │       ├── JP-003-delete-post-returns-200-for-non-existent-id.md
-│       └── JP-004-patch-post-does-not-merge-with-existing-data.md
+│       ├── JP-004-patch-post-does-not-merge-with-existing-data.md
+│       ├── JP-005-put-post-accepts-missing-required-fields.md
+│       └── JP-006-patch-post-returns-200-for-any-id.md
 ├── FILE_STRUCTURE.md
 ├── GitHubObservableBehaviour.md
 ├── GitHubTestPlan.md

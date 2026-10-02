@@ -66,7 +66,7 @@
 
 ## Phase 1 — TODO Endpoints: Test Design
 
-Seed methodology per `Rules/test-practices.md`: 5 seeds → expand → enforce 5+ negatives per endpoint.
+Seed methodology per `Rules/test-practices.md`: 5 seeds → expand → enforce 5+ active negatives per endpoint.
 Priority: `1` = must have, `2` = nice to have.
 
 > **Source of truth:** these tables are a test inventory (case → category → priority) derived from `GitHubObservableBehaviour.md` sections 9a, 9b, 11–15. If API behavior changes, update OB first, then adjust the tables here.

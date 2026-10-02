@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.GitHub.Issues;
 
@@ -15,6 +16,7 @@ namespace Api.GitHub.Issues;
 public class GetIssueByIdTests : GitHubTestBase
 {
     private const int ExistingIssueNumber = 5;
+    private const string NonNumericIssueNumber = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -112,5 +114,27 @@ public class GetIssueByIdTests : GitHubTestBase
 
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("10.9 Non-numeric issue number returns 404")]
+    public async Task GetIssueById_InvalidSegment_ReturnsNotFound()
+    {
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            [.. TestRepoParam(), UrlSegment("issue_number", NonNumericIssueNumber)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("10.10 Issue number int.MaxValue returns 404")]
+    public async Task GetIssueById_IntMaxIssueNumber_ReturnsNotFound()
+    {
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            [.. TestRepoParam(), .. IssueNumberParam(int.MaxValue)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 }

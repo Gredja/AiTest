@@ -20,7 +20,7 @@ When generating or reviewing {Service} API tests, the AI agent:
 6. **Uses State transitions for E2E chains** — e.g. "state: open → closed" maps to PATCH test that verifies `state` changed
 7. **Uses Endpoint Priority for coverage ordering** — P0 first, P3 last when generating incrementally
 8. **Never invents fields** — only asserts fields listed in this document; if a field is missing from the response, reports it as a discrepancy
-9. **Uses Seed methodology** — for each endpoint: 5 seeds → expand to table with `# | Case | Category | Priority | Source seed` → enforce 5+ negatives → see `Rules/test-practices.md` → "Seed methodology"
+9. **Uses Seed methodology** — for each endpoint: 5 seeds → expand to table with `# | Case | Category | Priority | Source seed` → enforce 5+ active negatives → see `Rules/test-practices.md` → "Seed methodology"
 10. **Uses Test Plan risks for coverage** — maps each Top-3 risk from `{Service}TestPlan.md` / `{Service}TestingStructure.md` to at least one test case; an uncovered risk is a coverage gap, reported in the review
 
 ---
