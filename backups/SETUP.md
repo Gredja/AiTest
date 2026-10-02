@@ -160,7 +160,7 @@ MiMoCode хранит настройки в файле `~/.config/mimocode/mimoc
 В корне проекта создай файл `.env` (НЕ коммитить, NEVER):
 
 ```
-GITHUB_TOKEN=твой_личный_токен_здесь
+GITHUB_PAT=твой_личный_токен_здесь
 ```
 
 **Как получить токен:**
@@ -212,13 +212,20 @@ Gredja/
 │   │   ├── FakeStoreEndpoints.cs
 │   │   ├── JsonPlaceholderEndpoints.cs
 │   │   └── GitHubEndpoints.cs
+│   ├── Helpers/                  # Тестовая инфраструктура (всегда здесь, даже для E2E)
+│   │   ├── RequestHelper.cs      # Базовый клиент (Get/Post/Put/Patch/Delete)
+│   │   ├── FakeStoreRequestHelper.cs / JsonPlaceholderRequestHelper.cs / GitHubRequestHelper.cs
+│   │   ├── GitHub/               # GitHubTestBase + GitHubParamHelper
+│   │   ├── ParamHelper.cs        # Общие IdParam/UrlSegment/Query
+│   │   ├── DataGenerator.cs      # RandomString/RandomInt для write-данных
+│   │   └── AssertHelper.cs       # ShouldHaveStatusCode и др.
 │   └── Models/                   # Модели данных (Response/Request)
 │       ├── FakeStore/            # Модели FakeStoreAPI
 │       ├── JsonPlaceholder/      # Модели JSONPlaceholder
 │       ├── GitHub/               # Модели GitHub API
 │       └── Generic/              # Общие модели
 ├── Api/
-│   ├── FakeStore/Tests/          # Тесты FakeStoreAPI
+│   ├── FakeStore/Tests/          # Тесты FakeStoreAPI (Auth/, Carts/, Products/, Users/)
 │   ├── JsonPlaceholder/Tests/    # Тесты JSONPlaceholder
 │   │   ├── Albums/               # Тесты альбомов
 │   │   ├── Comments/             # Тесты комментариев
@@ -226,13 +233,15 @@ Gredja/
 │   │   ├── Posts/                # Тесты постов
 │   │   ├── Todos/                # Тесты задач
 │   │   └── Users/                # Тесты пользователей
-│   └── GitHub/Tests/             # Тесты GitHub API
+│   └── GitHub/Tests/             # Тесты GitHub API (Auth/, Issues/, Repos/ и др.)
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── TestAdapter/                  # Allure-адаптер
 ├── Scripts/                      # Скрипты (allure-report.ps1)
 ├── Rules/                        # Правила кодирования
+├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── metrics.md                    # Метрики AI-использования (tests/time/cost)
 ├── documentation/                # Документация
+│   ├── FILE_STRUCTURE.md         # Точное дерево всех файлов проекта
 │   ├── Bugs/                     # Баг-репорты
 │   │   ├── FakeStore/            # Баги FakeStoreAPI
 │   │   └── JsonPlaceholder/      # Баги JsonPlaceholder
@@ -360,6 +369,8 @@ git checkout -b features/add-user-tests
 **Тесты:**
 - 1 endpoint = 1 тестовый класс
 - Seed-методология: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → ~15-20 тестов на endpoint
+- Обязательные поля request body → тест на КАЖДОЕ отсутствующее поле (`*_Missing{Field}_*`); пустой body не заменяет проверку полей
+- Негативы считаются по АКТИВНЫМ тестам (`[Ignore]` не в счёт); когда полезные режимы исчерпаны — фиксируй достигнутое, не плоди дубли
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
@@ -373,6 +384,7 @@ git checkout -b features/add-user-tests
 
 **Workflow:**
 - План → одобение → изменения → отчёт
+- Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
 - Перед коммитом: `dotnet format` + `dotnet test` должны пройти
 - Коммиты только по запросу
 
@@ -444,11 +456,11 @@ dotnet build
 **Тесты падают с ошибкой подключения**
 
 - FakeStoreAPI и JSONPlaceholder — фейковые API, проблемы с интернетом
-- GitHub API — нужен `.env` с `GITHUB_TOKEN` (см. Часть 4)
+- GitHub API — нужен `.env` с `GITHUB_PAT` (см. Часть 4)
 
 **Тесты падают с 401/403**
 
-- Проверь что `.env` содержит валидный `GITHUB_TOKEN`
+- Проверь что `.env` содержит валидный `GITHUB_PAT`
 - Токен должен иметь scope `public_repo` (read) или `repo` (read + write)
 - Проверь что токен не истёк: GitHub → Settings → Developer settings → Personal access tokens
 
@@ -483,9 +495,9 @@ dotnet build
 - **FakeStoreAPI:** https://fakestoreapi.com/docs
 - **JSONPlaceholder:** https://jsonplaceholder.typicode.com
 - **GitHub API:** https://docs.github.com/en/rest
-- **Observable Behaviour:** `documentation/GitHubObservableBehaviour.md` — source of truth для тестов GitHub
-- **Test Plan:** `documentation/GitHubTestPlan.md` — покрытие и статусы
-- **Правила:** `Rules/*.md` — код,斷言, тест-практики
+- **Observable Behaviour (source of truth для тестов):** `documentation/FakeStoreObservableBehaviour.md`, `documentation/JsonPlaceholderObservableBehaviour.md`, `documentation/GitHubObservableBehaviour.md` — читай OB своего сервиса
+- **Test Plan:** `documentation/FakeStoreTestPlan.md`, `documentation/JsonPlaceholderTestPlan.md`, `documentation/GitHubTestPlan.md` — покрытие и статусы
+- **Правила:** `Rules/*.md` — код, ассерты, тест-практики
 
 ---
 
@@ -499,7 +511,7 @@ dotnet build
 - [ ] Установлен Git
 - [ ] Создан `~/.config/mimocode/mimocode.jsonc` (см. Часть 3)
 - [ ] Клонирован репозиторий
-- [ ] Создан `.env` с GITHUB_TOKEN (см. Часть 4)
+- [ ] Создан `.env` с GITHUB_PAT (см. Часть 4)
 - [ ] `dotnet build` проходит без ошибок
 - [ ] `dotnet test` показывает пройденные тесты
 - [ ] `mimo` запускается и отвечает на сообщения
@@ -507,6 +519,6 @@ dotnet build
 
 **Рекомендовано:**
 - [ ] Установлена Visual Studio Community (или VS Code) для удобной работы с кодом
-- [ ] Подана заявка на MiMo Desktop (https://mimocode.mi.mi.com)
-- [ ] Прочитал `documentation/GitHubObservableBehaviour.md` — понимаешь структуру документа
+- [ ] Подана заявка на MiMo Desktop (https://mimocode.mi.com)
+- [ ] Прочитал OB своего сервиса (`documentation/{Service}ObservableBehaviour.md`) — понимаешь структуру документа
 - [ ] Прочитал `Rules/test-practices.md` — знаешь seed-методологию и read-after-write visibility

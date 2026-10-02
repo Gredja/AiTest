@@ -71,6 +71,7 @@ Check if any of the following were changed in this commit:
   - Config files (endpoints, env vars)
   - AGENTS.md or documentation/README.md
 - Structural changes (new files, moved files, deleted files) → update `documentation/FILE_STRUCTURE.md`
+- **Fact verification for `backups/SETUP.md`**: when you edit (or add) a SETUP section, verify every factual claim in THAT section against the code — env var names (read `TestConfig.cs`, don't guess: `GITHUB_PAT`, not `GITHUB_TOKEN`), commands, file paths, URLs, tool flags. Syncing a line without checking what it asserts is not a sync — a wrong claim that "went through the sync" is worse than a stale one.
 
 If nothing changed — skip. If something changed — update the corresponding backup file.
 
@@ -110,3 +111,4 @@ Report in execution order:
 - Commits: English only, format: action + object
 - Never commit `.env` or tokens
 - Always sync backups/ before commit if relevant files changed
+- Sync is change-driven AND fact-driven: touching a backups/SETUP.md line obliges you to verify that line's claim against the code
