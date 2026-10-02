@@ -103,4 +103,15 @@ public class GetUserTests : GitHubTestBase
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Login.Should().Be(response2.Data!.Login);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.9 Invalid token returns 401")]
+    public async Task GetUser_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.UsersById, $"Bearer {InvalidToken}", UsernameParam(_testUsername));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

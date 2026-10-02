@@ -147,4 +147,15 @@ public class GetPullRequestsTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateClosed);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("5.12 Invalid token returns 401")]
+    public async Task GetPullRequests_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoPullRequests, $"Bearer {InvalidToken}", TestRepoParam());
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

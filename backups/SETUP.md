@@ -355,7 +355,7 @@ git checkout -b features/add-user-tests
 
 **Тесты:**
 - 1 endpoint = 1 тестовый класс
-- Seed-методология: 5 seeds → expand → enforce 5+ active negatives (mock-API list exception) → ~15-20 тестов на endpoint
+- Seed-методология: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → ~15-20 тестов на endpoint
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
@@ -365,7 +365,7 @@ git checkout -b features/add-user-tests
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
 - Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure)
-- Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности, обфускация заменой, метод-нота для сложных наборов
+- Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности (вариативные поля — через `Core/Helpers/DataGenerator`), обфускация заменой, метод-нота для сложных наборов
 
 **Workflow:**
 - План → одобение → изменения → отчёт

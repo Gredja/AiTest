@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.GitHub.Issues;
 
@@ -199,5 +200,18 @@ public class GetIssuesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateClosed);
+    }
+
+    private const string InvalidQueryValue = "abc";
+
+    [Test]
+    [Category("Negative")]
+    [Description("3.13 since=abc returns 422")]
+    public async Task GetIssues_InvalidSince_Returns422()
+    {
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            [.. TestRepoParam(), Query("since", InvalidQueryValue)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
 }

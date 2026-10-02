@@ -14,7 +14,12 @@ namespace Api.JsonPlaceholder.Posts;
 public class CreatePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
-    private static readonly PostModelRequest _testPost = new() { UserId = TestUserId, Title = "Test Post", Body = "Test Body" };
+    private static readonly PostModelRequest _testPost = new()
+    {
+        UserId = TestUserId,
+        Title = $"Post {DataGenerator.RandomString(8)}",
+        Body = $"Body {DataGenerator.RandomString(16)}"
+    };
 
     [Test]
     [Category("HealthCheck")]
@@ -43,8 +48,8 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     {
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
-        response.Data!.Title.Should().Be("Test Post");
-        response.Data!.Body.Should().Be("Test Body");
+        response.Data!.Title.Should().Be(_testPost.Title);
+        response.Data!.Body.Should().Be(_testPost.Body);
         response.Data!.UserId.Should().Be(TestUserId);
     }
 
@@ -100,7 +105,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.8 Special chars in title are accepted")]
     public async Task CreatePost_SpecialCharsInTitle_ReturnsCreated()
     {
-        var specialPost = new PostModelRequest { UserId = TestUserId, Title = SpecialCharsTitle, Body = "Body" };
+        var specialPost = new PostModelRequest { UserId = TestUserId, Title = SpecialCharsTitle, Body = $"Body {DataGenerator.RandomString(16)}" };
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, specialPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);

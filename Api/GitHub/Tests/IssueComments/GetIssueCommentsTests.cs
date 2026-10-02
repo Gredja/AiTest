@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.GitHub.IssueComments;
 
@@ -160,5 +161,18 @@ public class GetIssueCommentsTests : GitHubTestBase
             [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName), .. IssueNumberParam(1)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    private const string InvalidQueryValue = "abc";
+
+    [Test]
+    [Category("Negative")]
+    [Description("11.9 since=abc returns 422")]
+    public async Task GetIssueComments_InvalidSince_Returns422()
+    {
+        var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber), Query("since", InvalidQueryValue)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
 }

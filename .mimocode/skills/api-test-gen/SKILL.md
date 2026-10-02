@@ -110,7 +110,7 @@ If models already exist — verify they match current API response.
 **Seed methodology** — before writing code, plan test cases using Seed → Expand → Review:
 1. Write 5 seeds per endpoint (2 happy, 2 failure, 1 edge) — see `Rules/test-practices.md` → "Seed methodology"
 2. Expand to table: `# | Case | Category | Priority | Source seed` — with concrete example for the endpoint
-3. Enforce minimum 5 active negatives per endpoint (`[Ignore]`d don't count; mock-API list exception — see `Rules/test-practices.md` Step 4)
+3. Enforce minimum 5 active negatives per endpoint (`[Ignore]`d don't count; mock-API exception + ceiling rule — see `Rules/test-practices.md` Step 4)
 4. **One negative test per required request field** — `*_Missing{Field}_*` for EVERY required body field (mandatory for all services; empty-body test doesn't substitute)
 5. Target ~15-20 unique test cases per endpoint
 
@@ -286,6 +286,7 @@ public async Task OneTimeTearDown()
 - **Negative tests:** `[Ignore]` with explanation for API known bugs — see `Rules/test-practices.md`
 - **Access modifiers:** narrowest possible — private > protected > public — see `Rules/code.md`
 - **Request/Response comparison:** Use `ShouldMatchRequest()` for POST/PATCH — see `Rules/assertions.md`
+- **Write payloads:** vary fields per run via `Core/Helpers/DataGenerator` (`RandomString`, `RandomInt`); semantic negative-test data stays as named constants — see `Rules/test-practices.md` → "Test data for write operations"
 
 ### Step 6: Safety Check
 
@@ -346,3 +347,4 @@ Show:
 | 1.6 | 2026-09-30 | Fixed stale `Get<T>` signature in Step 4 template — removed `Method.Get` argument | MiMo |
 | 1.7 | 2026-09-30 | Step 1: added "read existing code first — never duplicate files" (from model-selection-note katka) | MiMo |
 | 1.8 | 2026-10-02 | Step 4: negative floor counts active tests only, mock-API list exception, one negative per required request field | MiMo |
+| 1.9 | 2026-10-02 | Step 5: write payloads vary via Core/Helpers/DataGenerator | MiMo |

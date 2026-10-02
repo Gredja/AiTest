@@ -76,4 +76,15 @@ public class GetUserReposTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Count.Should().BeLessThanOrEqualTo(DefaultPageSize);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("7.6 Invalid token returns 401")]
+    public async Task GetUserRepos_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.UsersRepos, $"Bearer {InvalidToken}", UsernameParam(_testUsername));
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

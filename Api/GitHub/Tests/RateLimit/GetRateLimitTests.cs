@@ -91,4 +91,15 @@ public class GetRateLimitTests : GitHubTestBase
 
         response.Data!.Rate.Used.Should().BeGreaterThanOrEqualTo(0);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("6.8 Invalid token returns 401")]
+    public async Task GetRateLimit_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RateLimit, $"Bearer {InvalidToken}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

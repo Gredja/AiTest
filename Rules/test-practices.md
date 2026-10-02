@@ -93,12 +93,13 @@ Priority: `1` = must have, `2` = nice to have
 - If fewer than 5: generate more, each exercising a different failure mode
 - Failure modes: no auth, invalid token, wrong scope, missing required field, non-existent resource, invalid value, boundary value
 - **Missing-field rule (mandatory, ALL services)**: every required request field gets its OWN negative test that omits exactly that field (`*_Missing{Field}_*`); a single empty-body test does NOT replace per-field tests
-- **Mock-API exception**: list endpoints of mock services (FakeStore, JsonPlaceholder) silently ignore invalid input (unknown query params, any id) and cannot produce 5 distinct active failures — document the achieved count and stop; never pad with `[Ignore]`d tests just to hit the number
+- **Mock-API exception**: some mock endpoints cannot produce 5 distinct active failures — list endpoints (query params and any id silently accepted) and GetById endpoints of FakeStore (200 for any input, e.g. `/products/abc`). Document the achieved count and stop; never pad with `[Ignore]`d tests just to hit the number
+- **Ceiling rule**: when distinct useful failure modes are exhausted (verify with live probes first), stop even below 5 and note the achieved count — padding with redundant tests is worse than a documented gap. Useful beats numerous: a uniform GitHub auth middleware doesn't need a 401 test on every route
 
 **Step 5: Save** — target ~15-20 unique test cases per endpoint
 
 **Expected yield per endpoint:** ~8-14 tests (5-6 happy, 5-6 negative, 2-3 edge)
-**Never:** less than 3 tests per endpoint, less than 5 active negatives per endpoint (mock-API list exception — see Step 4)
+**Never:** less than 3 tests per endpoint, less than 5 active negatives per endpoint without a documented ceiling (see Step 4)
 
 **Don't duplicate attribute checks:** `ShouldHaveValidFields()` covers `[RequiredField]`, `[PositiveId]`, `[ValueRange]`. Per-field assertions only for things attributes CAN'T cover: unique IDs, boundary values, idempotency, cross-field invariants, category counts.
 
@@ -178,4 +179,5 @@ Derived from kata 6.W.3 (PII-safe test data). Applies to E2E and any POST/PATCH 
 - **Fictional values only, never PII** — E2E writes into the public sandbox repo `Gredja/AiTest`; issue/PR bodies are publicly visible forever. Synthetic IDs, invented names, tokenized payments (see `documentation/Katas/02-test-data.json` for the pattern)
 - **Obfuscate by replacement, never by dropping** — keep the field shape, replace the value; dropping a field breaks e2e coverage
 - **Vary ≥2 dimensions across test payloads** — don't run every write test against one static body (country/language, order size, status, payment method). If one dataset is intentionally enough, document why in the test class
+- **Vary payload values via `Core/Helpers/DataGenerator`** — generate per-run values (`RandomString`, `RandomInt`) for varying write fields instead of static literals; semantic negative-test data (invalid ids, boundary values, wrong-type markers) stays as named constants — its value IS the specification
 - **Complex datasets get a method note** — which tool/prompts generated them, which fields are obfuscated, which dimensions are exercised, what is intentionally missing (pattern: `documentation/Katas/02-data-method.md`)

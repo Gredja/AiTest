@@ -139,4 +139,28 @@ public class GetBranchesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
+
+    private const string NonExistentBranchName = "nonexistent-branch-12345";
+
+    [Test]
+    [Category("Negative")]
+    [Description("4.11 Non-existent branch returns 404")]
+    public async Task GetBranches_NonExistentBranch_ReturnsNotFound()
+    {
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranchByName,
+            [.. TestRepoParam(), .. BranchNameParam(NonExistentBranchName)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("4.12 Invalid token returns 401")]
+    public async Task GetBranches_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoBranches, $"Bearer {InvalidToken}", TestRepoParam());
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
 }

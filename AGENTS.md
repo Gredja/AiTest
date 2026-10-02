@@ -8,7 +8,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Api/` — NUnit API-тесты (FakeStore, JsonPlaceholder, GitHub)
 - `E2E/` — NUnit E2E тесты (GitHub write operations)
 - `Core/Models/` — модели ответов/запросов
-- `Core/Helpers/` — общие хелперы: request-инфраструктура (`RequestHelper`, `FakeStoreRequestHelper`, `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`) всегда здесь; нужны E2E → сюда (`GitHubTestBase`, `GitHubParamHelper`, `ParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
+- `Core/Helpers/` — общие хелперы: request-инфраструктура (`RequestHelper`, `FakeStoreRequestHelper`, `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`) и `DataGenerator` (вариативные write-данные) всегда здесь; нужны E2E → сюда (`GitHubTestBase`, `GitHubParamHelper`, `ParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
 - `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
 - `Prompts/` — шаблоны промптов
 - `Rules/` — полные правила (здесь — краткая сводка)
@@ -64,7 +64,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - 0 и -1 — безопасные static IDs (всегда невалидные)
 - Dynamic non-existent ID = maxId + 1 (не статический 999)
 - FakeStoreAPI: ровно 20 товаров (IDs 1-20)
-- Seed methodology: 5 seeds → expand → enforce 5+ active negatives (mock-API list exception) → see `Rules/test-practices.md`
+- Seed methodology: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → see `Rules/test-practices.md`
 - Document sync: Observable Behaviour ↔ Test Plan ↔ Rules — always in sync
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
 - Test data для write: только вымышленные значения (E2E пишет в публичный репо), vary ≥2 размерности, обфускация заменой — see `Rules/test-practices.md` → "Test data for write operations"

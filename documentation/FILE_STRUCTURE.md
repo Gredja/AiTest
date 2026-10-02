@@ -71,6 +71,7 @@ Core/
 │   └── TestConfig.cs
 ├── Helpers/
 │   ├── AssertHelper.cs           # ShouldHaveValidContract, ShouldHaveValidFields, etc.
+│   ├── DataGenerator.cs          # RandomString/RandomInt for varying write payloads
 │   ├── FakeStoreRequestHelper.cs
 │   ├── GitHub/
 │   │   ├── GitHubParamHelper.cs

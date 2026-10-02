@@ -18,8 +18,13 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     private const int TestUserId = 1;
     private const string MalformedJson = "{\"title\":";
     private const string NonNumericId = "abc";
-    private static readonly PostModelRequest _putBody = new() { UserId = TestUserId, Title = "Updated Title", Body = "Updated Body" };
-    private static readonly PostModelRequest _patchBody = new() { Title = "Patched Title" };
+    private static readonly PostModelRequest _putBody = new()
+    {
+        UserId = TestUserId,
+        Title = $"Updated {DataGenerator.RandomString(8)}",
+        Body = $"Body {DataGenerator.RandomString(16)}"
+    };
+    private static readonly PostModelRequest _patchBody = new() { Title = $"Patched {DataGenerator.RandomString(8)}" };
 
     [Test]
     [Category("HealthCheck")]
@@ -62,7 +67,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _patchBody,
             IdParam(TestPostId));
 
-        response.Data!.Title.Should().Be("Patched Title");
+        response.Data!.Title.Should().Be(_patchBody.Title);
     }
 
     [Test]
@@ -107,7 +112,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _patchBody,
             IdParam(TestPostId));
 
-        response.Data!.Title.Should().Be("Patched Title");
+        response.Data!.Title.Should().Be(_patchBody.Title);
         response.Data!.Body.Should().NotBeNull();
     }
 

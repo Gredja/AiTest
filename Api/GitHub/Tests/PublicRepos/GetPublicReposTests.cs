@@ -6,6 +6,7 @@ using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using TestAdapter;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.GitHub.PublicRepos;
 
@@ -60,5 +61,29 @@ public class GetPublicReposTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
         response.Data!.Count.Should().BeGreaterThan(0);
+    }
+
+    private const string InvalidQueryValue = "abc";
+
+    [Test]
+    [Category("Negative")]
+    [Description("8.5 since=abc returns 422")]
+    public async Task GetPublicRepos_InvalidSince_Returns422()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
+            [Query("since", InvalidQueryValue)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8.6 Invalid token returns 401")]
+    public async Task GetPublicRepos_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.Repositories, $"Bearer {InvalidToken}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 }

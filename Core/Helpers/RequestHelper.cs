@@ -120,7 +120,7 @@ public class RequestHelper
         request.AddHeader("Authorization", $"Bearer {_githubToken.Value}");
     }
 
-    private static void AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
+    protected static void AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
     {
         foreach (var param in additionalParams)
         {
