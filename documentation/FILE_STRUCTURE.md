@@ -10,8 +10,7 @@ Gredja/
 ├── metrics.md                      # AI usage tracking (Gap 1)
 ├── Gredja.slnx
 ├── Directory.Build.props          # File.TestLogger config (VSTestLogger, temp workspace dir)
-├── Directory.Build.targets        # run-start marker for the test report
-├── .runsettings                  # same File logger for VS Test Explorer (CLI ignores it)
+├── .runsettings                  # VS Test Explorer: parallel sources → one report per run (CLI ignores it)
 ├── allureConfig.json
 ├── testsettings.json
 ├── .env                          # secrets (not tracked)

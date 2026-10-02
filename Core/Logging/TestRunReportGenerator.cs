@@ -8,11 +8,12 @@ public static class TestRunReportGenerator
     private const int MaxWriteAttempts = 3;
     private const int RetryDelayMilliseconds = 200;
     private const string ReportPrefix = "TestRunReport-";
-    private const string RunStartFileName = ".run-start";
     private const string ActionLogPrefix = "actions-";
     private const string TestResultLogPrefix = "test-results-";
 
     private static readonly Encoding _reportEncoding = new UTF8Encoding(false);
+
+    public static void PrepareRun() => TestRunWorkspace.PrepareRun();
 
     public static void Generate()
     {
@@ -23,7 +24,7 @@ public static class TestRunReportGenerator
         }
 
         var workspace = TestRunWorkspace.Resolve();
-        var runStartFile = Path.Combine(workspace, RunStartFileName);
+        var runStartFile = Path.Combine(workspace, TestRunWorkspace.MarkerFileName);
         if (!File.Exists(runStartFile))
         {
             return;

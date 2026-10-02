@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Read by Visual Studio Test Explorer (auto-detection), NOT by `dotnet test`.
-  CLI logging is enabled via Directory.Build.props (VSTestLogger=File) —
-  so enabling this file in VS does not duplicate CLI logs.
+  Auto-detected by Visual Studio Test Explorer (CLI `dotnet test` ignores this file).
+  Runs test sources in parallel so both assemblies of one selection are alive at the
+  same time and share a single run — one TestRunReport per run. No loggers here:
+  VS cannot resolve NuGet test loggers (it used to abort the run with
+  "Could not find a test logger 'File'").
 -->
 <RunSettings>
-  <LoggerRunSettings>
-    <Loggers>
-      <Logger friendlyName="File" enabled="True" />
-    </Loggers>
-  </LoggerRunSettings>
+  <RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+  </RunConfiguration>
 </RunSettings>

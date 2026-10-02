@@ -7,16 +7,22 @@ Set-Location $PSScriptRoot/..
 
 Write-Host "=== Gredja Test Coverage ===" -ForegroundColor Cyan
 
-# Clean old results
-Write-Host "`n[1/4] Cleaning old results..." -ForegroundColor Yellow
-if (Test-Path "TestResults") {
-    cmd /c "rmdir /s /q TestResults" 2>$null
+# Clean previous coverage artifacts only. TestRunReport-*.md files must survive —
+# TestResults/ holds one report per test run; raw artifacts live in the temp workspace.
+$coverageDir = Join-Path $env:TEMP "GredjaTestRun\coverage"
+Write-Host "`n[1/4] Cleaning old coverage artifacts..." -ForegroundColor Yellow
+if (Test-Path $coverageDir) {
+    Remove-Item $coverageDir -Recurse -Force
+}
+New-Item -ItemType Directory -Path $coverageDir -Force | Out-Null
+if (Test-Path "TestResults/Report") {
+    Remove-Item "TestResults/Report" -Recurse -Force
 }
 
 # Run tests with coverlet
 if (-not $SkipTests) {
     Write-Host "[2/4] Running tests with coverage collection..." -ForegroundColor Yellow
-    dotnet test --verbosity minimal --collect:"XPlat Code Coverage" --results-directory "TestResults"
+    dotnet test --verbosity minimal --collect:"XPlat Code Coverage" --results-directory "$coverageDir"
 } else {
     Write-Host "[2/4] Skipping tests (using existing results)..." -ForegroundColor Yellow
 }
@@ -24,7 +30,7 @@ if (-not $SkipTests) {
 # Generate HTML report
 Write-Host "[3/4] Generating coverage report..." -ForegroundColor Yellow
 $reportPath = "TestResults/Report"
-$coverageFiles = Get-ChildItem -Path "TestResults" -Recurse -Filter "coverage.cobertura.xml"
+$coverageFiles = Get-ChildItem -Path $coverageDir -Recurse -Filter "coverage.cobertura.xml"
 
 if ($coverageFiles.Count -eq 0) {
     Write-Host "No coverage files found. Run tests first." -ForegroundColor Red
