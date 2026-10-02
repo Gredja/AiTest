@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Read by Visual Studio Test Explorer (auto-detection), NOT by `dotnet test`.
+  CLI logging is enabled via Directory.Build.props (VSTestLogger=File) —
+  so enabling this file in VS does not duplicate CLI logs.
+-->
+<RunSettings>
+  <LoggerRunSettings>
+    <Loggers>
+      <Logger friendlyName="File" enabled="True" />
+    </Loggers>
+  </LoggerRunSettings>
+</RunSettings>

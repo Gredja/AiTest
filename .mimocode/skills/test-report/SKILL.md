@@ -24,9 +24,10 @@ Note: Allure runs from main agent because subagents cannot get user approval for
 
 ## Step 1: Quick pre-check (main agent)
 
-Run `dotnet test --verbosity minimal` and show:
+Run `dotnet test --verbosity minimal --filter Category=HealthCheck` and show:
 - Current branch
 - Quick pass/fail summary
+- Report file: the newest `TestResults/TestRunReport-*.md` (written automatically after every run; path is not printed to console)
 
 ## Step 2: Clean old results (main agent)
 
@@ -51,11 +52,13 @@ Working dir: {working_dir}
 2. Run all tests:
    - Run `dotnet test --verbosity minimal`
    - Capture output: passed / failed / skipped counts
+   - Report file: the newest `TestResults/TestRunReport-*.md`
 
 3. Report to parent:
    - Branch name
    - Test results: passed / failed / skipped counts
    - Failed test details (name + error) if any
+   - Report file path (newest `TestResults/TestRunReport-*.md`)
 ```
 
 Wait for test subagent to complete. Collect test results from its output.

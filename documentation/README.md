@@ -46,6 +46,7 @@ dotnet test --filter Category=HealthCheck
 
 ## Documentation
 
+- `documentation/GeneralPlan.md` — permanent user backlog (statuses TODO / IN PROGRESS / DONE, never deleted)
 - `documentation/FakeStoreTestPlan.md` — FakeStore API test plan (coverage + negative floor status)
 - `documentation/FakeStoreObservableBehaviour.md` — observable behaviour for FakeStore API
 - `documentation/JsonPlaceholderTestPlan.md` — JsonPlaceholder API test plan (coverage + negative floor status)

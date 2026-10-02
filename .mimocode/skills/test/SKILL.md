@@ -9,9 +9,10 @@ Run **all tests** (every category, every service) without Allure report.
 
 ## Step 1: Confirm with user (main agent)
 
-Run `dotnet test --verbosity minimal` as a quick pre-check. Show:
+Run `dotnet test --verbosity minimal --filter Category=HealthCheck` as a quick pre-check. Show:
 - Current branch
 - Quick pass/fail summary
+- Report file: the newest `TestResults/TestRunReport-*.md` (written automatically after every run; path is not printed to console)
 
 Ask for confirmation to proceed.
 
@@ -32,6 +33,7 @@ Working dir: {working_dir}
 2. Run all tests:
    - Run `dotnet test --verbosity minimal`
    - Capture output: passed/failed/skipped counts
+   - Report file: the newest `TestResults/TestRunReport-*.md` (contains the same counts + per-test table + failed-test action traces)
 
 3. Run coverage:
    - Run `./Scripts/test-coverage.ps1`
@@ -45,7 +47,7 @@ Working dir: {working_dir}
 
 ## Step 3: Deliver result (main agent)
 
-Report the subagent's output to the user, then run `/coverage` skill for coverage data.
+Report the subagent's output to the user (including the newest `TestResults/TestRunReport-*.md` path), then run `/coverage` skill for coverage data.
 
 ---
 
@@ -54,3 +56,8 @@ Report the subagent's output to the user, then run `/coverage` skill for coverag
 - Never skip safety gate
 - Show failed test details if any
 - No Allure report — use /test-report if Allure is needed
+- Every `dotnet test` run automatically produces one report file in `TestResults/`
+  (NUnit teardown generator + run-start marker) — no extra flags needed
+- The report includes a `## Failed tests` section with full error, stack trace and the
+  HTTP action trace of each failed test; raw run logs (actions, per-test results) live
+  in `%TEMP%\GredjaTestRun` — `TestResults/` holds only report files

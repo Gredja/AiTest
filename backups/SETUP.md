@@ -187,8 +187,10 @@ cd AiTest
 
 ```
 dotnet build                       # должна компилироваться без ошибок
-dotnet test --verbosity minimal    # должны пройти тесты
+dotnet test --verbosity minimal    # штатный запуск всех тестов: пишет TestRunReport-*.md в TestResults/
 ```
+
+Отчёт — таблица по каждому тесту + итог (количество и проценты), создаётся автоматически после любого `dotnet test`. Фильтр: `dotnet test --verbosity minimal --filter "Category=HealthCheck"`.
 
 ### 5.3. Запусти MiMoCode
 
@@ -219,6 +221,7 @@ Gredja/
 │   │   ├── ParamHelper.cs        # Общие IdParam/UrlSegment/Query
 │   │   ├── DataGenerator.cs      # RandomString/RandomInt для write-данных
 │   │   └── AssertHelper.cs       # ShouldHaveStatusCode и др.
+│   ├── Logging/                   # Лог действий (Serilog → %TEMP%\GredjaTestRun) + генератор TestRunReport
 │   └── Models/                   # Модели данных (Response/Request)
 │       ├── FakeStore/            # Модели FakeStoreAPI
 │       ├── JsonPlaceholder/      # Модели JSONPlaceholder
@@ -236,12 +239,13 @@ Gredja/
 │   └── GitHub/Tests/             # Тесты GitHub API (Auth/, Issues/, Repos/ и др.)
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── TestAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report.ps1)
+├── Scripts/                      # Скрипты (allure-report.ps1, test-coverage.ps1)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── metrics.md                    # Метрики AI-использования (tests/time/cost)
 ├── documentation/                # Документация
 │   ├── FILE_STRUCTURE.md         # Точное дерево всех файлов проекта
+│   ├── GeneralPlan.md            # Постоянный план хотелок пользователя (не удаляется)
 │   ├── Bugs/                     # Баг-репорты
 │   │   ├── FakeStore/            # Баги FakeStoreAPI
 │   │   └── JsonPlaceholder/      # Баги JsonPlaceholder
@@ -289,7 +293,7 @@ MiMoCode:
 
 | Команда | Что делает |
 |---------|-----------|
-| `/test` | Запускает все тесты |
+| `/test` | Запускает все тесты + пишет TestRunReport-*.md в `TestResults/` |
 | `/test-report` | Запускает тесты + генерирует Allure-отчёт |
 | `/commit` | Форматирование + ревью + тесты + синк бэкапов + коммит + пуш |
 | `/review-commit` | Ревью не закоммиченных изменений |
@@ -408,7 +412,7 @@ git checkout -b features/add-user-tests
 
 ### "Запустить тесты и посмотреть отчёт"
 
-Напиши `/test-report` — MiMoCode запустит тесты и откроет Allure-отчёт в браузере.
+Напиши `/test-report` — MiMoCode запустит тесты и откроет Allure-отчёт в браузере. Или запусти сам `dotnet test --verbosity minimal` — после прогона в `TestResults/` появится файл-таблица `TestRunReport-*.md` с результатами каждого теста и итогом в процентах.
 
 ### "Проверить код перед коммитом"
 

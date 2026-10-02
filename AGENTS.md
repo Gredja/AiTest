@@ -10,6 +10,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Core/Models/` — модели ответов/запросов
 - `Core/Helpers/` — общие хелперы: request-инфраструктура (`RequestHelper`, `FakeStoreRequestHelper`, `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`) и `DataGenerator` (вариативные write-данные) всегда здесь; нужны E2E → сюда (`GitHubTestBase`, `GitHubParamHelper`, `ParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
 - `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
+- `Core/Logging/` — два независимых от Allure механизма: логирование действий (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) и отчёт прогона (свои результаты тестов `test-results-*.log` + `TestRunReportGenerator` → `TestResults/TestRunReport-*.md`, вызывается из NUnit-teardown `TestReportSetup`). `TestResults/` содержит **только отчёты**, сырые артефакты прогона — во временной папке
 - `Prompts/` — шаблоны промптов
 - `Rules/` — полные правила (здесь — краткая сводка)
 - `documentation/` — документация проекта
@@ -89,7 +90,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 
 1. Прочитай `AGENTS.md` целиком и `Rules/test-practices.md` — там базовые правила и seed-методология
 2. `/api-test-gen <service> <endpoint>` — сгенерировать тесты для нового эндпоинта (скилл сам прочитает Observable Behaviour и правила)
-3. `/test` — запустить весь тест-сьют, `/test-report` — запуск + Allure-отчёт
+3. `/test` — запустить весь тест-сьют (пишет `TestResults/TestRunReport-*.md`), `/test-report` — запуск + Allure-отчёт
 4. `/review-commit` — проверить незакоммиченные изменения по правилам проекта
 5. `/commit` — форматирование + HealthCheck + коммит + пуш
 

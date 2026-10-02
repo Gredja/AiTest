@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Logging;
 using Core.Models;
 using RestSharp;
 
@@ -147,6 +148,8 @@ public class RequestHelper
         {
             options.RemoteCertificateValidationCallback = (_, _, _, _) => true;
         }
+
+        options.ConfigureMessageHandler = handler => new ActionLogHandler(handler);
 
         return new RestClient(options);
     }

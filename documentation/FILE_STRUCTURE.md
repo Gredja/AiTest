@@ -9,7 +9,9 @@ Gredja/
 ├── AGENTS.md
 ├── metrics.md                      # AI usage tracking (Gap 1)
 ├── Gredja.slnx
-├── Directory.Build.props
+├── Directory.Build.props          # File.TestLogger config (VSTestLogger, temp workspace dir)
+├── Directory.Build.targets        # run-start marker for the test report
+├── .runsettings                  # same File logger for VS Test Explorer (CLI ignores it)
 ├── allureConfig.json
 ├── testsettings.json
 ├── .env                          # secrets (not tracked)
@@ -17,7 +19,7 @@ Gredja/
 ├── .gitignore
 ├── .graphifyignore
 ├── allure-results/              # not tracked
-├── TestResults/                 # not tracked
+├── TestResults/                 # not tracked — ONLY TestRunReport-*.md (raw logs in %TEMP%\GredjaTestRun)
 ├── .playwright-cli/             # not tracked
 ├── .mimocode/
 │   ├── .gitignore
@@ -80,6 +82,20 @@ Core/
 │   ├── JsonPlaceholderRequestHelper.cs
 │   ├── ParamHelper.cs             # shared IdParam + UrlSegment/Query primitives for param helpers
 │   └── RequestHelper.cs
+├── Logging/
+│   ├── ActionLogHandler.cs        # DelegatingHandler: logs every HTTP request/response
+│   ├── ActionLogger.cs            # Serilog bootstrap → %TEMP%\GredjaTestRun\actions-*.log
+│   ├── ActionLogParser.cs         # picks failed-test actions for the report
+│   ├── SharedFile.cs              # read-with-ShareWrite helpers
+│   ├── TestNameEnricher.cs        # adds NUnit test name to every log line
+│   ├── TestOutcome.cs             # own test result (name/status/duration/error)
+│   ├── TestOutcomeAttribute.cs    # assembly-level ITestAction → test-results-*.log
+│   ├── TestOutcomeReader.cs       # reads test-results-*.log of the current run
+│   ├── TestOutcomeWriter.cs       # appends one JSON line per finished test
+│   ├── TestRunWorkspace.cs        # temp workspace %TEMP%\GredjaTestRun (raw logs)
+│   ├── TestRunReportGenerator.cs  # writes TestResults/TestRunReport-*.md (teardown)
+│   ├── TestRunRow.cs
+│   └── TestSourceCategoryReader.cs # fixture/category from test sources
 ├── Models/
 │   ├── Generic/
 │   │   ├── IdModel.cs
@@ -190,31 +206,32 @@ Api/
 │           ├── GetUserPostsTests.cs
 │           ├── GetUserTodosTests.cs
 │           └── GetUserAlbumsTests.cs
-└── GitHub/
-    └── Tests/
-        ├── Auth/
-        │   └── AuthNegativeTests.cs
-        ├── AuthRepos/
-        │   └── GetAuthenticatedUserReposTests.cs
-        ├── Branches/
-        │   └── GetBranchesTests.cs
-        ├── IssueComments/
-        │   └── GetIssueCommentsTests.cs
-        ├── Issues/
-        │   ├── GetIssueByIdTests.cs
-        │   └── GetIssuesTests.cs
-        ├── PublicRepos/
-        │   └── GetPublicReposTests.cs
-        ├── PullRequests/
-        │   └── GetPullRequestsTests.cs
-        ├── RateLimit/
-        │   └── GetRateLimitTests.cs
-        ├── Repos/
-        │   └── GetRepositoryTests.cs
-        ├── UserRepos/
-        │   └── GetUserReposTests.cs
-        └── Users/
-            └── GetUserTests.cs
+├── GitHub/
+│   └── Tests/
+│       ├── Auth/
+│       │   └── AuthNegativeTests.cs
+│       ├── AuthRepos/
+│       │   └── GetAuthenticatedUserReposTests.cs
+│       ├── Branches/
+│       │   └── GetBranchesTests.cs
+│       ├── IssueComments/
+│       │   └── GetIssueCommentsTests.cs
+│       ├── Issues/
+│       │   ├── GetIssueByIdTests.cs
+│       │   └── GetIssuesTests.cs
+│       ├── PublicRepos/
+│       │   └── GetPublicReposTests.cs
+│       ├── PullRequests/
+│       │   └── GetPullRequestsTests.cs
+│       ├── RateLimit/
+│       │   └── GetRateLimitTests.cs
+│       ├── Repos/
+│       │   └── GetRepositoryTests.cs
+│       ├── UserRepos/
+│       │   └── GetUserReposTests.cs
+│       └── Users/
+│           └── GetUserTests.cs
+└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```
 
 ## TestAdapter/
@@ -238,10 +255,11 @@ TestAdapter/
 E2E/
 ├── E2E.csproj
 ├── AllureGlobalSetup.cs
-└── GitHub/
-    ├── GitHubE2ETestBase.cs
-    └── Tests/
-        └── SampleTests.cs
+├── GitHub/
+│   ├── GitHubE2ETestBase.cs
+│   └── Tests/
+│       └── SampleTests.cs
+└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```
 
 ## Rules/
@@ -288,6 +306,7 @@ documentation/
 ├── FILE_STRUCTURE.md
 ├── FakeStoreObservableBehaviour.md
 ├── FakeStoreTestPlan.md
+├── GeneralPlan.md                # Permanent user backlog (never deleted)
 ├── GitHubObservableBehaviour.md
 ├── GitHubTestPlan.md
 ├── GitHubTestingStructure.md

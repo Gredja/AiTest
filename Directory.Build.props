@@ -1,5 +1,9 @@
-﻿<Project>
+<Project>
   <PropertyGroup>
     <NoWarn>$(NoWarn);CS8618</NoWarn>
+    <!-- %3B = escaped ';'. Per-project log name prevents Api/E2E filename collision.
+         Raw run artifacts live in the temp workspace so TestResults/ holds only reports. -->
+    <VSTestLogger>File%3BLogFileName=$(MSBuildProjectName).log</VSTestLogger>
+    <VSTestResultsDirectory>$([System.IO.Path]::GetTempPath())GredjaTestRun</VSTestResultsDirectory>
   </PropertyGroup>
 </Project>
