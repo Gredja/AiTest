@@ -89,7 +89,7 @@ public class GetAllUsersTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
 
-        var ids = response.Data!.Select(user => user.Id).ToList();
+        var ids = response.Data!.Select(user => user.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 

@@ -150,7 +150,7 @@ public class GetAllProductsTests : FakeStoreRequestHelper
     {
         var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
-        var ids = response.Data!.Select(product => product.Id).ToList();
+        var ids = response.Data!.Select(product => product.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 
@@ -161,7 +161,7 @@ public class GetAllProductsTests : FakeStoreRequestHelper
     {
         var response = await Get<List<ProductModelResponse>>(FakeStoreEndpoints.Products);
 
-        var categories = response.Data!.Select(product => product.Category).Distinct().ToList();
+        var categories = response.Data!.Select(product => product.Category).Distinct();
         categories.Should().HaveCount(TestConfig.ExpectedCategoryCount);
     }
 

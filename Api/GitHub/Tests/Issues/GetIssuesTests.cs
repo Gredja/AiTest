@@ -105,7 +105,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             TestRepoParam());
 
-        var ids = response.Data!.Select(issue => issue.Id).ToList();
+        var ids = response.Data!.Select(issue => issue.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 

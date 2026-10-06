@@ -89,7 +89,7 @@ public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
 
-        var ids = response.Data!.Select(album => album.Id).ToList();
+        var ids = response.Data!.Select(album => album.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 

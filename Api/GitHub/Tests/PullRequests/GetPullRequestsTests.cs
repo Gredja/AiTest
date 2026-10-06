@@ -62,7 +62,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             TestRepoParam());
 
-        var ids = response.Data!.Select(pullRequest => pullRequest.Id).ToList();
+        var ids = response.Data!.Select(pullRequest => pullRequest.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 

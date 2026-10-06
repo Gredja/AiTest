@@ -138,7 +138,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
-        var ids = response.Data!.Select(post => post.Id).ToList();
+        var ids = response.Data!.Select(post => post.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 

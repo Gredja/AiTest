@@ -89,7 +89,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
-        var ids = response.Data!.Select(comment => comment.Id).ToList();
+        var ids = response.Data!.Select(comment => comment.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 

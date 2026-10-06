@@ -132,7 +132,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
-        var ids = response.Data!.Select(comment => comment.Id).ToList();
+        var ids = response.Data!.Select(comment => comment.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 

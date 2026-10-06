@@ -269,8 +269,11 @@ public static class TestRunReportGenerator
                 File.WriteAllLines(reportFile, lines, _reportEncoding);
                 return;
             }
-            catch (Exception exception) when (
-                exception is IOException or UnauthorizedAccessException && attempt < MaxWriteAttempts)
+            catch (IOException) when (attempt < MaxWriteAttempts)
+            {
+                Thread.Sleep(RetryDelayMilliseconds);
+            }
+            catch (UnauthorizedAccessException) when (attempt < MaxWriteAttempts)
             {
                 Thread.Sleep(RetryDelayMilliseconds);
             }

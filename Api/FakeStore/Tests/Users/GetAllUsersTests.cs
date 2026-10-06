@@ -139,7 +139,7 @@ public class GetAllUsersTests : FakeStoreRequestHelper
     {
         var response = await Get<List<UserModelResponse>>(FakeStoreEndpoints.Users);
 
-        var ids = response.Data!.Select(user => user.Id).ToList();
+        var ids = response.Data!.Select(user => user.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
 

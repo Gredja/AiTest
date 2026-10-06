@@ -112,7 +112,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
             TestRepoParam());
 
-        var names = response.Data!.Select(branch => branch.Name).ToList();
+        var names = response.Data!.Select(branch => branch.Name);
         names.Should().OnlyHaveUniqueItems();
     }
 

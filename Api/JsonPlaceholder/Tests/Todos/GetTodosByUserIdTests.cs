@@ -139,8 +139,8 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response5 = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(5));
 
-        var ids1 = response1.Data!.Select(todo => todo.Id).ToList();
-        var ids5 = response5.Data!.Select(todo => todo.Id).ToList();
+        var ids1 = response1.Data!.Select(todo => todo.Id);
+        var ids5 = response5.Data!.Select(todo => todo.Id);
         ids1.Should().NotBeEquivalentTo(ids5);
     }
 
