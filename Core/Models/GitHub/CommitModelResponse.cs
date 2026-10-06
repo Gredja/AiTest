@@ -1,10 +1,9 @@
-using Core.Models.Generic;
 using System.Text.Json.Serialization;
 using Core.Attributes;
 
 namespace Core.Models.GitHub;
 
-public class CommitModelResponse : IdModel<long>
+public class CommitModelResponse
 {
     [RequiredField]
     public string Sha { get; set; }

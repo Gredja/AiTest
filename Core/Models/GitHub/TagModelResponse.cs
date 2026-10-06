@@ -1,9 +1,8 @@
-using Core.Models.Generic;
 using Core.Attributes;
 
 namespace Core.Models.GitHub;
 
-public class TagModelResponse : IdModel<long>
+public class TagModelResponse
 {
     [RequiredField]
     public string Name { get; set; }
