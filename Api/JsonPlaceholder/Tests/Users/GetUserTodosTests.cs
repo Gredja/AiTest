@@ -65,7 +65,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Smoke")]
     [Description("4.5 All todos belong to same user")]
     public async Task GetUserTodos_AllBelongToSameUser()
     {

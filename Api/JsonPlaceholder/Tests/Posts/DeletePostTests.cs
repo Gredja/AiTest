@@ -117,7 +117,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
 
         var response = await Client.ExecuteAsync(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
     }
 
     [Test]

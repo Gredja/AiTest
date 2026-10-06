@@ -65,7 +65,7 @@ public class GetUserPostsTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Smoke")]
     [Description("3.5 All posts belong to same user")]
     public async Task GetUserPosts_AllBelongToSameUser()
     {

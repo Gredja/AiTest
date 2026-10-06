@@ -100,6 +100,6 @@ public class GetRateLimitTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.RateLimit, $"Bearer {InvalidToken}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 }

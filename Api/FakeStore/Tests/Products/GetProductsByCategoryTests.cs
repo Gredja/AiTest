@@ -88,7 +88,7 @@ public class GetProductsByCategoryTests : FakeStoreRequestHelper
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Smoke")]
     [Description("10.7 Returns expected count for electronics")]
     public async Task GetProductsByCategory_Electronics_ReturnsExpectedCount()
     {

@@ -163,7 +163,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
 
         var response = await Client.ExecuteAsync(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
     }
 
     [Test]
@@ -216,7 +216,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
 
         var response = await Client.ExecuteAsync(request);
 
-        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
     }
 
     [Test]

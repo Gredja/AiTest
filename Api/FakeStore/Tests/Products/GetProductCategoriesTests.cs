@@ -56,7 +56,7 @@ public class GetProductCategoriesTests : FakeStoreRequestHelper
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Smoke")]
     [Description("9.5 Returns exactly 4 categories")]
     public async Task GetProductCategories_ReturnsExpectedCount()
     {

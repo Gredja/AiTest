@@ -65,7 +65,7 @@ public class GetAlbumsByUserTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Category("Regression")]
+    [Category("Smoke")]
     [Description("3.5 All albums belong to same user")]
     public async Task GetAlbumsByUser_AllBelongToSameUser()
     {

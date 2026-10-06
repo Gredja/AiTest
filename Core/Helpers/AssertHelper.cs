@@ -10,7 +10,7 @@ public static class AssertHelper
 {
     public const string JsonContentType = "application/json";
 
-    public static void ShouldHaveStatusCode<T>(this RestResponse<T> response, HttpStatusCode expected) =>
+    public static void ShouldHaveStatusCode(this RestResponse response, HttpStatusCode expected) =>
         response.StatusCode.Should().Be(expected);
 
     public static void ShouldHaveValidContract<T>(this T entity) where T : class

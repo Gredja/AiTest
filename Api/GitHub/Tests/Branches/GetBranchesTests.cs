@@ -161,6 +161,6 @@ public class GetBranchesTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.RepoBranches, $"Bearer {InvalidToken}", TestRepoParam());
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 }

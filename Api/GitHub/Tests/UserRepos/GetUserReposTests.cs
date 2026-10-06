@@ -85,6 +85,6 @@ public class GetUserReposTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.UsersRepos, $"Bearer {InvalidToken}", UsernameParam(_testUsername));
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 }

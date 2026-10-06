@@ -84,6 +84,6 @@ public class GetPublicReposTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.Repositories, $"Bearer {InvalidToken}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 }

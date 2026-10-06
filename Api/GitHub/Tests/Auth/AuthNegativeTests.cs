@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
@@ -21,7 +22,7 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.AuthenticatedUserRepos, $"Bearer {InvalidToken}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 
     [Test]
@@ -32,7 +33,7 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.AuthenticatedUserRepos, authorization: null);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 
     [Test]
@@ -43,7 +44,7 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.AuthenticatedUserRepos, MalformedAuthorization);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 
     [Test]
@@ -54,7 +55,7 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.ReposById, $"Bearer {InvalidToken}", TestRepoParam());
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 
     [Test]
@@ -65,6 +66,6 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.RateLimit, $"Bearer {InvalidToken}");
 
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
 }
