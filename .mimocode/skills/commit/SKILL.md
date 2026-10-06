@@ -62,14 +62,14 @@ If ANY tests fail: report the failures and STOP. Do not commit.
 
 Check if any of the following were changed in this commit:
 - `.mimocode/mimocode.jsonc` → update `backups/mimocode-project.jsonc`
-- `Rules/*.md` or `Prompts/templates/*` affecting test generation → update `backups/Prompts-templates/`
+- `Rules/*.md` affecting test generation → update `backups/SETUP.md` (guidance sections)
 - **ALWAYS check `backups/SETUP.md`** — update if any of these changed:
   - Skills (`*.mimocode/skills/`)
   - Rules (`Rules/*.md`)
   - Project structure (new directories, moved files)
   - Observable Behaviour documents
   - Config files (endpoints, env vars)
-  - AGENTS.md or documentation/README.md
+  - AGENTS.md or README.md
 - Structural changes (new files, moved files, deleted files) → update `documentation/FILE_STRUCTURE.md`
 - **Fact verification for `backups/SETUP.md`**: when you edit (or add) a SETUP section, verify every factual claim in THAT section against the code — env var names (read `TestConfig.cs`, don't guess: `GITHUB_PAT`, not `GITHUB_TOKEN`), commands, file paths, URLs, tool flags. Syncing a line without checking what it asserts is not a sync — a wrong claim that "went through the sync" is worse than a stale one.
 

@@ -12,7 +12,6 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
 - `Core/Logging/` — логирование действий (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) и сырые результаты тестов (`test-results-*.log`). `TestResults/` содержит **только отчёты**, сырые артефакты прогона — во временной папке
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (вызывается из NUnit-teardown `TestReportSetup`), age-based очистка артефактов старше 7 дней
-- `Prompts/` — шаблоны промптов
 - `Rules/` — полные правила (здесь — краткая сводка)
 - `documentation/` — документация проекта
 - `documentation/*ObservableBehaviour.md` — наблюдаемое поведение API (актуальные состояния, типы полей, негативные кейсы). **Читать при генерации и review тестов.**

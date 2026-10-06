@@ -208,6 +208,7 @@ mimo
 
 ```
 Gredja/
+├── README.md                     # Обзор проекта (GitHub рендерит как главную страницу)
 ├── AGENTS.md                     # Описание проекта для ИИ-агента
 ├── Core/
 │   ├── Config/                   # URL и пути к API endpoint'ам
@@ -257,8 +258,7 @@ Gredja/
 │   ├── JsonPlaceholderObservableBehaviour.md # Наблюдаемое поведение JP API
 │   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
-│   └── README.md                 # Обзор проекта
-├── Prompts/                      # Шаблоны промптов
+│   └── README.md                 # Заглушка → ссылка на корневой README.md
 └── .mimocode/skills/             # Скиллы для MiMoCode
 ```
 

@@ -37,7 +37,7 @@ Checklist:
 
 ## Step 3: Update README.md
 
-Read `documentation/README.md` and verify:
+Read `README.md` (repository root) and verify:
 
 1. **Technologies** — new packages added? Version bumps?
 2. **APIs Under Test** — new endpoints/services?

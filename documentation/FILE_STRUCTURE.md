@@ -6,6 +6,7 @@
 
 ```
 Gredja/
+├── README.md                     # project overview (rendered by GitHub as the homepage)
 ├── AGENTS.md
 ├── metrics.md                      # AI usage tracking (Gap 1)
 ├── Gredja.slnx
@@ -19,7 +20,6 @@ Gredja/
 ├── .graphifyignore
 ├── allure-results/              # not tracked
 ├── TestResults/                 # not tracked — ONLY TestRunReport-*.md (raw logs in %TEMP%\GredjaTestRun)
-├── .playwright-cli/             # not tracked
 ├── .mimocode/
 │   ├── .gitignore
 │   ├── mimocode.jsonc
@@ -48,12 +48,9 @@ Gredja/
 ├── Scripts/
 │   ├── allure-report.ps1
 │   └── test-coverage.ps1
-├── black-white-cat/
 └── backups/
     ├── SETUP.md
-    ├── mimocode-project.jsonc
-    └── Prompts-templates/
-        └── api-test-generation.md
+    └── mimocode-project.jsonc
 ```
 
 ## Core/
@@ -330,18 +327,4 @@ documentation/
 │   └── maturity-gap-analysis.md
 ├── README.md
 └── token-budget.md
-```
-
-## Other
-
-```
-Prompts/
-├── prompts.md
-└── templates/
-    └── api-test-generation.md
-
-graphify-out/
-├── graph.json
-├── model-dependencies.html
-└── manifest.json
 ```
