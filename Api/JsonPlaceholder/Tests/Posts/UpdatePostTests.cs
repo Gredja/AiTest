@@ -6,6 +6,7 @@ using FluentAssertions;
 using RestSharp;
 using TestAdapter;
 using static Core.Helpers.ParamHelper;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -18,6 +19,8 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     private const int TestUserId = 1;
     private const int TitleRandomLength = 8;
     private const int BodyRandomLength = 16;
+    private const string IgnorePutNoValidationBug = "JsonPlaceholder mock: PUT accepts body missing required fields — no validation — Bug: documentation/Bugs/JsonPlaceholder/JP-005-put-post-accepts-missing-required-fields.md";
+    private const string IgnorePatchAnyIdBug = "JsonPlaceholder mock: PATCH returns 200 for any ID, including invalid and non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-006-patch-post-returns-200-for-any-id.md";
     private const string MalformedJson = "{\"title\":";
     private const string NonNumericId = "abc";
     private static readonly PostModelRequest _putBody = new()
@@ -149,7 +152,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Put_InvalidSegment_ReturnsInternalServerError()
     {
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _putBody,
-            [UrlSegment("id", NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
     }
@@ -160,7 +163,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Put_MalformedJson_ReturnsInternalServerError()
     {
         var request = new RestRequest(JsonPlaceholderEndpoints.PostsById, Method.Put);
-        request.AddUrlSegment("id", TestPostId);
+        request.AddUrlSegment(IdKey, TestPostId);
         request.AddStringBody(MalformedJson, ContentType.Json);
 
         var response = await Client.ExecuteAsync(request);
@@ -169,12 +172,12 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: PUT accepts body missing required fields — no validation — Bug: documentation/Bugs/JsonPlaceholder/JP-005-put-post-accepts-missing-required-fields.md")]
+    [Ignore(IgnorePutNoValidationBug)]
     [Category("Negative")]
     [Description("5.13 PUT without title returns 400")]
     public async Task UpdatePost_Put_MissingTitle_ReturnsBadRequest()
     {
-        var body = new Dictionary<string, object> { ["body"] = "Body", ["userId"] = TestUserId };
+        var body = new Dictionary<string, object> { ["body"] = "Body", [UserIdKey] = TestUserId };
         var response = await Put<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, body,
             IdParam(TestPostId));
 
@@ -182,12 +185,12 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: PUT accepts body missing required fields — no validation — Bug: documentation/Bugs/JsonPlaceholder/JP-005-put-post-accepts-missing-required-fields.md")]
+    [Ignore(IgnorePutNoValidationBug)]
     [Category("Negative")]
     [Description("5.14 PUT without body returns 400")]
     public async Task UpdatePost_Put_MissingBody_ReturnsBadRequest()
     {
-        var body = new Dictionary<string, object> { ["title"] = "Title", ["userId"] = TestUserId };
+        var body = new Dictionary<string, object> { ["title"] = "Title", [UserIdKey] = TestUserId };
         var response = await Put<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, body,
             IdParam(TestPostId));
 
@@ -195,7 +198,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: PUT accepts body missing required fields — no validation — Bug: documentation/Bugs/JsonPlaceholder/JP-005-put-post-accepts-missing-required-fields.md")]
+    [Ignore(IgnorePutNoValidationBug)]
     [Category("Negative")]
     [Description("5.15 PUT without userId returns 400")]
     public async Task UpdatePost_Put_MissingUserId_ReturnsBadRequest()
@@ -213,7 +216,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Patch_MalformedJson_ReturnsInternalServerError()
     {
         var request = new RestRequest(JsonPlaceholderEndpoints.PostsById, Method.Patch);
-        request.AddUrlSegment("id", TestPostId);
+        request.AddUrlSegment(IdKey, TestPostId);
         request.AddStringBody(MalformedJson, ContentType.Json);
 
         var response = await Client.ExecuteAsync(request);
@@ -222,7 +225,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: PATCH returns 200 for any ID, including invalid and non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-006-patch-post-returns-200-for-any-id.md")]
+    [Ignore(IgnorePatchAnyIdBug)]
     [Category("Negative")]
     [Description("5.17 PATCH with ID 0 returns 404")]
     public async Task UpdatePost_Patch_ZeroId_ReturnsNotFound()
@@ -234,7 +237,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: PATCH returns 200 for any ID, including invalid and non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-006-patch-post-returns-200-for-any-id.md")]
+    [Ignore(IgnorePatchAnyIdBug)]
     [Category("Negative")]
     [Description("5.18 PATCH with non-existent ID returns 404")]
     public async Task UpdatePost_Patch_NonExistentId_ReturnsNotFound()
@@ -249,13 +252,13 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: PATCH returns 200 for any ID, including invalid and non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-006-patch-post-returns-200-for-any-id.md")]
+    [Ignore(IgnorePatchAnyIdBug)]
     [Category("Negative")]
     [Description("5.19 PATCH with non-numeric ID returns 404")]
     public async Task UpdatePost_Patch_InvalidSegment_ReturnsNotFound()
     {
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _patchBody,
-            [UrlSegment("id", NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

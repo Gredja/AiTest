@@ -7,6 +7,8 @@ namespace Core.Helpers;
 
 public class RequestHelper
 {
+    protected const string AuthorizationHeader = "Authorization";
+
     private static readonly RestClient _fakeStoreClient = CreateClient(FakeStoreEndpoints.BaseUrl);
     private static readonly RestClient _jsonPlaceholderClient = CreateClient(JsonPlaceholderEndpoints.BaseUrl);
     private static readonly RestClient _gitHubClient = CreateClient(GitHubEndpoints.BaseUrl);
@@ -118,7 +120,7 @@ public class RequestHelper
             return;
         }
 
-        request.AddHeader("Authorization", $"Bearer {_githubToken.Value}");
+        request.AddHeader(AuthorizationHeader, $"Bearer {_githubToken.Value}");
     }
 
     protected static void AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)

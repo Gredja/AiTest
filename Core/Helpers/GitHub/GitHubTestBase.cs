@@ -10,6 +10,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected const int DefaultPageSize = 5;
     protected const int SmallPageSize = 2;
     protected const string InvalidToken = "ghp_invalidtoken123";
+    protected const string InvalidAuthorization = $"Bearer {InvalidToken}";
+    protected const string SinceParamKey = "since";
 
     protected static List<RequestDictionaryModel> TestRepoParam()
     {
@@ -27,7 +29,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
 
         if (authorization is not null)
         {
-            request.AddHeader("Authorization", authorization);
+            request.AddHeader(AuthorizationHeader, authorization);
         }
 
         if (additionalParams is not null)

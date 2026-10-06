@@ -5,13 +5,14 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Core.Helpers.ParamHelper;
+using static Api.FakeStore.Helpers.FakeStoreTestData;
 
 namespace Api.FakeStore.Carts;
 
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-[Ignore("FakeStoreAPI: service under investigation — outage HTTP 521 (fakestoreapi.com down), checked 2026-10-06; un-ignore all FakeStore tests after investigation")]
+[Ignore(OutageIgnoreReason)]
 public class GetCartByIdTests : FakeStoreRequestHelper
 {
     private const int TestCartId = 1;
@@ -174,7 +175,7 @@ public class GetCartByIdTests : FakeStoreRequestHelper
     [Description("12.14 Get cart by non-numeric ID (abc) — status code 400")]
     public async Task GetCartById_InvalidSegment_ReturnsBadRequest()
     {
-        var response = await Get<CartModelResponse>(FakeStoreEndpoints.CartsById, [UrlSegment("id", NonNumericId)]);
+        var response = await Get<CartModelResponse>(FakeStoreEndpoints.CartsById, [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }

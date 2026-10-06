@@ -5,8 +5,10 @@ namespace Api.JsonPlaceholder.Helpers;
 
 public static class JsonPlaceholderParamHelper
 {
+    public const string UserIdKey = "userId";
+
     public static List<RequestDictionaryModel> UserIdParam(int userId) =>
-        [ParamHelper.Query("userId", userId)];
+        [ParamHelper.Query(UserIdKey, userId)];
 
     public static List<RequestDictionaryModel> PostIdQueryParam(int postId) =>
         [ParamHelper.Query("postId", postId)];

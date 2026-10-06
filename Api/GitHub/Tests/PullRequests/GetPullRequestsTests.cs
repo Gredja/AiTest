@@ -154,7 +154,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.RepoPullRequests, $"Bearer {InvalidToken}", TestRepoParam());
+            GitHubEndpoints.RepoPullRequests, InvalidAuthorization, TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }

@@ -11,6 +11,6 @@ public class CommitModelResponse
     [RequiredField]
     public CommitInfo Commit { get; set; }
 
-    [JsonPropertyName("html_url")]
+    [JsonPropertyName(GitHubJsonFields.HtmlUrl)]
     public string HtmlUrl { get; set; }
 }

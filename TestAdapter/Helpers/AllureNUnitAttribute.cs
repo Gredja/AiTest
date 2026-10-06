@@ -116,13 +116,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         {
             return null;
         }
-        return AllureHelper.GetDescription(test.Method.MethodInfo);
-    }
 
-    private class ContainerInfo
-    {
-        public string Uuid { get; set; } = "";
-        public string Name { get; set; } = "";
-        public List<string> Children { get; set; } = [];
+        return AllureHelper.GetDescription(test.Method.MethodInfo);
     }
 }

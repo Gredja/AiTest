@@ -98,7 +98,7 @@ public class GetRateLimitTests : GitHubTestBase
     public async Task GetRateLimit_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.RateLimit, $"Bearer {InvalidToken}");
+            GitHubEndpoints.RateLimit, InvalidAuthorization);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }

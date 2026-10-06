@@ -12,7 +12,7 @@ namespace Api.FakeStore.Users;
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
-[Ignore("FakeStoreAPI: service under investigation — outage HTTP 521 (fakestoreapi.com down), checked 2026-10-06; un-ignore all FakeStore tests after investigation")]
+[Ignore(OutageIgnoreReason)]
 public class GetUserByIdTests : FakeStoreRequestHelper
 {
     private const int TestUserId = 1;
@@ -201,7 +201,7 @@ public class GetUserByIdTests : FakeStoreRequestHelper
     [Description("4.13 Get user by non-numeric ID (abc) — status code 400")]
     public async Task GetUserById_InvalidSegment_ReturnsBadRequest()
     {
-        var response = await Get<UserModelResponse>(FakeStoreEndpoints.UsersById, [UrlSegment("id", NonNumericId)]);
+        var response = await Get<UserModelResponse>(FakeStoreEndpoints.UsersById, [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }

@@ -174,7 +174,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            [UrlSegment("id", NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

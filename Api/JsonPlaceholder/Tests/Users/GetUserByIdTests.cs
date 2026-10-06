@@ -174,7 +174,7 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     public async Task GetUserById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
-            [UrlSegment("id", NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

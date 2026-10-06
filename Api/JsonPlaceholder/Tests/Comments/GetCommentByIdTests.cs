@@ -174,7 +174,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            [UrlSegment("id", NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

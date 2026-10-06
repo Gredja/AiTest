@@ -210,7 +210,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_InvalidSince_Returns422()
     {
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
-            [.. TestRepoParam(), Query("since", InvalidQueryValue)]);
+            [.. TestRepoParam(), Query(SinceParamKey, InvalidQueryValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

@@ -8,9 +8,12 @@ public static class TestRunReportGenerator
     private const int MaxWriteAttempts = 3;
     private const int RetryDelayMilliseconds = 200;
     private const int LogTimeSkewSeconds = 1;
+    private const int DurationDecimalPlaces = 3;
     private const string ReportPrefix = "TestRunReport-";
+    private const string CodeFence = "```";
     private const string ActionLogPrefix = "actions-";
     private const string TestResultLogPrefix = "test-results-";
+    private const string SolutionFileName = "Gredja.slnx";
 
     private static readonly Encoding _reportEncoding = new UTF8Encoding(false);
 
@@ -57,7 +60,7 @@ public static class TestRunReportGenerator
 
         var resultsDirectory = Path.Combine(root, "TestResults");
         Directory.CreateDirectory(resultsDirectory);
-        var reportFile = Path.Combine(resultsDirectory, ReportPrefix + runStart.ToString("yyyyMMdd-HHmmss") + ".md");
+        var reportFile = Path.Combine(resultsDirectory, $"{ReportPrefix}{runStart:yyyyMMdd-HHmmss}.md");
         WriteWithRetry(reportFile, lines);
     }
 
@@ -65,7 +68,7 @@ public static class TestRunReportGenerator
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, "Gredja.slnx")))
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, SolutionFileName)))
         {
             directory = directory.Parent;
         }
@@ -107,7 +110,8 @@ public static class TestRunReportGenerator
             (fixture, category) = queue.Dequeue();
         }
 
-        var duration = Math.Round(outcome.DurationMilliseconds / 1000.0, 3);
+        var duration = Math.Round(outcome.DurationMilliseconds / 1000.0, DurationDecimalPlaces);
+
         return new TestRunRow(outcome.Name, fixture, category, MapStatus(outcome.Status), duration);
     }
 
@@ -139,9 +143,9 @@ public static class TestRunReportGenerator
 
     private static IEnumerable<string> BuildHeader(DateTime runStart, string workspace, int actionLogCount)
     {
-        yield return "# Test Run Report - " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+        yield return $"# Test Run Report - {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}";
         yield return string.Empty;
-        yield return "- Run started: " + runStart.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+        yield return $"- Run started: {runStart.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}";
         yield return $"- Raw logs: {workspace}";
         yield return $"- Action logs: {actionLogCount}";
         yield return string.Empty;
@@ -214,7 +218,7 @@ public static class TestRunReportGenerator
     {
         yield return $"### {test}";
         yield return string.Empty;
-        yield return "```";
+        yield return CodeFence;
 
         if (string.IsNullOrWhiteSpace(failure.Message) && string.IsNullOrWhiteSpace(failure.Trace))
         {
@@ -233,11 +237,11 @@ public static class TestRunReportGenerator
             }
         }
 
-        yield return "```";
+        yield return CodeFence;
         yield return string.Empty;
         yield return "Actions:";
         yield return string.Empty;
-        yield return "```";
+        yield return CodeFence;
 
         if (actions.Count == 0)
         {
@@ -251,7 +255,7 @@ public static class TestRunReportGenerator
             }
         }
 
-        yield return "```";
+        yield return CodeFence;
         yield return string.Empty;
     }
 
@@ -268,6 +272,7 @@ public static class TestRunReportGenerator
             try
             {
                 File.WriteAllLines(reportFile, lines, _reportEncoding);
+
                 return;
             }
             catch (IOException) when (attempt < MaxWriteAttempts)

@@ -110,7 +110,7 @@ public class GetUserTests : GitHubTestBase
     public async Task GetUser_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.UsersById, $"Bearer {InvalidToken}", UsernameParam(_testUsername));
+            GitHubEndpoints.UsersById, InvalidAuthorization, UsernameParam(_testUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }

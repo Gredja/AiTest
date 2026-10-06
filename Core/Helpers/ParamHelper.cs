@@ -4,8 +4,10 @@ namespace Core.Helpers;
 
 public static class ParamHelper
 {
+    public const string IdKey = "id";
+
     public static List<RequestDictionaryModel> IdParam(int id) =>
-        [UrlSegment("id", id)];
+        [UrlSegment(IdKey, id)];
 
     public static RequestDictionaryModel UrlSegment(string key, object value) =>
         new() { Type = ParamType.UrlSegment, Key = key, Value = value };

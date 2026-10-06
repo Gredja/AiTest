@@ -4,6 +4,8 @@ namespace Core.Config;
 
 public static class TestConfig
 {
+    private const string BaseUrlKey = "BaseUrl";
+
     private static readonly JsonDocument _root = JsonDocument.Parse(
         File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "testsettings.json")));
 
@@ -14,7 +16,7 @@ public static class TestConfig
     public static int MaxResponseTimeMs => _root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
     public static bool IsSslValidationSkipped => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
 
-    public static string FakeStoreBaseUrl => FakeStore.GetProperty("BaseUrl").GetString()!;
+    public static string FakeStoreBaseUrl => FakeStore.GetProperty(BaseUrlKey).GetString()!;
     public static int ExpectedProductCount => FakeStore.GetProperty("ExpectedProductCount").GetInt32();
     public static int ExpectedCartCount => FakeStore.GetProperty("ExpectedCartCount").GetInt32();
     public static int ExpectedCategoryCount => FakeStore.GetProperty("ExpectedCategoryCount").GetInt32();
@@ -23,9 +25,9 @@ public static class TestConfig
     public static string LoginUsername => FakeStore.GetProperty("Login").GetProperty("Username").GetString()!;
     public static string LoginPassword => FakeStore.GetProperty("Login").GetProperty("Password").GetString()!;
 
-    public static string JsonPlaceholderBaseUrl => JsonPlaceholder.GetProperty("BaseUrl").GetString()!;
+    public static string JsonPlaceholderBaseUrl => JsonPlaceholder.GetProperty(BaseUrlKey).GetString()!;
 
-    public static string GitHubBaseUrl => GitHub.GetProperty("BaseUrl").GetString()!;
+    public static string GitHubBaseUrl => GitHub.GetProperty(BaseUrlKey).GetString()!;
     public static string GitHubToken
     {
         get
@@ -35,6 +37,7 @@ public static class TestConfig
             {
                 return token;
             }
+
             return ReadTokenFromEnvFile();
         }
     }

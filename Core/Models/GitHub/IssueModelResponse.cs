@@ -24,9 +24,9 @@ public class IssueModelResponse : IdModel<long>
 
     public UserModelResponse Assignee { get; set; }
 
-    [JsonPropertyName("created_at")]
+    [JsonPropertyName(GitHubJsonFields.CreatedAt)]
     public DateTime CreatedAt { get; set; }
 
-    [JsonPropertyName("updated_at")]
+    [JsonPropertyName(GitHubJsonFields.UpdatedAt)]
     public DateTime UpdatedAt { get; set; }
 }

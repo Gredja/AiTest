@@ -19,6 +19,6 @@ internal static class TestOutcomeWriter
             trace = outcome.Trace
         });
 
-        File.AppendAllText(_logPath.Value, line + Environment.NewLine);
+        File.AppendAllText(_logPath.Value, $"{line}{Environment.NewLine}");
     }
 }

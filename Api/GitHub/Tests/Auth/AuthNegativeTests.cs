@@ -20,7 +20,7 @@ public class AuthNegativeTests : GitHubTestBase
     public async Task GetUserRepos_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.AuthenticatedUserRepos, $"Bearer {InvalidToken}");
+            GitHubEndpoints.AuthenticatedUserRepos, InvalidAuthorization);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
@@ -53,7 +53,7 @@ public class AuthNegativeTests : GitHubTestBase
     public async Task GetRepository_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.ReposById, $"Bearer {InvalidToken}", TestRepoParam());
+            GitHubEndpoints.ReposById, InvalidAuthorization, TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
@@ -64,7 +64,7 @@ public class AuthNegativeTests : GitHubTestBase
     public async Task GetRateLimit_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.RateLimit, $"Bearer {InvalidToken}");
+            GitHubEndpoints.RateLimit, InvalidAuthorization);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }

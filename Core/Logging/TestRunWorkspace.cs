@@ -15,6 +15,7 @@ internal static class TestRunWorkspace
     {
         var workspace = Path.Combine(Path.GetTempPath(), "GredjaTestRun");
         Directory.CreateDirectory(workspace);
+
         return workspace;
     }
 
@@ -42,6 +43,7 @@ internal static class TestRunWorkspace
         {
             _runLock = new FileStream(marker, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
             File.SetLastWriteTime(marker, DateTime.Now);
+
             return true;
         }
         catch (IOException)

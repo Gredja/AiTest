@@ -1,6 +1,6 @@
 namespace TestAdapter.Helpers;
 
-public record TestResultParams(
+internal record TestResultParams(
     string Uuid,
     string FullName,
     string Name,

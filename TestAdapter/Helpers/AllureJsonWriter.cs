@@ -2,7 +2,7 @@ using System.Text.Json;
 
 namespace TestAdapter.Helpers;
 
-public static class AllureJsonWriter
+internal static class AllureJsonWriter
 {
     private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = false };
 

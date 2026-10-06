@@ -4,7 +4,7 @@ namespace Core.Models.JsonPlaceholder;
 
 public class TodoModelRequest
 {
-    [JsonPropertyName("completed")]
+    [JsonPropertyName(JsonPlaceholderJsonFields.Completed)]
     public bool IsCompleted { get; set; }
 
     public string Title { get; set; }

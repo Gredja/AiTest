@@ -17,6 +17,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     private const int TestPostId = 1;
     private const string MalformedJson = "{\"title\":";
     private const string NonNumericId = "abc";
+    private const string IgnoreDeleteNonExistentBug = "JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-003-delete-post-returns-200-for-non-existent-id.md";
 
     [Test]
     [Category("HealthCheck")]
@@ -56,7 +57,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-003-delete-post-returns-200-for-non-existent-id.md")]
+    [Ignore(IgnoreDeleteNonExistentBug)]
     [Category("Negative")]
     [Description("6.4 DELETE with ID 0 returns error")]
     public async Task DeletePost_ZeroId_ReturnsError()
@@ -68,7 +69,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-003-delete-post-returns-200-for-non-existent-id.md")]
+    [Ignore(IgnoreDeleteNonExistentBug)]
     [Category("Negative")]
     [Description("6.5 DELETE with non-existent ID returns 404")]
     public async Task DeletePost_NonExistentId_ReturnsNotFound()
@@ -83,7 +84,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-003-delete-post-returns-200-for-non-existent-id.md")]
+    [Ignore(IgnoreDeleteNonExistentBug)]
     [Category("Negative")]
     [Description("6.6 DELETE with negative ID returns 404")]
     public async Task DeletePost_NegativeId_ReturnsNotFound()
@@ -95,13 +96,13 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     }
 
     [Test]
-    [Ignore("JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-003-delete-post-returns-200-for-non-existent-id.md")]
+    [Ignore(IgnoreDeleteNonExistentBug)]
     [Category("Negative")]
     [Description("6.7 DELETE with non-numeric ID returns 404")]
     public async Task DeletePost_InvalidSegment_ReturnsNotFound()
     {
         var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            [UrlSegment("id", NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -112,7 +113,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     public async Task DeletePost_MalformedJson_ReturnsInternalServerError()
     {
         var request = new RestRequest(JsonPlaceholderEndpoints.PostsById, Method.Delete);
-        request.AddUrlSegment("id", TestPostId);
+        request.AddUrlSegment(IdKey, TestPostId);
         request.AddStringBody(MalformedJson, ContentType.Json);
 
         var response = await Client.ExecuteAsync(request);

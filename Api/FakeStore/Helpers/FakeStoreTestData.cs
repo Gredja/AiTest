@@ -4,6 +4,8 @@ namespace Api.FakeStore.Helpers;
 
 public static class FakeStoreTestData
 {
+    public const string OutageIgnoreReason = "FakeStoreAPI: service under investigation — outage HTTP 521 (fakestoreapi.com down), checked 2026-10-06; un-ignore all FakeStore tests after investigation";
+
     public static readonly ProductModelRequest TestProduct = new()
     {
         Title = "Test Product for contract",

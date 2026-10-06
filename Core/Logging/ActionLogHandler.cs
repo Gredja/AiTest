@@ -37,6 +37,7 @@ internal sealed class ActionLogHandler : DelegatingHandler
 
         var buffered = await BufferAsync(request.Content, cancellationToken);
         request.Content = buffered;
+
         return await buffered.ReadAsStringAsync(cancellationToken);
     }
 
@@ -49,6 +50,7 @@ internal sealed class ActionLogHandler : DelegatingHandler
 
         var buffered = await BufferAsync(response.Content, cancellationToken);
         response.Content = buffered;
+
         return await buffered.ReadAsStringAsync(cancellationToken);
     }
 

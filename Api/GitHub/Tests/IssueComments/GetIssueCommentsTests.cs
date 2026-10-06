@@ -172,7 +172,7 @@ public class GetIssueCommentsTests : GitHubTestBase
     public async Task GetIssueComments_InvalidSince_Returns422()
     {
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber), Query("since", InvalidQueryValue)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber), Query(SinceParamKey, InvalidQueryValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

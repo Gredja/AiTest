@@ -173,7 +173,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            [UrlSegment("id", NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

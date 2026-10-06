@@ -196,7 +196,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            [UrlSegment("id", NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

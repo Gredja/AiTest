@@ -23,7 +23,8 @@
 
 ## Magic strings
 
-- Extract a string to a `const` if it appears **3+ times** in the codebase
+- Extract a string to a `const` if it appears **2+ times** in the codebase
+  - Occurrences must carry the **same meaning**: coincidentally identical texts (e.g. `Description` strings reused across services, the same path in different services' endpoint configs) do not count
 - Group related constants in a dedicated static class (e.g. `AllureConstants`)
 - Single-use domain constants go in the class that uses them
 - Fallback/default values (`"Tests"`, `"Unknown"`) stay inline — they are self-explanatory

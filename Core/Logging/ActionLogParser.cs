@@ -36,8 +36,8 @@ internal static class ActionLogParser
     {
         foreach (var (test, fixture) in fixtureByTest)
         {
-            var isTestAction = loggedTestName.EndsWith("." + test, StringComparison.Ordinal);
-            var isFixtureAction = fixture != "-" && loggedTestName.EndsWith("." + fixture, StringComparison.Ordinal);
+            var isTestAction = loggedTestName.EndsWith($".{test}", StringComparison.Ordinal);
+            var isFixtureAction = fixture != "-" && loggedTestName.EndsWith($".{fixture}", StringComparison.Ordinal);
 
             if (isTestAction || isFixtureAction)
             {

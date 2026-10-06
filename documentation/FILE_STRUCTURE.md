@@ -120,6 +120,7 @@ Core/
 │   │   ├── CommentModelResponse.cs
 │   │   ├── Company.cs
 │   │   ├── Geo.cs
+│   │   ├── JsonPlaceholderJsonFields.cs
 │   │   ├── PhotoModelResponse.cs
 │   │   ├── PostModelRequest.cs
 │   │   ├── PostModelResponse.cs
@@ -136,6 +137,7 @@ Core/
 │   │   ├── ContributorModelResponse.cs
 │   │   ├── CreateCommentModelRequest.cs
 │   │   ├── CreateIssueModelRequest.cs
+│   │   ├── GitHubJsonFields.cs
 │   │   ├── IssueModelResponse.cs
 │   │   ├── Label.cs
 │   │   ├── PullRequestBranch.cs
@@ -245,6 +247,7 @@ TestAdapter/
     ├── AllureNUnitAttribute.cs
     ├── AllureSkippedTestWriter.cs
     ├── AllureTestResultBuilder.cs
+    ├── ContainerInfo.cs
     └── TestResultParams.cs
 ```
 

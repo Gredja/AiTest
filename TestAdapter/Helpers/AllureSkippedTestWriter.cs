@@ -54,6 +54,6 @@ public static class AllureSkippedTestWriter
     private static Type[] GetTypesSafely(Assembly assembly)
     {
         try { return assembly.GetTypes(); }
-        catch (ReflectionTypeLoadException ex) { return ex.Types.Where(type => type is not null).ToArray()!; }
+        catch (ReflectionTypeLoadException exception) { return exception.Types.Where(type => type is not null).ToArray()!; }
     }
 }
