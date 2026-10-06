@@ -27,3 +27,12 @@ PRs from `features/...` into `main` — only after review and approval.
 - Token stored in `.env` (not tracked by git)
 - Never commit `.env` or `.credentials`
 - Never put tokens in commit messages
+
+## Repository hygiene
+
+- The repo root holds ONLY project artifacts (configs, `AGENTS.md`, `README.md`, solution).
+  Tool outputs, caches, logs, and foreign projects MUST NOT live in the root.
+- Generated tool output goes to a gitignored folder or `%TEMP%` — never hand-placed in the tree.
+- When introducing a tool that writes files, add its ignore entries in the SAME commit.
+- After scripted/bulk edits run `git add -A` and verify ZERO line-ending warnings —
+  respect `.gitattributes` (.cs/.csproj → CRLF, .md → LF).

@@ -20,7 +20,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 ## Rules
 
 ### Workflow
-Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию. Выполненные планы (`.mimocode/plans/`) — удалять сразу после реализации.
+Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию (включая удаления gitignored-файлов — в том же ходу, даже без коммита). Выполненные планы (`.mimocode/plans/`) — удалять сразу после реализации.
 
 ### Code
 - Naming: PascalCase (classes, methods, properties, constants), camelCase (locals, params), `_camelCase` (private fields)
@@ -77,10 +77,10 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Rules/code-principles.md` — SOLID, general principles
 - `Rules/models.md` — model building rules (ModelResponse/ModelRequest, properties, naming)
 - `Rules/assertions.md` — FluentAssertions, key patterns, HTTP response assertions, request/response comparison
-- `Rules/test-practices.md` — test isolation, API patterns, non-existent IDs, E2E cleanup, artifact cleanup, seed methodology, document sync, read-after-write visibility
+- `Rules/test-practices.md` — test isolation, API patterns, non-existent IDs, E2E cleanup, artifact cleanup, seed methodology, document sync (incl. single-source guidance), read-after-write visibility
 - `Rules/comments.md` — when comments are needed in code
 - `Rules/config.md` — endpoints, configuration
-- `Rules/git.md` — remote, commits, secrets
+- `Rules/git.md` — remote, commits, secrets, repo hygiene
 - `Rules/workflow.md` — plan → approval → changes → report
 - `Rules/categories.md` — test categories
 

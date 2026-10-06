@@ -66,6 +66,9 @@ When adding or changing endpoints, keep these documents in sync:
 - `documentation/{Service}TestPlan.md` — coverage tracking (which endpoints have tests, status)
 - `Rules/*.md` — shared rules for all services (assertions, patterns, cleanup)
 - If Observable Behaviour changes → update Test Plan status; if Test Plan adds endpoints → update Observable Behaviour
+- **One canonical source per guidance topic**: test-generation instructions live ONLY in
+  `.mimocode/skills/*` — never create parallel prompt libraries (they silently drift;
+  `Prompts/` was deleted for this reason)
 - **Risk coverage** — every Top-3 risk from `{Service}TestPlan.md` / `{Service}TestingStructure.md` must map to ≥1 test case; an uncovered risk is a coverage gap (found this way: PSD2 SCA risk had no test case — see `documentation/Katas/01-test-cases.md`)
 
 ## Seed methodology for test generation

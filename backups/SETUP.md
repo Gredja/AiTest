@@ -392,6 +392,8 @@ git checkout -b features/add-user-tests
 - Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
 - Перед коммитом: `dotnet format` + `dotnet test` должны пройти
 - Коммиты только по запросу
+- Гигиена репо: корень — только файлы проекта; вывод инструментов → gitignored/%TEMP%; после массовых правок `git add -A` без EOL-warning (`.gitattributes`: .cs/.csproj → CRLF, .md → LF); структурные изменения включают удаления gitignored-файлов → `FILE_STRUCTURE.md`/`AGENTS.md` обновлять в том же ходу, даже без коммита
+- Генерация тестов — только через скиллы `.mimocode/skills/*`; параллельные библиотеки промптов запрещены (`Prompts/` удалён из-за дрейфа содержания)
 
 ---
 
