@@ -41,8 +41,8 @@ public class GetIssuesTests : GitHubTestBase
         {
             try
             {
-                var delete = await Delete<object>($"{GitHubEndpoints.RepoIssues}/{_createdIssueNumber}",
-                    TestRepoParam());
+                var delete = await Delete<object>(GitHubEndpoints.RepoIssueById,
+                    [.. TestRepoParam(), .. IssueNumberParam(_createdIssueNumber.Value)]);
 
                 if (!delete.IsSuccessful)
                 {

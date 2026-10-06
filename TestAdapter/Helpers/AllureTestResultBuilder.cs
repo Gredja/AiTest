@@ -24,9 +24,8 @@ public static class AllureTestResultBuilder
         return result;
     }
 
-    public static Dictionary<string, object> BuildContainer(string uuid, string name, List<string> children)
-    {
-        return new Dictionary<string, object>
+    public static Dictionary<string, object> BuildContainer(string uuid, string name, List<string> children) =>
+        new Dictionary<string, object>
         {
             ["uuid"] = uuid,
             ["id"] = name,
@@ -38,11 +37,9 @@ public static class AllureTestResultBuilder
                 new() { ["name"] = AllureConstants.LabelSuite, ["value"] = name }
             }
         };
-    }
 
-    private static Dictionary<string, object> CreateBaseResult(TestResultParams resultParams)
-    {
-        return new Dictionary<string, object>
+    private static Dictionary<string, object> CreateBaseResult(TestResultParams resultParams) =>
+        new Dictionary<string, object>
         {
             ["uuid"] = resultParams.Uuid,
             ["testCaseId"] = resultParams.FullName,
@@ -56,26 +53,21 @@ public static class AllureTestResultBuilder
             ["steps"] = new List<object>(),
             ["attachments"] = new List<object>()
         };
-    }
 
-    private static Dictionary<string, long> BuildTime(long startMilliseconds, long stopMilliseconds)
-    {
-        return new Dictionary<string, long>
+    private static Dictionary<string, long> BuildTime(long startMilliseconds, long stopMilliseconds) =>
+        new Dictionary<string, long>
         {
             ["start"] = startMilliseconds,
             ["stop"] = stopMilliseconds,
             ["duration"] = stopMilliseconds - startMilliseconds
         };
-    }
 
-    private static Dictionary<string, string> BuildStatusDetails(string message, string? trace)
-    {
-        return new Dictionary<string, string>
+    private static Dictionary<string, string> BuildStatusDetails(string message, string? trace) =>
+        new Dictionary<string, string>
         {
             ["message"] = message,
             ["trace"] = trace ?? ""
         };
-    }
 
     private static List<Dictionary<string, string>> BuildLabels(TestResultParams resultParams)
     {

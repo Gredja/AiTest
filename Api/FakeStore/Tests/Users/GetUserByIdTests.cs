@@ -41,7 +41,7 @@ public class GetUserByIdTests : FakeStoreRequestHelper
         {
             try
             {
-                var delete = await Delete<object>($"{FakeStoreEndpoints.Users}/{_createdUserId}");
+                var delete = await Delete<object>(FakeStoreEndpoints.UsersById, IdParam(_createdUserId.Value));
 
                 if (!delete.IsSuccessful)
                 {

@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -36,7 +37,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
         {
             try
             {
-                var delete = await Delete<object>($"{JsonPlaceholderEndpoints.Posts}/{_createdPostId}");
+                var delete = await Delete<object>(JsonPlaceholderEndpoints.PostsById, IdParam(_createdPostId.Value));
 
                 if (!delete.IsSuccessful)
                 {

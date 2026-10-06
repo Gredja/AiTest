@@ -1,6 +1,6 @@
 using Core.Config;
 using Core.Logging;
-using Core.Models;
+using Core.Models.Generic;
 using RestSharp;
 
 namespace Core.Helpers;

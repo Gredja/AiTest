@@ -25,13 +25,13 @@ public static class AssertHelper
 
         var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-        foreach (var prop in properties)
+        foreach (var property in properties)
         {
-            var value = prop.GetValue(entity);
+            var value = property.GetValue(entity);
 
-            foreach (var attr in prop.GetCustomAttributes())
+            foreach (var attribute in property.GetCustomAttributes())
             {
-                ValidateProperty(prop.Name, value, attr);
+                ValidateProperty(property.Name, value, attribute);
             }
         }
     }
@@ -43,10 +43,10 @@ public static class AssertHelper
         response.Should().NotBeNull();
         request.Should().NotBeNull();
 
-        var requestProps = typeof(TRequest).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-        var responseProps = typeof(TResponse).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var requestProperties = typeof(TRequest).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+        var responseProperties = typeof(TResponse).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-        foreach (var requestProperty in requestProps)
+        foreach (var requestProperty in requestProperties)
         {
             var requestValue = requestProperty.GetValue(request);
             if (requestValue is null)
@@ -54,7 +54,7 @@ public static class AssertHelper
                 continue;
             }
 
-            var responseProperty = responseProps.FirstOrDefault(property =>
+            var responseProperty = responseProperties.FirstOrDefault(property =>
                 property.Name.Equals(requestProperty.Name, StringComparison.OrdinalIgnoreCase));
 
             responseProperty.Should().NotBeNull($"response should have property '{requestProperty.Name}' matching request");
@@ -64,15 +64,15 @@ public static class AssertHelper
         }
     }
 
-    private static void ValidateProperty(string name, object? value, Attribute attr)
+    private static void ValidateProperty(string name, object? value, Attribute attribute)
     {
-        switch (attr)
+        switch (attribute)
         {
             case RequiredFieldAttribute:
                 value.Should().NotBeNull($"{name} is marked [RequiredField]");
-                if (value is string str)
+                if (value is string text)
                 {
-                    str.Should().NotBeNullOrWhiteSpace($"{name} is marked [RequiredField]");
+                    text.Should().NotBeNullOrWhiteSpace($"{name} is marked [RequiredField]");
                 }
                 break;
 

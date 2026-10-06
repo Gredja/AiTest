@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.JsonPlaceholder.Todos;
 
@@ -36,7 +37,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
         {
             try
             {
-                var delete = await Delete<object>($"{JsonPlaceholderEndpoints.Todos}/{_createdTodoId}");
+                var delete = await Delete<object>(JsonPlaceholderEndpoints.TodosById, IdParam(_createdTodoId.Value));
 
                 if (!delete.IsSuccessful)
                 {

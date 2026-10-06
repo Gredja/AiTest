@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using TestAdapter;
 using static Api.FakeStore.Helpers.FakeStoreTestData;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.FakeStore.Users;
 
@@ -38,7 +39,7 @@ public class GetAllUsersTests : FakeStoreRequestHelper
         {
             try
             {
-                var delete = await Delete<object>($"{FakeStoreEndpoints.Users}/{_createdUserId}");
+                var delete = await Delete<object>(FakeStoreEndpoints.UsersById, IdParam(_createdUserId.Value));
 
                 if (!delete.IsSuccessful)
                 {

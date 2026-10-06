@@ -1,4 +1,4 @@
-using Core.Models;
+using Core.Models.Generic;
 using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
@@ -15,6 +15,8 @@ namespace Api.GitHub.PublicRepos;
 [Category("GitHub")]
 public class GetPublicReposTests : GitHubTestBase
 {
+    private const int FirstRepositoryId = 1;
+
     [Test]
     [Category("HealthCheck")]
     [Description("8.1 GET /repositories returns 200 OK")]
@@ -56,7 +58,7 @@ public class GetPublicReposTests : GitHubTestBase
     public async Task GetPublicRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
-            [new() { Type = ParamType.Parameter, Key = "since", Value = 1 }]);
+            [new() { Type = ParamType.Parameter, Key = "since", Value = FirstRepositoryId }]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();

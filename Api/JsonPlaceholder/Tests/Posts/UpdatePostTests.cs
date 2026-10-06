@@ -16,15 +16,17 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestPostId = 1;
     private const int TestUserId = 1;
+    private const int TitleRandomLength = 8;
+    private const int BodyRandomLength = 16;
     private const string MalformedJson = "{\"title\":";
     private const string NonNumericId = "abc";
     private static readonly PostModelRequest _putBody = new()
     {
         UserId = TestUserId,
-        Title = $"Updated {DataGenerator.RandomString(8)}",
-        Body = $"Body {DataGenerator.RandomString(16)}"
+        Title = $"Updated {DataGenerator.RandomString(TitleRandomLength)}",
+        Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}"
     };
-    private static readonly PostModelRequest _patchBody = new() { Title = $"Patched {DataGenerator.RandomString(8)}" };
+    private static readonly PostModelRequest _patchBody = new() { Title = $"Patched {DataGenerator.RandomString(TitleRandomLength)}" };
 
     [Test]
     [Category("HealthCheck")]

@@ -14,11 +14,13 @@ namespace Api.JsonPlaceholder.Posts;
 public class CreatePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
+    private const int TitleRandomLength = 8;
+    private const int BodyRandomLength = 16;
     private static readonly PostModelRequest _testPost = new()
     {
         UserId = TestUserId,
-        Title = $"Post {DataGenerator.RandomString(8)}",
-        Body = $"Body {DataGenerator.RandomString(16)}"
+        Title = $"Post {DataGenerator.RandomString(TitleRandomLength)}",
+        Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}"
     };
 
     [Test]
@@ -105,7 +107,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.8 Special chars in title are accepted")]
     public async Task CreatePost_SpecialCharsInTitle_ReturnsCreated()
     {
-        var specialPost = new PostModelRequest { UserId = TestUserId, Title = SpecialCharsTitle, Body = $"Body {DataGenerator.RandomString(16)}" };
+        var specialPost = new PostModelRequest { UserId = TestUserId, Title = SpecialCharsTitle, Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}" };
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, specialPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);

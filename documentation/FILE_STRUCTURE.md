@@ -98,6 +98,8 @@ Core/
 ├── Models/
 │   ├── Generic/
 │   │   ├── IdModel.cs
+│   │   ├── ParamType.cs
+│   │   ├── RequestDictionaryModel.cs
 │   │   └── UserOwnedModel.cs
 │   ├── FakeStore/
 │   │   ├── Address.cs
@@ -145,8 +147,6 @@ Core/
 │   │   ├── RepositoryModelResponse.cs
 │   │   ├── TagModelResponse.cs
 │   │   └── UserModelResponse.cs
-│   ├── ParamType.cs
-│   └── RequestDictionaryModel.cs
 ```
 
 ## Api/

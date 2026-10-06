@@ -30,34 +30,6 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
     public ActionTargets Targets => ActionTargets.Test;
 
-    internal static void WriteSkippedTests(IEnumerable<ITest> skippedTests)
-    {
-        foreach (var test in skippedTests)
-        {
-            var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-            var uuid = Guid.NewGuid().ToString();
-            WriteSkippedResult(test, uuid, now);
-        }
-    }
-
-    private static void WriteSkippedResult(ITest test, string uuid, long now)
-    {
-        var description = GetDescription(test);
-        var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
-            Uuid: uuid,
-            FullName: test.FullName,
-            Name: test.Name,
-            StartMilliseconds: now,
-            StopMilliseconds: now,
-            Status: AllureConstants.StatusSkipped,
-            StatusMessage: AllureConstants.DefaultIgnoreMessage,
-            Description: description,
-            TestClassName: test.ClassName));
-
-        AllureJsonWriter.WriteResultFile(_resultsDir, testResult);
-        AddToContainer(test, uuid);
-    }
-
     private static void WriteTestResult(ITest test, string uuid, long startTicks)
     {
         var elapsed = Environment.TickCount64 - startTicks;

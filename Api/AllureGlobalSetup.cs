@@ -1,5 +1,7 @@
 using TestAdapter.Helpers;
 
+namespace Api;
+
 [SetUpFixture]
 public class AllureGlobalSetup
 {

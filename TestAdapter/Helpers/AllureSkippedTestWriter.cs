@@ -19,18 +19,18 @@ public static class AllureSkippedTestWriter
                     continue;
                 }
 
-                var ignoreAttr = method.GetCustomAttribute<IgnoreAttribute>();
-                if (ignoreAttr is null)
+                var ignoreAttribute = method.GetCustomAttribute<IgnoreAttribute>();
+                if (ignoreAttribute is null)
                 {
                     continue;
                 }
 
-                WriteSkippedTestResult(type, method, ignoreAttr, resultsDir);
+                WriteSkippedTestResult(type, method, ignoreAttribute, resultsDir);
             }
         }
     }
 
-    private static void WriteSkippedTestResult(Type type, MethodInfo method, IgnoreAttribute ignoreAttr, string resultsDir)
+    private static void WriteSkippedTestResult(Type type, MethodInfo method, IgnoreAttribute ignoreAttribute, string resultsDir)
     {
         var fullName = $"{type.FullName}.{method.Name}";
         var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
@@ -44,7 +44,7 @@ public static class AllureSkippedTestWriter
             StartMilliseconds: now,
             StopMilliseconds: now,
             Status: AllureConstants.StatusSkipped,
-            StatusMessage: ignoreAttr.Reason ?? AllureConstants.DefaultIgnoreMessage,
+            StatusMessage: ignoreAttribute.Reason ?? AllureConstants.DefaultIgnoreMessage,
             Description: description,
             TestClassName: type.FullName));
 

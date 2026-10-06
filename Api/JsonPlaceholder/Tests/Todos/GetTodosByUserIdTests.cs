@@ -6,6 +6,7 @@ using FluentAssertions;
 using TestAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
+using static Core.Helpers.ParamHelper;
 
 namespace Api.JsonPlaceholder.Todos;
 
@@ -15,6 +16,7 @@ namespace Api.JsonPlaceholder.Todos;
 public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
+    private const int OtherUserId = 5;
     private int? _createdTodoId;
 
     [OneTimeSetUp]
@@ -37,7 +39,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         {
             try
             {
-                var delete = await Delete<object>($"{JsonPlaceholderEndpoints.Todos}/{_createdTodoId}");
+                var delete = await Delete<object>(JsonPlaceholderEndpoints.TodosById, IdParam(_createdTodoId.Value));
 
                 if (!delete.IsSuccessful)
                 {
@@ -137,7 +139,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response1 = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(TestUserId));
         var response5 = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
-            UserIdParam(5));
+            UserIdParam(OtherUserId));
 
         var ids1 = response1.Data!.Select(todo => todo.Id);
         var ids5 = response5.Data!.Select(todo => todo.Id);

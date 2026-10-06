@@ -16,6 +16,7 @@ namespace Api.GitHub.IssueComments;
 public class GetIssueCommentsTests : GitHubTestBase
 {
     private const int ExistingIssueNumber = 5;
+    private const int FirstIssueNumber = 1;
     private const string TestComment = "Test comment for contract check";
 
     private long? _createdCommentId;
@@ -158,7 +159,7 @@ public class GetIssueCommentsTests : GitHubTestBase
     public async Task GetIssueComments_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName), .. IssueNumberParam(1)]);
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName), .. IssueNumberParam(FirstIssueNumber)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

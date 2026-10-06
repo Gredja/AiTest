@@ -40,7 +40,7 @@ public class GetProductByIdTests : FakeStoreRequestHelper
         {
             try
             {
-                var delete = await Delete<object>($"{FakeStoreEndpoints.Products}/{_createdProductId}");
+                var delete = await Delete<object>(FakeStoreEndpoints.ProductsById, IdParam(_createdProductId.Value));
 
                 if (!delete.IsSuccessful)
                 {

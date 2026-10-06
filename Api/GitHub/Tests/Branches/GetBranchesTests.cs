@@ -16,6 +16,7 @@ namespace Api.GitHub.Branches;
 public class GetBranchesTests : GitHubTestBase
 {
     private const int ShaHexLength = 40;
+    private const int SingleItemPageSize = 1;
     private static readonly Regex _shaHexPattern = new("^[0-9a-f]+$", RegexOptions.Compiled);
 
     [Test]
@@ -98,10 +99,10 @@ public class GetBranchesTests : GitHubTestBase
     public async Task GetBranches_PaginationPerOne()
     {
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
-            [.. TestRepoParam(), .. PaginationParams(1, 1)]);
+            [.. TestRepoParam(), .. PaginationParams(FirstPage, SingleItemPageSize)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Count.Should().BeLessThanOrEqualTo(1);
+        response.Data!.Count.Should().BeLessThanOrEqualTo(SingleItemPageSize);
     }
 
     [Test]

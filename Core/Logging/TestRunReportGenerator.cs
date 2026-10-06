@@ -7,6 +7,7 @@ public static class TestRunReportGenerator
 {
     private const int MaxWriteAttempts = 3;
     private const int RetryDelayMilliseconds = 200;
+    private const int LogTimeSkewSeconds = 1;
     private const string ReportPrefix = "TestRunReport-";
     private const string ActionLogPrefix = "actions-";
     private const string TestResultLogPrefix = "test-results-";
@@ -76,7 +77,7 @@ public static class TestRunReportGenerator
         Directory.EnumerateFiles(workspace)
             .Where(path => Path.GetFileName(path).StartsWith(filePrefix, StringComparison.Ordinal))
             .Where(path => path.EndsWith(".log", StringComparison.Ordinal))
-            .Where(path => File.GetLastWriteTime(path) >= runStart.AddSeconds(-1))
+            .Where(path => File.GetLastWriteTime(path) >= runStart.AddSeconds(-LogTimeSkewSeconds))
             .OrderBy(path => path)
             .ToList();
 

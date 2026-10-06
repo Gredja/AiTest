@@ -2,6 +2,9 @@ namespace Core.Logging;
 
 internal static class ActionLogParser
 {
+    private const int LogFieldCount = 4;
+    private const int TestNameFieldIndex = 2;
+
     internal static Dictionary<string, List<string>> Read(
         IReadOnlyCollection<string> actionLogPaths,
         IReadOnlyDictionary<string, string> fixtureByTest)
@@ -12,13 +15,13 @@ internal static class ActionLogParser
         {
             foreach (var line in SharedFile.ReadLines(logPath))
             {
-                var parts = line.Split('|', 4);
-                if (parts.Length != 4)
+                var parts = line.Split('|', LogFieldCount);
+                if (parts.Length != LogFieldCount)
                 {
                     continue;
                 }
 
-                AppendToMatchingTests(actions, line, parts[2], fixtureByTest);
+                AppendToMatchingTests(actions, line, parts[TestNameFieldIndex], fixtureByTest);
             }
         }
 

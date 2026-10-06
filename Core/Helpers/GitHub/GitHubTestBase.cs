@@ -1,5 +1,5 @@
 using Core.Config;
-using Core.Models;
+using Core.Models.Generic;
 using RestSharp;
 
 namespace Core.Helpers.GitHub;

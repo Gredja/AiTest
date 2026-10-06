@@ -21,6 +21,7 @@ public static class JsonPlaceholderEndpoints
 
     public const string Todos = "/todos";
     public const string TodosByUser = "/todos";
+    public const string TodosById = "/todos/{id}";
 
     public const string Users = "/users";
     public const string UsersById = "/users/{id}";

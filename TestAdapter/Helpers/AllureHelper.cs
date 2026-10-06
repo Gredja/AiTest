@@ -5,7 +5,7 @@ namespace TestAdapter.Helpers;
 
 public static class AllureHelper
 {
-    public static string FindProjectRoot()
+    private static string FindProjectRoot()
     {
         var dir = AppContext.BaseDirectory;
         while (dir is not null)
@@ -30,11 +30,11 @@ public static class AllureHelper
 
     public static string? GetDescription(MethodInfo method)
     {
-        var attrs = method.GetCustomAttributes(typeof(DescriptionAttribute), false);
-        if (attrs.Length == 0)
+        var attributes = method.GetCustomAttributes(typeof(DescriptionAttribute), false);
+        if (attributes.Length == 0)
         {
             return null;
         }
-        return attrs[0].GetType().GetProperty("Description")?.GetValue(attrs[0]) as string;
+        return attributes[0].GetType().GetProperty("Description")?.GetValue(attributes[0]) as string;
     }
 }

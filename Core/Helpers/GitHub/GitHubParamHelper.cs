@@ -1,4 +1,4 @@
-using Core.Models;
+using Core.Models.Generic;
 
 namespace Core.Helpers.GitHub;
 
@@ -15,9 +15,6 @@ public static class GitHubParamHelper
 
     public static List<RequestDictionaryModel> CommentIdParam(long id) =>
         [ParamHelper.UrlSegment("comment_id", id)];
-
-    public static List<RequestDictionaryModel> PullNumberParam(int number) =>
-        [ParamHelper.UrlSegment("pull_number", number)];
 
     public static List<RequestDictionaryModel> BranchNameParam(string branch) =>
         [ParamHelper.UrlSegment("branch", branch)];
