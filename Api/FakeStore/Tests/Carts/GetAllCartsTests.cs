@@ -11,6 +11,7 @@ namespace Api.FakeStore.Carts;
 [TestFixture]
 [AllureNUnit]
 [Category("FakeStore")]
+[Ignore("FakeStoreAPI: service under investigation — outage HTTP 521 (fakestoreapi.com down), checked 2026-10-06; un-ignore all FakeStore tests after investigation")]
 public class GetAllCartsTests : FakeStoreRequestHelper
 {
     [Test]
