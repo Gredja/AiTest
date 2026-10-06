@@ -57,7 +57,7 @@ Run artifacts accumulate without bound — every mechanism MUST be wired to the 
 - Use `ShouldHaveValidContract()` for ContractCheck tests (JSON round-trip + attribute validation)
 - Use `ShouldHaveValidFields()` for Regression tests (attribute validation only)
 - Use `ShouldMatchRequest()` for request/response comparison — not manual field mapping
-- All helpers live in `Core/Helpers/AssertHelper.cs`
+- All helpers live in `Core/Helpers/Assertions/AssertHelper.cs`
 
 ## Document sync
 
@@ -194,5 +194,5 @@ Derived from kata 6.W.3 (PII-safe test data). Applies to E2E and any POST/PATCH 
 - **Fictional values only, never PII** — E2E writes into the public sandbox repo `Gredja/AiTest`; issue/PR bodies are publicly visible forever. Synthetic IDs, invented names, tokenized payments (see `documentation/Katas/02-test-data.json` for the pattern)
 - **Obfuscate by replacement, never by dropping** — keep the field shape, replace the value; dropping a field breaks e2e coverage
 - **Vary ≥2 dimensions across test payloads** — don't run every write test against one static body (country/language, order size, status, payment method). If one dataset is intentionally enough, document why in the test class
-- **Vary payload values via `Core/Helpers/DataGenerator`** — generate per-run values (`RandomString`, `RandomInt`) for varying write fields instead of static literals; semantic negative-test data (invalid ids, boundary values, wrong-type markers) stays as named constants — its value IS the specification
+- **Vary payload values via `Core/Helpers/Data/DataGenerator`** — generate per-run values (`RandomString`, `RandomInt`) for varying write fields instead of static literals; semantic negative-test data (invalid ids, boundary values, wrong-type markers) stays as named constants — its value IS the specification
 - **Complex datasets get a method note** — which tool/prompts generated them, which fields are obfuscated, which dimensions are exercised, what is intentionally missing (pattern: `documentation/Katas/02-data-method.md`)

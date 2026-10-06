@@ -1,4 +1,4 @@
-﻿---
+---
 name: review-commit
 description: Use when the user says "review-commit", "/review-commit", "review code", "review changes", or wants to review local uncommitted code changes. Reviews all modified and new files against project rules and existing patterns. NOT for PR reviews (use /review-pr instead).
 ---

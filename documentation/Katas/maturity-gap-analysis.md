@@ -1,4 +1,4 @@
-﻿# Maturity Gap Analysis
+# Maturity Gap Analysis
 
 **Date:** 2026-06-25
 **Author:** Алексей — AQA Engineer

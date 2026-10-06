@@ -8,7 +8,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Api/` — NUnit API-тесты (FakeStore, JsonPlaceholder, GitHub)
 - `E2E/` — NUnit E2E тесты (GitHub write operations)
 - `Core/Models/` — модели ответов/запросов
-- `Core/Helpers/` — общие хелперы: request-инфраструктура (`RequestHelper`, `FakeStoreRequestHelper`, `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`) и `DataGenerator` (вариативные write-данные) всегда здесь; нужны E2E → сюда (`GitHubTestBase`, `GitHubParamHelper`, `ParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
+- `Core/Helpers/` — общие хелперы по подпапкам: `Http/` (request-инфраструктура: `RequestHelper`, `FakeStore/JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — вариативные write-данные), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`); нужны E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
 - `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
 - `Core/Logging/` — логирование действий (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) и сырые результаты тестов (`test-results-*.log`). `TestResults/` содержит **только отчёты**, сырые артефакты прогона — во временной папке
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (вызывается из NUnit-teardown `TestReportSetup`), age-based очистка артефактов старше 7 дней

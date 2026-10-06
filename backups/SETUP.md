@@ -215,12 +215,11 @@ Gredja/
 │   │   ├── JsonPlaceholderEndpoints.cs
 │   │   └── GitHubEndpoints.cs
 │   ├── Helpers/                  # Тестовая инфраструктура (всегда здесь, даже для E2E)
-│   │   ├── RequestHelper.cs      # Базовый клиент (Get/Post/Put/Patch/Delete)
-│   │   ├── FakeStoreRequestHelper.cs / JsonPlaceholderRequestHelper.cs / GitHubRequestHelper.cs
-│   │   ├── GitHub/               # GitHubTestBase + GitHubParamHelper
-│   │   ├── ParamHelper.cs        # Общие IdParam/UrlSegment/Query
-│   │   ├── DataGenerator.cs      # RandomString/RandomInt для write-данных
-│   │   └── AssertHelper.cs       # ShouldHaveStatusCode и др.
+│   │   ├── Http/                 # RequestHelper (Get/Post/Put/Patch/Delete) + FakeStore/JsonPlaceholder/GitHubRequestHelper
+│   │   ├── Params/               # Общие IdParam/UrlSegment/Query
+│   │   ├── Assertions/           # ShouldHaveStatusCode и др.
+│   │   ├── Data/                 # DataGenerator: RandomString/RandomInt для write-данных
+│   │   └── GitHub/               # GitHubTestBase + GitHubParamHelper
 │   ├── Logging/                   # Лог действий (Serilog → %TEMP%\GredjaTestRun) + test-results-*.log
 │   ├── Reporting/                 # Генератор TestRunReport-*.md (teardown)
 │   └── Models/                   # Модели данных (Response/Request)
@@ -385,7 +384,7 @@ git checkout -b features/add-user-tests
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
 - Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure)
-- Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности (вариативные поля — через `Core/Helpers/DataGenerator`), обфускация заменой, метод-нота для сложных наборов
+- Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности (вариативные поля — через `Core/Helpers/Data/DataGenerator`), обфускация заменой, метод-нота для сложных наборов
 - Чистка артефактов обязательна: temp-логи (`%TEMP%\GredjaTestRun`) чистит `TestRunWorkspace.PrepareRun()`; файлы старше 7 дней (`ArtifactRetentionDays`) в `allure-results/` и `TestResults/` — `TestRunReportGenerator.PrepareRun()` → `CleanupAccumulatedArtifacts()`; новые каталоги артефактов регистрировать там же в том же коммите; cleanup не фейлит прогон (warning вместо failure)
 
 **Workflow:**

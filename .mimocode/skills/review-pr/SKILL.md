@@ -1,4 +1,4 @@
-﻿---
+---
 name: review-pr
 description: Use when the user says "review-pr", "/review-pr", or wants to review a pull request. Automated code review for Gredja pull requests.
 ---

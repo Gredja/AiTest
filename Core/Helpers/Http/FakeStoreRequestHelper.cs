@@ -1,4 +1,4 @@
-﻿namespace Core.Helpers;
+namespace Core.Helpers;
 
 public class FakeStoreRequestHelper : RequestHelper
 {

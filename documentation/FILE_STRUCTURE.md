@@ -71,16 +71,20 @@ Core/
 │   ├── JsonPlaceholderEndpoints.cs
 │   └── TestConfig.cs
 ├── Helpers/
-│   ├── AssertHelper.cs           # ShouldHaveValidContract, ShouldHaveValidFields, etc.
-│   ├── DataGenerator.cs          # RandomString/RandomInt for varying write payloads
-│   ├── FakeStoreRequestHelper.cs
+│   ├── Assertions/
+│   │   └── AssertHelper.cs        # ShouldHaveValidContract, ShouldHaveValidFields, etc.
+│   ├── Data/
+│   │   └── DataGenerator.cs       # RandomString/RandomInt for varying write payloads
 │   ├── GitHub/
 │   │   ├── GitHubParamHelper.cs
 │   │   └── GitHubTestBase.cs
-│   ├── GitHubRequestHelper.cs
-│   ├── JsonPlaceholderRequestHelper.cs
-│   ├── ParamHelper.cs             # shared IdParam + UrlSegment/Query primitives for param helpers
-│   └── RequestHelper.cs
+│   ├── Http/
+│   │   ├── FakeStoreRequestHelper.cs
+│   │   ├── GitHubRequestHelper.cs
+│   │   ├── JsonPlaceholderRequestHelper.cs
+│   │   └── RequestHelper.cs
+│   └── Params/
+│       └── ParamHelper.cs         # shared IdParam + UrlSegment/Query primitives for param helpers
 ├── Logging/
 │   ├── ActionLogHandler.cs        # DelegatingHandler: logs every HTTP request/response
 │   ├── ActionLogger.cs            # Serilog bootstrap → %TEMP%\GredjaTestRun\actions-*.log
