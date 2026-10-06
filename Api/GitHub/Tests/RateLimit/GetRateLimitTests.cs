@@ -4,7 +4,7 @@ using Core.Helpers.GitHub;
 using Core.Models.GitHub;
 using System.Net;
 using FluentAssertions;
-using TestAdapter;
+using AllureAdapter;
 
 namespace Api.GitHub.RateLimit;
 

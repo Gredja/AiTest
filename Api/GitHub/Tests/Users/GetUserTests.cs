@@ -4,7 +4,7 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using TestAdapter;
+using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.Users;

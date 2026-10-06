@@ -4,7 +4,7 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using TestAdapter;
+using AllureAdapter;
 using static Core.Helpers.ParamHelper;
 
 namespace Api.JsonPlaceholder.Albums;

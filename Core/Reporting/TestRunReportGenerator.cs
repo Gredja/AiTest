@@ -1,7 +1,8 @@
 using System.Globalization;
 using System.Text;
+using Core.Logging;
 
-namespace Core.Logging;
+namespace Core.Reporting;
 
 public static class TestRunReportGenerator
 {

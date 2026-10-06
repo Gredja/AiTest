@@ -1,9 +1,9 @@
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using System.Collections.Concurrent;
-using TestAdapter.Helpers;
+using AllureAdapter.Helpers;
 
-namespace TestAdapter;
+namespace AllureAdapter;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AllureNUnitAttribute : Attribute, ITestAction

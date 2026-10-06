@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
-    <ProjectReference Include="..\TestAdapter\TestAdapter.csproj" />
+    <ProjectReference Include="..\AllureAdapter\AllureAdapter.csproj" />
   </ItemGroup>
 
 </Project>

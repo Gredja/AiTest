@@ -142,7 +142,7 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using TestAdapter;
+using AllureAdapter;
 using static Api.Helpers.{Service}ParamHelper;
 
 namespace Api.{Service}.Tests;

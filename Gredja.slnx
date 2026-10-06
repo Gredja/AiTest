@@ -1,6 +1,6 @@
 <Solution>
   <Project Path="Core/Core.csproj" />
-  <Project Path="TestAdapter/TestAdapter.csproj" />
+  <Project Path="AllureAdapter/AllureAdapter.csproj" />
   <Project Path="E2E/E2E.csproj" />
   <Project Path="Api/Api.csproj" />
 </Solution>

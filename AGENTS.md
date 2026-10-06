@@ -10,7 +10,8 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - `Core/Models/` — модели ответов/запросов
 - `Core/Helpers/` — общие хелперы: request-инфраструктура (`RequestHelper`, `FakeStoreRequestHelper`, `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`) и `DataGenerator` (вариативные write-данные) всегда здесь; нужны E2E → сюда (`GitHubTestBase`, `GitHubParamHelper`, `ParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
 - `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
-- `Core/Logging/` — два независимых от Allure механизма: логирование действий (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) и отчёт прогона (свои результаты тестов `test-results-*.log` + `TestRunReportGenerator` → `TestResults/TestRunReport-*.md`, вызывается из NUnit-teardown `TestReportSetup`). `TestResults/` содержит **только отчёты**, сырые артефакты прогона — во временной папке
+- `Core/Logging/` — логирование действий (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) и сырые результаты тестов (`test-results-*.log`). `TestResults/` содержит **только отчёты**, сырые артефакты прогона — во временной папке
+- `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (вызывается из NUnit-teardown `TestReportSetup`), age-based очистка артефактов старше 7 дней
 - `Prompts/` — шаблоны промптов
 - `Rules/` — полные правила (здесь — краткая сводка)
 - `documentation/` — документация проекта

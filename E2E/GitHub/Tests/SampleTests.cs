@@ -1,6 +1,6 @@
 using Core.Config;
 using Core.Helpers;
-using TestAdapter;
+using AllureAdapter;
 using System.Net;
 
 namespace E2E.GitHub.Tests;

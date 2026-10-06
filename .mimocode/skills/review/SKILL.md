@@ -37,7 +37,7 @@ Working dir: {working_dir}
    - Api/FakeStore/Tests/*.cs
    - Api/JsonPlaceholder/Tests/*.cs
    - Api/AllureGlobalSetup.cs
-   - TestAdapter/Helpers/*.cs
+   - AllureAdapter/Helpers/*.cs
    - Ui/Tests/*.cs
    - Ui/AllureGlobalSetup.cs
 

@@ -1,4 +1,4 @@
-namespace TestAdapter.Helpers;
+namespace AllureAdapter.Helpers;
 
 internal static class AllureConstants
 {

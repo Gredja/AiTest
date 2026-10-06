@@ -1,4 +1,5 @@
 using Core.Logging;
+using Core.Reporting;
 
 [assembly: TestOutcome]
 

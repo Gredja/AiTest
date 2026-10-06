@@ -1,4 +1,4 @@
-using TestAdapter.Helpers;
+using AllureAdapter.Helpers;
 
 namespace E2E;
 

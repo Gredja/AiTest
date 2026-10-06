@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace TestAdapter.Helpers;
+namespace AllureAdapter.Helpers;
 
 internal static class AllureJsonWriter
 {

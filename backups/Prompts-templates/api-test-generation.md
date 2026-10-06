@@ -26,7 +26,7 @@ Generate a test class for the endpoint: {METHOD} {ENDPOINT_PATH}
 ### File structure
 - One test class per endpoint, file: `Api/{SERVICE}/Tests/{ENDPOINT_FOLDER}/{CLASS_NAME}.cs`
 - File-scoped namespace: `namespace Api.{SERVICE}.{ENDPOINT_FOLDER};`
-- Usings at top: NUnit.Framework, RestSharp, Core.Models, Core.Config, Core.Helpers, System.Threading.Tasks, FluentAssertions, plus any needed (System.Net, System.Diagnostics, TestAdapter, `using static Core.Helpers.ParamHelper;` for `IdParam`, `using static ...{SERVICE}ParamHelper;` for service-specific params)
+- Usings at top: NUnit.Framework, RestSharp, Core.Models, Core.Config, Core.Helpers, System.Threading.Tasks, FluentAssertions, plus any needed (System.Net, System.Diagnostics, AllureAdapter, `using static Core.Helpers.ParamHelper;` for `IdParam`, `using static ...{SERVICE}ParamHelper;` for service-specific params)
 
 ### Class structure
 - `[TestFixture]` + `[AllureNUnit]` + `[Category("{SERVICE}")]` class named `{CLASS_NAME}`

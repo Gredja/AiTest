@@ -3,7 +3,7 @@ using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
-using TestAdapter;
+using AllureAdapter;
 using static Core.Helpers.ParamHelper;
 using static Api.FakeStore.Helpers.FakeStoreTestData;
 

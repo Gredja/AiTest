@@ -8,7 +8,7 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 - NUnit 4.6.1
 - RestSharp 114.0.0
 - FluentAssertions 8.11.0
-- Allure (via custom TestAdapter)
+- Allure (via custom AllureAdapter)
 - Coverlet (code coverage)
 
 ## APIs Under Test
@@ -33,7 +33,7 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 - `Core/Models/` — response/request models
 - `Core/Config/` — endpoint constants
 - `Core/Helpers/` — RequestHelper, AssertHelper, param helpers
-- `TestAdapter/` — custom Allure adapter
+- `AllureAdapter/` — custom Allure adapter
 
 ## Running Tests
 

@@ -221,7 +221,8 @@ Gredja/
 │   │   ├── ParamHelper.cs        # Общие IdParam/UrlSegment/Query
 │   │   ├── DataGenerator.cs      # RandomString/RandomInt для write-данных
 │   │   └── AssertHelper.cs       # ShouldHaveStatusCode и др.
-│   ├── Logging/                   # Лог действий (Serilog → %TEMP%\GredjaTestRun) + генератор TestRunReport
+│   ├── Logging/                   # Лог действий (Serilog → %TEMP%\GredjaTestRun) + test-results-*.log
+│   ├── Reporting/                 # Генератор TestRunReport-*.md (teardown)
 │   └── Models/                   # Модели данных (Response/Request)
 │       ├── FakeStore/            # Модели FakeStoreAPI
 │       ├── JsonPlaceholder/      # Модели JSONPlaceholder
@@ -238,7 +239,7 @@ Gredja/
 │   │   └── Users/                # Тесты пользователей
 │   └── GitHub/Tests/             # Тесты GitHub API (Auth/, Issues/, Repos/ и др.)
 ├── E2E/                          # E2E тесты (цепочки связей)
-├── TestAdapter/                  # Allure-адаптер
+├── AllureAdapter/                  # Allure-адаптер
 ├── Scripts/                      # Скрипты (allure-report.ps1, test-coverage.ps1)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него

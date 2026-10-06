@@ -92,9 +92,10 @@ Core/
 │   ├── TestOutcomeReader.cs       # reads test-results-*.log of the current run
 │   ├── TestOutcomeWriter.cs       # appends one JSON line per finished test
 │   ├── TestRunWorkspace.cs        # temp workspace %TEMP%\GredjaTestRun (raw logs)
-│   ├── TestRunReportGenerator.cs  # writes TestResults/TestRunReport-*.md (teardown)
-│   ├── TestRunRow.cs
 │   └── TestSourceCategoryReader.cs # fixture/category from test sources
+├── Reporting/
+│   ├── TestRunReportGenerator.cs  # writes TestResults/TestRunReport-*.md (teardown)
+│   └── TestRunRow.cs
 ├── Models/
 │   ├── Generic/
 │   │   ├── IdModel.cs
@@ -235,11 +236,11 @@ Api/
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```
 
-## TestAdapter/
+## AllureAdapter/
 
 ```
-TestAdapter/
-├── TestAdapter.csproj
+AllureAdapter/
+├── AllureAdapter.csproj
 └── Helpers/
     ├── AllureConstants.cs
     ├── AllureHelper.cs

@@ -4,7 +4,7 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using TestAdapter;
+using AllureAdapter;
 using static Api.FakeStore.Helpers.FakeStoreTestData;
 
 namespace Api.FakeStore.Carts;

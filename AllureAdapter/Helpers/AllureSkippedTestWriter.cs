@@ -1,7 +1,7 @@
 using System.Reflection;
 using NUnit.Framework;
 
-namespace TestAdapter.Helpers;
+namespace AllureAdapter.Helpers;
 
 public static class AllureSkippedTestWriter
 {

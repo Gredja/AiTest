@@ -4,7 +4,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using RestSharp;
-using TestAdapter;
+using AllureAdapter;
 using static Core.Helpers.ParamHelper;
 
 namespace Api.JsonPlaceholder.Posts;

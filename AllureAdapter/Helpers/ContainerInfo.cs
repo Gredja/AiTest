@@ -1,4 +1,4 @@
-namespace TestAdapter;
+namespace AllureAdapter;
 
 internal class ContainerInfo
 {

@@ -1,6 +1,6 @@
-using static TestAdapter.Helpers.AllureConstants;
+using static AllureAdapter.Helpers.AllureConstants;
 
-namespace TestAdapter.Helpers;
+namespace AllureAdapter.Helpers;
 
 internal static class AllureTestResultBuilder
 {

@@ -3,7 +3,7 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using TestAdapter;
+using AllureAdapter;
 
 namespace Api.GitHub.Auth;
 
