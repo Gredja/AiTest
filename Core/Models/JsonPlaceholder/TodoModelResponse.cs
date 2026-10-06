@@ -5,6 +5,6 @@ namespace Core.Models.JsonPlaceholder;
 
 public class TodoModelResponse : UserOwnedModel
 {
-    [JsonPropertyName(JsonPlaceholderJsonFields.Completed)]
+    [JsonPropertyName(JsonFields.Completed)]
     public bool IsCompleted { get; set; }
 }

@@ -9,10 +9,10 @@ public class ContributorModelResponse : IdModel<long>
     [RequiredField]
     public string Login { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.AvatarUrl)]
+    [JsonPropertyName(JsonFields.AvatarUrl)]
     public string AvatarUrl { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.HtmlUrl)]
+    [JsonPropertyName(JsonFields.HtmlUrl)]
     public string HtmlUrl { get; set; }
 
     [RequiredField]

@@ -23,14 +23,14 @@ public class RepositoryModelResponse
     [JsonPropertyName("private")]
     public bool IsPrivate { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.HtmlUrl)]
+    [JsonPropertyName(JsonFields.HtmlUrl)]
     [RequiredField]
     public string HtmlUrl { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.CreatedAt)]
+    [JsonPropertyName(JsonFields.CreatedAt)]
     public DateTime CreatedAt { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.UpdatedAt)]
+    [JsonPropertyName(JsonFields.UpdatedAt)]
     public DateTime UpdatedAt { get; set; }
 
     public string Language { get; set; }

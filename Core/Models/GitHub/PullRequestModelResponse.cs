@@ -23,7 +23,7 @@ public class PullRequestModelResponse
 
     public PullRequestBranch Base { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.CreatedAt)]
+    [JsonPropertyName(JsonFields.CreatedAt)]
     public DateTime CreatedAt { get; set; }
 
     [JsonPropertyName("merged_at")]

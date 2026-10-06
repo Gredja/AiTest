@@ -12,9 +12,9 @@ public class CommentModelResponse : IdModel<long>
     [RequiredField]
     public UserModelResponse User { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.CreatedAt)]
+    [JsonPropertyName(JsonFields.CreatedAt)]
     public DateTime CreatedAt { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.UpdatedAt)]
+    [JsonPropertyName(JsonFields.UpdatedAt)]
     public DateTime UpdatedAt { get; set; }
 }

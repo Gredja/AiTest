@@ -1,6 +1,6 @@
 namespace Core.Models.JsonPlaceholder;
 
-internal static class JsonPlaceholderJsonFields
+internal static class JsonFields
 {
     public const string Completed = "completed";
 }

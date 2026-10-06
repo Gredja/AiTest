@@ -15,7 +15,7 @@ public class UserModelResponse
 
     public string Email { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.AvatarUrl)]
+    [JsonPropertyName(JsonFields.AvatarUrl)]
     public string AvatarUrl { get; set; }
 
     public string Bio { get; set; }

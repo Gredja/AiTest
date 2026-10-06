@@ -20,6 +20,6 @@ public class ReleaseModelResponse : IdModel<long>
     [JsonPropertyName("prerelease")]
     public bool IsPreRelease { get; set; }
 
-    [JsonPropertyName(GitHubJsonFields.CreatedAt)]
+    [JsonPropertyName(JsonFields.CreatedAt)]
     public DateTime CreatedAt { get; set; }
 }

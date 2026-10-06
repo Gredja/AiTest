@@ -120,7 +120,7 @@ Core/
 │   │   ├── CommentModelResponse.cs
 │   │   ├── Company.cs
 │   │   ├── Geo.cs
-│   │   ├── JsonPlaceholderJsonFields.cs
+│   │   ├── JsonFields.cs
 │   │   ├── PhotoModelResponse.cs
 │   │   ├── PostModelRequest.cs
 │   │   ├── PostModelResponse.cs
@@ -137,8 +137,8 @@ Core/
 │   │   ├── ContributorModelResponse.cs
 │   │   ├── CreateCommentModelRequest.cs
 │   │   ├── CreateIssueModelRequest.cs
-│   │   ├── GitHubJsonFields.cs
 │   │   ├── IssueModelResponse.cs
+│   │   ├── JsonFields.cs
 │   │   ├── Label.cs
 │   │   ├── PullRequestBranch.cs
 │   │   ├── PullRequestModelResponse.cs
