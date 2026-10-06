@@ -9,15 +9,22 @@ public static class TestRunReportGenerator
     private const int RetryDelayMilliseconds = 200;
     private const int LogTimeSkewSeconds = 1;
     private const int DurationDecimalPlaces = 3;
+    private const int ArtifactRetentionDays = 7;
     private const string ReportPrefix = "TestRunReport-";
     private const string CodeFence = "```";
     private const string ActionLogPrefix = "actions-";
     private const string TestResultLogPrefix = "test-results-";
     private const string SolutionFileName = "Gredja.slnx";
+    private const string ResultsDirName = "TestResults";
+    private const string AllureResultsDirName = "allure-results";
 
     private static readonly Encoding _reportEncoding = new UTF8Encoding(false);
 
-    public static void PrepareRun() => TestRunWorkspace.PrepareRun();
+    public static void PrepareRun()
+    {
+        TestRunWorkspace.PrepareRun();
+        CleanupAccumulatedArtifacts();
+    }
 
     public static void Generate()
     {
@@ -58,10 +65,50 @@ public static class TestRunReportGenerator
         lines.AddRange(BuildTests(rows));
         lines.AddRange(BuildFailedSection(failures, failedActions));
 
-        var resultsDirectory = Path.Combine(root, "TestResults");
+        var resultsDirectory = Path.Combine(root, ResultsDirName);
         Directory.CreateDirectory(resultsDirectory);
         var reportFile = Path.Combine(resultsDirectory, $"{ReportPrefix}{runStart:yyyyMMdd-HHmmss}.md");
         WriteWithRetry(reportFile, lines);
+    }
+
+    private static void CleanupAccumulatedArtifacts()
+    {
+        var root = ResolveRepositoryRoot();
+        if (root is null)
+        {
+            return;
+        }
+
+        DeleteOlderThan(Path.Combine(root, AllureResultsDirName), ArtifactRetentionDays);
+        DeleteOlderThan(Path.Combine(root, ResultsDirName), ArtifactRetentionDays);
+    }
+
+    private static void DeleteOlderThan(string directory, int retentionDays)
+    {
+        if (!Directory.Exists(directory))
+        {
+            return;
+        }
+
+        var cutoff = DateTime.Now.AddDays(-retentionDays);
+        foreach (var file in Directory.EnumerateFiles(directory))
+        {
+            if (File.GetLastWriteTime(file) < cutoff)
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch (IOException exception)
+                {
+                    ActionLogger.Logger.Warning(exception, "Failed to delete old artifact {File}", file);
+                }
+                catch (UnauthorizedAccessException exception)
+                {
+                    ActionLogger.Logger.Warning(exception, "Failed to delete old artifact {File}", file);
+                }
+            }
+        }
     }
 
     private static string? ResolveRepositoryRoot()

@@ -6,6 +6,7 @@ namespace TestAdapter.Helpers;
 public static class AllureHelper
 {
     private const string SolutionFileName = "Gredja.slnx";
+    private const string AllureResultsDirName = "allure-results";
 
     private static string FindProjectRoot()
     {
@@ -25,7 +26,7 @@ public static class AllureHelper
     public static string GetResultsDir()
     {
         var projectDir = FindProjectRoot();
-        var resultsDir = Path.Combine(projectDir, "allure-results");
+        var resultsDir = Path.Combine(projectDir, AllureResultsDirName);
         Directory.CreateDirectory(resultsDir);
 
         return resultsDir;

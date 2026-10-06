@@ -385,6 +385,7 @@ git checkout -b features/add-user-tests
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
 - Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure)
 - Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности (вариативные поля — через `Core/Helpers/DataGenerator`), обфускация заменой, метод-нота для сложных наборов
+- Чистка артефактов обязательна: temp-логи (`%TEMP%\GredjaTestRun`) чистит `TestRunWorkspace.PrepareRun()`; файлы старше 7 дней (`ArtifactRetentionDays`) в `allure-results/` и `TestResults/` — `TestRunReportGenerator.PrepareRun()` → `CleanupAccumulatedArtifacts()`; новые каталоги артефактов регистрировать там же в том же коммите; cleanup не фейлит прогон (warning вместо failure)
 
 **Workflow:**
 - План → одобение → изменения → отчёт

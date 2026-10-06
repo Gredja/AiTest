@@ -36,6 +36,21 @@
 - If cleanup fails, log warning but don't fail the test — resource can be manually cleaned
 - Use sandbox repo for all write operations — never target production data
 
+## Temp and artifact cleanup
+
+Run artifacts accumulate without bound — every mechanism MUST be wired to the run lifecycle:
+
+- **Temp logs** (`%TEMP%\GredjaTestRun`) — cleaned by `TestRunWorkspace.PrepareRun()`
+  (run-marker based, once per run, two testhosts cannot double-run it).
+- **Repo artifacts** (`allure-results/`, `TestResults/*.md`) — cleaned by
+  `TestRunReportGenerator.PrepareRun()`: files older than `ArtifactRetentionDays` (7) are deleted.
+- **A new artifact output directory MUST be registered in `CleanupAccumulatedArtifacts()`**
+  in the same commit that introduces it — unbounded growth is not allowed.
+- **Cleanup MUST NOT fail the run**: catch specific exceptions (`IOException`,
+  `UnauthorizedAccessException`), log a warning, continue.
+- **Condition is age-based (`LastWriteTime`)**, never "delete everything" — sequential
+  testhosts (Api → E2E) may already have written current-run files.
+
 ## Assertion helpers
 
 - Use `ShouldHaveStatusCode()` for HTTP status checks — not `.Should().Be(HttpStatusCode.OK)`
