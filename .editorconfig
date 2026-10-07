@@ -1,0 +1,7 @@
+# Root EditorConfig — enforces project rules at tooling level.
+root = true
+
+[*.cs]
+# Rules/code.md: "Remove unused usings — Never leave dead imports behind."
+# Without this, `dotnet format --verify-no-changes` silently skips dead imports.
+dotnet_diagnostic.IDE0005.severity = warning

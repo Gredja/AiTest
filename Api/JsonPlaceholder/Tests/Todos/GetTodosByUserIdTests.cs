@@ -24,10 +24,12 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(TestUserId));
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
 
         if (response.Data!.Count == 0)
         {
             var create = await Post<TodoModelRequest, TodoModelResponse>(JsonPlaceholderEndpoints.Todos, TestTodo);
+            create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdTodoId = create.Data!.Id;
         }
     }

@@ -352,6 +352,7 @@ git checkout -b features/add-user-tests
 - Без аббревиатур: `response`, не `resp`
 - Лямбды: читаемое имя (`product => product.Id`), не однобуквенные (`p =>`)
 - Все API-запросы async (`ExecuteAsync`)
+- Без мёртвых `using` — удалять сразу вместе с кодом; enforcement: `.editorconfig` → `IDE0005 = warning`, ловится `dotnet format --verify-no-changes`
 - Маленькие методы, одно действие, максимум ~30 строк
 - Конкретные исключения вместо `Exception`, без `null!`
 - LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`

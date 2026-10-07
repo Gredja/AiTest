@@ -1,24 +1,25 @@
 using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
+using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
-namespace E2E.GitHub.Tests;
+namespace Api.GitHub.Issues;
 
 [TestFixture]
 [AllureNUnit]
-[Category("GitHubE2E")]
-public class CreateIssueVisibilityTests : GitHubE2ETestBase
+[Category("GitHub")]
+public class CreateIssueVisibilityTests : GitHubTestBase
 {
     private const int TitleRandomLength = 8;
     private const int BodyRandomLength = 16;
 
     [Test]
     [Category("Performance")]
-    [Description("E2E-2 Created issue becomes visible within max response time")]
+    [Description("17.1 Created issue becomes visible within max response time")]
     public async Task CreateIssue_RecordVisibleWithinTimeLimit()
     {
         var request = new CreateIssueModelRequest

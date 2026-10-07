@@ -4,7 +4,6 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
@@ -27,6 +26,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     {
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
+        pulls.ShouldHaveStatusCode(HttpStatusCode.OK);
 
         _existingPullNumber = pulls.Data!.Max(pullRequest => pullRequest.Number);
         _nonExistentPullNumber = _existingPullNumber + GitHubEndpoints.NonExistentIdOffset;

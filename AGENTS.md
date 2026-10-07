@@ -1,12 +1,12 @@
 # AGENTS.md — Gredja
 
 AQA-проект. API-тесты (NUnit + RestSharp): JSONPlaceholder, GitHub API.
-E2E тесты (NUnit + RestSharp): GitHub write operations.
+E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (multi-step write flows).
 
 ## Project Structure
 
-- `Api/` — NUnit API-тесты (JsonPlaceholder, GitHub)
-- `E2E/` — NUnit E2E тесты (GitHub write operations)
+- `Api/` — NUnit API-тесты (JsonPlaceholder, GitHub), включая одиночные write-тесты
+- `E2E/` — NUnit E2E тесты: ТОЛЬКО сценарные цепочки (create → verify → mutate → cleanup)
 - `Core/Models/` — модели ответов/запросов
 - `Core/Helpers/` — общие хелперы по подпапкам: `Http/` (request-инфраструктура: `RequestHelper`, `JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — вариативные write-данные), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`); нужны E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
 - `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
@@ -27,6 +27,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - Lambda parameters: readable singular noun (`product => product.Id`), не однобуквенные (`p =>`)
 - Без аббревиатур (`response`, не `resp`). Boolean: `Is`, `Has`, `Can`, `Should`
 - File-scoped namespaces, one class per file, use `var` wherever possible (explicit type only when `var` is not applicable, e.g. `null`, tuples)
+- Без мёртвых `using` — удалять в том же ходу, что и код (ловится `dotnet format` через `.editorconfig` IDE0005)
 - Methods: short, one responsibility, max ~30 lines, max 5 params
 - Все API-запросы async (`ExecuteAsync`, не `Execute`)
 - Нет модификатора = private. Нет magic numbers. Нет вложенных ternary. `nameof()` для exceptions

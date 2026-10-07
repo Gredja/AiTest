@@ -26,6 +26,7 @@ public class GetIssueCommentsTests : GitHubTestBase
     {
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
 
         if (response.Data!.Count == 0)
         {
@@ -33,6 +34,7 @@ public class GetIssueCommentsTests : GitHubTestBase
                 GitHubEndpoints.RepoIssueComments,
                 new CreateCommentModelRequest { Body = TestComment },
                 [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
+            create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdCommentId = create.Data!.Id;
         }
     }

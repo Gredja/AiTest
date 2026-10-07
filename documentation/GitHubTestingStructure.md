@@ -24,7 +24,7 @@
 
 | Item | Rationale |
 |------|-----------|
-| **Write operations** (POST/PUT/DELETE on issues, PRs, comments) in Phase 1 | Write tests belong to Phase 2 (E2E project) with sandbox repo isolation, cleanup, and different risk profile. Mixing write ops into read-only suite would break test independence and require auth token management. |
+| **Multi-step write chains in the read-only suite** | Scenario chains (create → verify → mutate → cleanup) live in the separate `E2E/` project: sandbox repo isolation, mandatory cleanup, different risk profile. Single-endpoint write tests (POST + its negatives) stay in `Api/{Service}/Tests` — same place JsonPlaceholder write tests live. |
 | **GraphQL API** | The test suite targets REST API v3 only. GraphQL has a different endpoint, schema, and rate limit — out of scope for this phase. |
 | **Webhook delivery** | Requires event simulation infrastructure not available in current test environment. |
 

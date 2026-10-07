@@ -16,6 +16,7 @@ namespace Api.GitHub.Issues;
 public class GetIssuesTests : GitHubTestBase
 {
     private const string TestTitle = "Test issue for contract check";
+    private static readonly TimeSpan StateOpenConsistencyTimeout = TimeSpan.FromSeconds(10);
     private int? _createdIssueNumber;
 
     [OneTimeSetUp]
@@ -23,6 +24,7 @@ public class GetIssuesTests : GitHubTestBase
     {
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             TestRepoParam());
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
 
         if (response.Data!.Count == 0)
         {
@@ -30,6 +32,7 @@ public class GetIssuesTests : GitHubTestBase
                 GitHubEndpoints.RepoIssues,
                 new CreateIssueModelRequest { Title = TestTitle },
                 TestRepoParam());
+            create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdIssueNumber = create.Data!.Number;
         }
     }
@@ -41,19 +44,22 @@ public class GetIssuesTests : GitHubTestBase
         {
             try
             {
-                var delete = await Delete<object>(GitHubEndpoints.RepoIssueById,
+                // REST has no issue-delete endpoint (DELETE → 404, see OB §17) — cleanup closes instead
+                var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+                    GitHubEndpoints.RepoIssueById,
+                    new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
                     [.. TestRepoParam(), .. IssueNumberParam(_createdIssueNumber.Value)]);
 
-                if (!delete.IsSuccessful)
+                if (!cleanup.IsSuccessful)
                 {
                     TestContext.Progress.WriteLine(
-                        $"Warning: issue {_createdIssueNumber} not deleted: HTTP {(int)delete.StatusCode}");
+                        $"Warning: issue {_createdIssueNumber} not closed: HTTP {(int)cleanup.StatusCode}");
                 }
             }
             catch (HttpRequestException exception)
             {
                 TestContext.Progress.WriteLine(
-                    $"Warning: failed to delete issue {_createdIssueNumber}: {exception.Message}");
+                    $"Warning: failed to close issue {_createdIssueNumber}: {exception.Message}");
             }
         }
     }
@@ -183,11 +189,21 @@ public class GetIssuesTests : GitHubTestBase
     [Description("3.11 Filter by state=open returns only open issues")]
     public async Task GetIssues_FilterByStateOpen()
     {
-        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
-            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateOpen)]);
+        // GitHub list may serve a torn read while E2E closes issues concurrently (solution run):
+        // a just-closed issue briefly appears in ?state=open — refresh until the read is consistent
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+                [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateOpen)]),
+            response => response.StatusCode == HttpStatusCode.OK
+                && response.Data is not null
+                && response.Data.All(issue => issue.State == GitHubEndpoints.StateOpen),
+            timeout: StateOpenConsistencyTimeout);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateOpen);
+        result.IsSuccess.Should().BeTrue(
+            $"state=open must return only open issues;" +
+            $" waited {result.Elapsed}, attempts {result.Attempts}," +
+            $" last status {result.LastValue?.StatusCode}");
+        result.LastValue!.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateOpen);
     }
 
     [Test]

@@ -19,12 +19,12 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 
 ### GitHub REST API v3 — https://api.github.com
 - Repos, Issues, PRs, Branches, Users, Rate Limit — GET
-- Issues, Comments, PRs, Branches — POST, PATCH, DELETE (E2E)
+- Issues, Comments, PRs, Branches — POST, PATCH, DELETE (single-endpoint in `Api/`, scenario chains in `E2E/`)
 
 ## Test Structure
 
-- `Api/` — read-only API tests (NUnit + RestSharp)
-- `E2E/` — write operation tests (NUnit + RestSharp)
+- `Api/` — read-only API tests + single-endpoint write tests (NUnit + RestSharp)
+- `E2E/` — scenario chain tests: multi-step write flows only (NUnit + RestSharp)
 - `Core/Models/` — response/request models
 - `Core/Config/` — endpoint constants
 - `Core/Helpers/` — Http/, Assertions/, Params/, Data/, GitHub/ (request infra, asserts, params, data generators)

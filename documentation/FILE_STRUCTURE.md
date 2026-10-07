@@ -197,6 +197,8 @@ Api/
 │       ├── IssueComments/
 │       │   └── GetIssueCommentsTests.cs
 │       ├── Issues/
+│       │   ├── CreateIssueNegativeTests.cs
+│       │   ├── CreateIssueVisibilityTests.cs
 │       │   ├── GetIssueByIdTests.cs
 │       │   └── GetIssuesTests.cs
 │       ├── PublicRepos/
@@ -208,7 +210,8 @@ Api/
 │       ├── RateLimit/
 │       │   └── GetRateLimitTests.cs
 │       ├── Repos/
-│       │   └── GetRepositoryTests.cs
+│       │   ├── GetRepositoryTests.cs
+│       │   └── SampleTests.cs
 │       ├── UserRepos/
 │       │   └── GetUserReposTests.cs
 │       └── Users/
@@ -242,9 +245,7 @@ E2E/
 ├── GitHub/
 │   ├── GitHubE2ETestBase.cs
 │   └── Tests/
-│       ├── CreateIssueNegativeTests.cs
-│       ├── CreateIssueVisibilityTests.cs
-│       └── SampleTests.cs
+│       └── IssueLifecycleTests.cs
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```
 

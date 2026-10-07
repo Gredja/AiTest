@@ -1,19 +1,19 @@
 using Core.Config;
 using Core.Helpers;
-using AllureAdapter;
+using Core.Helpers.GitHub;
 using System.Net;
+using AllureAdapter;
 
-namespace E2E.GitHub.Tests;
+namespace Api.GitHub.Repos;
 
 [TestFixture]
 [AllureNUnit]
-[Category("GitHubE2E")]
-[Description("Placeholder E2E test to verify Allure integration")]
-public class SampleTests : GitHubE2ETestBase
+[Category("GitHub")]
+public class SampleTests : GitHubTestBase
 {
     [Test]
     [Category("HealthCheck")]
-    [Description("E2E-1 Sandbox repo is accessible via API")]
+    [Description("1.1.4 Sandbox repo is accessible via API")]
     public async Task SandboxRepo_IsAccessible()
     {
         var response = await Get<object>(GitHubEndpoints.ReposById,

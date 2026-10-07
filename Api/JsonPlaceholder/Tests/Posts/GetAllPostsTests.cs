@@ -22,10 +22,12 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     public async Task OneTimeSetup()
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
 
         if (response.Data!.Count == 0)
         {
             var create = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, TestPost);
+            create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdPostId = create.Data!.Id;
         }
     }
