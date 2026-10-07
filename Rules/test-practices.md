@@ -182,13 +182,27 @@ public async Task OneTimeTearDown()
 - `*_ReturnsCreatedRecord` (`Smoke`) — second GET: `HaveCount(_baseline.Count + 1)` and set-difference of Ids (`current - baseline`) equals exactly `{ _created.Id }`
 - `*_CreatedRecordMatchesRequest` (`Regression`) — `record.ShouldMatchRequest(TestData)` for ALL fields, not only Id (POST may return a valid Id while persisting fields wrong)
 
+**Mandatory for every POST flow — record-add speed check:**
+- `*_RecordVisibleWithinTimeLimit` (`Performance`) — time from POST completion until the record is visible to GET. Poll with `WaitHelper.WaitUntilAsync(action, condition, timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs))` (`Core/Helpers/Waiting/` — first attempt is immediate, so instant APIs finish on attempt 1 without polling overhead). Assert `result.IsSuccess`; include `result.Elapsed` / `result.Attempts` / `result.LastValue` in the failure message — that IS the speed metric and the diagnostics
+- APIs that never persist the record (fake APIs, e.g. JSONPlaceholder) — keep the test but `[Ignore]` it with documented behavior (fake-API exception below)
+
 **Rules:**
 - Baseline GET + POST go in `[OneTimeSetUp]`; tests only read and assert; `[OneTimeTearDown]` deletes the created record — cleanup is mandatory
+- **Cleanup = delete if the API allows it.** If the service has a delete endpoint — use it (`DELETE`); only if deletion is genuinely unavailable (e.g. GitHub issues: no REST delete, see OB §17) fall back to soft-close (`PATCH state=closed`) and document the fallback in the OB
 - Cleanup failure must not fail the run — log warning and continue (transient errors, rate limits)
 - Set-diff by Id is the primary invariant; exact `+1` only holds in a controlled sandbox — parallel runs on shared public APIs break counts
 - If POST does not persist (fake APIs, e.g. JSONPlaceholder) — `[Ignore]` with explanation of documented behavior
 - If this pattern always POSTs, count-based tests (`ExpectedCount`) must use a dynamic baseline, not a constant
-- GitHub: Phase 1 is read-only — apply this pattern in Phase 2 E2E (skill `/e2e-test-gen`)
+- GitHub: Phase 1 is read-only — apply this pattern in Phase 2 E2E (skill `/e2e-test-gen`); issue cleanup = `PATCH state=closed` (REST has no issue-delete endpoint — `DELETE /issues/{n}` → 404, see OB §17)
+
+## Waiting for conditions (WaitHelper)
+
+For APIs where visibility/state change is not immediate (eventual consistency, background processing) — poll instead of a single immediate GET: `WaitHelper.WaitUntilAsync(action, condition, timeout?, interval?)` in `Core/Helpers/Waiting/` returns `WaitResult<T>` (`IsSuccess`, `Elapsed`, `Attempts`, `LastValue`).
+
+- **Use it when:** the record must appear / state must change within a time limit — assert `result.IsSuccess` plus a bound on `result.Elapsed` (e.g. `Elapsed < sla` for "within 3s", `Elapsed >= minDelay` for "no earlier than 15s"); name such tests `*_AppearsWithinTimeLimit`, category `Performance`
+- **Do not use it when:** the API answers instantly (fake APIs like JSONPlaceholder) — polling only slows the suite; and for latency of a SINGLE request keep the existing pattern: `Stopwatch` + `TestConfig.MaxResponseTimeMs` (`*_ResponseTimeIsAcceptable`)
+- On failure include `Elapsed`/`Attempts`/`LastValue` in the assertion message — they are the diagnostics for flaky timing tests
+- Timing boundary "exactly at N seconds" is unverifiable with polling granularity — leave a margin (check "not earlier" one interval before the boundary) and clarify the requirement if strictness matters
 
 ## Test data for write operations
 

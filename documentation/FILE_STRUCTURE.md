@@ -78,8 +78,11 @@ Core/
 │   │   ├── GitHubRequestHelper.cs
 │   │   ├── JsonPlaceholderRequestHelper.cs
 │   │   └── RequestHelper.cs
-│   └── Params/
-│       └── ParamHelper.cs         # shared IdParam + UrlSegment/Query primitives for param helpers
+│   ├── Params/
+│   │   └── ParamHelper.cs         # shared IdParam + UrlSegment/Query primitives for param helpers
+│   └── Waiting/
+│       ├── WaitHelper.cs          # generic async WaitUntilAsync polling
+│       └── WaitResult.cs          # IsSuccess/Elapsed/Attempts/LastValue
 ├── Logging/
 │   ├── ActionLogHandler.cs        # DelegatingHandler: logs every HTTP request/response
 │   ├── ActionLogger.cs            # Serilog bootstrap → %TEMP%\GredjaTestRun\actions-*.log
@@ -137,6 +140,7 @@ Core/
 │   │   ├── ReleaseModelResponse.cs
 │   │   ├── RepositoryModelResponse.cs
 │   │   ├── TagModelResponse.cs
+│   │   ├── UpdateIssueModelRequest.cs
 │   │   └── UserModelResponse.cs
 ```
 
@@ -234,6 +238,7 @@ E2E/
 ├── GitHub/
 │   ├── GitHubE2ETestBase.cs
 │   └── Tests/
+│       ├── CreateIssueVisibilityTests.cs
 │       └── SampleTests.cs
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```

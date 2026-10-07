@@ -5,6 +5,7 @@ using System.Net;
 using FluentAssertions;
 using RestSharp;
 using AllureAdapter;
+using static Core.Helpers.ParamHelper;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 
@@ -189,5 +190,25 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
         var response = await Client.ExecuteAsync(request);
 
         response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
+    }
+
+    [Test]
+    [Ignore("JsonPlaceholder mock: POST does not persist — GET never returns the created record (GET /posts/{id} → 404), documented mock behavior — see Rules/test-practices.md → Read-after-write visibility (fake-API exception)")]
+    [Category("Performance")]
+    [Description("4.15 Created post becomes visible within max response time")]
+    public async Task CreatePost_RecordVisibleWithinTimeLimit()
+    {
+        var created = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById, IdParam(created.Data!.Id)),
+            response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
+            timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
+
+        result.IsSuccess.Should().BeTrue(
+            $"created post should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
+            $" waited {result.Elapsed}, attempts {result.Attempts}," +
+            $" last status {result.LastValue?.StatusCode}");
     }
 }

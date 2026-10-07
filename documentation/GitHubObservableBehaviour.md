@@ -363,9 +363,13 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Object has: `id` (integer > 0), `number` (integer > 0), `title` (string, matches request), `state` (string: "open"), `user` (object), `created_at` (datetime)
 - Content-Type is application/json
 
+**Cleanup note:**
+- Issue deletion via REST is NOT available — `DELETE /repos/{owner}/{repo}/issues/{n}` → 404 (endpoint absent from current REST API docs). E2E cleanup must **close** the issue instead: `PATCH /repos/{owner}/{repo}/issues/{n}` with `state=closed`
+
 **Negative:**
 - No auth → 401, body has `message` (string: "Requires authentication")
 - Missing `title` → 422 Unprocessable Entity, body has `message` (string: "Validation Failed"), `errors` (array)
+- `labels: null` (JSON null instead of array/absent) → 422 Unprocessable Entity — optional fields must be omitted, not sent as null
 - Non-existent repo → 404, body has `message` (string: "Not Found")
 
 ---
