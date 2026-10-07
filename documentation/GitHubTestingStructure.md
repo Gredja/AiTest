@@ -18,7 +18,7 @@
 | 7 | **Branch detail** | GET /branches/{branch} — status, contract, fields, negatives | TODO (design D3) |
 | 8 | **Repo metadata** | GET /contributors, /languages, /topics, /tags — status, contract, fields, negatives | TODO (design D4–D7) |
 
-**Total:** ~55 implemented read-only tests across 10 endpoint groups; 88 tests designed for 7 more groups — see [GitHubTestPlan.md](GitHubTestPlan.md) → "Phase 1 Test Design".
+**Total:** ~55 implemented read-only tests across 10 endpoint groups; 88 tests designed for 7 more groups — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md) → "Test Design for TODO Endpoints (D1–D7)".
 
 ## 2. Out of Scope
 

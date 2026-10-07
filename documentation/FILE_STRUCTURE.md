@@ -312,7 +312,6 @@ documentation/
 ├── FakeStoreTestPlan.md
 ├── GeneralPlan.md                # Permanent user backlog (never deleted)
 ├── GitHubObservableBehaviour.md
-├── GitHubTestPlan.md
 ├── GitHubTestingStructure.md
 ├── JsonPlaceholderObservableBehaviour.md
 ├── JsonPlaceholderTestPlan.md

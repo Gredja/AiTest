@@ -252,14 +252,15 @@ Gredja/
 │   │   └── JsonPlaceholder/      # Баги JsonPlaceholder
 │   ├── FakeStoreObservableBehaviour.md # Наблюдаемое поведение FakeStore API
 │   ├── FakeStoreTestPlan.md       # План тестирования FakeStore API
-│   ├── GitHubTestPlan.md         # План тестирования GitHub API
 │   ├── GitHubTestingStructure.md # Структура тестирования
 │   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
 │   ├── JsonPlaceholderObservableBehaviour.md # Наблюдаемое поведение JP API
 │   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
 │   └── README.md                 # Заглушка → ссылка на корневой README.md
-└── .mimocode/skills/             # Скиллы для MiMoCode
+└── .mimocode/
+    ├── skills/                  # Скиллы для MiMoCode
+    └── plans/                   # Активные планы работ (github-full-coverage.md и др.)
 ```
 
 **Проект тестирует три REST API:**
@@ -503,7 +504,7 @@ dotnet build
 - **JSONPlaceholder:** https://jsonplaceholder.typicode.com
 - **GitHub API:** https://docs.github.com/en/rest
 - **Observable Behaviour (source of truth для тестов):** `documentation/FakeStoreObservableBehaviour.md`, `documentation/JsonPlaceholderObservableBehaviour.md`, `documentation/GitHubObservableBehaviour.md` — читай OB своего сервиса
-- **Test Plan:** `documentation/FakeStoreTestPlan.md`, `documentation/JsonPlaceholderTestPlan.md`, `documentation/GitHubTestPlan.md` — покрытие и статусы
+- **Test Plan:** `documentation/FakeStoreTestPlan.md`, `documentation/JsonPlaceholderTestPlan.md`, `.mimocode/plans/github-full-coverage.md` — покрытие и статусы
 - **Правила:** `Rules/*.md` — код, ассерты, тест-практики
 
 ---

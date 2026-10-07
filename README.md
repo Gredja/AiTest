@@ -52,7 +52,7 @@ dotnet test --filter Category=HealthCheck
 - `documentation/FakeStoreObservableBehaviour.md` — observable behaviour for FakeStore API
 - `documentation/JsonPlaceholderTestPlan.md` — JsonPlaceholder API test plan (coverage + negative floor status)
 - `documentation/JsonPlaceholderObservableBehaviour.md` — observable behaviour for JsonPlaceholder API
-- `documentation/GitHubTestPlan.md` — GitHub API test plan (Phase 1 + Phase 2)
+- `.mimocode/plans/github-full-coverage.md` — GitHub API test plan (Phase 1 + Phase 2)
 - `documentation/GitHubTestingStructure.md` — scope, risks, entry/exit criteria
 - `documentation/GitHubObservableBehaviour.md` — observable behaviour for GitHub API
 - `documentation/ObservableBehaviourTemplate.md` — template for new services

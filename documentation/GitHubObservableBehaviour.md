@@ -4,7 +4,7 @@
 **API Under Test:** GitHub REST API v3 (https://api.github.com)
 **Date:** 2026-02-21
 **Scope:** GET (Phase 1) + POST/PATCH/DELETE (Phase 2 E2E)
-**Test Plan:** [GitHubTestPlan.md](GitHubTestPlan.md)
+**Test Plan:** [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md)
 
 ---
 
@@ -21,7 +21,7 @@ When generating or reviewing GitHub API tests, the AI agent:
 7. **Uses Endpoint Priority for coverage ordering** — P0 first, P3 last when generating incrementally
 8. **Never invents fields** — only asserts fields listed in this document; if a field is missing from the response, reports it as a discrepancy
 9. **Uses Seed methodology** — for each endpoint: 5 seeds → expand to table with `# | Case | Category | Priority | Source seed` → enforce 5+ active negatives → see `Rules/test-practices.md` → "Seed methodology"
-10. **Uses Test Plan risks for coverage** — maps each Top-3 risk from `GitHubTestPlan.md` / `GitHubTestingStructure.md` to at least one test case; an uncovered risk is a coverage gap, reported in the review
+10. **Uses Test Plan risks for coverage** — maps each Top-3 risk from `GitHubTestingStructure.md` to at least one test case; an uncovered risk is a coverage gap, reported in the review
 
 ---
 
