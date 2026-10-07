@@ -370,6 +370,7 @@ git checkout -b features/add-user-tests
 - Seed-методология: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → ~15-20 тестов на endpoint
 - Обязательные поля request body → тест на КАЖДОЕ отсутствующее поле (`*_Missing{Field}_*`); пустой body не заменяет проверку полей
 - Негативы считаются по АКТИВНЫМ тестам (`[Ignore]` не в счёт); когда полезные режимы исчерпаны — фиксируй достигнутое, не плоди дубли
+- Non-existent ID: динамически `maxId + 1`; если в том же ране есть concurrent-записи (solution-ран Api + E2E) — `maxId + Offset` (`GitHubEndpoints.NonExistentIdOffset = 100`); stateless mock (JP) остаётся на `maxId + 1`
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
@@ -386,6 +387,7 @@ git checkout -b features/add-user-tests
 **Workflow:**
 - План → одобение → изменения → отчёт
 - Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
+- Параллелизм тестов: механизм включён (`[assembly: Parallelizable(Fixtures)]` в `Api/AssemblyInfo.cs` и `E2E/AssemblyInfo.cs`), число потоков = **1 по умолчанию**; менять через `.runsettings` (`<NUnit><NumberOfTestWorkers>`) или CLI: `dotnet test -- NUnit.NumberOfTestWorkers=8` (на 8 потоках solution-ран ~10s вместо ~57s)
 - Перед коммитом: `dotnet format` + `dotnet test` должны пройти
 - Коммиты только по запросу
 - Гигиена репо: корень — только файлы проекта; вывод инструментов → gitignored/%TEMP%; после массовых правок `git add -A` без EOL-warning (`.gitattributes`: .cs/.csproj → CRLF, .md → LF); структурные изменения включают удаления gitignored-файлов → `FILE_STRUCTURE.md`/`AGENTS.md` обновлять в том же ходу, даже без коммита

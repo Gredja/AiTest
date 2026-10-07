@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  Auto-detected by Visual Studio Test Explorer (CLI `dotnet test` ignores this file).
-  Runs test sources in parallel so both assemblies of one selection are alive at the
+  Test parallelism + VS Test Explorer settings.
+
+  NumberOfTestWorkers — how many NUnit worker threads run fixtures in parallel.
+  Default is 1 (= sequential, same behavior as before parallelism was enabled).
+  Change it here, or per-run from CLI without editing the file:
+      dotnet test --settings .runsettings
+      dotnet test -- NUnit.NumberOfTestWorkers=4
+  Plain `dotnet test` (no --settings) uses LevelOfParallelism(1) from AssemblyInfo.cs.
+
+  MaxCpuCount is for Visual Studio Test Explorer only (CLI ignores it):
+  runs test sources in parallel so both assemblies of one selection are alive at the
   same time and share a single run — one TestRunReport per run. No loggers here:
   VS cannot resolve NuGet test loggers (it used to abort the run with
   "Could not find a test logger 'File'").
@@ -10,4 +19,7 @@
   <RunConfiguration>
     <MaxCpuCount>0</MaxCpuCount>
   </RunConfiguration>
+  <NUnit>
+    <NumberOfTestWorkers>1</NumberOfTestWorkers>
+  </NUnit>
 </RunSettings>

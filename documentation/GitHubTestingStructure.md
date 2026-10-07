@@ -47,7 +47,7 @@ Releases get delayed chasing upstream noise — or worse, real failures get igno
 Rename, close, or delete any of them and dozens of tests fail at once with no code change behind them.
 The team loses trust in the suite and stops running it — the moment coverage starts rotting.
 
-*Mitigation:* constants centralized in test classes and `GitHubEndpoints`; design D1–D2 uses dynamic PR lookup (`max + 1` via `[OneTimeSetUp]`); if data drifts, fix constants — not test logic.
+*Mitigation:* constants centralized in test classes and `GitHubEndpoints`; design D1–D2 uses dynamic PR lookup (`max + NonExistentIdOffset` via `[OneTimeSetUp]` — offset guards against concurrent E2E writes in the same run); if data drifts, fix constants — not test logic.
 
 ## 4. Entry Criteria
 

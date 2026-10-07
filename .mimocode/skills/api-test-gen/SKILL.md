@@ -227,7 +227,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 ```
 
 **For negative tests (non-existent ID):**
-- Use dynamic approach: `GET all → maxId + 1`
+- Use dynamic approach: `GET all → maxId + 1` (concurrent writes in same run → `maxId + Offset`, see Rules/test-practices.md)
 - Never hardcode 999 or any static number
 - If API returns 200 instead of 404 — use `[Ignore]` with explanation
 
@@ -277,7 +277,7 @@ public async Task OneTimeTearDown()
 - **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers or strings — see `Rules/code.md`
 - **Code style:** error handling, LINQ, strings, null safety — see `Rules/code-style.md`
 - **Categories:** `[Category("{Service}")]` on class; test category on every method — see `Rules/categories.md`
-- **Non-existent IDs:** Dynamic only — GET all → `maxId + 1` — see `Rules/test-practices.md`
+- **Non-existent IDs:** Dynamic only — GET all → `maxId + 1` (concurrent runs → `maxId + Offset`) — see `Rules/test-practices.md`
 - **Assertions:** FluentAssertions only — see `Rules/assertions.md`
 - **JSON parsing:** Always parse responses into typed models — never use `JsonElement` + `TryGetProperty` in tests. Create model for every nested JSON structure — see `Rules/assertions.md`
 - **Models:** suffix Model/Request, attributes on separate lines, pure data containers — see `Rules/models.md`

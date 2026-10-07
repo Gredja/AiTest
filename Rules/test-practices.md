@@ -18,6 +18,7 @@
 ## Non-existent IDs
 
 - Dynamic only: `GET all → maxId + 1`
+- **When the same run writes concurrently** (solution run: Api + E2E together) — `maxId + 1` is racy: a parallel E2E write can create exactly that number and flip an expected 404 into 200. Use `maxId + Offset` instead (GitHub: `GitHubEndpoints.NonExistentIdOffset = 100`); stateless mocks (JSONPlaceholder) keep `maxId + 1` — nothing can create there
 - Never hardcode 999, 1000, or any static number
 - If API returns 200 instead of 404 — use `[Ignore]` with explanation of the bug
 - For negative tests with invalid types (0, negative, non-numeric) — use explicit values

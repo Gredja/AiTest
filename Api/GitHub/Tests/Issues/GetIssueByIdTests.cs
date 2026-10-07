@@ -61,7 +61,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         var maxIssueNumber = issues.Data!.Max(issue => issue.Number);
-        var nonExistentIssueNumber = maxIssueNumber + 1;
+        var nonExistentIssueNumber = maxIssueNumber + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(nonExistentIssueNumber)]);

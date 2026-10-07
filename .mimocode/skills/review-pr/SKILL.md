@@ -46,7 +46,7 @@ Against checklist:
 - Methods: max ~30 lines, one responsibility
 - No magic numbers/strings
 - Config: Endpoints in `Core/Config/JsonPlaceholderEndpoints.cs` and `Core/Config/GitHubEndpoints.cs`
-- Non-existent IDs: dynamic (GET all → maxId + 1), not static 999
+- Non-existent IDs: dynamic (GET all → maxId + 1; concurrent writes → maxId + Offset), not static 999
 
 **General:**
 - No hardcoded secrets/tokens

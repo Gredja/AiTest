@@ -191,7 +191,7 @@ private async Task CleanupComments(int issueNumber)
 - **Code:** PascalCase, file-scoped namespaces, async, no magic numbers — see `Rules/code.md`
 - **Cleanup:** mandatory, try/catch in TearDown — see `Rules/test-practices.md`
 - **Assertions:** ShouldHaveStatusCode, ShouldHaveValidFields, ShouldMatchRequest (reduces code vs manual field comparison) — see `Rules/assertions.md`
-- **Non-existent IDs:** dynamic (GET all → maxId + 1) — see `Rules/test-practices.md`
+- **Non-existent IDs:** dynamic (GET all → maxId + 1; concurrent runs → maxId + Offset) — see `Rules/test-practices.md`
 - **Mock API behavior:** `[Ignore]` with explanation for known mock limitations — see `Rules/test-practices.md`
 - **Seed methodology:** 5 seeds → expand to table → enforce 5+ active negatives → one negative test per required request field (`*_Missing{Field}_*`, mandatory) — see `Rules/test-practices.md`
 

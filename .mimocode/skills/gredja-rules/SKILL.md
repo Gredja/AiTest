@@ -38,5 +38,5 @@ Read the relevant file before working on the corresponding entity:
 - **Reference types:** no `?`, no init. **Value types:** `?` if JSON field can be null
 - **No comments** unless regex pattern or non-obvious WHY
 - **No magic numbers** — extract to constants
-- **Non-existent IDs:** dynamic (GET all → maxId + 1), never static 999
+- **Non-existent IDs:** dynamic (GET all → maxId + 1; concurrent E2E writes → maxId + Offset), never static 999
 - **Commits:** only on user request, English, action + object format

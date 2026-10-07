@@ -150,6 +150,7 @@ Core/
 Api/
 ├── Api.csproj
 ├── AllureGlobalSetup.cs
+├── AssemblyInfo.cs               # [assembly: Parallelizable(Fixtures)] + LevelOfParallelism(1)
 ├── JsonPlaceholder/
 │   ├── Helpers/
 │   │   ├── JsonPlaceholderParamHelper.cs
@@ -235,6 +236,7 @@ AllureAdapter/
 E2E/
 ├── E2E.csproj
 ├── AllureGlobalSetup.cs
+├── AssemblyInfo.cs               # [assembly: Parallelizable(Fixtures)] + LevelOfParallelism(1)
 ├── GitHub/
 │   ├── GitHubE2ETestBase.cs
 │   └── Tests/

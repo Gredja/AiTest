@@ -63,7 +63,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 
 ## Key Decisions
 - 0 и -1 — безопасные static IDs (всегда невалидные)
-- Dynamic non-existent ID = maxId + 1 (не статический 999)
+- Dynamic non-existent ID = maxId + 1 (не статический 999); при concurrent-записи в том же ране (Api + E2E solution-ран) — maxId + Offset (`GitHubEndpoints.NonExistentIdOffset = 100`)
 - Seed methodology: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → see `Rules/test-practices.md`
 - Document sync: Observable Behaviour ↔ Test Plan ↔ Rules — always in sync
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown

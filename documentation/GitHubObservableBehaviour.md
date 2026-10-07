@@ -652,7 +652,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Tests depend on specific existing resources: repo `Gredja/AiTest`, issue #5, PR #5 (files/commits), branch `main`, user `Gredja`.
 - If repo is renamed, deleted, or issue #5 is closed/deleted — tests will fail with false negatives.
 - If all PRs are deleted — PR files/commits tests fall back via `[OneTimeSetUp]` dynamic lookup (max PR number); empty PR list must be handled.
-- Dynamic non-existent IDs (`maxId + 1`) depend on at least one item existing in the collection.
+- Dynamic non-existent IDs (`maxId + NonExistentIdOffset`) depend on at least one item existing in the collection.
 - Empty collections (e.g. repo with no tags, no contributors) return 200 with `[]` — tests must handle this gracefully.
 
 ### Flake Risks

@@ -30,7 +30,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
 
         _existingPullNumber = pulls.Data!.Max(pullRequest => pullRequest.Number);
-        _nonExistentPullNumber = _existingPullNumber + 1;
+        _nonExistentPullNumber = _existingPullNumber + GitHubEndpoints.NonExistentIdOffset;
     }
 
     private List<RequestDictionaryModel> PullFilesParams(int pullNumber) =>

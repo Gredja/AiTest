@@ -145,7 +145,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         var maxIssueNumber = issues.Data!.Max(issue => issue.Number);
-        var nonExistentIssueNumber = maxIssueNumber + 1;
+        var nonExistentIssueNumber = maxIssueNumber + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             [.. TestRepoParam(), .. IssueNumberParam(nonExistentIssueNumber)]);
