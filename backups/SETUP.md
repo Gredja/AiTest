@@ -373,7 +373,7 @@ git checkout -b features/add-user-tests
 - Non-existent ID: динамически `maxId + 1`; если в том же ране есть concurrent-записи (solution-ран Api + E2E) — `maxId + Offset` (`GitHubEndpoints.NonExistentIdOffset = 100`); stateless mock (JP) остаётся на `maxId + 1`
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
-- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
+- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveError()` (статус + читаемый message + совпадение с документированным в OB), `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
 - Категории: тип сервиса (JsonPlaceholder/GitHub/GitHubE2E) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно

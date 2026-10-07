@@ -96,7 +96,7 @@ public class GetBranchByNameTests : GitHubTestBase
         var response = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.NonExistentBranchName)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.BranchNotFound);
     }
 
     [Test]
@@ -107,7 +107,7 @@ public class GetBranchByNameTests : GitHubTestBase
         var response = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.BranchWithSpacesName)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.BranchNotFound);
     }
 
     [Test]
@@ -119,7 +119,7 @@ public class GetBranchByNameTests : GitHubTestBase
             [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName),
              .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -133,7 +133,7 @@ public class GetBranchByNameTests : GitHubTestBase
             [.. RepoParam(GitHubEndpoints.NonExistentUser, repo),
              .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -145,6 +145,6 @@ public class GetBranchByNameTests : GitHubTestBase
             GitHubEndpoints.RepoBranchByName, InvalidAuthorization,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 }

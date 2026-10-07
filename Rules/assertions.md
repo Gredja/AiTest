@@ -14,6 +14,7 @@ FluentAssertions (not NUnit Assert).
 - `collection.Should().OnlyContain(p => ...)` — all items match predicate
 - `x.Should().NotBeEmpty()` — collection not empty
 - `response.ShouldHaveStatusCode(HttpStatusCode.OK)` — extension from `AssertHelper`
+- `response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound)` — status + error body present + message readable + message equals the documented OB value (message constants live in `Core/Config/GitHubErrors.cs`); returns the parsed `ErrorMessageModelResponse` for follow-up asserts
 - `item.ShouldHaveValidContract()` — JSON serializable + validates `[RequiredField]`, `[PositiveId]`, `[ValueRange]` attributes (use for ContractCheck)
 - `item.ShouldHaveValidFields()` — validates attributes only (use when JSON serialization is already covered)
 - `response.Data!.ShouldMatchRequest(_testBody)` — compare request fields against response
@@ -23,7 +24,7 @@ FluentAssertions (not NUnit Assert).
 - Check status code: `response.ShouldHaveStatusCode(HttpStatusCode.OK)`
 - Check content type: `response.ContentType.Should().Contain("application/json")`
 - Check response time: `stopwatch.ElapsedMilliseconds.Should().BeLessThan(MaxResponseTimeMs)`
-- Check error message: `response.Data!.Message.Should().Be("Not Found")` — for 404 responses
+- Check error message: `response.ShouldHaveError(status, expectedMessage)` — for negative tests where OB documents the error text (status + readable body + documented message in one call); status-only `ShouldHaveStatusCode` is the fallback when the service has no documented message
 
 ## JSON response parsing
 

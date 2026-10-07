@@ -1,6 +1,8 @@
 using System.Net;
 using System.Reflection;
+using System.Text.Json;
 using Core.Attributes;
+using Core.Models.Generic;
 using FluentAssertions;
 using RestSharp;
 
@@ -12,6 +14,22 @@ public static class AssertHelper
 
     public static void ShouldHaveStatusCode(this RestResponse response, HttpStatusCode expected) =>
         response.StatusCode.Should().Be(expected);
+
+    public static ErrorMessageModelResponse ShouldHaveError(
+        this RestResponse response, HttpStatusCode expected, string expectedMessage)
+    {
+        response.StatusCode.Should().Be(expected);
+
+        var content = response.Content;
+        content.Should().NotBeNullOrWhiteSpace("error response must carry a body");
+
+        var error = JsonSerializer.Deserialize<ErrorMessageModelResponse>(content!);
+        error.Should().NotBeNull("error body must be valid JSON");
+        error!.Message.Should().NotBeNullOrWhiteSpace("error message must be readable and explain the problem");
+        error.Message.Should().Be(expectedMessage, "error message must match the documented Observable Behaviour value");
+
+        return error;
+    }
 
     public static void ShouldHaveValidContract<T>(this T entity) where T : class
     {

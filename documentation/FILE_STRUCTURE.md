@@ -64,6 +64,7 @@ Core/
 │   └── ValueRangeAttribute.cs
 ├── Config/
 │   ├── GitHubEndpoints.cs
+│   ├── GitHubErrors.cs            # documented error message constants (verified vs live API)
 │   ├── JsonPlaceholderEndpoints.cs
 │   └── TestConfig.cs
 ├── Helpers/
@@ -100,6 +101,7 @@ Core/
 │   └── TestRunRow.cs
 ├── Models/
 │   ├── Generic/
+│   │   ├── ErrorMessageModelResponse.cs
 │   │   ├── IdModel.cs
 │   │   ├── ParamType.cs
 │   │   ├── RequestDictionaryModel.cs
@@ -240,6 +242,7 @@ E2E/
 ├── GitHub/
 │   ├── GitHubE2ETestBase.cs
 │   └── Tests/
+│       ├── CreateIssueNegativeTests.cs
 │       ├── CreateIssueVisibilityTests.cs
 │       └── SampleTests.cs
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md

@@ -148,7 +148,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullCommitsParams(_nonExistentPullNumber));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -159,7 +159,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullCommitsParams(0));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -170,7 +170,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullCommitsParams(-1));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -182,7 +182,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
             [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName),
              .. PullRequestNumberParam(_existingPullNumber)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -196,7 +196,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
             [.. RepoParam(GitHubEndpoints.NonExistentUser, repo),
              .. PullRequestNumberParam(_existingPullNumber)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -207,6 +207,6 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.RepoPullRequestCommits, InvalidAuthorization, PullCommitsParams(_existingPullNumber));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 }
