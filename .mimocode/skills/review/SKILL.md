@@ -83,6 +83,12 @@ Working dir: {working_dir}
    - [Category] on [Test] method — check type
    - Both dimensions applied
 
+   Test practices (Rules/test-practices.md):
+   - Every request in [OneTimeSetUp]/[OneTimeTearDown] asserts its status (no bare Data! dereference)
+   - Cleanup everywhere, incl. in-test `finally` — try/catch + warning, never an unhandled exception
+   - ShouldMatchRequest() after POST/PATCH — no hand-rolled field-by-field comparisons
+   - No hardcoded volatile entities (live branch names → dynamic lookup or Entry Criteria)
+
 4. Cross-cutting checks:
    - Dead code: unused methods, unused models, unused using statements
    - DRY violations: repeated patterns that should be extracted

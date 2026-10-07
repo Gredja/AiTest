@@ -74,10 +74,24 @@ public class IssueLifecycleTests : GitHubE2ETestBase
         {
             if (created.Data is not null)
             {
-                await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                    GitHubEndpoints.RepoIssueById,
-                    new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                    [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
+                try
+                {
+                    var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+                        GitHubEndpoints.RepoIssueById,
+                        new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+                        [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
+
+                    if (!cleanup.IsSuccessful)
+                    {
+                        TestContext.Progress.WriteLine(
+                            $"Warning: issue {created.Data.Number} not closed: HTTP {(int)cleanup.StatusCode}");
+                    }
+                }
+                catch (HttpRequestException exception)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: failed to close issue {created.Data.Number}: {exception.Message}");
+                }
             }
         }
     }

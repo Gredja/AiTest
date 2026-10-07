@@ -4,6 +4,8 @@ namespace Core.Logging;
 
 internal sealed class ActionLogHandler : DelegatingHandler
 {
+    private const int MaxLoggedBodyChars = 4096;
+
     public ActionLogHandler(HttpMessageHandler innerHandler) : base(innerHandler)
     {
     }
@@ -22,8 +24,8 @@ internal sealed class ActionLogHandler : DelegatingHandler
             request.RequestUri?.ToString() ?? string.Empty,
             (int)response.StatusCode,
             (int)stopwatch.Elapsed.TotalMilliseconds,
-            Escape(requestBody),
-            Escape(responseBody));
+            Escape(Truncate(requestBody)),
+            Escape(Truncate(responseBody)));
 
         return response;
     }
@@ -69,4 +71,15 @@ internal sealed class ActionLogHandler : DelegatingHandler
 
     private static string Escape(string value) =>
         value.Replace("\r\n", "\\n").Replace("\r", "\\n").Replace("\n", "\\n");
+
+    // Full response bodies (paginated lists) would bloat action logs — keep enough context for debugging
+    private static string Truncate(string value)
+    {
+        if (value.Length <= MaxLoggedBodyChars)
+        {
+            return value;
+        }
+
+        return $"{value[..MaxLoggedBodyChars]}...[truncated, total {value.Length} chars]";
+    }
 }

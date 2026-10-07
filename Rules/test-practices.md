@@ -6,6 +6,7 @@
 - Order of execution must not matter
 - Each test sets up its own data, doesn't rely on another test's side effects
 - Clean up in teardown if tests create resources
+- **Setup/teardown requests assert their status** — every GET/POST inside `[OneTimeSetUp]`/`[OneTimeTearDown]` gets `ShouldHaveStatusCode(...)` immediately after the call. A failed setup must fail with a clear status assertion, not a `NullReferenceException` mid-fixture (kills CI diagnostics)
 
 ## API testing patterns
 
@@ -22,6 +23,7 @@
 - Never hardcode 999, 1000, or any static number
 - If API returns 200 instead of 404 — use `[Ignore]` with explanation of the bug
 - For negative tests with invalid types (0, negative, non-numeric) — use explicit values
+- **Volatile external entities as test data** (live branch names, temporary numbers) — dynamic lookup only; if a hardcoded dependency is unavoidable (e.g. a branch with a slash), register it in Entry Criteria (`documentation/GitHubTestingStructure.md`) and keep it alive for the suite's lifetime
 
 ## Request/Response comparison
 
@@ -35,6 +37,7 @@
 - Every E2E test that creates a resource must delete it in teardown
 - Cleanup order: delete comments before issues, delete branches before PRs, delete PRs before repos
 - If cleanup fails, log warning but don't fail the test — resource can be manually cleaned
+- **"Warning, not failure" covers in-test cleanup too** — cleanup in `finally` (and any non-teardown path) is wrapped in `try/catch` + `TestContext.Progress.WriteLine(...)`; an unhandled cleanup exception would replace the original test failure and mask its cause
 - Use sandbox repo for all write operations — never target production data
 
 ## Temp and artifact cleanup

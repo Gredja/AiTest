@@ -40,6 +40,7 @@ Collect three lists:
 - Assertion rules (`Rules/assertions.md`): FluentAssertions only
 - Comment rules (`Rules/comments.md`): default = no comments
 - Config rules (`Rules/config.md`): Endpoints in JsonPlaceholderEndpoints.cs/GitHubEndpoints.cs, never hardcoded
+- Test practices (`Rules/test-practices.md`): every request in `[OneTimeSetUp]`/`[OneTimeTearDown]` asserts its status; cleanup everywhere (incl. in-test `finally`) = `try/catch` + warning, never an unhandled exception; `ShouldMatchRequest()` after POST/PATCH; no hardcoded volatile entities (live branch names etc. → dynamic lookup or Entry Criteria)
 - Pattern consistency: compare against existing similar code, check for DRY violations
 
 ## Step 5: Classify each issue

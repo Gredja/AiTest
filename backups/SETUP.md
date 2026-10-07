@@ -371,7 +371,8 @@ git checkout -b features/add-user-tests
 - Seed-методология: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → ~15-20 тестов на endpoint
 - Обязательные поля request body → тест на КАЖДОЕ отсутствующее поле (`*_Missing{Field}_*`); пустой body не заменяет проверку полей
 - Негативы считаются по АКТИВНЫМ тестам (`[Ignore]` не в счёт); когда полезные режимы исчерпаны — фиксируй достигнутое, не плоди дубли
-- Non-existent ID: динамически `maxId + 1`; если в том же ране есть concurrent-записи (solution-ран Api + E2E) — `maxId + Offset` (`GitHubEndpoints.NonExistentIdOffset = 100`); stateless mock (JP) остаётся на `maxId + 1`
+- Non-existent ID: динамически `maxId + 1`; если в том же ране есть concurrent-записи (solution-ран Api + E2E) — `maxId + Offset` (`GitHubEndpoints.NonExistentIdOffset = 100`); stateless mock (JP) остаётся на `maxId + 1`; волатильные сущности (имена живых веток) — только dynamic lookup либо запись в Entry Criteria
+- Setup/teardown: каждый запрос в `[OneTimeSetUp]`/`[OneTimeTearDown]` сразу проверяет статус (`ShouldHaveStatusCode`) — иначе падение токена даёт NRE посреди фикстуры; cleanup везде, включая `finally` внутри теста — `try/catch` + warning (cleanup = warning, не failure, и не подмена исходного исключения)
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveError()` (статус + читаемый message + совпадение с документированным в OB), `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
