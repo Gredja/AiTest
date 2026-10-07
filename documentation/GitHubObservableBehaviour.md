@@ -186,7 +186,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 - Response status is 200 OK
 - Response body is a JSON array
-- Each object has: `id` (integer), `title` (string), `state` (string: "open" | "closed"), `user` (object with `login`, `id`), `head` (object with `ref`, `sha`), `base` (object with `ref`, `sha`), `created_at` (datetime), `updated_at` (datetime), `merged_at` (datetime or null)
+- Each object has: `id` (integer), `number` (integer, PR number used in `/pulls/{pull_number}` paths), `title` (string), `state` (string: "open" | "closed"), `user` (object with `login`, `id`), `head` (object with `ref`, `sha`), `base` (object with `ref`, `sha`), `created_at` (datetime), `updated_at` (datetime), `merged_at` (datetime or null)
 - Content-Type is application/json
 - Response time < 5s
 
@@ -263,10 +263,17 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - Response body is a JSON object
 - Object has: `name` (string, matches {branch}), `commit` (object with `sha` string of 40 hex chars)
 - Content-Type is application/json
+- Response time < 5s
+
+**Edge:**
+- Branch name containing slash (e.g. `features/GitHub-API-Integration`) → 200 OK, `name` equals the full branch name including slashes
 
 **Negative:**
 - Non-existent branch → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Branch name with spaces (URL-encoded, e.g. `branch%20with%20spaces`) → 404
 - Non-existent repo → 404, body has `message` (string: "Not Found")
+- Non-existent owner → 404, body has `message` (string: "Not Found")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
 
 ---
 

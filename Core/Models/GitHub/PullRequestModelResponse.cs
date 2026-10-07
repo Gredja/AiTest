@@ -8,6 +8,9 @@ public class PullRequestModelResponse
     [PositiveId]
     public long Id { get; set; }
 
+    [PositiveId]
+    public int Number { get; set; }
+
     [RequiredField]
     public string Title { get; set; }
 

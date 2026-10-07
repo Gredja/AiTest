@@ -8,6 +8,10 @@ public static class GitHubEndpoints
     public const string NonExistentRepo = "this-repo-definitely-does-not-exist-12345";
     public const string NonExistentUser = "this-user-definitely-does-not-exist-12345";
     public const string NonExistentRepoName = "nonexistent";
+    public const string NonExistentBranchName = "nonexistent-branch-12345";
+    public const string BranchWithSpacesName = "branch with spaces";
+    public const string DefaultBranch = "main";
+    public const string FeatureBranchName = "features/GitHub-API-Integration";
     public const string StateOpen = "open";
     public const string StateClosed = "closed";
     public const string StateAll = "all";

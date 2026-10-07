@@ -141,15 +141,13 @@ public class GetBranchesTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
-    private const string NonExistentBranchName = "nonexistent-branch-12345";
-
     [Test]
     [Category("Negative")]
     [Description("4.11 Non-existent branch returns 404")]
     public async Task GetBranches_NonExistentBranch_ReturnsNotFound()
     {
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranchByName,
-            [.. TestRepoParam(), .. BranchNameParam(NonExistentBranchName)]);
+            [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.NonExistentBranchName)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

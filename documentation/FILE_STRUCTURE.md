@@ -128,6 +128,8 @@ Core/
 │   │   ├── JsonFields.cs
 │   │   ├── Label.cs
 │   │   ├── PullRequestBranch.cs
+│   │   ├── PullRequestCommitModelResponse.cs
+│   │   ├── PullRequestFileModelResponse.cs
 │   │   ├── PullRequestModelResponse.cs
 │   │   ├── RateLimitModelResponse.cs
 │   │   ├── RateLimitResources.cs
@@ -183,6 +185,7 @@ Api/
 │       ├── AuthRepos/
 │       │   └── GetAuthenticatedUserReposTests.cs
 │       ├── Branches/
+│       │   ├── GetBranchByNameTests.cs
 │       │   └── GetBranchesTests.cs
 │       ├── IssueComments/
 │       │   └── GetIssueCommentsTests.cs
@@ -192,6 +195,8 @@ Api/
 │       ├── PublicRepos/
 │       │   └── GetPublicReposTests.cs
 │       ├── PullRequests/
+│       │   ├── GetPullRequestCommitsTests.cs
+│       │   ├── GetPullRequestFilesTests.cs
 │       │   └── GetPullRequestsTests.cs
 │       ├── RateLimit/
 │       │   └── GetRateLimitTests.cs

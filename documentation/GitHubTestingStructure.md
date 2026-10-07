@@ -14,11 +14,11 @@
 | 3 | **Pull Requests** | GET /repos/{owner}/{repo}/pulls — status, fields, pagination, state filter | Done |
 | 4 | **Branches** | GET /repos/{owner}/{repo}/branches — status, fields, pagination | Done |
 | 5 | **Rate Limit & Misc** | GET /rate_limit — status, remaining, reset, sections | Done |
-| 6 | **Pull Request details** | GET /pulls/{pull_number}/files, /pulls/{pull_number}/commits — status, contract, fields, negatives | TODO (design D1–D2) |
-| 7 | **Branch detail** | GET /branches/{branch} — status, contract, fields, negatives | TODO (design D3) |
+| 6 | **Pull Request details** | GET /pulls/{pull_number}/files, /pulls/{pull_number}/commits — status, contract, fields, negatives | Done (D1–D2) |
+| 7 | **Branch detail** | GET /branches/{branch} — status, contract, fields, negatives | Done (D3) |
 | 8 | **Repo metadata** | GET /contributors, /languages, /topics, /tags — status, contract, fields, negatives | TODO (design D4–D7) |
 
-**Total:** ~55 implemented read-only tests across 10 endpoint groups; 88 tests designed for 7 more groups — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md) → "Test Design for TODO Endpoints (D1–D7)".
+**Total:** ~94 implemented read-only tests across 12 endpoint groups; 49 tests designed for 4 more groups — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md) → "Test Design for TODO Endpoints (D1–D7)".
 
 ## 2. Out of Scope
 
