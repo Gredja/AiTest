@@ -63,7 +63,6 @@ Core/
 │   ├── RequiredFieldAttribute.cs
 │   └── ValueRangeAttribute.cs
 ├── Config/
-│   ├── FakeStoreEndpoints.cs
 │   ├── GitHubEndpoints.cs
 │   ├── JsonPlaceholderEndpoints.cs
 │   └── TestConfig.cs
@@ -76,7 +75,6 @@ Core/
 │   │   ├── GitHubParamHelper.cs
 │   │   └── GitHubTestBase.cs
 │   ├── Http/
-│   │   ├── FakeStoreRequestHelper.cs
 │   │   ├── GitHubRequestHelper.cs
 │   │   ├── JsonPlaceholderRequestHelper.cs
 │   │   └── RequestHelper.cs
@@ -103,19 +101,6 @@ Core/
 │   │   ├── ParamType.cs
 │   │   ├── RequestDictionaryModel.cs
 │   │   └── UserOwnedModel.cs
-│   ├── FakeStore/
-│   │   ├── Address.cs
-│   │   ├── AuthModelRequest.cs
-│   │   ├── AuthModelResponse.cs
-│   │   ├── CartModelResponse.cs
-│   │   ├── CartProduct.cs
-│   │   ├── Geolocation.cs
-│   │   ├── ProductModelResponse.cs
-│   │   ├── ProductModelRequest.cs
-│   │   ├── Rating.cs
-│   │   ├── UserModelResponse.cs
-│   │   ├── UserModelRequest.cs
-│   │   └── UserName.cs
 │   ├── JsonPlaceholder/
 │   │   ├── Address.cs
 │   │   ├── AlbumModelResponse.cs
@@ -159,24 +144,6 @@ Core/
 Api/
 ├── Api.csproj
 ├── AllureGlobalSetup.cs
-├── FakeStore/
-│   ├── Helpers/
-│   │   ├── FakeStoreParamHelper.cs
-│   │   └── FakeStoreTestData.cs
-│   └── Tests/
-│       ├── Auth/
-│       │   └── LoginTests.cs
-│       ├── Carts/
-│       │   ├── GetAllCartsTests.cs
-│       │   └── GetCartByIdTests.cs
-│       ├── Products/
-│       │   ├── GetAllProductsTests.cs
-│       │   ├── GetProductByIdTests.cs
-│       │   ├── GetProductCategoriesTests.cs
-│       │   └── GetProductsByCategoryTests.cs
-│       └── Users/
-│           ├── GetAllUsersTests.cs
-│           └── GetUserByIdTests.cs
 ├── JsonPlaceholder/
 │   ├── Helpers/
 │   │   ├── JsonPlaceholderParamHelper.cs
@@ -289,17 +256,6 @@ Rules/
 documentation/
 ├── BugReportTemplate.md
 ├── Bugs/
-│   ├── FakeStore/
-│   │   ├── FS-001-products-non-existent-id-returns-200.md
-│   │   ├── FS-002-products-id-zero-returns-200.md
-│   │   ├── FS-003-products-negative-id-returns-200.md
-│   │   ├── FS-004-users-non-existent-id-returns-200.md
-│   │   ├── FS-005-users-id-zero-returns-200.md
-│   │   ├── FS-006-users-negative-id-returns-200.md
-│   │   ├── FS-007-carts-non-existent-id-returns-200.md
-│   │   ├── FS-008-carts-id-zero-returns-200.md
-│   │   ├── FS-009-carts-negative-id-returns-200.md
-│   │   └── FS-010-list-endpoints-invalid-params-return-200.md
 │   └── JsonPlaceholder/
 │       ├── JP-001-create-post-accepts-empty-body.md
 │       ├── JP-002-delete-post-does-not-actually-delete.md
@@ -308,8 +264,6 @@ documentation/
 │       ├── JP-005-put-post-accepts-missing-required-fields.md
 │       └── JP-006-patch-post-returns-200-for-any-id.md
 ├── FILE_STRUCTURE.md
-├── FakeStoreObservableBehaviour.md
-├── FakeStoreTestPlan.md
 ├── GeneralPlan.md                # Permanent user backlog (never deleted)
 ├── GitHubObservableBehaviour.md
 ├── GitHubTestingStructure.md

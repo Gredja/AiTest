@@ -15,7 +15,7 @@ Generates a complete set of NUnit API tests for any REST API service endpoint â€
 
 | Placeholder | Description | Example value |
 |---|---|---|
-| `{{service_name}}` | API service (matches directory/class names) | FakeStore, JsonPlaceholder, Swapi |
+| `{{service_name}}` | API service (matches directory/class names) | JsonPlaceholder, GitHub, Swapi |
 | `{{endpoint_name}}` | Endpoint to test | users, posts, todos |
 
 ---

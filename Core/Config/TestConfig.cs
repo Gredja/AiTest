@@ -9,21 +9,11 @@ public static class TestConfig
     private static readonly JsonDocument _root = JsonDocument.Parse(
         File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "testsettings.json")));
 
-    private static JsonElement FakeStore => _root.RootElement.GetProperty("FakeStore");
     private static JsonElement JsonPlaceholder => _root.RootElement.GetProperty("JsonPlaceholder");
     private static JsonElement GitHub => _root.RootElement.GetProperty("GitHub");
 
     public static int MaxResponseTimeMs => _root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
     public static bool IsSslValidationSkipped => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
-
-    public static string FakeStoreBaseUrl => FakeStore.GetProperty(BaseUrlKey).GetString()!;
-    public static int ExpectedProductCount => FakeStore.GetProperty("ExpectedProductCount").GetInt32();
-    public static int ExpectedCartCount => FakeStore.GetProperty("ExpectedCartCount").GetInt32();
-    public static int ExpectedCategoryCount => FakeStore.GetProperty("ExpectedCategoryCount").GetInt32();
-    public static int ExpectedProductsInCategoryCount => FakeStore.GetProperty("ExpectedProductsInCategoryCount").GetInt32();
-    public static string TestCategoryName => FakeStore.GetProperty("TestCategoryName").GetString()!;
-    public static string LoginUsername => FakeStore.GetProperty("Login").GetProperty("Username").GetString()!;
-    public static string LoginPassword => FakeStore.GetProperty("Login").GetProperty("Password").GetString()!;
 
     public static string JsonPlaceholderBaseUrl => JsonPlaceholder.GetProperty(BaseUrlKey).GetString()!;
 

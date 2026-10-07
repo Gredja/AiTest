@@ -73,7 +73,7 @@ Write-Host ""
 Write-Host "=== File Coverage (endpoint → test) ===" -ForegroundColor Cyan
 Write-Host ""
 
-$services = @("FakeStore", "JsonPlaceholder", "GitHub")
+$services = @("JsonPlaceholder", "GitHub")
 
 foreach ($service in $services) {
     $endpointsFile = "Core/Config/${service}Endpoints.cs"
@@ -102,7 +102,6 @@ Write-Host "=== Per-Service Code Coverage ===" -ForegroundColor Cyan
 Write-Host ""
 
 $serviceNamespaces = @{
-    "FakeStore"      = @("Core/Models/FakeStore", "Api/FakeStore")
     "JsonPlaceholder" = @("Core/Models/JsonPlaceholder", "Api/JsonPlaceholder")
     "GitHub"         = @("Core/Models/GitHub", "Api/GitHub")
 }
@@ -139,7 +138,7 @@ foreach ($file in $coverageFiles) {
     }
 }
 
-foreach ($service in @("FakeStore", "JsonPlaceholder", "GitHub")) {
+foreach ($service in @("JsonPlaceholder", "GitHub")) {
     if ($serviceResults.ContainsKey($service)) {
         $covered = $serviceResults[$service].Covered
         $total = $serviceResults[$service].Total
@@ -183,7 +182,7 @@ $html = @"
             <tr><th>Service</th><th>Endpoints</th><th>Tested</th><th>Coverage</th></tr>
 "@
 
-foreach ($service in @("FakeStore", "JsonPlaceholder", "GitHub")) {
+foreach ($service in @("JsonPlaceholder", "GitHub")) {
     $endpointsFile = "Core/Config/${service}Endpoints.cs"
     if (-not (Test-Path $endpointsFile)) { continue }
     $content = Get-Content $endpointsFile -Raw
@@ -209,7 +208,7 @@ $html += @"
             <tr><th>Service</th><th>Lines Covered</th><th>Lines Total</th><th>Coverage</th></tr>
 "@
 
-foreach ($service in @("FakeStore", "JsonPlaceholder", "GitHub")) {
+foreach ($service in @("JsonPlaceholder", "GitHub")) {
     if ($serviceResults.ContainsKey($service)) {
         $covered = $serviceResults[$service].Covered
         $total = $serviceResults[$service].Total

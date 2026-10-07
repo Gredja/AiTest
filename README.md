@@ -13,11 +13,6 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 
 ## APIs Under Test
 
-### FakeStoreAPI — https://fakestoreapi.com
-- Products — GET (list, by ID, by category, categories)
-- Users, Carts — GET (list, by ID)
-- Auth — POST (login)
-
 ### JSONPlaceholder — https://jsonplaceholder.typicode.com
 - Posts — GET, POST, PUT, PATCH, DELETE
 - Comments, Albums, Photos, Todos, Users — GET (all, by parent/ID)
@@ -48,8 +43,6 @@ dotnet test --filter Category=HealthCheck
 ## Documentation
 
 - `documentation/GeneralPlan.md` — permanent user backlog (statuses TODO / IN PROGRESS / DONE, never deleted)
-- `documentation/FakeStoreTestPlan.md` — FakeStore API test plan (coverage + negative floor status)
-- `documentation/FakeStoreObservableBehaviour.md` — observable behaviour for FakeStore API
 - `documentation/JsonPlaceholderTestPlan.md` — JsonPlaceholder API test plan (coverage + negative floor status)
 - `documentation/JsonPlaceholderObservableBehaviour.md` — observable behaviour for JsonPlaceholder API
 - `.mimocode/plans/github-full-coverage.md` — GitHub API test plan (Phase 1 + Phase 2)

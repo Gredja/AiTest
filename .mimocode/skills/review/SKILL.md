@@ -12,7 +12,7 @@ Review the entire Gredja project against all rules and patterns. Comprehensive a
 Run in parallel:
 - `Get-ChildItem -Recurse -Include "*.cs" | Where-Object { $_.FullName -notmatch "\\obj\\" }` — list all source files
 - Read `Rules/*.md` — all rule files
-- Read `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`
+- Read `Core/Config/JsonPlaceholderEndpoints.cs` and `Core/Config/GitHubEndpoints.cs`
 
 ## Step 2: Spawn subagent (main agent)
 
@@ -34,7 +34,6 @@ Working dir: {working_dir}
    - Core/Config/*.cs
    - Core/Helpers/*.cs
    - Core/Models/**/*.cs
-   - Api/FakeStore/Tests/*.cs
    - Api/JsonPlaceholder/Tests/*.cs
    - Api/AllureGlobalSetup.cs
    - AllureAdapter/Helpers/*.cs
@@ -76,7 +75,7 @@ Working dir: {working_dir}
    - Exceptions: regex explanations, TODO (remove before merge), non-obvious WHY
 
    Config rules (Rules/config.md):
-   - Base URL and endpoints in FakeStoreEndpoints.cs/JsonPlaceholderEndpoints.cs
+   - Base URL and endpoints in JsonPlaceholderEndpoints.cs/GitHubEndpoints.cs
    - Never hardcode in tests
 
    Category rules (Rules/categories.md):

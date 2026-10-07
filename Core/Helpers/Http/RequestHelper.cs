@@ -9,16 +9,13 @@ public class RequestHelper
 {
     protected const string AuthorizationHeader = "Authorization";
 
-    private static readonly RestClient _fakeStoreClient = CreateClient(FakeStoreEndpoints.BaseUrl);
     private static readonly RestClient _jsonPlaceholderClient = CreateClient(JsonPlaceholderEndpoints.BaseUrl);
     private static readonly RestClient _gitHubClient = CreateClient(GitHubEndpoints.BaseUrl);
     private static readonly Lazy<string?> _githubToken = new(() => GitHubEndpoints.Token);
 
-    protected RestClient Client { get; private set; } = _fakeStoreClient;
+    protected RestClient Client { get; private set; } = _jsonPlaceholderClient;
 
     protected void UseJsonPlaceholder() => Client = _jsonPlaceholderClient;
-
-    protected void UseFakeStore() => Client = _fakeStoreClient;
 
     protected void UseGitHub() => Client = _gitHubClient;
 

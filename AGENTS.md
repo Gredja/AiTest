@@ -1,15 +1,15 @@
 # AGENTS.md — Gredja
 
-AQA-проект. API-тесты (NUnit + RestSharp): FakeStoreAPI, JSONPlaceholder, GitHub API.
+AQA-проект. API-тесты (NUnit + RestSharp): JSONPlaceholder, GitHub API.
 E2E тесты (NUnit + RestSharp): GitHub write operations.
 
 ## Project Structure
 
-- `Api/` — NUnit API-тесты (FakeStore, JsonPlaceholder, GitHub)
+- `Api/` — NUnit API-тесты (JsonPlaceholder, GitHub)
 - `E2E/` — NUnit E2E тесты (GitHub write operations)
 - `Core/Models/` — модели ответов/запросов
-- `Core/Helpers/` — общие хелперы по подпапкам: `Http/` (request-инфраструктура: `RequestHelper`, `FakeStore/JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — вариативные write-данные), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`); нужны E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
-- `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
+- `Core/Helpers/` — общие хелперы по подпапкам: `Http/` (request-инфраструктура: `RequestHelper`, `JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — вариативные write-данные), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`); нужны E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
+- `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URL и пути эндпоинтов
 - `Core/Logging/` — логирование действий (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) и сырые результаты тестов (`test-results-*.log`). `TestResults/` содержит **только отчёты**, сырые артефакты прогона — во временной папке
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (вызывается из NUnit-teardown `TestReportSetup`), age-based очистка артефактов старше 7 дней
 - `Rules/` — полные правила (здесь — краткая сводка)
@@ -40,7 +40,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - Response: suffix `ModelResponse` (включает `Id`). Request: suffix `ModelRequest` (без `Id`). Вложенные/вспомогательные — без суффикса
 - Reference types (string, object, List): без `?`, без initializer
 - Value types (int, decimal, DateTime): `?` только если JSON-поле может быть null/absent
-- Namespace: `Core.Models.{Service}` (например `Core.Models.FakeStore`). Чистые контейнеры данных — без конструкторов, валидации, логики
+- Namespace: `Core.Models.{Service}` (например `Core.Models.GitHub`). Чистые контейнеры данных — без конструкторов, валидации, логики
 
 ### Assertions
 - FluentAssertions (не NUnit Assert)
@@ -52,7 +52,7 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 - Исключения: regex-объяснения, TODO (только в dev, удалить до merge), non-obvious WHY
 
 ### Config
-- Base URL и эндпоинты в `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`. Никогда не хардкодить в тестах.
+- Base URL и эндпоинты в `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`. Никогда не хардкодить в тестах.
 
 ### Git
 - Repo: github.com/Gredja/AiTest.git, branch: `main`
@@ -64,7 +64,6 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 ## Key Decisions
 - 0 и -1 — безопасные static IDs (всегда невалидные)
 - Dynamic non-existent ID = maxId + 1 (не статический 999)
-- FakeStoreAPI: ровно 20 товаров (IDs 1-20)
 - Seed methodology: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → see `Rules/test-practices.md`
 - Document sync: Observable Behaviour ↔ Test Plan ↔ Rules — always in sync
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown
@@ -102,6 +101,6 @@ E2E тесты (NUnit + RestSharp): GitHub write operations.
 $env:PATH = "C:\Users\User\.local\bin;$env:PATH"
 graphify . --code-only --force
 graphify query "show all models"
-graphify path "ProductModelResponse" "Rating"
+graphify path "PostModelResponse" "User"
 graphify explain "UserModelResponse"
 ```

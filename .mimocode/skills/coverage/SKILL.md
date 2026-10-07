@@ -40,7 +40,7 @@ Working dir: {working_dir}
      ```
      | Service | Endpoints | Tested | Coverage |
      |---------|-----------|--------|----------|
-     | FakeStore | 8 | 4 | 50% |
+     | JsonPlaceholder | 8 | 4 | 50% |
      | ... | ... | ... | ... |
      ```
    - List of untested endpoints per service

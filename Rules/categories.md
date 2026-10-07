@@ -8,7 +8,6 @@ Add exactly one service category to the `[TestFixture]` class:
 
 | Service | Category |
 |---------|----------|
-| FakeStore API | `[Category("FakeStore")]` |
 | JSONPlaceholder API | `[Category("JsonPlaceholder")]` |
 | GitHub API | `[Category("GitHub")]` |
 | GitHub E2E | `[Category("GitHubE2E")]` |
@@ -16,8 +15,8 @@ Add exactly one service category to the `[TestFixture]` class:
 ```csharp
 [TestFixture]
 [AllureNUnit]
-[Category("FakeStore")]
-public class GetAllProductsTests : RequestHelper
+[Category("JsonPlaceholder")]
+public class GetAllPostsTests : RequestHelper
 ```
 
 ## Check-type category (on method)
@@ -37,17 +36,17 @@ Each test method gets ONE primary category based on what it verifies:
 [Test]
 [Category("HealthCheck")]
 [Description("1.1 Status code is 200")]
-public async Task GetAllProducts_ReturnsOk()
+public async Task GetAllPosts_ReturnsOk()
 
 [Test]
 [Category("ContractCheck")]
 [Description("1.2 Response matches expected model schema")]
-public async Task GetAllProducts_ReturnsExpectedFields()
+public async Task GetAllPosts_ReturnsExpectedFields()
 
 [Test]
 [Category("Regression")]
 [Description("1.4 Each item has valid required fields")]
-public async Task GetAllProducts_EachItemHasValidFields()
+public async Task GetAllPosts_EachItemHasValidFields()
 ```
 
 ## Category-to-test mapping
@@ -72,4 +71,4 @@ public async Task GetAllProducts_EachItemHasValidFields()
 - NEVER put the service category on methods — it goes on the class
 - A method can have only ONE check-type category (the primary thing it verifies)
 - `[Ignore]` tests also get their category (Negative) — ignored tests are still categorized
-- When filtering: `dotnet test --filter Category=FakeStore` runs all FakeStore tests; `dotnet test --filter Category=Negative` runs all negative tests across all services
+- When filtering: `dotnet test --filter Category=JsonPlaceholder` runs all JsonPlaceholder tests; `dotnet test --filter Category=Negative` runs all negative tests across all services

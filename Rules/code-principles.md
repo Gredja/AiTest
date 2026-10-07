@@ -18,7 +18,7 @@
 ## Expression-bodied members
 
 - Use `=>` for single-expression methods, properties, and lambdas
-- Example: `protected void UseFakeStore() => Client = _fakeStoreClient;`
+- Example: `protected void UseGitHub() => Client = _gitHubClient;`
 
 ## SOLID principles
 

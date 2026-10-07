@@ -4,7 +4,7 @@ namespace Core.Logging;
 
 internal static class TestSourceCategoryReader
 {
-    private static readonly string[] _serviceCategories = ["FakeStore", "JsonPlaceholder", "GitHub", "GitHubE2E"];
+    private static readonly string[] _serviceCategories = ["JsonPlaceholder", "GitHub", "GitHubE2E"];
     private static readonly Regex _classRegex = new(@"public\s+(?:abstract\s+)?class\s+(\w+)");
     private static readonly Regex _methodRegex = new(@"public\s+async\s+Task\s+(\w+)");
     private static readonly Regex _categoryRegex = new(@"Category\(""(\w+)""\)");

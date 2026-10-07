@@ -212,11 +212,10 @@ Gredja/
 ├── AGENTS.md                     # Описание проекта для ИИ-агента
 ├── Core/
 │   ├── Config/                   # URL и пути к API endpoint'ам
-│   │   ├── FakeStoreEndpoints.cs
 │   │   ├── JsonPlaceholderEndpoints.cs
 │   │   └── GitHubEndpoints.cs
 │   ├── Helpers/                  # Тестовая инфраструктура (всегда здесь, даже для E2E)
-│   │   ├── Http/                 # RequestHelper (Get/Post/Put/Patch/Delete) + FakeStore/JsonPlaceholder/GitHubRequestHelper
+│   │   ├── Http/                 # RequestHelper (Get/Post/Put/Patch/Delete) + JsonPlaceholder/GitHubRequestHelper
 │   │   ├── Params/               # Общие IdParam/UrlSegment/Query
 │   │   ├── Assertions/           # ShouldHaveStatusCode и др.
 │   │   ├── Data/                 # DataGenerator: RandomString/RandomInt для write-данных
@@ -224,12 +223,10 @@ Gredja/
 │   ├── Logging/                   # Лог действий (Serilog → %TEMP%\GredjaTestRun) + test-results-*.log
 │   ├── Reporting/                 # Генератор TestRunReport-*.md (teardown)
 │   └── Models/                   # Модели данных (Response/Request)
-│       ├── FakeStore/            # Модели FakeStoreAPI
 │       ├── JsonPlaceholder/      # Модели JSONPlaceholder
 │       ├── GitHub/               # Модели GitHub API
 │       └── Generic/              # Общие модели
 ├── Api/
-│   ├── FakeStore/Tests/          # Тесты FakeStoreAPI (Auth/, Carts/, Products/, Users/)
 │   ├── JsonPlaceholder/Tests/    # Тесты JSONPlaceholder
 │   │   ├── Albums/               # Тесты альбомов
 │   │   ├── Comments/             # Тесты комментариев
@@ -248,10 +245,7 @@ Gredja/
 │   ├── FILE_STRUCTURE.md         # Точное дерево всех файлов проекта
 │   ├── GeneralPlan.md            # Постоянный план хотелок пользователя (не удаляется)
 │   ├── Bugs/                     # Баг-репорты
-│   │   ├── FakeStore/            # Баги FakeStoreAPI
 │   │   └── JsonPlaceholder/      # Баги JsonPlaceholder
-│   ├── FakeStoreObservableBehaviour.md # Наблюдаемое поведение FakeStore API
-│   ├── FakeStoreTestPlan.md       # План тестирования FakeStore API
 │   ├── GitHubTestingStructure.md # Структура тестирования
 │   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
 │   ├── JsonPlaceholderObservableBehaviour.md # Наблюдаемое поведение JP API
@@ -263,8 +257,7 @@ Gredja/
     └── plans/                   # Активные планы работ (github-full-coverage.md и др.)
 ```
 
-**Проект тестирует три REST API:**
-- **FakeStoreAPI** — интернет-магазин (20 товаров, IDs 1-20)
+**Проект тестирует два REST API:**
 - **JSONPlaceholder** — фейковый REST API (посты, комментарии, пользователи)
 - **GitHub API** — реальный GitHub (репозитории, Issues, PR, Branches)
 
@@ -368,7 +361,7 @@ git checkout -b features/add-user-tests
 - Response модели: суффикс `ModelResponse` (включает `Id`)
 - Request модели: суффикс `ModelRequest` (без `Id`)
 - Вложенные/вспомогательные модели — без суффикса
-- Namespace: `Core.Models.{Service}` (например `Core.Models.FakeStore`)
+- Namespace: `Core.Models.{Service}` (например `Core.Models.GitHub`)
 - Чистые контейнеры данных — без логики
 
 **Тесты:**
@@ -379,7 +372,7 @@ git checkout -b features/add-user-tests
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
-- Категории: тип сервиса (FakeStore/JsonPlaceholder/GitHub) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
+- Категории: тип сервиса (JsonPlaceholder/GitHub/GitHubE2E) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`
@@ -463,7 +456,7 @@ dotnet build
 
 **Тесты падают с ошибкой подключения**
 
-- FakeStoreAPI и JSONPlaceholder — фейковые API, проблемы с интернетом
+- JSONPlaceholder — фейковый API, проблемы с интернетом
 - GitHub API — нужен `.env` с `GITHUB_PAT` (см. Часть 4)
 
 **Тесты падают с 401/403**
@@ -500,11 +493,10 @@ dotnet build
 
 - **Репозиторий:** https://github.com/Gredja/AiTest
 - **MiMoCode:** https://github.com/XiaomiMiMo/MiMo-Code
-- **FakeStoreAPI:** https://fakestoreapi.com/docs
 - **JSONPlaceholder:** https://jsonplaceholder.typicode.com
 - **GitHub API:** https://docs.github.com/en/rest
-- **Observable Behaviour (source of truth для тестов):** `documentation/FakeStoreObservableBehaviour.md`, `documentation/JsonPlaceholderObservableBehaviour.md`, `documentation/GitHubObservableBehaviour.md` — читай OB своего сервиса
-- **Test Plan:** `documentation/FakeStoreTestPlan.md`, `documentation/JsonPlaceholderTestPlan.md`, `.mimocode/plans/github-full-coverage.md` — покрытие и статусы
+- **Observable Behaviour (source of truth для тестов):** `documentation/JsonPlaceholderObservableBehaviour.md`, `documentation/GitHubObservableBehaviour.md` — читай OB своего сервиса
+- **Test Plan:** `documentation/JsonPlaceholderTestPlan.md`, `.mimocode/plans/github-full-coverage.md` — покрытие и статусы
 - **Правила:** `Rules/*.md` — код, ассерты, тест-практики
 
 ---

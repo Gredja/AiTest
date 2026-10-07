@@ -39,7 +39,7 @@ Research/decision first, implementation only if the answer is "yes".
 
 ---
 
-## 3. Un-ignore FakeStore tests after API recovery — TODO
+## 3. Un-ignore FakeStore tests after API recovery — DONE
 
 **Wish (2026-10-06):** when fakestoreapi.com recovers from the HTTP 521 outage, remove the
 fixture-level `[Ignore("FakeStoreAPI: service under investigation — outage HTTP 521 ...")]`
@@ -50,3 +50,5 @@ service stays fully ignored with the marker in the attributes.
 **Status history:**
 - 2026-10-06 — `TODO`: added to backlog — FakeStore tests ignored during HTTP 521 outage
   (commits `854ccba`); tracked ONLY in this backlog (per user decision, no session task)
+- 2026-10-06 — `DONE`: superseded by user decision — FakeStoreAPI removed from the project
+  entirely (tests, helpers, models, config, docs); no longer applicable

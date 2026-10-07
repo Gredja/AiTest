@@ -111,7 +111,7 @@ Priority: `1` = must have, `2` = nice to have
 - If fewer than 5: generate more, each exercising a different failure mode
 - Failure modes: no auth, invalid token, wrong scope, missing required field, non-existent resource, invalid value, boundary value
 - **Missing-field rule (mandatory, ALL services)**: every required request field gets its OWN negative test that omits exactly that field (`*_Missing{Field}_*`); a single empty-body test does NOT replace per-field tests
-- **Mock-API exception**: some mock endpoints cannot produce 5 distinct active failures — list endpoints (query params and any id silently accepted) and GetById endpoints of FakeStore (200 for any input, e.g. `/products/abc`). Document the achieved count and stop; never pad with `[Ignore]`d tests just to hit the number
+- **Mock-API exception**: some mock endpoints cannot produce 5 distinct active failures — list endpoints (query params and any id silently accepted) and GetById endpoints that return 200 for any input. Document the achieved count and stop; never pad with `[Ignore]`d tests just to hit the number
 - **Ceiling rule**: when distinct useful failure modes are exhausted (verify with live probes first), stop even below 5 and note the achieved count — padding with redundant tests is worse than a documented gap. Useful beats numerous: a uniform GitHub auth middleware doesn't need a 401 test on every route
 
 **Step 5: Save** — target ~15-20 unique test cases per endpoint

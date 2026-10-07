@@ -9,12 +9,12 @@ Entry point for all Gredja project rules. Overview + pointers to detailed rule f
 
 ## Project
 
-Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). FakeStoreAPI, JSONPlaceholder, GitHub API.
+Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). JSONPlaceholder, GitHub API.
 
 - Repo: https://github.com/Gredja/AiTest.git
 - Branch: `main`, changes in `features/<topic>`
-- Test base classes: `FakeStoreRequestHelper`, `JsonPlaceholderRequestHelper`, `GitHubTestBase` (see `Core/Helpers/`)
-- Endpoints: `Core/Config/FakeStoreEndpoints.cs`, `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`
+- Test base classes: `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`, `GitHubTestBase` (see `Core/Helpers/`)
+- Endpoints: `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`
 
 ## Rule Files
 
@@ -39,5 +39,4 @@ Read the relevant file before working on the corresponding entity:
 - **No comments** unless regex pattern or non-obvious WHY
 - **No magic numbers** — extract to constants
 - **Non-existent IDs:** dynamic (GET all → maxId + 1), never static 999
-- **FakeStoreAPI:** returns 200 OK for non-existent IDs — mark tests with `[Ignore]`
 - **Commits:** only on user request, English, action + object format
