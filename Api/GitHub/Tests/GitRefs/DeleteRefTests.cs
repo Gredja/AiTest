@@ -14,8 +14,8 @@ namespace Api.GitHub.GitRefs;
 [Category("GitHub")]
 public class DeleteRefTests : GitHubTestBase
 {
-    private const string RefPathPrefix = "heads/audit-";
-    private const string NonExistentRefPath = "heads/nonexistent-branch-audit-12345";
+    private const string RefPathPrefix = $"{HeadsPrefix}audit-";
+    private const string NonExistentRefPath = $"{HeadsPrefix}nonexistent-branch-audit-12345";
 
     private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
@@ -37,7 +37,7 @@ public class DeleteRefTests : GitHubTestBase
         var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(8)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"refs/{refPath}", Sha = _baseSha }, TestRepoParam());
+            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{refPath[HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
         _createdRefs.Add(refPath);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -55,7 +55,7 @@ public class DeleteRefTests : GitHubTestBase
         var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(8)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"refs/{refPath}", Sha = _baseSha }, TestRepoParam());
+            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{refPath[HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
         _createdRefs.Add(refPath);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -86,7 +86,7 @@ public class DeleteRefTests : GitHubTestBase
     {
         var response = await Delete<object>(
             GitHubEndpoints.RepoGitRefById,
-            [.. TestRepoParam(), .. GitRefParam($"heads/{GitHubEndpoints.DefaultBranch}")]);
+            [.. TestRepoParam(), .. GitRefParam($"{HeadsPrefix}{GitHubEndpoints.DefaultBranch}")]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

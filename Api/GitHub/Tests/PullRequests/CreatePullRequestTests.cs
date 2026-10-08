@@ -184,7 +184,7 @@ public class CreatePullRequestTests : GitHubTestBase
 
         var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"refs/heads/{branchName}", Sha = mainBranch.Data!.Commit.Sha },
+            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{branchName}", Sha = mainBranch.Data!.Commit.Sha },
             TestRepoParam());
 
         _createdBranchNames.Add(branchName);

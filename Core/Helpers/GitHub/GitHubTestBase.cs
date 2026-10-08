@@ -19,8 +19,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     private const string ScratchFileName = "audit-scratch.txt";
     private const string FileMode644 = "100644";
     private const string BlobType = "blob";
-    private const string RefsPrefix = "refs/";
-    private const string HeadsPrefix = "heads/";
+    protected const string RefsHeadsPrefix = "refs/heads/";
+    protected const string HeadsPrefix = "heads/";
 
     protected static List<RequestDictionaryModel> TestRepoParam()
     {
@@ -74,12 +74,18 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     // tolerance would silently leak the branch
     protected async Task CleanupGitRefAsync(string refPath)
     {
-        var path = refPath.StartsWith(RefsPrefix, StringComparison.Ordinal)
-            ? refPath[RefsPrefix.Length..]
-            : refPath;
-        if (!path.StartsWith(HeadsPrefix, StringComparison.Ordinal))
+        string path;
+        if (refPath.StartsWith(RefsHeadsPrefix, StringComparison.Ordinal))
         {
-            path = $"{HeadsPrefix}{path}";
+            path = $"{HeadsPrefix}{refPath[RefsHeadsPrefix.Length..]}";
+        }
+        else if (refPath.StartsWith(HeadsPrefix, StringComparison.Ordinal))
+        {
+            path = refPath;
+        }
+        else
+        {
+            path = $"{HeadsPrefix}{refPath}";
         }
 
         await RunCleanupAsync(
@@ -150,13 +156,13 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         {
             var head = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
                 GitHubEndpoints.RepoGitRefs,
-                new CreateGitRefModelRequest { Ref = $"refs/heads/{headBranch}", Sha = commit.Data!.Sha },
+                new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{headBranch}", Sha = commit.Data!.Sha },
                 TestRepoParam());
             head.ShouldHaveStatusCode(HttpStatusCode.Created);
 
             var baseRef = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
                 GitHubEndpoints.RepoGitRefs,
-                new CreateGitRefModelRequest { Ref = $"refs/heads/{baseBranch}", Sha = mainSha },
+                new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{baseBranch}", Sha = mainSha },
                 TestRepoParam());
             baseRef.ShouldHaveStatusCode(HttpStatusCode.Created);
 

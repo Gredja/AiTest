@@ -15,7 +15,7 @@ namespace Api.GitHub.GitRefs;
 [Category("GitHub")]
 public class CreateRefTests : GitHubTestBase
 {
-    private const string BranchPrefix = "refs/heads/audit-";
+    private const string BranchPrefix = $"{RefsHeadsPrefix}audit-";
     private const string MissingSha = "0000000000000000000000000000000000000000";
     private const int ShaHexLength = 40;
 
@@ -200,7 +200,7 @@ public class CreateRefTests : GitHubTestBase
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        var refPath = refName["refs/".Length..];
+        var refPath = $"{HeadsPrefix}{refName[RefsHeadsPrefix.Length..]}";
         var result = await WaitHelper.WaitUntilAsync(
             () => Get<GitRefModelResponse>(GitHubEndpoints.RepoGitRefByName,
                 [.. TestRepoParam(), .. GitRefParam(refPath)]),
