@@ -16,7 +16,7 @@ namespace Api.GitHub.PullRequests;
 public class UpdatePullRequestTests : GitHubTestBase
 {
 
-    private readonly List<(int Number, string BranchName)> _createdPullRequests = [];
+    private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
 
     private const int TitleRandomLength = 8;
     private const int ExistingPullNumber = 1;
@@ -26,19 +26,20 @@ public class UpdatePullRequestTests : GitHubTestBase
     [Description("22.1 PATCH title returns 200 and persists")]
     public async Task UpdatePullRequest_PatchTitle_Persists()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var newTitle = $"Patched {DataGenerator.RandomString(TitleRandomLength)}";
+        var patchRequest = new UpdatePullRequestModelRequest { Title = newTitle };
         var patched = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
-            new UpdatePullRequestModelRequest { Title = newTitle },
+            patchRequest,
             PullParams(pullNumber));
 
         patched.ShouldHaveStatusCode(HttpStatusCode.OK);
-        patched.Data!.Title.Should().Be(newTitle);
+        patched.Data!.ShouldMatchRequest(patchRequest);
 
         var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(pullNumber));
@@ -51,18 +52,20 @@ public class UpdatePullRequestTests : GitHubTestBase
     [Description("22.2 PATCH state=closed persists via read-back")]
     public async Task UpdatePullRequest_ClosePersists()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
+
+        var closeRequest = new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed };
 
         var closed = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
-            new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+            closeRequest,
             PullParams(pullNumber));
 
         closed.ShouldHaveStatusCode(HttpStatusCode.OK);
-        closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
+        closed.Data!.ShouldMatchRequest(closeRequest);
 
         var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(pullNumber));
@@ -75,10 +78,10 @@ public class UpdatePullRequestTests : GitHubTestBase
     [Description("22.3 Content-Type is application/json")]
     public async Task UpdatePullRequest_ContentTypeIsJson()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var patched = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
@@ -131,6 +134,7 @@ public class UpdatePullRequestTests : GitHubTestBase
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         pulls.ShouldHaveStatusCode(HttpStatusCode.OK);
+        pulls.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
         var nonExistentPullNumber = pulls.Data!.Max(pull => pull.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
@@ -158,9 +162,9 @@ public class UpdatePullRequestTests : GitHubTestBase
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        foreach (var (number, branchName) in _createdPullRequests)
+        foreach (var (number, headBranch, baseBranch) in _createdPullRequests)
         {
-            await CleanupPullRequestAsync(number, branchName);
+            await CleanupPullRequestAsync(number, headBranch, baseBranch);
         }
     }
 }

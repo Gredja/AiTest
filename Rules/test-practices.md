@@ -6,10 +6,11 @@
 - Order of execution must not matter
 - Each test sets up its own data, doesn't rely on another test's side effects
 - Clean up in teardown if tests create resources
+- **Supported parallelism: `NumberOfTestWorkers = 1` (default)** — higher values are experimental: shared guarantee data (same issue #5, baseline counts) and set-diff `+1` invariants can flake across parallel fixtures
 - **Setup requests assert their status** — every GET/POST inside `[OneTimeSetUp]` gets `ShouldHaveStatusCode(...)` immediately after the call. A failed setup must fail with a clear status assertion, not a `NullReferenceException` mid-fixture (kills CI diagnostics)
 - **Teardown/cleanup requests do NOT assert status** — `[OneTimeTearDown]` cleanup runs under the shared `RunCleanupAsync` (try/catch + warning, see "E2E cleanup"): a status assertion there would fail the run for a resource that can be cleaned manually and would mask the original test failure. Log the status code in the warning instead; never dereference the cleanup response body
 - **Status check before every `.Data` dereference** — not only in setups: when a test body reads `.Data!` or aggregates off a response, assert the status first; a 500 must fail as "expected 200, got 500", not as an NRE
-- **Aggregates need data first** — `Max`/`First` in `[OneTimeSetUp]` run only after `NotBeEmpty(...)` whose message points at Entry Criteria (`documentation/GitHubTestingStructure.md`); a bare `InvalidOperationException: Sequence contains no elements` explains nothing
+- **Aggregates need data first** — `Max`/`First` anywhere (setup OR test body): status-assert first, then `NotBeEmpty(...)` whose message points at Entry Criteria (`documentation/GitHubTestingStructure.md`); a bare `InvalidOperationException: Sequence contains no elements` explains nothing
 
 ## API testing patterns
 
@@ -39,6 +40,7 @@
 
 ## E2E cleanup
 
+- **Create → remove, never retain** — every remote resource a test creates is deleted once the flow ends; leaving a test record behind is never the default ("better to create once more and delete than to keep a test entry"). When the API has no delete (issues → close, PRs → close, merge/commit history → immutable), use the closest available cleanup and document the residue — a deletable resource (branch, comment) is always actually deleted
 - **All cleanup lives in `[OneTimeTearDown]` (last member of the class) via a fixture-registry pattern** — never per-test `finally`:
   1. fixture holds `private readonly List<T> _createdX = [];` (test data, allowed by the "only tests" rule)
   2. **register-then-assert**: add the created resource id to the registry IMMEDIATELY after the create call, before any assertion — a failing assert must not leak the resource
@@ -167,6 +169,7 @@ public async Task OneTimeTearDown()
 - `[OneTimeTearDown]` deletes created resources
 - If POST is unavailable — use `[Ignore]` with explanation, not `Inconclusive`
 - Never use `if (Data.Any())` to skip assertions — data must exist before assertion runs
+- **Documented-empty exception** — when OB documents the collection as empty in the sandbox (topics, tags, releases), an item-contract check may be guarded with `if (Count > 0)`; the empty state itself MUST be asserted in a separate Smoke test (200 + `NotBeNull`/`OnlyContain`) — never a silent skip
 
 ## Read-after-write visibility (GET + POST)
 

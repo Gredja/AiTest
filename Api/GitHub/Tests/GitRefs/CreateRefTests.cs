@@ -187,4 +187,29 @@ public class CreateRefTests : GitHubTestBase
             await CleanupGitRefAsync(refPath);
         }
     }
+    [Test]
+    [Category("Performance")]
+    [Description("25.10 Created ref becomes visible within max response time")]
+    public async Task CreateRef_RecordVisibleWithinTimeLimit()
+    {
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(8)}";
+        var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+            GitHubEndpoints.RepoGitRefs,
+            new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+        _createdRefs.Add(refName);
+
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        var refPath = refName["refs/".Length..];
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<GitRefModelResponse>(GitHubEndpoints.RepoGitRefByName,
+                [.. TestRepoParam(), .. GitRefParam(refPath)]),
+            response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
+            timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
+
+        result.IsSuccess.Should().BeTrue(
+            $"created ref should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
+            $" waited {result.Elapsed}, attempts {result.Attempts}," +
+            $" last status {result.LastValue?.StatusCode}");
+    }
 }

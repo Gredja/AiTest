@@ -86,7 +86,7 @@ Working dir: {working_dir}
    Test practices (Rules/test-practices.md):
    - Every request in [OneTimeSetUp] asserts its status (no bare Data! dereference); teardown/cleanup never asserts status — try/catch + warning only
    - Status check before any `.Data` dereference, including test bodies; NotBeEmpty before Max/First in setups
-   - Cleanup lives in `[OneTimeTearDown]` — LAST member of the class, fixture-registry pattern (register-then-assert, no per-test `finally`), via `RunCleanupAsync` = try/catch + warning, never an unhandled exception or a status assertion
+   - Cleanup lives in `[OneTimeTearDown]` — LAST member of the class, fixture-registry pattern (register-then-assert, no per-test `finally`), via `RunCleanupAsync` = try/catch + warning, never an unhandled exception or a status assertion; resources are DELETED after use (create → remove), never retained — no-delete APIs → closest cleanup (close issue/PR)
    - ShouldMatchRequest() after POST/PATCH — no hand-rolled field-by-field comparisons
    - No hardcoded volatile entities (live branch names → dynamic lookup or Entry Criteria)
 

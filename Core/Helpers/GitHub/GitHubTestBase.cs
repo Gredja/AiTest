@@ -91,9 +91,10 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     // Scratch PR pipeline: changed blob → tree → commit → branch → PR. A same-tree commit gives
     // "No commits between" (OB §21) and an empty files list for the dynamic-max PR fixtures —
     // the new file guarantees both divergence and ≥1 changed file.
-    protected async Task<(int Number, string BranchName)> CreateScratchPullRequestAsync(string title)
+    protected async Task<(int Number, string HeadBranch, string BaseBranch)> CreateScratchPullRequestAsync(string title)
     {
-        var branchName = $"audit-{DataGenerator.RandomString(8)}";
+        var headBranch = $"audit-{DataGenerator.RandomString(8)}";
+        var baseBranch = $"audit-base-{DataGenerator.RandomString(8)}";
 
         var mainBranch = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. GitHubParamHelper.BranchNameParam(GitHubEndpoints.DefaultBranch)]);
@@ -106,7 +107,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
 
         var blob = await Post<CreateGitBlobModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitBlobs,
-            new CreateGitBlobModelRequest { Content = $"scratch {branchName}" },
+            new CreateGitBlobModelRequest { Content = $"scratch {headBranch}" },
             TestRepoParam());
         blob.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -133,44 +134,69 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             GitHubEndpoints.RepoGitCommits,
             new CreateGitCommitModelRequest
             {
-                Message = $"scratch {branchName}",
+                Message = $"scratch {headBranch}",
                 Tree = tree.Data!.Sha,
                 Parents = [mainSha]
             },
             TestRepoParam());
         commit.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        // Orphan blob/tree/commit objects are harmless (unreachable); branch and PR are the
-        // remote-visible resources — clean them on any partial failure before rethrowing
+        // A merge must never target main (merged scratch data would change the repo — the
+        // "create then remove, never keep test records" rule): every PR gets its own base
+        // branch, deleted together with the head. Orphan blob/tree/commit objects are
+        // unreachable and harmless; branch and PR are cleaned on any partial failure.
+        PullRequestModelResponse? createdPull = null;
         try
         {
-            var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+            var head = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
                 GitHubEndpoints.RepoGitRefs,
-                new CreateGitRefModelRequest { Ref = $"refs/heads/{branchName}", Sha = commit.Data!.Sha },
+                new CreateGitRefModelRequest { Ref = $"refs/heads/{headBranch}", Sha = commit.Data!.Sha },
                 TestRepoParam());
-            branch.ShouldHaveStatusCode(HttpStatusCode.Created);
+            head.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+            var baseRef = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+                GitHubEndpoints.RepoGitRefs,
+                new CreateGitRefModelRequest { Ref = $"refs/heads/{baseBranch}", Sha = mainSha },
+                TestRepoParam());
+            baseRef.ShouldHaveStatusCode(HttpStatusCode.Created);
 
             var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
                 GitHubEndpoints.RepoPullRequests,
                 new CreatePullRequestModelRequest
                 {
                     Title = title,
-                    Head = branchName,
-                    Base = GitHubEndpoints.DefaultBranch
+                    Head = headBranch,
+                    Base = baseBranch
                 },
                 TestRepoParam());
+            createdPull = pullRequest.Data;
             pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
+            if (createdPull is null)
+            {
+                throw new InvalidOperationException("PR create returned 201 without a body");
+            }
 
-            return (pullRequest.Data!.Number, branchName);
+            return (createdPull.Number, headBranch, baseBranch);
         }
         catch
         {
-            await CleanupGitRefAsync(branchName);
+            if (createdPull is not null)
+            {
+                await RunCleanupAsync(
+                    () => Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
+                        GitHubEndpoints.RepoPullRequestById,
+                        new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+                        PullParams(createdPull.Number)),
+                    $"close scratch pull request {createdPull.Number}");
+            }
+
+            await CleanupGitRefAsync(headBranch);
+            await CleanupGitRefAsync(baseBranch);
             throw;
         }
     }
 
-    protected async Task CleanupPullRequestAsync(int? pullNumber, string branchName)
+    protected async Task CleanupPullRequestAsync(int? pullNumber, string headBranch, string baseBranch)
     {
         if (pullNumber.HasValue)
         {
@@ -182,7 +208,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
                 $"close pull request {pullNumber}");
         }
 
-        await CleanupGitRefAsync(branchName);
+        await CleanupGitRefAsync(headBranch);
+        await CleanupGitRefAsync(baseBranch);
     }
 
     // One cleanup core for every entity: warn, never fail the run (Rules/test-practices.md → E2E cleanup)

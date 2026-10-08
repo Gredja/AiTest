@@ -42,7 +42,8 @@ public class GetCommitsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
-        response.Data!.First().ShouldHaveValidContract();
+        response.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
+        response.Data.First().ShouldHaveValidContract();
     }
 
     [Test]

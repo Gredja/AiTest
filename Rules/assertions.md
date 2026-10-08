@@ -39,6 +39,7 @@ FluentAssertions (not NUnit Assert).
 - Helper maps request properties to response by name (case-insensitive)
 - Skips null values in request (only validates fields that were sent)
 - Comparison semantics (inside the helper): scalars/strings → `Be`; collections and nested objects → structural comparison (`BeEquivalentTo`) — plain `Be` on a collection is reference equality and fails every time; never hand-roll either variant in tests
+- **Documented exception — nested-shape responses**: when the wire response nests a request scalar (create-ref: request `Sha` → response `object.sha`; create-PR: request `Head` → response `head.ref` object), the helper cannot map by name — assert those fields explicitly and note it at the call site; still use the helper everywhere it fits (PATCH echoes, create-comment)
 - Validate server-generated fields separately: `id`, `created_at`, `state`
 
 ## Notes

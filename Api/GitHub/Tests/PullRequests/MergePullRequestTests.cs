@@ -16,7 +16,7 @@ namespace Api.GitHub.PullRequests;
 public class MergePullRequestTests : GitHubTestBase
 {
 
-    private readonly List<(int Number, string BranchName)> _createdPullRequests = [];
+    private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
 
     private const int TitleRandomLength = 8;
     private const int ExistingPullNumber = 1;
@@ -26,10 +26,10 @@ public class MergePullRequestTests : GitHubTestBase
     [Description("23.1 PUT merge returns 200 with merged=true")]
     public async Task MergePullRequest_ReturnsMerged()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var merged = await Put<Dictionary<string, object>, object>(
             GitHubEndpoints.RepoPullRequestMerge,
@@ -45,10 +45,10 @@ public class MergePullRequestTests : GitHubTestBase
     [Description("23.2 Re-merge returns 200 (idempotent, documented)")]
     public async Task MergePullRequest_Twice_Returns200Again()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var first = await Put<Dictionary<string, object>, object>(
             GitHubEndpoints.RepoPullRequestMerge,
@@ -68,10 +68,10 @@ public class MergePullRequestTests : GitHubTestBase
     [Description("23.3 Content-Type is application/json")]
     public async Task MergePullRequest_ContentTypeIsJson()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var merged = await Put<Dictionary<string, object>, object>(
             GitHubEndpoints.RepoPullRequestMerge,
@@ -124,6 +124,7 @@ public class MergePullRequestTests : GitHubTestBase
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         pulls.ShouldHaveStatusCode(HttpStatusCode.OK);
+        pulls.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
         var nonExistentPullNumber = pulls.Data!.Max(pull => pull.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Put<Dictionary<string, object>, object>(
@@ -151,9 +152,9 @@ public class MergePullRequestTests : GitHubTestBase
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        foreach (var (number, branchName) in _createdPullRequests)
+        foreach (var (number, headBranch, baseBranch) in _createdPullRequests)
         {
-            await CleanupPullRequestAsync(number, branchName);
+            await CleanupPullRequestAsync(number, headBranch, baseBranch);
         }
     }
 }

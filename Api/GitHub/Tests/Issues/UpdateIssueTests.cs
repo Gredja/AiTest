@@ -82,7 +82,7 @@ public class UpdateIssueTests : GitHubTestBase
             GitHubEndpoints.RepoIssueById, closeRequest, IssueParams(created.Data!.Number));
 
         closed.ShouldHaveStatusCode(HttpStatusCode.OK);
-        closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
+        closed.Data!.ShouldMatchRequest(closeRequest);
 
         var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             IssueParams(created.Data.Number));
@@ -106,19 +106,17 @@ public class UpdateIssueTests : GitHubTestBase
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
 
+        var closeRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed };
         var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-            GitHubEndpoints.RepoIssueById,
-            new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-            IssueParams(created.Data!.Number));
+            GitHubEndpoints.RepoIssueById, closeRequest, IssueParams(created.Data!.Number));
         closed.ShouldHaveStatusCode(HttpStatusCode.OK);
-        closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
+        closed.Data!.ShouldMatchRequest(closeRequest);
 
+        var reopenRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateOpen };
         var reopened = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-            GitHubEndpoints.RepoIssueById,
-            new UpdateIssueModelRequest { State = GitHubEndpoints.StateOpen },
-            IssueParams(created.Data.Number));
+            GitHubEndpoints.RepoIssueById, reopenRequest, IssueParams(created.Data.Number));
         reopened.ShouldHaveStatusCode(HttpStatusCode.OK);
-        reopened.Data!.State.Should().Be(GitHubEndpoints.StateOpen);
+        reopened.Data!.ShouldMatchRequest(reopenRequest);
 
         var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             IssueParams(created.Data.Number));
@@ -205,6 +203,7 @@ public class UpdateIssueTests : GitHubTestBase
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         issues.ShouldHaveStatusCode(HttpStatusCode.OK);
+        issues.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
         var nonExistentIssueNumber = issues.Data!.Max(issue => issue.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Patch<UpdateIssueModelRequest, IssueModelResponse>(

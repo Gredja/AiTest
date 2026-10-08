@@ -45,6 +45,7 @@ public static class GitHubEndpoints
 
     public const string RepoGitRefs = "/repos/{owner}/{repo}/git/refs";
     public const string RepoGitRefById = "/repos/{owner}/{repo}/git/refs/{ref}";
+    public const string RepoGitRefByName = "/repos/{owner}/{repo}/git/ref/{ref}";
     public const string RepoGitCommits = "/repos/{owner}/{repo}/git/commits";
     public const string RepoGitCommitsById = "/repos/{owner}/{repo}/git/commits/{commit_sha}";
     public const string RepoGitBlobs = "/repos/{owner}/{repo}/git/blobs";

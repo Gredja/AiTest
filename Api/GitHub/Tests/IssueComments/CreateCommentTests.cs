@@ -182,6 +182,7 @@ public class CreateCommentTests : GitHubTestBase
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         issues.ShouldHaveStatusCode(HttpStatusCode.OK);
+        issues.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
         var nonExistentIssueNumber = issues.Data!.Max(issue => issue.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Post<CreateCommentModelRequest, CommentModelResponse>(

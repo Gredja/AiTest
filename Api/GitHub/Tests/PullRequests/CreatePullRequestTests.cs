@@ -16,7 +16,7 @@ namespace Api.GitHub.PullRequests;
 public class CreatePullRequestTests : GitHubTestBase
 {
 
-    private readonly List<(int Number, string BranchName)> _createdPullRequests = [];
+    private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
     private readonly List<string> _createdBranchNames = [];
 
     private const int TitleRandomLength = 8;
@@ -26,10 +26,10 @@ public class CreatePullRequestTests : GitHubTestBase
     [Description("21.1 POST /pulls creates a PR and returns 201")]
     public async Task CreatePullRequest_ReturnsCreated()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         pullNumber.Should().BeGreaterThan(0, "created PR must get a number");
     }
@@ -40,9 +40,9 @@ public class CreatePullRequestTests : GitHubTestBase
     public async Task CreatePullRequest_EchoesTitleAndIsOpen()
     {
         var title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}";
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(title);
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(title);
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(pullNumber));
@@ -57,10 +57,10 @@ public class CreatePullRequestTests : GitHubTestBase
     [Description("21.3 Content-Type is application/json")]
     public async Task CreatePullRequest_ContentTypeIsJson()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(pullNumber));
@@ -154,18 +154,18 @@ public class CreatePullRequestTests : GitHubTestBase
     [Description("21.8 Duplicate PR for same head/base returns 422")]
     public async Task CreatePullRequest_Duplicate_Returns422()
     {
-        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        _createdPullRequests.Add((pullNumber, branchName));
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var duplicate = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,
             new CreatePullRequestModelRequest
             {
                 Title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}",
-                Head = branchName,
-                Base = GitHubEndpoints.DefaultBranch
+                Head = headBranch,
+                Base = baseBranch
             },
             TestRepoParam());
 
@@ -225,14 +225,33 @@ public class CreatePullRequestTests : GitHubTestBase
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        foreach (var (number, branchName) in _createdPullRequests)
+        foreach (var (number, headBranch, baseBranch) in _createdPullRequests)
         {
-            await CleanupPullRequestAsync(number, branchName);
+            await CleanupPullRequestAsync(number, headBranch, baseBranch);
         }
 
         foreach (var branchName in _createdBranchNames)
         {
             await CleanupGitRefAsync(branchName);
         }
+    }
+    [Test]
+    [Category("Performance")]
+    [Description("21.11 Created PR becomes visible within max response time")]
+    public async Task CreatePullRequest_RecordVisibleWithinTimeLimit()
+    {
+        var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
+            $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
+        _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
+
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById, PullParams(pullNumber)),
+            response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
+            timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
+
+        result.IsSuccess.Should().BeTrue(
+            $"created PR should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
+            $" waited {result.Elapsed}, attempts {result.Attempts}," +
+            $" last status {result.LastValue?.StatusCode}");
     }
 }
