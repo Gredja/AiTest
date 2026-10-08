@@ -1,9 +1,11 @@
+using Core.Config;
 using Core.Models.Generic;
 
 namespace Core.Helpers.GitHub;
 
 public static class GitHubParamHelper
 {
+    private const string AcceptHeader = "Accept";
     public static List<RequestDictionaryModel> RepoParam(string owner, string repo) =>
         [
             ParamHelper.UrlSegment("owner", owner),
@@ -25,8 +27,14 @@ public static class GitHubParamHelper
     public static List<RequestDictionaryModel> PaginationParams(int page, int perPage) =>
         [
             ParamHelper.Query("page", page),
-            ParamHelper.Query("per_page", perPage)
+            .. PerPageParam(perPage)
         ];
+
+    public static List<RequestDictionaryModel> PerPageParam(object perPage) =>
+        [ParamHelper.Query("per_page", perPage)];
+
+    public static List<RequestDictionaryModel> MercyPreviewParam() =>
+        [ParamHelper.Header(AcceptHeader, GitHubEndpoints.MercyPreviewAccept)];
 
     public static List<RequestDictionaryModel> UsernameParam(string username) =>
         [ParamHelper.UrlSegment("username", username)];

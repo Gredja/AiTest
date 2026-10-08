@@ -149,6 +149,7 @@ Core/
 │   │   ├── ReleaseModelResponse.cs
 │   │   ├── RepositoryModelResponse.cs
 │   │   ├── TagModelResponse.cs
+│   │   ├── TopicsModelResponse.cs
 │   │   ├── UpdateIssueModelRequest.cs
 │   │   └── UserModelResponse.cs
 ```
@@ -201,6 +202,8 @@ Api/
 │       ├── Branches/
 │       │   ├── GetBranchByNameTests.cs
 │       │   └── GetBranchesTests.cs
+│       ├── Contributors/
+│       │   └── GetContributorsTests.cs
 │       ├── IssueComments/
 │       │   └── GetIssueCommentsTests.cs
 │       ├── Issues/
@@ -208,6 +211,8 @@ Api/
 │       │   ├── CreateIssueVisibilityTests.cs
 │       │   ├── GetIssueByIdTests.cs
 │       │   └── GetIssuesTests.cs
+│       ├── Languages/
+│       │   └── GetLanguagesTests.cs
 │       ├── PublicRepos/
 │       │   └── GetPublicReposTests.cs
 │       ├── PullRequests/
@@ -219,6 +224,10 @@ Api/
 │       ├── Repos/
 │       │   ├── GetRepositoryTests.cs
 │       │   └── SampleTests.cs
+│       ├── Tags/
+│       │   └── GetTagsTests.cs
+│       ├── Topics/
+│       │   └── GetTopicsTests.cs
 │       ├── UserRepos/
 │       │   └── GetUserReposTests.cs
 │       └── Users/

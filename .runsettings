@@ -4,10 +4,9 @@
 
   NumberOfTestWorkers — how many NUnit worker threads run fixtures in parallel.
   Default is 1 (= sequential, same behavior as before parallelism was enabled).
-  Change it here, or per-run from CLI without editing the file:
-      dotnet test --settings .runsettings
-      dotnet test -- NUnit.NumberOfTestWorkers=4
-  Plain `dotnet test` (no --settings) uses LevelOfParallelism(1) from AssemblyInfo.cs.
+  Change it here, or per-run from CLI — commands are documented in backups/SETUP.md
+  (Part 9: параллелизм тестов). Plain `dotnet test` without this file uses
+  LevelOfParallelism(1) from AssemblyInfo.cs.
 
   MaxCpuCount is for Visual Studio Test Explorer only (CLI ignores it):
   runs test sources in parallel so both assemblies of one selection are alive at the

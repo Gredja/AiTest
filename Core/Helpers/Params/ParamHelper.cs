@@ -14,4 +14,7 @@ public static class ParamHelper
 
     public static RequestDictionaryModel Query(string key, object value) =>
         new() { Type = ParamType.Parameter, Key = key, Value = value };
+
+    public static RequestDictionaryModel Header(string key, object value) =>
+        new() { Type = ParamType.Header, Key = key, Value = value };
 }
