@@ -17,6 +17,7 @@ public class DeleteRefTests : GitHubTestBase
     private const string RefPathPrefix = "heads/audit-";
     private const string NonExistentRefPath = "heads/nonexistent-branch-audit-12345";
 
+    private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
 
     [OneTimeSetUp]
@@ -37,19 +38,13 @@ public class DeleteRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = $"refs/{refPath}", Sha = _baseSha }, TestRepoParam());
+        _createdRefs.Add(refPath);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        try
-        {
-            var deleted = await Delete<object>(
-                GitHubEndpoints.RepoGitRefById, [.. TestRepoParam(), .. GitRefParam(refPath)]);
+        var deleted = await Delete<object>(
+            GitHubEndpoints.RepoGitRefById, [.. TestRepoParam(), .. GitRefParam(refPath)]);
 
-            deleted.ShouldHaveStatusCode(HttpStatusCode.NoContent);
-        }
-        finally
-        {
-            await CleanupGitRefAsync(refPath);
-        }
+        deleted.ShouldHaveStatusCode(HttpStatusCode.NoContent);
     }
 
     [Test]
@@ -61,22 +56,16 @@ public class DeleteRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = $"refs/{refPath}", Sha = _baseSha }, TestRepoParam());
+        _createdRefs.Add(refPath);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        try
-        {
-            var first = await Delete<object>(
-                GitHubEndpoints.RepoGitRefById, [.. TestRepoParam(), .. GitRefParam(refPath)]);
-            first.ShouldHaveStatusCode(HttpStatusCode.NoContent);
+        var first = await Delete<object>(
+            GitHubEndpoints.RepoGitRefById, [.. TestRepoParam(), .. GitRefParam(refPath)]);
+        first.ShouldHaveStatusCode(HttpStatusCode.NoContent);
 
-            var second = await Delete<object>(
-                GitHubEndpoints.RepoGitRefById, [.. TestRepoParam(), .. GitRefParam(refPath)]);
-            second.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
-        }
-        finally
-        {
-            await CleanupGitRefAsync(refPath);
-        }
+        var second = await Delete<object>(
+            GitHubEndpoints.RepoGitRefById, [.. TestRepoParam(), .. GitRefParam(refPath)]);
+        second.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
 
     [Test]
@@ -140,5 +129,14 @@ public class DeleteRefTests : GitHubTestBase
         var response = await Client.ExecuteAsync(request);
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var refPath in _createdRefs)
+        {
+            await CleanupGitRefAsync(refPath);
+        }
     }
 }

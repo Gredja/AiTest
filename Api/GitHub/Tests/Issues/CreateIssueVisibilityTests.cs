@@ -17,6 +17,8 @@ public class CreateIssueVisibilityTests : GitHubTestBase
     private const int TitleRandomLength = 8;
     private const int BodyRandomLength = 16;
 
+    private readonly List<int> _createdIssueNumbers = [];
+
     [Test]
     [Category("Performance")]
     [Description("17.1 Created issue becomes visible within max response time")]
@@ -30,46 +32,32 @@ public class CreateIssueVisibilityTests : GitHubTestBase
 
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, request, TestRepoParam());
-
-        try
+        if (created.Data is not null)
         {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data.Should().NotBeNull();
-
-            var result = await WaitHelper.WaitUntilAsync(
-                () => Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-                    [.. TestRepoParam(), .. IssueNumberParam(created.Data!.Number)]),
-                response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
-                timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
-
-            result.IsSuccess.Should().BeTrue(
-                $"created issue should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
-                $" waited {result.Elapsed}, attempts {result.Attempts}," +
-                $" last status {result.LastValue?.StatusCode}");
+            _createdIssueNumbers.Add(created.Data.Number);
         }
-        finally
-        {
-            if (created.Data is not null)
-            {
-                try
-                {
-                    var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                        GitHubEndpoints.RepoIssueById,
-                        new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                        [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
 
-                    if (!cleanup.IsSuccessful)
-                    {
-                        TestContext.Progress.WriteLine(
-                            $"Warning: issue {created.Data.Number} not closed: HTTP {(int)cleanup.StatusCode}");
-                    }
-                }
-                catch (HttpRequestException exception)
-                {
-                    TestContext.Progress.WriteLine(
-                        $"Warning: failed to close issue {created.Data.Number}: {exception.Message}");
-                }
-            }
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data.Should().NotBeNull();
+
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+                [.. TestRepoParam(), .. IssueNumberParam(created.Data!.Number)]),
+            response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
+            timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
+
+        result.IsSuccess.Should().BeTrue(
+            $"created issue should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
+            $" waited {result.Elapsed}, attempts {result.Attempts}," +
+            $" last status {result.LastValue?.StatusCode}");
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var issueNumber in _createdIssueNumbers)
+        {
+            await CleanupIssueAsync(issueNumber);
         }
     }
 }

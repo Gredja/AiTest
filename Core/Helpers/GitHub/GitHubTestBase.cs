@@ -140,24 +140,34 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             TestRepoParam());
         commit.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
-            GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"refs/heads/{branchName}", Sha = commit.Data!.Sha },
-            TestRepoParam());
-        branch.ShouldHaveStatusCode(HttpStatusCode.Created);
+        // Orphan blob/tree/commit objects are harmless (unreachable); branch and PR are the
+        // remote-visible resources — clean them on any partial failure before rethrowing
+        try
+        {
+            var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+                GitHubEndpoints.RepoGitRefs,
+                new CreateGitRefModelRequest { Ref = $"refs/heads/{branchName}", Sha = commit.Data!.Sha },
+                TestRepoParam());
+            branch.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
-            GitHubEndpoints.RepoPullRequests,
-            new CreatePullRequestModelRequest
-            {
-                Title = title,
-                Head = branchName,
-                Base = GitHubEndpoints.DefaultBranch
-            },
-            TestRepoParam());
-        pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
+            var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+                GitHubEndpoints.RepoPullRequests,
+                new CreatePullRequestModelRequest
+                {
+                    Title = title,
+                    Head = branchName,
+                    Base = GitHubEndpoints.DefaultBranch
+                },
+                TestRepoParam());
+            pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        return (pullRequest.Data!.Number, branchName);
+            return (pullRequest.Data!.Number, branchName);
+        }
+        catch
+        {
+            await CleanupGitRefAsync(branchName);
+            throw;
+        }
     }
 
     protected async Task CleanupPullRequestAsync(int? pullNumber, string branchName)

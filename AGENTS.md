@@ -36,7 +36,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - Strings: интерполяция `$""`, `StringBuilder` в циклах, `IsNullOrEmpty()` вместо `.Length == 0`
 - Null safety: `?.` для safe navigation, `??` для fallback, `is not null` вместо `!= null`
 - SOLID: один класс — одна задача, зависимости через интерфейсы, расширяемость через наследование
-- Тестовые классы (`*Tests.cs`): только `[Test]` + lifecycle + тестовые данные; общие билдеры параметров — в base/helpers, не в тестовом классе (`Rules/test-practices.md`)
+- Тестовые классы (`*Tests.cs`): только `[Test]` + lifecycle + тестовые данные; общие билдеры параметров — в base/helpers, не в тестовом классе; cleanup — только в `[OneTimeTearDown]` (**последним членом класса**) через fixture-реестр (register-then-assert), не в `finally` (`Rules/test-practices.md`)
 
 ### Models
 - Response: suffix `ModelResponse` (включает `Id`). Request: suffix `ModelRequest` (без `Id`). Вложенные/вспомогательные — без суффикса

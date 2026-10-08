@@ -40,7 +40,7 @@ Collect three lists:
 - Assertion rules (`Rules/assertions.md`): FluentAssertions only
 - Comment rules (`Rules/comments.md`): default = no comments
 - Config rules (`Rules/config.md`): Endpoints in JsonPlaceholderEndpoints.cs/GitHubEndpoints.cs, never hardcoded
-- Test practices (`Rules/test-practices.md`): every request in `[OneTimeSetUp]` asserts its status; cleanup everywhere (incl. in-test `finally` and `[OneTimeTearDown]`) = `try/catch` + warning, never a status assertion or an unhandled exception; status check before any `.Data` dereference and `NotBeEmpty` before `Max`/`First` in setups; `ShouldMatchRequest()` after POST/PATCH; no hardcoded volatile entities (live branch names etc. → dynamic lookup or Entry Criteria)
+- Test practices (`Rules/test-practices.md`): every request in `[OneTimeSetUp]` asserts its status; cleanup lives in `[OneTimeTearDown]` as the LAST class member (fixture-registry, register-then-assert, no per-test `finally`) via `RunCleanupAsync` = try/catch + warning, never a status assertion or an unhandled exception; status check before any `.Data` dereference and `NotBeEmpty` before `Max`/`First` in setups; `ShouldMatchRequest()` after POST/PATCH; no hardcoded volatile entities (live branch names etc. → dynamic lookup or Entry Criteria)
 - False-positive guards (verify BEFORE flagging): `[Ignore]`d negatives — check the documented ceiling first (`documentation/*TestPlan.md` → "Negative Floor Status", OB); unused endpoint constants — check `.mimocode/plans/` (they may be planned endpoints with ready designs)
 - Pattern consistency: compare against existing similar code, check for DRY violations
 

@@ -24,6 +24,8 @@ public class DeleteCommentTests : GitHubTestBase
         Body = $"Cleanup probe {DataGenerator.RandomString(BodyRandomLength)}"
     };
 
+    private readonly List<long> _createdCommentIds = [];
+
     [Test]
     [Category("HealthCheck")]
     [Description("20.1 DELETE comment returns 204 No Content")]
@@ -31,20 +33,17 @@ public class DeleteCommentTests : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+        if (created.Data is not null)
+        {
+            _createdCommentIds.Add(created.Data.Id);
+        }
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
 
-        try
-        {
-            var deleted = await Delete<object>(
-                GitHubEndpoints.RepoIssueCommentById, CommentParams(created.Data!.Id));
+        var deleted = await Delete<object>(
+            GitHubEndpoints.RepoIssueCommentById, CommentParams(created.Data!.Id));
 
-            deleted.ShouldHaveStatusCode(HttpStatusCode.NoContent);
-        }
-        finally
-        {
-            await CleanupCommentAsync(created.Data?.Id);
-        }
+        deleted.ShouldHaveStatusCode(HttpStatusCode.NoContent);
     }
 
     [Test]
@@ -54,6 +53,10 @@ public class DeleteCommentTests : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+        if (created.Data is not null)
+        {
+            _createdCommentIds.Add(created.Data.Id);
+        }
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
 
@@ -130,5 +133,14 @@ public class DeleteCommentTests : GitHubTestBase
              .. CommentIdParam(NonExistentCommentId)]);
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var commentId in _createdCommentIds)
+        {
+            await CleanupCommentAsync(commentId);
+        }
     }
 }

@@ -15,6 +15,9 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class MergePullRequestTests : GitHubTestBase
 {
+
+    private readonly List<(int Number, string BranchName)> _createdPullRequests = [];
+
     private const int TitleRandomLength = 8;
     private const int ExistingPullNumber = 1;
 
@@ -26,20 +29,15 @@ public class MergePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            var merged = await Put<Dictionary<string, object>, object>(
-                GitHubEndpoints.RepoPullRequestMerge,
-                new Dictionary<string, object>(),
-                PullParams(pullNumber));
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            merged.ShouldHaveStatusCode(HttpStatusCode.OK);
-            merged.Data.Should().NotBeNull();
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        var merged = await Put<Dictionary<string, object>, object>(
+            GitHubEndpoints.RepoPullRequestMerge,
+            new Dictionary<string, object>(),
+            PullParams(pullNumber));
+
+        merged.ShouldHaveStatusCode(HttpStatusCode.OK);
+        merged.Data.Should().NotBeNull();
     }
 
     [Test]
@@ -50,24 +48,19 @@ public class MergePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            var first = await Put<Dictionary<string, object>, object>(
-                GitHubEndpoints.RepoPullRequestMerge,
-                new Dictionary<string, object>(),
-                PullParams(pullNumber));
-            first.ShouldHaveStatusCode(HttpStatusCode.OK);
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            var second = await Put<Dictionary<string, object>, object>(
-                GitHubEndpoints.RepoPullRequestMerge,
-                new Dictionary<string, object>(),
-                PullParams(pullNumber));
-            second.ShouldHaveStatusCode(HttpStatusCode.OK);
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        var first = await Put<Dictionary<string, object>, object>(
+            GitHubEndpoints.RepoPullRequestMerge,
+            new Dictionary<string, object>(),
+            PullParams(pullNumber));
+        first.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        var second = await Put<Dictionary<string, object>, object>(
+            GitHubEndpoints.RepoPullRequestMerge,
+            new Dictionary<string, object>(),
+            PullParams(pullNumber));
+        second.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
@@ -78,19 +71,14 @@ public class MergePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            var merged = await Put<Dictionary<string, object>, object>(
-                GitHubEndpoints.RepoPullRequestMerge,
-                new Dictionary<string, object>(),
-                PullParams(pullNumber));
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            merged.ContentType.Should().Contain(AssertHelper.JsonContentType);
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        var merged = await Put<Dictionary<string, object>, object>(
+            GitHubEndpoints.RepoPullRequestMerge,
+            new Dictionary<string, object>(),
+            PullParams(pullNumber));
+
+        merged.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]
@@ -158,5 +146,14 @@ public class MergePullRequestTests : GitHubTestBase
              .. PullRequestNumberParam(1)]);
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var (number, branchName) in _createdPullRequests)
+        {
+            await CleanupPullRequestAsync(number, branchName);
+        }
     }
 }

@@ -7,13 +7,14 @@
 - Each test sets up its own data, doesn't rely on another test's side effects
 - Clean up in teardown if tests create resources
 - **Setup requests assert their status** — every GET/POST inside `[OneTimeSetUp]` gets `ShouldHaveStatusCode(...)` immediately after the call. A failed setup must fail with a clear status assertion, not a `NullReferenceException` mid-fixture (kills CI diagnostics)
-- **Teardown/cleanup requests do NOT assert status** — `[OneTimeTearDown]` and in-test `finally` cleanup run under `try/catch` + warning (see "E2E cleanup"): a status assertion there would fail the run for a resource that can be cleaned manually and would mask the original test failure. Log the status code in the warning instead; never dereference the cleanup response body
+- **Teardown/cleanup requests do NOT assert status** — `[OneTimeTearDown]` cleanup runs under the shared `RunCleanupAsync` (try/catch + warning, see "E2E cleanup"): a status assertion there would fail the run for a resource that can be cleaned manually and would mask the original test failure. Log the status code in the warning instead; never dereference the cleanup response body
 - **Status check before every `.Data` dereference** — not only in setups: when a test body reads `.Data!` or aggregates off a response, assert the status first; a 500 must fail as "expected 200, got 500", not as an NRE
 - **Aggregates need data first** — `Max`/`First` in `[OneTimeSetUp]` run only after `NotBeEmpty(...)` whose message points at Entry Criteria (`documentation/GitHubTestingStructure.md`); a bare `InvalidOperationException: Sequence contains no elements` explains nothing
 
 ## API testing patterns
 
 - **Test classes contain only tests** — `[Test]` methods, `[OneTimeSetUp]`/`[OneTimeTearDown]` lifecycle, and test data (constants, state fields). No helper methods inside `*Tests.cs`: shared request/param builders live in base classes (`GitHubTestBase` → `PullParams`, `MercyPreviewRepoParams`) or param helpers; when 2+ test classes grow the same private builder — extract it to the base, never duplicate
+- **`[OneTimeTearDown]` is the LAST member of the test class** — after all `[Test]` methods; fields and `[OneTimeSetUp]` stay at the top
 - Use Given/When/Then structure (Arrange/Act/Assert)
 - Check HTTP status code and response body separately — don't combine
 - Verify content type when relevant
@@ -38,10 +39,14 @@
 
 ## E2E cleanup
 
-- Every E2E test that creates a resource must delete it in teardown
-- Cleanup order: delete comments before issues, delete branches before PRs, delete PRs before repos
-- If cleanup fails, log warning but don't fail the test — resource can be manually cleaned
-- **"Warning, not failure" covers in-test cleanup too** — cleanup in `finally` (and any non-teardown path) is wrapped in `try/catch` + `TestContext.Progress.WriteLine(...)`; an unhandled cleanup exception would replace the original test failure and mask its cause
+- **All cleanup lives in `[OneTimeTearDown]` (last member of the class) via a fixture-registry pattern** — never per-test `finally`:
+  1. fixture holds `private readonly List<T> _createdX = [];` (test data, allowed by the "only tests" rule)
+  2. **register-then-assert**: add the created resource id to the registry IMMEDIATELY after the create call, before any assertion — a failing assert must not leak the resource
+  3. teardown iterates the registry and calls the shared helpers (`CleanupCommentAsync`, `CleanupIssueAsync`, `CleanupGitRefAsync`, `CleanupPullRequestAsync` → single `RunCleanupAsync` core)
+- **Tests stay pure asserts** — no cleanup code inside `[Test]` bodies; a re-delete of an already-deleted resource is safe (NotFound is tolerated)
+- **Multi-step builders clean their own partials** — e.g. `CreateScratchPullRequestAsync` deletes the branch and rethrows if the pipeline fails midway (orphan blob/tree/commit objects are harmless)
+- Cleanup order inside a teardown: comments before issues, branches before PRs, PRs before repos
+- If cleanup fails, log warning but don't fail the run — resource can be manually cleaned; an unhandled cleanup exception would replace the original test failure and mask its cause
 - Use sandbox repo for all write operations — never target production data
 
 ## Temp and artifact cleanup

@@ -25,6 +25,8 @@ public class UpdateIssueTests : GitHubTestBase
         Body = $"Body {DataGenerator.RandomString(TitleRandomLength)}"
     };
 
+    private readonly List<int> _createdIssueNumbers = [];
+
     [Test]
     [Category("Smoke")]
     [Description("19.1 PATCH title returns 200 and echoes the new title")]
@@ -33,32 +35,30 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        try
+        if (created.Data is not null)
         {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data.Should().NotBeNull();
-
-            var patchRequest = new UpdateIssueModelRequest
-            {
-                Title = $"Patched {DataGenerator.RandomString(TitleRandomLength)}"
-            };
-            var patched = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                GitHubEndpoints.RepoIssueById, patchRequest,
-                IssueParams(created.Data!.Number));
-
-            patched.ShouldHaveStatusCode(HttpStatusCode.OK);
-            patched.Data.Should().NotBeNull();
-            patched.Data!.ShouldMatchRequest(patchRequest);
-
-            var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-                IssueParams(created.Data.Number));
-            readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-            readBack.Data!.Title.Should().Be(patchRequest.Title, "PATCH must persist the new title");
+            _createdIssueNumbers.Add(created.Data.Number);
         }
-        finally
+
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data.Should().NotBeNull();
+
+        var patchRequest = new UpdateIssueModelRequest
         {
-            await CleanupIssueAsync(created.Data?.Number);
-        }
+            Title = $"Patched {DataGenerator.RandomString(TitleRandomLength)}"
+        };
+        var patched = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+            GitHubEndpoints.RepoIssueById, patchRequest,
+            IssueParams(created.Data!.Number));
+
+        patched.ShouldHaveStatusCode(HttpStatusCode.OK);
+        patched.Data.Should().NotBeNull();
+        patched.Data!.ShouldMatchRequest(patchRequest);
+
+        var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            IssueParams(created.Data.Number));
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+        readBack.Data!.Title.Should().Be(patchRequest.Title, "PATCH must persist the new title");
     }
 
     [Test]
@@ -69,27 +69,25 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        try
+        if (created.Data is not null)
         {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data.Should().NotBeNull();
-
-            var closeRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed };
-            var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                GitHubEndpoints.RepoIssueById, closeRequest, IssueParams(created.Data!.Number));
-
-            closed.ShouldHaveStatusCode(HttpStatusCode.OK);
-            closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
-
-            var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-                IssueParams(created.Data.Number));
-            readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-            readBack.Data!.State.Should().Be(GitHubEndpoints.StateClosed, "closed state must persist");
+            _createdIssueNumbers.Add(created.Data.Number);
         }
-        finally
-        {
-            await CleanupIssueAsync(created.Data?.Number);
-        }
+
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data.Should().NotBeNull();
+
+        var closeRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed };
+        var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+            GitHubEndpoints.RepoIssueById, closeRequest, IssueParams(created.Data!.Number));
+
+        closed.ShouldHaveStatusCode(HttpStatusCode.OK);
+        closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
+
+        var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            IssueParams(created.Data.Number));
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+        readBack.Data!.State.Should().Be(GitHubEndpoints.StateClosed, "closed state must persist");
     }
 
     [Test]
@@ -100,34 +98,32 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        try
+        if (created.Data is not null)
         {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data.Should().NotBeNull();
-
-            var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                GitHubEndpoints.RepoIssueById,
-                new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                IssueParams(created.Data!.Number));
-            closed.ShouldHaveStatusCode(HttpStatusCode.OK);
-            closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
-
-            var reopened = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                GitHubEndpoints.RepoIssueById,
-                new UpdateIssueModelRequest { State = GitHubEndpoints.StateOpen },
-                IssueParams(created.Data.Number));
-            reopened.ShouldHaveStatusCode(HttpStatusCode.OK);
-            reopened.Data!.State.Should().Be(GitHubEndpoints.StateOpen);
-
-            var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-                IssueParams(created.Data.Number));
-            readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-            readBack.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "reopened state must persist");
+            _createdIssueNumbers.Add(created.Data.Number);
         }
-        finally
-        {
-            await CleanupIssueAsync(created.Data?.Number);
-        }
+
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data.Should().NotBeNull();
+
+        var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+            GitHubEndpoints.RepoIssueById,
+            new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+            IssueParams(created.Data!.Number));
+        closed.ShouldHaveStatusCode(HttpStatusCode.OK);
+        closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
+
+        var reopened = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+            GitHubEndpoints.RepoIssueById,
+            new UpdateIssueModelRequest { State = GitHubEndpoints.StateOpen },
+            IssueParams(created.Data.Number));
+        reopened.ShouldHaveStatusCode(HttpStatusCode.OK);
+        reopened.Data!.State.Should().Be(GitHubEndpoints.StateOpen);
+
+        var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            IssueParams(created.Data.Number));
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+        readBack.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "reopened state must persist");
     }
 
     [Test]
@@ -138,21 +134,19 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        try
+        if (created.Data is not null)
         {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-
-            var patched = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                GitHubEndpoints.RepoIssueById,
-                new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                IssueParams(created.Data!.Number));
-
-            patched.ContentType.Should().Contain(AssertHelper.JsonContentType);
+            _createdIssueNumbers.Add(created.Data.Number);
         }
-        finally
-        {
-            await CleanupIssueAsync(created.Data?.Number);
-        }
+
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        var patched = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+            GitHubEndpoints.RepoIssueById,
+            new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+            IssueParams(created.Data!.Number));
+
+        patched.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]
@@ -242,28 +236,35 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        try
+        if (created.Data is not null)
         {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data.Should().NotBeNull();
-
-            var bogus = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                GitHubEndpoints.RepoIssueById,
-                new UpdateIssueModelRequest { State = InvalidStateValue },
-                IssueParams(created.Data!.Number));
-
-            bogus.ShouldHaveStatusCode(HttpStatusCode.OK);
-            bogus.Data!.State.Should().Be(GitHubEndpoints.StateOpen);
-
-            var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-                IssueParams(created.Data.Number));
-            readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-            readBack.Data!.State.Should().Be(GitHubEndpoints.StateOpen,
-                "unrecognized state must be ignored — OB §19");
+            _createdIssueNumbers.Add(created.Data.Number);
         }
-        finally
+
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data.Should().NotBeNull();
+
+        var bogus = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+            GitHubEndpoints.RepoIssueById,
+            new UpdateIssueModelRequest { State = InvalidStateValue },
+            IssueParams(created.Data!.Number));
+
+        bogus.ShouldHaveStatusCode(HttpStatusCode.OK);
+        bogus.Data!.State.Should().Be(GitHubEndpoints.StateOpen);
+
+        var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            IssueParams(created.Data.Number));
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+        readBack.Data!.State.Should().Be(GitHubEndpoints.StateOpen,
+            "unrecognized state must be ignored — OB §19");
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var issueNumber in _createdIssueNumbers)
         {
-            await CleanupIssueAsync(created.Data?.Number);
+            await CleanupIssueAsync(issueNumber);
         }
     }
 }

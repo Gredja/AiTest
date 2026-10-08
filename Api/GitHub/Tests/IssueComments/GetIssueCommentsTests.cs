@@ -45,31 +45,6 @@ public class GetIssueCommentsTests : GitHubTestBase
         }
     }
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_createdCommentId.HasValue)
-        {
-            try
-            {
-                var delete = await Delete<object>(
-                    GitHubEndpoints.RepoIssueCommentById,
-                    [.. TestRepoParam(), .. CommentIdParam(_createdCommentId.Value)]);
-
-                if (!delete.IsSuccessful)
-                {
-                    TestContext.Progress.WriteLine(
-                        $"Warning: comment {_createdCommentId} not deleted: HTTP {(int)delete.StatusCode}");
-                }
-            }
-            catch (HttpRequestException exception)
-            {
-                TestContext.Progress.WriteLine(
-                    $"Warning: failed to delete comment {_createdCommentId}: {exception.Message}");
-            }
-        }
-    }
-
     [Test]
     [Category("HealthCheck")]
     [Description("11.1 GET /repos/{owner}/{repo}/issues/{number}/comments returns 200 OK")]
@@ -305,5 +280,30 @@ public class GetIssueCommentsTests : GitHubTestBase
             [.. TestRepoParam(), .. CommentIdParam(_existingCommentId)]);
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdCommentId.HasValue)
+        {
+            try
+            {
+                var delete = await Delete<object>(
+                    GitHubEndpoints.RepoIssueCommentById,
+                    [.. TestRepoParam(), .. CommentIdParam(_createdCommentId.Value)]);
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: comment {_createdCommentId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete comment {_createdCommentId}: {exception.Message}");
+            }
+        }
     }
 }

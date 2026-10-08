@@ -32,29 +32,6 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
         }
     }
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_createdTodoId.HasValue)
-        {
-            try
-            {
-                var delete = await Delete<object>(JsonPlaceholderEndpoints.TodosById, IdParam(_createdTodoId.Value));
-
-                if (!delete.IsSuccessful)
-                {
-                    TestContext.Progress.WriteLine(
-                        $"Warning: todo {_createdTodoId} not deleted: HTTP {(int)delete.StatusCode}");
-                }
-            }
-            catch (HttpRequestException exception)
-            {
-                TestContext.Progress.WriteLine(
-                    $"Warning: failed to delete todo {_createdTodoId}: {exception.Message}");
-            }
-        }
-    }
-
     [Test]
     [Category("HealthCheck")]
     [Description("7.1 Status code is 200")]
@@ -143,5 +120,28 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
 
         var ids = response.Data!.Select(todo => todo.Id);
         ids.Should().OnlyHaveUniqueItems();
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdTodoId.HasValue)
+        {
+            try
+            {
+                var delete = await Delete<object>(JsonPlaceholderEndpoints.TodosById, IdParam(_createdTodoId.Value));
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: todo {_createdTodoId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete todo {_createdTodoId}: {exception.Message}");
+            }
+        }
     }
 }

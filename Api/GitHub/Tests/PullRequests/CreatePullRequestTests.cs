@@ -15,6 +15,10 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class CreatePullRequestTests : GitHubTestBase
 {
+
+    private readonly List<(int Number, string BranchName)> _createdPullRequests = [];
+    private readonly List<string> _createdBranchNames = [];
+
     private const int TitleRandomLength = 8;
 
     [Test]
@@ -25,14 +29,9 @@ public class CreatePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            pullNumber.Should().BeGreaterThan(0, "created PR must get a number");
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        _createdPullRequests.Add((pullNumber, branchName));
+
+        pullNumber.Should().BeGreaterThan(0, "created PR must get a number");
     }
 
     [Test]
@@ -43,19 +42,14 @@ public class CreatePullRequestTests : GitHubTestBase
         var title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}";
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(title);
 
-        try
-        {
-            var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
-                PullParams(pullNumber));
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-            readBack.Data!.Title.Should().Be(title, "PR must echo the requested title");
-            readBack.Data.State.Should().Be(GitHubEndpoints.StateOpen, "fresh PR must be open");
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
+            PullParams(pullNumber));
+
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+        readBack.Data!.Title.Should().Be(title, "PR must echo the requested title");
+        readBack.Data.State.Should().Be(GitHubEndpoints.StateOpen, "fresh PR must be open");
     }
 
     [Test]
@@ -66,17 +60,12 @@ public class CreatePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
-                PullParams(pullNumber));
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            readBack.ContentType.Should().Contain(AssertHelper.JsonContentType);
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
+            PullParams(pullNumber));
+
+        readBack.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]
@@ -168,24 +157,19 @@ public class CreatePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            var duplicate = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
-                GitHubEndpoints.RepoPullRequests,
-                new CreatePullRequestModelRequest
-                {
-                    Title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}",
-                    Head = branchName,
-                    Base = GitHubEndpoints.DefaultBranch
-                },
-                TestRepoParam());
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            duplicate.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        var duplicate = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequests,
+            new CreatePullRequestModelRequest
+            {
+                Title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}",
+                Head = branchName,
+                Base = GitHubEndpoints.DefaultBranch
+            },
+            TestRepoParam());
+
+        duplicate.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
 
     [Test]
@@ -203,26 +187,21 @@ public class CreatePullRequestTests : GitHubTestBase
             new CreateGitRefModelRequest { Ref = $"refs/heads/{branchName}", Sha = mainBranch.Data!.Commit.Sha },
             TestRepoParam());
 
-        try
-        {
-            branch.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdBranchNames.Add(branchName);
 
-            var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
-                GitHubEndpoints.RepoPullRequests,
-                new CreatePullRequestModelRequest
-                {
-                    Title = "probe",
-                    Head = branchName,
-                    Base = GitHubEndpoints.DefaultBranch
-                },
-                TestRepoParam());
+        branch.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-            response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
-        }
-        finally
-        {
-            await CleanupGitRefAsync(branchName);
-        }
+        var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequests,
+            new CreatePullRequestModelRequest
+            {
+                Title = "probe",
+                Head = branchName,
+                Base = GitHubEndpoints.DefaultBranch
+            },
+            TestRepoParam());
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
 
     [Test]
@@ -241,5 +220,19 @@ public class CreatePullRequestTests : GitHubTestBase
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var (number, branchName) in _createdPullRequests)
+        {
+            await CleanupPullRequestAsync(number, branchName);
+        }
+
+        foreach (var branchName in _createdBranchNames)
+        {
+            await CleanupGitRefAsync(branchName);
+        }
     }
 }

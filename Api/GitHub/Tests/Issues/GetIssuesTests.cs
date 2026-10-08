@@ -37,33 +37,6 @@ public class GetIssuesTests : GitHubTestBase
         }
     }
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_createdIssueNumber.HasValue)
-        {
-            try
-            {
-                // REST has no issue-delete endpoint (DELETE → 404, see OB §17) — cleanup closes instead
-                var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                    GitHubEndpoints.RepoIssueById,
-                    new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                    [.. TestRepoParam(), .. IssueNumberParam(_createdIssueNumber.Value)]);
-
-                if (!cleanup.IsSuccessful)
-                {
-                    TestContext.Progress.WriteLine(
-                        $"Warning: issue {_createdIssueNumber} not closed: HTTP {(int)cleanup.StatusCode}");
-                }
-            }
-            catch (HttpRequestException exception)
-            {
-                TestContext.Progress.WriteLine(
-                    $"Warning: failed to close issue {_createdIssueNumber}: {exception.Message}");
-            }
-        }
-    }
-
     [Test]
     [Category("HealthCheck")]
     [Description("3.1 GET /repos/{owner}/{repo}/issues returns 200 OK")]
@@ -229,5 +202,32 @@ public class GetIssuesTests : GitHubTestBase
             [.. TestRepoParam(), Query(SinceParamKey, InvalidQueryValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdIssueNumber.HasValue)
+        {
+            try
+            {
+                // REST has no issue-delete endpoint (DELETE → 404, see OB §17) — cleanup closes instead
+                var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+                    GitHubEndpoints.RepoIssueById,
+                    new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+                    [.. TestRepoParam(), .. IssueNumberParam(_createdIssueNumber.Value)]);
+
+                if (!cleanup.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: issue {_createdIssueNumber} not closed: HTTP {(int)cleanup.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to close issue {_createdIssueNumber}: {exception.Message}");
+            }
+        }
     }
 }

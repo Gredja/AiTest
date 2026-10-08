@@ -19,6 +19,7 @@ public class CreateRefTests : GitHubTestBase
     private const string MissingSha = "0000000000000000000000000000000000000000";
     private const int ShaHexLength = 40;
 
+    private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
 
     [OneTimeSetUp]
@@ -39,16 +40,10 @@ public class CreateRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+        _createdRefs.Add(refName);
 
-        try
-        {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data.Should().NotBeNull();
-        }
-        finally
-        {
-            await CleanupGitRefAsync(refName);
-        }
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data.Should().NotBeNull();
     }
 
     [Test]
@@ -60,18 +55,12 @@ public class CreateRefTests : GitHubTestBase
         var createRequest = new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha };
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs, createRequest, TestRepoParam());
+        _createdRefs.Add(refName);
 
-        try
-        {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data.Should().NotBeNull();
-            created.Data!.Ref.Should().Be(refName, "response must echo the created ref");
-            created.Data.Object.Sha.Should().Be(_baseSha, "response must point at the requested sha");
-        }
-        finally
-        {
-            await CleanupGitRefAsync(refName);
-        }
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data.Should().NotBeNull();
+        created.Data!.Ref.Should().Be(refName, "response must echo the created ref");
+        created.Data.Object.Sha.Should().Be(_baseSha, "response must point at the requested sha");
     }
 
     [Test]
@@ -83,17 +72,11 @@ public class CreateRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+        _createdRefs.Add(refName);
 
-        try
-        {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data!.Object.Type.Should().Be("commit");
-            created.Data.Object.Sha.Should().HaveLength(ShaHexLength);
-        }
-        finally
-        {
-            await CleanupGitRefAsync(refName);
-        }
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data!.Object.Type.Should().Be("commit");
+        created.Data.Object.Sha.Should().HaveLength(ShaHexLength);
     }
 
     [Test]
@@ -172,21 +155,15 @@ public class CreateRefTests : GitHubTestBase
         var first = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+        _createdRefs.Add(refName);
 
-        try
-        {
-            first.ShouldHaveStatusCode(HttpStatusCode.Created);
+        first.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-            var second = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
-                GitHubEndpoints.RepoGitRefs,
-                new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+        var second = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+            GitHubEndpoints.RepoGitRefs,
+            new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
 
-            second.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
-        }
-        finally
-        {
-            await CleanupGitRefAsync(refName);
-        }
+        second.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
 
     [Test]
@@ -200,5 +177,14 @@ public class CreateRefTests : GitHubTestBase
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var refPath in _createdRefs)
+        {
+            await CleanupGitRefAsync(refPath);
+        }
     }
 }

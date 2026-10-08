@@ -34,29 +34,6 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
         }
     }
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_createdPostId.HasValue)
-        {
-            try
-            {
-                var delete = await Delete<object>(JsonPlaceholderEndpoints.PostsById, IdParam(_createdPostId.Value));
-
-                if (!delete.IsSuccessful)
-                {
-                    TestContext.Progress.WriteLine(
-                        $"Warning: post {_createdPostId} not deleted: HTTP {(int)delete.StatusCode}");
-                }
-            }
-            catch (HttpRequestException exception)
-            {
-                TestContext.Progress.WriteLine(
-                    $"Warning: failed to delete post {_createdPostId}: {exception.Message}");
-            }
-        }
-    }
-
     [Test]
     [Category("HealthCheck")]
     [Description("2.1 Status code is 200 for valid ID")]
@@ -213,5 +190,28 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
             IdParam(int.MaxValue));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdPostId.HasValue)
+        {
+            try
+            {
+                var delete = await Delete<object>(JsonPlaceholderEndpoints.PostsById, IdParam(_createdPostId.Value));
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: post {_createdPostId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete post {_createdPostId}: {exception.Message}");
+            }
+        }
     }
 }

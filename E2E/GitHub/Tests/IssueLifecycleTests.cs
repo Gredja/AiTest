@@ -16,6 +16,8 @@ public class IssueLifecycleTests : GitHubE2ETestBase
     private const int TitleRandomLength = 8;
     private const int BodyRandomLength = 16;
 
+    private readonly List<int> _createdIssueNumbers = [];
+
     [Test]
     [Category("Regression")]
     [Description("E2E-1 Issue lifecycle: create → comment → verify comment linked → close → verify state")]
@@ -29,70 +31,56 @@ public class IssueLifecycleTests : GitHubE2ETestBase
 
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, issueRequest, TestRepoParam());
-
-        try
+        if (created.Data is not null)
         {
-            created.ShouldHaveStatusCode(HttpStatusCode.Created);
-            created.Data.Should().NotBeNull();
-            created.Data!.State.Should().Be(GitHubEndpoints.StateOpen);
-
-            var opened = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-                [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
-            opened.ShouldHaveStatusCode(HttpStatusCode.OK);
-            opened.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "freshly created issue must be open");
-
-            var commentRequest = new CreateCommentModelRequest
-            {
-                Body = $"Comment {DataGenerator.RandomString(BodyRandomLength)}"
-            };
-            var comment = await Post<CreateCommentModelRequest, CommentModelResponse>(
-                GitHubEndpoints.RepoIssueComments, commentRequest,
-                [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
-
-            comment.ShouldHaveStatusCode(HttpStatusCode.Created);
-            comment.Data.Should().NotBeNull();
-            comment.Data!.ShouldMatchRequest(commentRequest);
-
-            var comments = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-                [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
-            comments.ShouldHaveStatusCode(HttpStatusCode.OK);
-            comments.Data.Should().Contain(existing => existing.Id == comment.Data.Id,
-                "created comment must be reachable via its issue's comments endpoint");
-
-            var closeRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed };
-            var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                GitHubEndpoints.RepoIssueById, closeRequest,
-                [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
-            closed.ShouldHaveStatusCode(HttpStatusCode.OK);
-
-            var afterClose = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-                [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
-            afterClose.ShouldHaveStatusCode(HttpStatusCode.OK);
-            afterClose.Data!.State.Should().Be(GitHubEndpoints.StateClosed, "issue must stay closed after PATCH");
+            _createdIssueNumbers.Add(created.Data.Number);
         }
-        finally
-        {
-            if (created.Data is not null)
-            {
-                try
-                {
-                    var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                        GitHubEndpoints.RepoIssueById,
-                        new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                        [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
 
-                    if (!cleanup.IsSuccessful)
-                    {
-                        TestContext.Progress.WriteLine(
-                            $"Warning: issue {created.Data.Number} not closed: HTTP {(int)cleanup.StatusCode}");
-                    }
-                }
-                catch (HttpRequestException exception)
-                {
-                    TestContext.Progress.WriteLine(
-                        $"Warning: failed to close issue {created.Data.Number}: {exception.Message}");
-                }
-            }
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        created.Data.Should().NotBeNull();
+        created.Data!.State.Should().Be(GitHubEndpoints.StateOpen);
+
+        var opened = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
+        opened.ShouldHaveStatusCode(HttpStatusCode.OK);
+        opened.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "freshly created issue must be open");
+
+        var commentRequest = new CreateCommentModelRequest
+        {
+            Body = $"Comment {DataGenerator.RandomString(BodyRandomLength)}"
+        };
+        var comment = await Post<CreateCommentModelRequest, CommentModelResponse>(
+            GitHubEndpoints.RepoIssueComments, commentRequest,
+            [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
+
+        comment.ShouldHaveStatusCode(HttpStatusCode.Created);
+        comment.Data.Should().NotBeNull();
+        comment.Data!.ShouldMatchRequest(commentRequest);
+
+        var comments = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
+            [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
+        comments.ShouldHaveStatusCode(HttpStatusCode.OK);
+        comments.Data.Should().Contain(existing => existing.Id == comment.Data.Id,
+            "created comment must be reachable via its issue's comments endpoint");
+
+        var closeRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed };
+        var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+            GitHubEndpoints.RepoIssueById, closeRequest,
+            [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
+        closed.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        var afterClose = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            [.. TestRepoParam(), .. IssueNumberParam(created.Data.Number)]);
+        afterClose.ShouldHaveStatusCode(HttpStatusCode.OK);
+        afterClose.Data!.State.Should().Be(GitHubEndpoints.StateClosed, "issue must stay closed after PATCH");
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var issueNumber in _createdIssueNumbers)
+        {
+            await CleanupIssueAsync(issueNumber);
         }
     }
 }

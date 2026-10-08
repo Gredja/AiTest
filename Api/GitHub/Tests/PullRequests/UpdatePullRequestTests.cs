@@ -15,6 +15,9 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class UpdatePullRequestTests : GitHubTestBase
 {
+
+    private readonly List<(int Number, string BranchName)> _createdPullRequests = [];
+
     private const int TitleRandomLength = 8;
     private const int ExistingPullNumber = 1;
 
@@ -26,26 +29,21 @@ public class UpdatePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            var newTitle = $"Patched {DataGenerator.RandomString(TitleRandomLength)}";
-            var patched = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
-                GitHubEndpoints.RepoPullRequestById,
-                new UpdatePullRequestModelRequest { Title = newTitle },
-                PullParams(pullNumber));
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            patched.ShouldHaveStatusCode(HttpStatusCode.OK);
-            patched.Data!.Title.Should().Be(newTitle);
+        var newTitle = $"Patched {DataGenerator.RandomString(TitleRandomLength)}";
+        var patched = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequestById,
+            new UpdatePullRequestModelRequest { Title = newTitle },
+            PullParams(pullNumber));
 
-            var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
-                PullParams(pullNumber));
-            readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-            readBack.Data!.Title.Should().Be(newTitle, "PATCH must persist the new title");
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        patched.ShouldHaveStatusCode(HttpStatusCode.OK);
+        patched.Data!.Title.Should().Be(newTitle);
+
+        var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
+            PullParams(pullNumber));
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+        readBack.Data!.Title.Should().Be(newTitle, "PATCH must persist the new title");
     }
 
     [Test]
@@ -56,25 +54,20 @@ public class UpdatePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            var closed = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
-                GitHubEndpoints.RepoPullRequestById,
-                new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
-                PullParams(pullNumber));
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            closed.ShouldHaveStatusCode(HttpStatusCode.OK);
-            closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
+        var closed = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequestById,
+            new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+            PullParams(pullNumber));
 
-            var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
-                PullParams(pullNumber));
-            readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-            readBack.Data!.State.Should().Be(GitHubEndpoints.StateClosed, "closed state must persist");
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        closed.ShouldHaveStatusCode(HttpStatusCode.OK);
+        closed.Data!.State.Should().Be(GitHubEndpoints.StateClosed);
+
+        var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
+            PullParams(pullNumber));
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+        readBack.Data!.State.Should().Be(GitHubEndpoints.StateClosed, "closed state must persist");
     }
 
     [Test]
@@ -85,19 +78,14 @@ public class UpdatePullRequestTests : GitHubTestBase
         var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
             $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
 
-        try
-        {
-            var patched = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
-                GitHubEndpoints.RepoPullRequestById,
-                new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
-                PullParams(pullNumber));
+        _createdPullRequests.Add((pullNumber, branchName));
 
-            patched.ContentType.Should().Contain(AssertHelper.JsonContentType);
-        }
-        finally
-        {
-            await CleanupPullRequestAsync(pullNumber, branchName);
-        }
+        var patched = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequestById,
+            new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+            PullParams(pullNumber));
+
+        patched.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]
@@ -165,5 +153,14 @@ public class UpdatePullRequestTests : GitHubTestBase
              .. PullRequestNumberParam(1)]);
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var (number, branchName) in _createdPullRequests)
+        {
+            await CleanupPullRequestAsync(number, branchName);
+        }
     }
 }

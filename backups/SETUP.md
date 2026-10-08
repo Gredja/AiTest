@@ -383,7 +383,7 @@ git checkout -b features/add-user-tests
 
 **Тесты:**
 - 1 endpoint = 1 тестовый класс
-- В тестовом классе только тесты: `[Test]`, lifecycle (`OneTimeSetUp`/`TearDown`), тестовые данные (константы/state); общие билдеры параметров — в base/param helpers (дубль в 2+ классах → извлечь в base)
+- В тестовом классе только тесты: `[Test]`, lifecycle (`OneTimeSetUp`/`TearDown`), тестовые данные (константы/state); общие билдеры параметров — в base/param helpers (дубль в 2+ классах → извлечь в base); cleanup — только в `[OneTimeTearDown]` **последним членом класса** через fixture-реестр (register-then-assert сразу после create, до asserts), не в `finally`; ядро cleanup — общий `RunCleanupAsync` (warning, не failure, NotFound глушится)
 - Seed-методология: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → ~15-20 тестов на endpoint
 - Обязательные поля request body → тест на КАЖДОЕ отсутствующее поле (`*_Missing{Field}_*`); пустой body не заменяет проверку полей
 - Негативы считаются по АКТИВНЫМ тестам (`[Ignore]` не в счёт); когда полезные режимы исчерпаны — фиксируй достигнутое, не плоди дубли
