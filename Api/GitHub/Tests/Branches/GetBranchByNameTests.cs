@@ -17,12 +17,14 @@ public class GetBranchByNameTests : GitHubTestBase
 {
     private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
 
+    private const int MaxBranchesPage = 100;
     private string _slashBranchName = string.Empty;
 
     [OneTimeSetUp]
     public async Task ResolveSlashBranchName()
     {
-        var branches = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, TestRepoParam());
+        var branches = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
+            [.. TestRepoParam(), .. PerPageParam(MaxBranchesPage)]);
 
         branches.ShouldHaveStatusCode(HttpStatusCode.OK);
         _slashBranchName = branches.Data!

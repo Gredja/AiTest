@@ -16,6 +16,12 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected const string InvalidAuthorization = $"Bearer {InvalidToken}";
     protected const string SinceParamKey = "since";
 
+    private const string ScratchFileName = "audit-scratch.txt";
+    private const string FileMode644 = "100644";
+    private const string BlobType = "blob";
+    private const string RefsPrefix = "refs/";
+    private const string HeadsPrefix = "heads/";
+
     protected static List<RequestDictionaryModel> TestRepoParam()
     {
         var (owner, repo) = ParseRepo();
@@ -63,11 +69,110 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             $"close issue {issueNumber}");
     }
 
+    // Accepts any of the three forms callers hold ("refs/heads/x", "heads/x", "x") —
+    // the endpoint wants exactly "heads/x"; a wrong form 404s and the NotFound
+    // tolerance would silently leak the branch
     protected async Task CleanupGitRefAsync(string refPath)
     {
+        var path = refPath.StartsWith(RefsPrefix, StringComparison.Ordinal)
+            ? refPath[RefsPrefix.Length..]
+            : refPath;
+        if (!path.StartsWith(HeadsPrefix, StringComparison.Ordinal))
+        {
+            path = $"{HeadsPrefix}{path}";
+        }
+
         await RunCleanupAsync(
-            () => Delete<object>(GitHubEndpoints.RepoGitRefById, GitHubParamHelper.GitRefParam(refPath)),
-            $"delete ref {refPath}");
+            () => Delete<object>(GitHubEndpoints.RepoGitRefById,
+                [.. TestRepoParam(), .. GitHubParamHelper.GitRefParam(path)]),
+            $"delete ref {path}");
+    }
+
+    // Scratch PR pipeline: changed blob → tree → commit → branch → PR. A same-tree commit gives
+    // "No commits between" (OB §21) and an empty files list for the dynamic-max PR fixtures —
+    // the new file guarantees both divergence and ≥1 changed file.
+    protected async Task<(int Number, string BranchName)> CreateScratchPullRequestAsync(string title)
+    {
+        var branchName = $"audit-{DataGenerator.RandomString(8)}";
+
+        var mainBranch = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
+            [.. TestRepoParam(), .. GitHubParamHelper.BranchNameParam(GitHubEndpoints.DefaultBranch)]);
+        mainBranch.ShouldHaveStatusCode(HttpStatusCode.OK);
+        var mainSha = mainBranch.Data!.Commit.Sha;
+
+        var mainCommit = await Get<GitCommitModelResponse>(GitHubEndpoints.RepoGitCommitsById,
+            [.. TestRepoParam(), .. GitHubParamHelper.GitCommitParam(mainSha)]);
+        mainCommit.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        var blob = await Post<CreateGitBlobModelRequest, GitShaModelResponse>(
+            GitHubEndpoints.RepoGitBlobs,
+            new CreateGitBlobModelRequest { Content = $"scratch {branchName}" },
+            TestRepoParam());
+        blob.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        var tree = await Post<CreateGitTreeModelRequest, GitShaModelResponse>(
+            GitHubEndpoints.RepoGitTrees,
+            new CreateGitTreeModelRequest
+            {
+                BaseTree = mainCommit.Data!.Tree.Sha,
+                Tree =
+                [
+                    new GitTreeEntry
+                    {
+                        Path = ScratchFileName,
+                        Mode = FileMode644,
+                        Type = BlobType,
+                        Sha = blob.Data!.Sha
+                    }
+                ]
+            },
+            TestRepoParam());
+        tree.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        var commit = await Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
+            GitHubEndpoints.RepoGitCommits,
+            new CreateGitCommitModelRequest
+            {
+                Message = $"scratch {branchName}",
+                Tree = tree.Data!.Sha,
+                Parents = [mainSha]
+            },
+            TestRepoParam());
+        commit.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+            GitHubEndpoints.RepoGitRefs,
+            new CreateGitRefModelRequest { Ref = $"refs/heads/{branchName}", Sha = commit.Data!.Sha },
+            TestRepoParam());
+        branch.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequests,
+            new CreatePullRequestModelRequest
+            {
+                Title = title,
+                Head = branchName,
+                Base = GitHubEndpoints.DefaultBranch
+            },
+            TestRepoParam());
+        pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        return (pullRequest.Data!.Number, branchName);
+    }
+
+    protected async Task CleanupPullRequestAsync(int? pullNumber, string branchName)
+    {
+        if (pullNumber.HasValue)
+        {
+            await RunCleanupAsync(
+                () => Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
+                    GitHubEndpoints.RepoPullRequestById,
+                    new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+                    PullParams(pullNumber.Value)),
+                $"close pull request {pullNumber}");
+        }
+
+        await CleanupGitRefAsync(branchName);
     }
 
     // One cleanup core for every entity: warn, never fail the run (Rules/test-practices.md → E2E cleanup)

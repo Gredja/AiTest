@@ -16,6 +16,7 @@ public class CreateIssueNegativeTests : GitHubTestBase
 {
     private const string MissingTitleErrorMessage = "Invalid request.\n\n\"title\" wasn't supplied.";
     private const string LabelsNullErrorMessage = "Invalid request.\n\nFor 'properties/labels', nil is not an array.";
+    private const int ExistingIssueNumber = 5;
 
     [Test]
     [Category("Negative")]
@@ -69,6 +70,17 @@ public class CreateIssueNegativeTests : GitHubTestBase
         var response = await Post<Dictionary<string, object>, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, body,
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("17.6 DELETE issue returns 404 (endpoint absent, documented)")]
+    public async Task DeleteIssue_ReturnsNotFound()
+    {
+        var response = await Delete<object>(GitHubEndpoints.RepoIssueById,
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }

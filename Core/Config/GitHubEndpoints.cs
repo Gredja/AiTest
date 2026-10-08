@@ -31,6 +31,7 @@ public static class GitHubEndpoints
     public const string RepoPullRequestById = "/repos/{owner}/{repo}/pulls/{pull_number}";
     public const string RepoPullRequestFiles = "/repos/{owner}/{repo}/pulls/{pull_number}/files";
     public const string RepoPullRequestCommits = "/repos/{owner}/{repo}/pulls/{pull_number}/commits";
+    public const string RepoPullRequestMerge = "/repos/{owner}/{repo}/pulls/{pull_number}/merge";
 
     public const string RepoBranches = "/repos/{owner}/{repo}/branches";
     public const string RepoBranchByName = "/repos/{owner}/{repo}/branches/{branch}";
@@ -44,6 +45,10 @@ public static class GitHubEndpoints
 
     public const string RepoGitRefs = "/repos/{owner}/{repo}/git/refs";
     public const string RepoGitRefById = "/repos/{owner}/{repo}/git/refs/{ref}";
+    public const string RepoGitCommits = "/repos/{owner}/{repo}/git/commits";
+    public const string RepoGitCommitsById = "/repos/{owner}/{repo}/git/commits/{commit_sha}";
+    public const string RepoGitBlobs = "/repos/{owner}/{repo}/git/blobs";
+    public const string RepoGitTrees = "/repos/{owner}/{repo}/git/trees";
 
     public const string Users = "/users";
     public const string UsersById = "/users/{username}";

@@ -135,10 +135,18 @@ Core/
 │   │   ├── CommitModelResponse.cs
 │   │   ├── ContributorModelResponse.cs
 │   │   ├── CreateCommentModelRequest.cs
+│   │   ├── CreateGitBlobModelRequest.cs
+│   │   ├── CreateGitCommitModelRequest.cs
 │   │   ├── CreateGitRefModelRequest.cs
+│   │   ├── CreateGitTreeModelRequest.cs
 │   │   ├── CreateIssueModelRequest.cs
+│   │   ├── CreatePullRequestModelRequest.cs
+│   │   ├── GitCommitModelResponse.cs
+│   │   ├── GitCommitTree.cs
 │   │   ├── GitRefModelResponse.cs
 │   │   ├── GitRefObject.cs
+│   │   ├── GitShaModelResponse.cs
+│   │   ├── GitTreeEntry.cs
 │   │   ├── IssueModelResponse.cs
 │   │   ├── JsonFields.cs
 │   │   ├── Label.cs
@@ -154,6 +162,7 @@ Core/
 │   │   ├── TagModelResponse.cs
 │   │   ├── TopicsModelResponse.cs
 │   │   ├── UpdateIssueModelRequest.cs
+│   │   ├── UpdatePullRequestModelRequest.cs
 │   │   └── UserModelResponse.cs
 ```
 
@@ -227,10 +236,13 @@ Api/
 │       ├── PublicRepos/
 │       │   └── GetPublicReposTests.cs
 │       ├── PullRequests/
+│       │   ├── CreatePullRequestTests.cs
 │       │   ├── GetPullRequestByIdTests.cs
 │       │   ├── GetPullRequestCommitsTests.cs
 │       │   ├── GetPullRequestFilesTests.cs
-│       │   └── GetPullRequestsTests.cs
+│       │   ├── GetPullRequestsTests.cs
+│       │   ├── MergePullRequestTests.cs
+│       │   └── UpdatePullRequestTests.cs
 │       ├── RateLimit/
 │       │   └── GetRateLimitTests.cs
 │       ├── Releases/

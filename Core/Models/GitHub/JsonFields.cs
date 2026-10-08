@@ -3,6 +3,8 @@ namespace Core.Models.GitHub;
 public static class JsonFields
 {
     public const string AvatarUrl = "avatar_url";
+    public const string Base = "base";
+    public const string BaseTree = "base_tree";
     public const string BlobUrl = "blob_url";
     public const string Body = "body";
     public const string ContentsUrl = "contents_url";

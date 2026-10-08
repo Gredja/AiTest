@@ -527,6 +527,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - `base` branch does not exist → 422
 - `head` = `base` → 422 Unprocessable Entity
 - PR already exists for same head/base → 422 with validation error
+- `head` branch with no commits vs `base` (e.g. branch pointing at base sha) → 422, message `Validation Failed: No commits between <base> and <head>` (verified 2026-10-08)
 
 ---
 
@@ -537,10 +538,12 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Response body is a JSON object with updated fields
 - Content-Type is application/json
 
-**Negative:**
+**Negative (verified 2026-10-08):**
 - No auth → 401
+- Invalid token → 401
 - Non-existent PR → 404
 - Non-existent repo → 404
+- Ceiling: null `title` and unrecognized `state` → 200 (accepted/ignored) — no further failure modes; 4 < 5 floor documented per ceiling rule
 
 ---
 
@@ -550,24 +553,20 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Response status is 200 OK with `merged` (boolean: true)
 - Response body has: `sha` (string — merge commit SHA), `merged` (boolean: true), `message` (string: "Pull Request successfully merged")
 
-**Negative:**
+**Negative (verified 2026-10-08):**
 - No auth → 401
+- Invalid token → 401, message `Bad credentials`
 - Non-existent PR → 404
-- PR already merged → 405 Method Not Allowed, body has `message` (string: "Pull Request is not mergeable")
-- PR has conflicts → 405, body has `message` (string: "Pull Request is not mergeable")
-- PR is open (not approved) → may fail depending on branch protection rules
+- Non-existent repo → 404
+- Already merged PR → 200 with `message` "Pull Request successfully merged" (idempotent — earlier doc claim of 405 not reproduced; closed-unmerged PR also merges with 200)
+- Ceiling: all other modes collapse to 200 — 4 < 5 floor documented per ceiling rule
 
 ---
 
 ## 24. DELETE /repos/{owner}/{repo}/issues/{number}
 
-- Response status is 204 No Content
-- Response body is empty
-
-**Negative:**
-- No auth → 401
-- Non-existent issue → 404
-- Non-existent repo → 404
+- Response status is **404 Not Found** — the endpoint is absent from the current REST API (verified probe 2026-10-08: freshly created issue → 404 with `message` "Not Found")
+- Earlier documentation claiming 204 was wrong; consistent with the §17 cleanup note (close issues via PATCH, never DELETE)
 
 ---
 
@@ -597,6 +596,16 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Non-existent ref → 422 Unprocessable Entity (earlier doc said 404 — probe returned 422)
 - Non-existent repo → 404
 - Attempt to delete default branch → 422 Unprocessable Entity (earlier doc said 403 — probe returned 422)
+
+---
+
+## 27. POST /repos/{owner}/{repo}/git/commits + GET /repos/{owner}/{repo}/git/commits/{commit_sha}
+
+**Infrastructure endpoints** (used by §21–23 test fixtures to build a diverged head branch — a branch pointing at the base sha gets "No commits between" from §21). No dedicated tests — outside the plan's endpoint list.
+
+- POST body: `message` (string), `tree` (tree sha), `parents` (array of commit shas) → 201 Created, body has `sha` (40 hex)
+- GET returns the commit with `tree.sha` (needed as POST's `tree` argument)
+- Invalid parent sha → 422
 
 ---
 

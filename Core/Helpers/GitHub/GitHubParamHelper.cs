@@ -39,6 +39,9 @@ public static class GitHubParamHelper
     public static List<RequestDictionaryModel> GitRefParam(string refPath) =>
         [ParamHelper.UrlSegment("ref", refPath)];
 
+    public static List<RequestDictionaryModel> GitCommitParam(string commitSha) =>
+        [ParamHelper.UrlSegment("commit_sha", commitSha)];
+
     public static List<RequestDictionaryModel> UsernameParam(string username) =>
         [ParamHelper.UrlSegment("username", username)];
 

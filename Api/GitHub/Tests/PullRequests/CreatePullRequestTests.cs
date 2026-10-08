@@ -1,0 +1,245 @@
+using Core.Models.GitHub;
+using Core.Config;
+using Core.Helpers;
+using Core.Helpers.GitHub;
+using System.Net;
+using FluentAssertions;
+using AllureAdapter;
+using RestSharp;
+using static Core.Helpers.GitHub.GitHubParamHelper;
+
+namespace Api.GitHub.PullRequests;
+
+[TestFixture]
+[AllureNUnit]
+[Category("GitHub")]
+public class CreatePullRequestTests : GitHubTestBase
+{
+    private const int TitleRandomLength = 8;
+
+    [Test]
+    [Category("HealthCheck")]
+    [Description("21.1 POST /pulls creates a PR and returns 201")]
+    public async Task CreatePullRequest_ReturnsCreated()
+    {
+        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+            $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
+
+        try
+        {
+            pullNumber.Should().BeGreaterThan(0, "created PR must get a number");
+        }
+        finally
+        {
+            await CleanupPullRequestAsync(pullNumber, branchName);
+        }
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("21.2 Response echoes title and starts open")]
+    public async Task CreatePullRequest_EchoesTitleAndIsOpen()
+    {
+        var title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}";
+        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(title);
+
+        try
+        {
+            var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
+                PullParams(pullNumber));
+
+            readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+            readBack.Data!.Title.Should().Be(title, "PR must echo the requested title");
+            readBack.Data.State.Should().Be(GitHubEndpoints.StateOpen, "fresh PR must be open");
+        }
+        finally
+        {
+            await CleanupPullRequestAsync(pullNumber, branchName);
+        }
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("21.3 Content-Type is application/json")]
+    public async Task CreatePullRequest_ContentTypeIsJson()
+    {
+        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+            $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
+
+        try
+        {
+            var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
+                PullParams(pullNumber));
+
+            readBack.ContentType.Should().Contain(AssertHelper.JsonContentType);
+        }
+        finally
+        {
+            await CleanupPullRequestAsync(pullNumber, branchName);
+        }
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("21.4 POST without auth returns 401")]
+    public async Task CreatePullRequest_NoAuth_ReturnsUnauthorized()
+    {
+        var request = new RestRequest(GitHubEndpoints.RepoPullRequests, Method.Post)
+        {
+            RequestFormat = DataFormat.Json
+        };
+        request.AddJsonBody(new CreatePullRequestModelRequest
+        {
+            Title = "probe",
+            Head = GitHubEndpoints.DefaultBranch,
+            Base = GitHubEndpoints.DefaultBranch
+        });
+        AddParams(request, TestRepoParam());
+
+        var response = await Client.ExecuteAsync<PullRequestModelResponse>(request);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.RequiresAuthentication);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("21.5 Invalid token returns 401")]
+    public async Task CreatePullRequest_InvalidToken_ReturnsUnauthorized()
+    {
+        var request = new RestRequest(GitHubEndpoints.RepoPullRequests, Method.Post)
+        {
+            RequestFormat = DataFormat.Json
+        };
+        request.AddHeader(AuthorizationHeader, InvalidAuthorization);
+        request.AddJsonBody(new CreatePullRequestModelRequest
+        {
+            Title = "probe",
+            Head = GitHubEndpoints.DefaultBranch,
+            Base = GitHubEndpoints.DefaultBranch
+        });
+        AddParams(request, TestRepoParam());
+
+        var response = await Client.ExecuteAsync<PullRequestModelResponse>(request);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("21.6 Missing head returns 422")]
+    public async Task CreatePullRequest_MissingHead_Returns422()
+    {
+        var response = await Post<Dictionary<string, object>, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequests,
+            new Dictionary<string, object>
+            {
+                [JsonFields.Title] = "probe",
+                [JsonFields.Body] = "probe",
+                [JsonFields.Base] = GitHubEndpoints.DefaultBranch
+            },
+            TestRepoParam());
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("21.7 head equals base returns 422")]
+    public async Task CreatePullRequest_HeadEqualsBase_Returns422()
+    {
+        var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequests,
+            new CreatePullRequestModelRequest
+            {
+                Title = "probe",
+                Head = GitHubEndpoints.DefaultBranch,
+                Base = GitHubEndpoints.DefaultBranch
+            },
+            TestRepoParam());
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("21.8 Duplicate PR for same head/base returns 422")]
+    public async Task CreatePullRequest_Duplicate_Returns422()
+    {
+        var (pullNumber, branchName) = await CreateScratchPullRequestAsync(
+            $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
+
+        try
+        {
+            var duplicate = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+                GitHubEndpoints.RepoPullRequests,
+                new CreatePullRequestModelRequest
+                {
+                    Title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}",
+                    Head = branchName,
+                    Base = GitHubEndpoints.DefaultBranch
+                },
+                TestRepoParam());
+
+            duplicate.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+        }
+        finally
+        {
+            await CleanupPullRequestAsync(pullNumber, branchName);
+        }
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("21.9 Head branch with no commits vs base returns 422")]
+    public async Task CreatePullRequest_NoCommits_Returns422()
+    {
+        var branchName = $"audit-{DataGenerator.RandomString(8)}";
+        var mainBranch = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
+            [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
+        mainBranch.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+            GitHubEndpoints.RepoGitRefs,
+            new CreateGitRefModelRequest { Ref = $"refs/heads/{branchName}", Sha = mainBranch.Data!.Commit.Sha },
+            TestRepoParam());
+
+        try
+        {
+            branch.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+            var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+                GitHubEndpoints.RepoPullRequests,
+                new CreatePullRequestModelRequest
+                {
+                    Title = "probe",
+                    Head = branchName,
+                    Base = GitHubEndpoints.DefaultBranch
+                },
+                TestRepoParam());
+
+            response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+        }
+        finally
+        {
+            await CleanupGitRefAsync(branchName);
+        }
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("21.10 Non-existent repo returns 404")]
+    public async Task CreatePullRequest_NonExistentRepo_ReturnsNotFound()
+    {
+        var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequests,
+            new CreatePullRequestModelRequest
+            {
+                Title = "probe",
+                Head = GitHubEndpoints.DefaultBranch,
+                Base = GitHubEndpoints.DefaultBranch
+            },
+            RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+}
