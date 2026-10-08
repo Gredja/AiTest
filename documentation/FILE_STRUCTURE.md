@@ -207,12 +207,14 @@ Api/
 │       ├── Contributors/
 │       │   └── GetContributorsTests.cs
 │       ├── IssueComments/
+│       │   ├── CreateCommentTests.cs
 │       │   └── GetIssueCommentsTests.cs
 │       ├── Issues/
 │       │   ├── CreateIssueNegativeTests.cs
 │       │   ├── CreateIssueVisibilityTests.cs
 │       │   ├── GetIssueByIdTests.cs
-│       │   └── GetIssuesTests.cs
+│       │   ├── GetIssuesTests.cs
+│       │   └── UpdateIssueTests.cs
 │       ├── Languages/
 │       │   └── GetLanguagesTests.cs
 │       ├── PublicRepos/

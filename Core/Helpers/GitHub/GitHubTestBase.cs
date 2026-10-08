@@ -1,5 +1,7 @@
 using Core.Config;
 using Core.Models.Generic;
+using Core.Models.GitHub;
+using NUnit.Framework;
 using RestSharp;
 
 namespace Core.Helpers.GitHub;
@@ -28,6 +30,62 @@ public abstract class GitHubTestBase : GitHubRequestHelper
 
     protected static List<RequestDictionaryModel> CommentParams(long commentId) =>
         [.. TestRepoParam(), .. GitHubParamHelper.CommentIdParam(commentId)];
+
+    protected static List<RequestDictionaryModel> IssueParams(int issueNumber) =>
+        [.. TestRepoParam(), .. GitHubParamHelper.IssueNumberParam(issueNumber)];
+
+    protected async Task CleanupCommentAsync(long? commentId)
+    {
+        if (!commentId.HasValue)
+        {
+            return;
+        }
+
+        try
+        {
+            var cleanup = await Delete<object>(
+                GitHubEndpoints.RepoIssueCommentById, CommentParams(commentId.Value));
+
+            if (!cleanup.IsSuccessful)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: comment {commentId} not deleted: HTTP {(int)cleanup.StatusCode}");
+            }
+        }
+        catch (HttpRequestException exception)
+        {
+            TestContext.Progress.WriteLine(
+                $"Warning: failed to delete comment {commentId}: {exception.Message}");
+        }
+    }
+
+    protected async Task CleanupIssueAsync(int? issueNumber)
+    {
+        if (!issueNumber.HasValue)
+        {
+            return;
+        }
+
+        try
+        {
+            // REST has no issue-delete endpoint (DELETE → 404, OB §17) — cleanup closes instead
+            var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+                GitHubEndpoints.RepoIssueById,
+                new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+                IssueParams(issueNumber.Value));
+
+            if (!cleanup.IsSuccessful)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: issue {issueNumber} not closed: HTTP {(int)cleanup.StatusCode}");
+            }
+        }
+        catch (HttpRequestException exception)
+        {
+            TestContext.Progress.WriteLine(
+                $"Warning: failed to close issue {issueNumber}: {exception.Message}");
+        }
+    }
 
     protected static (string Owner, string Repo) ParseRepo() => ParseRepo(TestConfig.GitHubTestRepo);
 

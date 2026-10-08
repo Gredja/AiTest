@@ -490,11 +490,12 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 **State transitions:**
 - `state: "open"` → `state: "closed"` closes the issue
 - `state: "closed"` → `state: "open"` reopens the issue
+- Unrecognized `state` value (e.g. `"bogus"`) → 200 OK, value silently ignored, state unchanged (verified 2026-10-08; earlier doc claims of 400/422 came from a broken probe)
 
 **Negative:**
 - No auth → 401
 - Non-existent issue → 404
-- Invalid `state` value → 422 Unprocessable Entity
+- `null` instead of an optional field (`title`, `labels`, `state`) → 422 Unprocessable Entity — optional fields must be omitted, not sent as null (verified 2026-10-08)
 - Non-existent repo → 404
 
 ---
