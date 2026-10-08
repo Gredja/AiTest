@@ -53,6 +53,15 @@ How to decide for value types: check the actual JSON response from the API. If t
 - Regular models: `Core.Models.{Service}` (e.g. `Core.Models.GitHub`, `Core.Models.JsonPlaceholder`) — nested/supporting models live in the same service namespace
 - Reusable generics: `Core.Models.Generic`
 
+## File layout
+
+Folders split by kind; **namespace stays flat** (`Core.Models.{Service}`) — no consumer `using` churn:
+
+- `Core/Models/{Service}/Requests/` — all `*ModelRequest.cs`
+- `Core/Models/{Service}/Responses/` — all `*ModelResponse.cs`
+- `Core/Models/{Service}/` (root) — nested/supporting models without suffix (`BranchCommit`, `Label`, `GitTreeEntry`…) + `JsonFields` constants
+- Same layout applies to `Core/Models/Generic/`
+
 ## Generic models
 
 For reusable structures shared across multiple entities — place in `Core/Models/Generic/`.

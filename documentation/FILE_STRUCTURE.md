@@ -107,63 +107,68 @@ Core/
 │   └── TestRunRow.cs
 ├── Models/
 │   ├── Generic/
-│   │   ├── ErrorMessageModelResponse.cs
+│   │   ├── Responses/
+│   │   │   └── ErrorMessageModelResponse.cs
 │   │   ├── IdModel.cs
 │   │   ├── JsonFields.cs
 │   │   ├── ParamType.cs
 │   │   ├── RequestDictionaryModel.cs
 │   │   └── UserOwnedModel.cs
 │   ├── JsonPlaceholder/
+│   │   ├── Requests/
+│   │   │   ├── PostModelRequest.cs
+│   │   │   └── TodoModelRequest.cs
+│   │   ├── Responses/
+│   │   │   ├── AlbumModelResponse.cs
+│   │   │   ├── CommentModelResponse.cs
+│   │   │   ├── PhotoModelResponse.cs
+│   │   │   ├── PostModelResponse.cs
+│   │   │   ├── TodoModelResponse.cs
+│   │   │   └── UserModelResponse.cs
 │   │   ├── Address.cs
-│   │   ├── AlbumModelResponse.cs
-│   │   ├── CommentModelResponse.cs
 │   │   ├── Company.cs
 │   │   ├── Geo.cs
-│   │   ├── JsonFields.cs
-│   │   ├── PhotoModelResponse.cs
-│   │   ├── PostModelRequest.cs
-│   │   ├── PostModelResponse.cs
-│   │   ├── TodoModelRequest.cs
-│   │   ├── TodoModelResponse.cs
-│   │   └── UserModelResponse.cs
+│   │   └── JsonFields.cs
 │   ├── GitHub/
+│   │   ├── Requests/
+│   │   │   ├── CreateCommentModelRequest.cs
+│   │   │   ├── CreateGitBlobModelRequest.cs
+│   │   │   ├── CreateGitCommitModelRequest.cs
+│   │   │   ├── CreateGitRefModelRequest.cs
+│   │   │   ├── CreateGitTreeModelRequest.cs
+│   │   │   ├── CreateIssueModelRequest.cs
+│   │   │   ├── CreatePullRequestModelRequest.cs
+│   │   │   ├── UpdateIssueModelRequest.cs
+│   │   │   └── UpdatePullRequestModelRequest.cs
+│   │   ├── Responses/
+│   │   │   ├── BranchModelResponse.cs
+│   │   │   ├── CommentModelResponse.cs
+│   │   │   ├── CommitModelResponse.cs
+│   │   │   ├── ContributorModelResponse.cs
+│   │   │   ├── GitCommitModelResponse.cs
+│   │   │   ├── GitRefModelResponse.cs
+│   │   │   ├── GitShaModelResponse.cs
+│   │   │   ├── IssueModelResponse.cs
+│   │   │   ├── PullRequestCommitModelResponse.cs
+│   │   │   ├── PullRequestFileModelResponse.cs
+│   │   │   ├── PullRequestModelResponse.cs
+│   │   │   ├── RateLimitModelResponse.cs
+│   │   │   ├── ReleaseModelResponse.cs
+│   │   │   ├── RepositoryModelResponse.cs
+│   │   │   ├── TagModelResponse.cs
+│   │   │   ├── TopicsModelResponse.cs
+│   │   │   └── UserModelResponse.cs
 │   │   ├── BranchCommit.cs
-│   │   ├── BranchModelResponse.cs
-│   │   ├── CommentModelResponse.cs
 │   │   ├── CommitAuthor.cs
 │   │   ├── CommitInfo.cs
-│   │   ├── CommitModelResponse.cs
-│   │   ├── ContributorModelResponse.cs
-│   │   ├── CreateCommentModelRequest.cs
-│   │   ├── CreateGitBlobModelRequest.cs
-│   │   ├── CreateGitCommitModelRequest.cs
-│   │   ├── CreateGitRefModelRequest.cs
-│   │   ├── CreateGitTreeModelRequest.cs
-│   │   ├── CreateIssueModelRequest.cs
-│   │   ├── CreatePullRequestModelRequest.cs
-│   │   ├── GitCommitModelResponse.cs
 │   │   ├── GitCommitTree.cs
-│   │   ├── GitRefModelResponse.cs
 │   │   ├── GitRefObject.cs
-│   │   ├── GitShaModelResponse.cs
 │   │   ├── GitTreeEntry.cs
-│   │   ├── IssueModelResponse.cs
 │   │   ├── JsonFields.cs
 │   │   ├── Label.cs
 │   │   ├── PullRequestBranch.cs
-│   │   ├── PullRequestCommitModelResponse.cs
-│   │   ├── PullRequestFileModelResponse.cs
-│   │   ├── PullRequestModelResponse.cs
-│   │   ├── RateLimitModelResponse.cs
 │   │   ├── RateLimitResources.cs
-│   │   ├── RateLimitSection.cs
-│   │   ├── ReleaseModelResponse.cs
-│   │   ├── RepositoryModelResponse.cs
-│   │   ├── TagModelResponse.cs
-│   │   ├── TopicsModelResponse.cs
-│   │   ├── UpdateIssueModelRequest.cs
-│   │   ├── UpdatePullRequestModelRequest.cs
-│   │   └── UserModelResponse.cs
+│   │   └── RateLimitSection.cs
 ```
 
 ## Api/
