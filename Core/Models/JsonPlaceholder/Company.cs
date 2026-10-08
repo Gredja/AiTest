@@ -12,6 +12,6 @@ public class Company
     public string CatchPhrase { get; set; }
 
     [RequiredField]
-    [JsonPropertyName("bs")]
+    [JsonPropertyName(JsonFields.Bs)]
     public string BusinessSlogan { get; set; }
 }

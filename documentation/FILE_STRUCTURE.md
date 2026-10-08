@@ -93,7 +93,9 @@ Core/
 │   ├── TestOutcome.cs             # own test result (name/status/duration/error)
 │   ├── TestOutcomeAttribute.cs    # assembly-level ITestAction → test-results-*.log
 │   ├── TestOutcomeReader.cs       # reads test-results-*.log of the current run
+│   ├── TestOutcomeFields.cs       # shared JSON property names of the outcome log line
 │   ├── TestOutcomeWriter.cs       # appends one JSON line per finished test
+│   ├── TestStatusNames.cs         # shared wire status strings (passed/skipped/failed)
 │   ├── TestRunWorkspace.cs        # temp workspace %TEMP%\GredjaTestRun (raw logs)
 │   └── TestSourceCategoryReader.cs # fixture/category from test sources
 ├── Reporting/
@@ -103,6 +105,7 @@ Core/
 │   ├── Generic/
 │   │   ├── ErrorMessageModelResponse.cs
 │   │   ├── IdModel.cs
+│   │   ├── JsonFields.cs
 │   │   ├── ParamType.cs
 │   │   ├── RequestDictionaryModel.cs
 │   │   └── UserOwnedModel.cs

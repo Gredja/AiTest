@@ -29,6 +29,6 @@ public class PullRequestModelResponse
     [JsonPropertyName(JsonFields.CreatedAt)]
     public DateTime CreatedAt { get; set; }
 
-    [JsonPropertyName("merged_at")]
+    [JsonPropertyName(JsonFields.MergedAt)]
     public DateTime? MergedAt { get; set; }
 }

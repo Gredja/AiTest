@@ -11,6 +11,6 @@ public class BranchModelResponse
     [RequiredField]
     public BranchCommit Commit { get; set; }
 
-    [JsonPropertyName("protected")]
+    [JsonPropertyName(JsonFields.Protected)]
     public bool IsProtected { get; set; }
 }

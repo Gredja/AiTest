@@ -36,11 +36,11 @@ internal static class TestOutcomeReader
             var root = document.RootElement;
 
             return new TestOutcome(
-                ReadString(root, "test"),
-                ReadString(root, "status"),
-                ReadInt64(root, "durationMs"),
-                ReadString(root, "message"),
-                ReadString(root, "trace"));
+                ReadString(root, TestOutcomeFields.Test),
+                ReadString(root, TestOutcomeFields.Status),
+                ReadInt64(root, TestOutcomeFields.DurationMs),
+                ReadString(root, TestOutcomeFields.Message),
+                ReadString(root, TestOutcomeFields.Trace));
         }
         catch (JsonException)
         {

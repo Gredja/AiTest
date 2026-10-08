@@ -11,7 +11,6 @@ public static class GitHubEndpoints
     public const string NonExistentBranchName = "nonexistent-branch-12345";
     public const string BranchWithSpacesName = "branch with spaces";
     public const string DefaultBranch = "main";
-    public const string FeatureBranchName = "features/GitHub-API-Integration";
 
     // max + 1 is racy: a concurrent E2E write in the same run can create that exact number
     public const int NonExistentIdOffset = 100;

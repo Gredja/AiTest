@@ -8,11 +8,6 @@ internal static class AllureTestResultBuilder
     {
         var result = CreateBaseResult(resultParams);
 
-        if (resultParams.Categories is not null && resultParams.Categories.Any())
-        {
-            result["tags"] = resultParams.Categories.Select(category => new Dictionary<string, string> { [NameKey] = category }).ToList();
-        }
-
         if (resultParams.StatusMessage is not null)
         {
             result["statusDetails"] = BuildStatusDetails(resultParams.StatusMessage, resultParams.StatusTrace);

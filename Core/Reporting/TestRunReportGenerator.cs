@@ -165,8 +165,8 @@ public static class TestRunReportGenerator
 
     private static string MapStatus(string status) => status switch
     {
-        "passed" => "Passed",
-        "skipped" => "Skipped",
+        TestStatusNames.Passed => "Passed",
+        TestStatusNames.Skipped => "Skipped",
         _ => "Failed"
     };
 

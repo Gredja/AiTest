@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
+using NUnit.Framework.Internal;
 using System.Collections.Concurrent;
 using AllureAdapter.Helpers;
 
@@ -49,7 +50,8 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             StatusMessage: status == AllureConstants.StatusFailed ? result.Message : null,
             StatusTrace: status == AllureConstants.StatusFailed ? result.StackTrace : null,
             Description: description,
-            TestClassName: test.ClassName));
+            TestClassName: test.ClassName,
+            Categories: GetCategories(test)));
 
         AllureJsonWriter.WriteResultFile(_resultsDir, testResult);
         AddToContainer(test, uuid);
@@ -108,6 +110,29 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         var hash = sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(input));
 
         return new Guid(hash[..GuidByteLength]).ToString();
+    }
+
+    private static List<string>? GetCategories(ITest test)
+    {
+        var categories = new List<string>();
+
+        // NUnit keeps fixture-level categories on the fixture test only — walk the parent chain
+        for (var current = test; current is not null; current = current.Parent)
+        {
+            if (!current.Properties.ContainsKey(PropertyNames.Category))
+            {
+                continue;
+            }
+
+            categories.AddRange(current.Properties[PropertyNames.Category]
+                .Cast<object>()
+                .Select(value => value.ToString())
+                .Where(value => !string.IsNullOrEmpty(value))
+                .Select(value => value!));
+        }
+
+        var distinct = categories.Distinct().ToList();
+        return distinct.Count > 0 ? distinct : null;
     }
 
     private static string? GetDescription(ITest test)

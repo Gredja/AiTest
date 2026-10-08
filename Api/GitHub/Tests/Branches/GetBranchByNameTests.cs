@@ -18,6 +18,21 @@ public class GetBranchByNameTests : GitHubTestBase
     private const int ShaHexLength = 40;
     private static readonly Regex _shaHexPattern = new("^[0-9a-f]+$", RegexOptions.Compiled);
 
+    private string _slashBranchName = string.Empty;
+
+    [OneTimeSetUp]
+    public async Task ResolveSlashBranchName()
+    {
+        var branches = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, TestRepoParam());
+
+        branches.ShouldHaveStatusCode(HttpStatusCode.OK);
+        _slashBranchName = branches.Data!
+            .Select(branch => branch.Name)
+            .FirstOrDefault(name => name.Contains('/')) ?? string.Empty;
+        _slashBranchName.Should().NotBeNullOrWhiteSpace(
+            "test repo must keep at least one branch with a slash — Entry Criteria, documentation/GitHubTestingStructure.md");
+    }
+
     [Test]
     [Category("HealthCheck")]
     [Description("11.1 GET /branches/{branch} for default branch returns 200 OK")]
@@ -82,10 +97,10 @@ public class GetBranchByNameTests : GitHubTestBase
     public async Task GetBranchByName_BranchWithSlash_ReturnsOk()
     {
         var response = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
-            [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.FeatureBranchName)]);
+            [.. TestRepoParam(), .. BranchNameParam(_slashBranchName)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Name.Should().Be(GitHubEndpoints.FeatureBranchName);
+        response.Data!.Name.Should().Be(_slashBranchName);
     }
 
     [Test]

@@ -11,7 +11,7 @@ public class RepositoryModelResponse
     [RequiredField]
     public string Name { get; set; }
 
-    [JsonPropertyName("full_name")]
+    [JsonPropertyName(JsonFields.FullName)]
     [RequiredField]
     public string FullName { get; set; }
 
@@ -20,7 +20,7 @@ public class RepositoryModelResponse
 
     public string Description { get; set; }
 
-    [JsonPropertyName("private")]
+    [JsonPropertyName(JsonFields.Private)]
     public bool IsPrivate { get; set; }
 
     [JsonPropertyName(JsonFields.HtmlUrl)]
@@ -35,12 +35,12 @@ public class RepositoryModelResponse
 
     public string Language { get; set; }
 
-    [JsonPropertyName("stargazers_count")]
+    [JsonPropertyName(JsonFields.StargazersCount)]
     public int StargazersCount { get; set; }
 
-    [JsonPropertyName("forks_count")]
+    [JsonPropertyName(JsonFields.ForksCount)]
     public int ForksCount { get; set; }
 
-    [JsonPropertyName("open_issues_count")]
+    [JsonPropertyName(JsonFields.OpenIssuesCount)]
     public int OpenIssuesCount { get; set; }
 }

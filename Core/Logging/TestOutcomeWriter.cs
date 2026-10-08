@@ -12,13 +12,13 @@ internal static class TestOutcomeWriter
 
     internal static void Write(TestOutcome outcome)
     {
-        var line = JsonSerializer.Serialize(new
+        var line = JsonSerializer.Serialize(new Dictionary<string, object>
         {
-            test = outcome.Name,
-            status = outcome.Status,
-            durationMs = outcome.DurationMilliseconds,
-            message = outcome.Message,
-            trace = outcome.Trace
+            [TestOutcomeFields.Test] = outcome.Name,
+            [TestOutcomeFields.Status] = outcome.Status,
+            [TestOutcomeFields.DurationMs] = outcome.DurationMilliseconds,
+            [TestOutcomeFields.Message] = outcome.Message,
+            [TestOutcomeFields.Trace] = outcome.Trace
         });
 
         // File.AppendAllText is not safe for concurrent writers — parallel tests share this file

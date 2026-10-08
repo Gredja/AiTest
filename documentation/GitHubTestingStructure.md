@@ -58,6 +58,7 @@ The team loses trust in the suite and stops running it — the moment coverage s
 - [ ] Test issue #5 exists in the target repo
 - [ ] Test PR #5 exists (needed for design D1–D2: PR files/commits)
 - [ ] Default branch `main` exists (needed for design D3)
+- [ ] Target repo has at least one branch with a slash in its name (slash-edge case 11.6 resolves it via dynamic lookup from `GET /branches` — keep a permanent test branch, e.g. `test/branch-with-slash`, alive for the suite's lifetime)
 - [ ] `api.github.com` reachable from the test runner (network/proxy allows it)
 
 ## 5. Exit Criteria

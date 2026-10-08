@@ -21,9 +21,9 @@ public sealed class TestOutcomeAttribute : Attribute, ITestAction
         var duration = Environment.TickCount64 - _startTicks.Value;
         var status = result.Outcome.Status switch
         {
-            TestStatus.Passed => "passed",
-            TestStatus.Skipped => "skipped",
-            _ => "failed"
+            TestStatus.Passed => TestStatusNames.Passed,
+            TestStatus.Skipped => TestStatusNames.Skipped,
+            _ => TestStatusNames.Failed
         };
 
         return new TestOutcome(

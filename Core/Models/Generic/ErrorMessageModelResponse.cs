@@ -6,9 +6,9 @@ namespace Core.Models.Generic;
 public class ErrorMessageModelResponse
 {
     [RequiredField]
-    [JsonPropertyName("message")]
+    [JsonPropertyName(JsonFields.Message)]
     public string Message { get; set; }
 
-    [JsonPropertyName("documentation_url")]
+    [JsonPropertyName(JsonFields.DocumentationUrl)]
     public string DocumentationUrl { get; set; }
 }

@@ -23,13 +23,13 @@ public class PullRequestFileModelResponse
     [ValueRange(0)]
     public int Changes { get; set; }
 
-    [JsonPropertyName("blob_url")]
+    [JsonPropertyName(JsonFields.BlobUrl)]
     public string BlobUrl { get; set; }
 
-    [JsonPropertyName("raw_url")]
+    [JsonPropertyName(JsonFields.RawUrl)]
     public string RawUrl { get; set; }
 
-    [JsonPropertyName("contents_url")]
+    [JsonPropertyName(JsonFields.ContentsUrl)]
     public string ContentsUrl { get; set; }
 
     public string Patch { get; set; }

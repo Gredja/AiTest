@@ -20,7 +20,7 @@ public class UserModelResponse
 
     public string Bio { get; set; }
 
-    [JsonPropertyName("public_repos")]
+    [JsonPropertyName(JsonFields.PublicRepos)]
     public int? PublicRepos { get; set; }
 
     public int? Followers { get; set; }

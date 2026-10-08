@@ -8,16 +8,16 @@ public class ReleaseModelResponse : IdModel<long>
 {
     public string Name { get; set; }
 
-    [JsonPropertyName("tag_name")]
+    [JsonPropertyName(JsonFields.TagName)]
     [RequiredField]
     public string TagName { get; set; }
 
     public string Body { get; set; }
 
-    [JsonPropertyName("draft")]
+    [JsonPropertyName(JsonFields.Draft)]
     public bool IsDraft { get; set; }
 
-    [JsonPropertyName("prerelease")]
+    [JsonPropertyName(JsonFields.Prerelease)]
     public bool IsPreRelease { get; set; }
 
     [JsonPropertyName(JsonFields.CreatedAt)]
