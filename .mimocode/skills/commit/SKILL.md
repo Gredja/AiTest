@@ -78,10 +78,15 @@ If nothing changed — skip. If something changed — update the corresponding b
 ## Step 7: Stage, commit, push
 
 ```
+powershell -File Scripts/normalize-eol.ps1   # LF worktree files → CRLF, silences git EOL warnings
 git add -A
 git diff --cached --stat
 git commit -m "{message}"
 ```
+
+`git add -A` must produce NO "LF will be replaced by CRLF" warnings — if it does, run the
+normalizer and confirm `git status` stays empty of unintended changes (normalization is
+worktree-only; it never alters committed blobs).
 
 If branch is `main` — do NOT push. Report that push was skipped.
 Otherwise: `git push -u origin HEAD`

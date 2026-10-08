@@ -50,6 +50,7 @@ Gredja/
 │       └── update-docs/SKILL.md
 ├── Scripts/
 │   ├── allure-report.ps1
+│   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   └── test-coverage.ps1
 └── backups/
     ├── SETUP.md

@@ -408,7 +408,7 @@ git checkout -b features/add-user-tests
 - Перед коммитом: `dotnet format` + `dotnet test` должны пройти
 - SDK пин: `global.json` → `10.0.401`, `rollForward: latestFeature` — сборка на другой машине берёт ближайший совместимый SDK, а не случайный
 - Коммиты только по запросу
-- Гигиена репо: корень — только файлы проекта; вывод инструментов → gitignored/%TEMP%; после массовых правок `git add -A` без EOL-warning (`.gitattributes`: .cs/.csproj → CRLF, .md → LF); структурные изменения включают удаления gitignored-файлов → `FILE_STRUCTURE.md`/`AGENTS.md` обновлять в том же ходу, даже без коммита
+- Гигиена репо: корень — только файлы проекта; вывод инструментов → gitignored/%TEMP%; после массовых правок `git add -A` без EOL-warning (`.gitattributes`: .cs/.csproj → CRLF, .md → LF; LF-файлы от инструментов нормализует `Scripts/normalize-eol.ps1` — перед add запускает `/commit`); структурные изменения включают удаления gitignored-файлов → `FILE_STRUCTURE.md`/`AGENTS.md` обновлять в том же ходу, даже без коммита
 - Генерация тестов — только через скиллы `.mimocode/skills/*`; параллельные библиотеки промптов запрещены (`Prompts/` удалён из-за дрейфа содержания)
 
 ---
