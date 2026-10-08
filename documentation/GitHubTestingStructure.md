@@ -18,9 +18,9 @@
 | 7 | **Branch detail** | GET /branches/{branch} — status, contract, fields, negatives | Done (D3) |
 | 8 | **Repo metadata** | GET /contributors, /languages, /topics, /tags — status, contract, fields, negatives | Done (D4–D7) |
 | 9 | **Commits & Releases** | GET /commits, /releases — status, contract, fields, negatives | Done (D8–D9) |
-| 10 | **PR detail & Users list** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a) — status, contract, fields, negatives | Done (Phase 1 close-out) |
+| 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
 
-**Total:** ~201 implemented read-only tests across 20 endpoint groups — **Phase 1 complete**: every GET endpoint covered (test-coverage.ps1 24/24 + GET /users; 6.1 GET /repos = no such route, documented); next: Phase 2 (write) — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md).
+**Total:** ~210 implemented read-only tests across 20 endpoint groups — **Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route (N/A); test-coverage.ps1 — грубая метрика (константы vs файлы); next: Phase 2 (write) — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md).
 
 ## 2. Out of Scope
 

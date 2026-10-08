@@ -20,6 +20,7 @@ public class GetIssueCommentsTests : GitHubTestBase
     private const string TestComment = "Test comment for contract check";
 
     private long? _createdCommentId;
+    private long _existingCommentId;
 
     [OneTimeSetUp]
     public async Task OneTimeSetup()
@@ -36,6 +37,11 @@ public class GetIssueCommentsTests : GitHubTestBase
                 [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
             create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdCommentId = create.Data!.Id;
+            _existingCommentId = create.Data.Id;
+        }
+        else
+        {
+            _existingCommentId = response.Data[0].Id;
         }
     }
 
@@ -191,5 +197,113 @@ public class GetIssueCommentsTests : GitHubTestBase
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("HealthCheck")]
+    [Description("8a.1 GET /issues/comments/{comment_id} for existing comment returns 200 OK")]
+    public async Task GetIssueCommentById_ReturnsOk()
+    {
+        var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
+            CommentParams(_existingCommentId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+    }
+
+    [Test]
+    [Category("ContractCheck")]
+    [Description("8a.2 Response matches expected contract")]
+    public async Task GetIssueCommentById_ResponseMatchesContract()
+    {
+        var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
+            CommentParams(_existingCommentId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidContract();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("8a.3 Fields are valid and id equals requested")]
+    public async Task GetIssueCommentById_HasValidFields()
+    {
+        var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
+            CommentParams(_existingCommentId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        var comment = response.Data!;
+        comment.ShouldHaveValidFields();
+        comment.Id.Should().Be(_existingCommentId, "response must echo the requested comment id");
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("8a.4 Content-Type is application/json")]
+    public async Task GetIssueCommentById_ContentTypeIsJson()
+    {
+        var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
+            CommentParams(_existingCommentId));
+
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8a.5 Comment id 0 returns 404")]
+    public async Task GetIssueCommentById_ZeroId_ReturnsNotFound()
+    {
+        var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
+            CommentParams(0));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8a.6 Comment id -1 returns 404")]
+    public async Task GetIssueCommentById_NegativeId_ReturnsNotFound()
+    {
+        var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
+            CommentParams(-1));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8a.7 Non-existent repo returns 404")]
+    public async Task GetIssueCommentById_NonExistentRepo_ReturnsNotFound()
+    {
+        var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName),
+             .. CommentIdParam(1)]);
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8a.8 Non-existent owner returns 404")]
+    public async Task GetIssueCommentById_NonExistentOwner_ReturnsNotFound()
+    {
+        var (_, repo) = ParseRepo();
+
+        var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, repo), .. CommentIdParam(1)]);
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8a.9 Invalid token returns 401")]
+    public async Task GetIssueCommentById_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoIssueCommentById, InvalidAuthorization,
+            [.. TestRepoParam(), .. CommentIdParam(_existingCommentId)]);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 }

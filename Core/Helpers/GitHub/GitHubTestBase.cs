@@ -26,6 +26,9 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected static List<RequestDictionaryModel> MercyPreviewRepoParams() =>
         [.. TestRepoParam(), .. GitHubParamHelper.MercyPreviewParam()];
 
+    protected static List<RequestDictionaryModel> CommentParams(long commentId) =>
+        [.. TestRepoParam(), .. GitHubParamHelper.CommentIdParam(commentId)];
+
     protected static (string Owner, string Repo) ParseRepo() => ParseRepo(TestConfig.GitHubTestRepo);
 
     protected async Task<RestResponse> ExecuteWithAuthorization(

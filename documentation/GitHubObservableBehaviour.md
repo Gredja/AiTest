@@ -200,6 +200,22 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ---
 
+## 8a. GET /repos/{owner}/{repo}/issues/comments/{comment_id}
+
+- Response status is 200 OK
+- Response body is a JSON object
+- Object has: `id` (integer, equals {comment_id}), `body` (string), `user` (object), `created_at` (datetime), `updated_at` (datetime)
+- Content-Type is application/json
+
+**Negative (verified 2026-10-08):**
+- Comment id 0 → 404, body has `message` (string: "Not Found")
+- Comment id -1 → 404
+- Non-existent repo → 404
+- Non-existent owner → 404
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+
+---
+
 ## 9. GET /repos/{owner}/{repo}/pulls
 
 - Response status is 200 OK
