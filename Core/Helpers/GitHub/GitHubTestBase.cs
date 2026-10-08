@@ -3,6 +3,7 @@ using Core.Models.Generic;
 using Core.Models.GitHub;
 using NUnit.Framework;
 using RestSharp;
+using System.Net;
 
 namespace Core.Helpers.GitHub;
 
@@ -41,22 +42,9 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             return;
         }
 
-        try
-        {
-            var cleanup = await Delete<object>(
-                GitHubEndpoints.RepoIssueCommentById, CommentParams(commentId.Value));
-
-            if (!cleanup.IsSuccessful)
-            {
-                TestContext.Progress.WriteLine(
-                    $"Warning: comment {commentId} not deleted: HTTP {(int)cleanup.StatusCode}");
-            }
-        }
-        catch (HttpRequestException exception)
-        {
-            TestContext.Progress.WriteLine(
-                $"Warning: failed to delete comment {commentId}: {exception.Message}");
-        }
+        await RunCleanupAsync(
+            () => Delete<object>(GitHubEndpoints.RepoIssueCommentById, CommentParams(commentId.Value)),
+            $"delete comment {commentId}");
     }
 
     protected async Task CleanupIssueAsync(int? issueNumber)
@@ -66,24 +54,37 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             return;
         }
 
-        try
-        {
-            // REST has no issue-delete endpoint (DELETE → 404, OB §17) — cleanup closes instead
-            var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+        // REST has no issue-delete endpoint (DELETE → 404, OB §17) — cleanup closes instead
+        await RunCleanupAsync(
+            () => Patch<UpdateIssueModelRequest, IssueModelResponse>(
                 GitHubEndpoints.RepoIssueById,
                 new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                IssueParams(issueNumber.Value));
+                IssueParams(issueNumber.Value)),
+            $"close issue {issueNumber}");
+    }
 
-            if (!cleanup.IsSuccessful)
+    protected async Task CleanupGitRefAsync(string refPath)
+    {
+        await RunCleanupAsync(
+            () => Delete<object>(GitHubEndpoints.RepoGitRefById, GitHubParamHelper.GitRefParam(refPath)),
+            $"delete ref {refPath}");
+    }
+
+    // One cleanup core for every entity: warn, never fail the run (Rules/test-practices.md → E2E cleanup)
+    private async Task RunCleanupAsync<T>(Func<Task<T>> cleanup, string subject)
+        where T : RestResponse
+    {
+        try
+        {
+            var response = await cleanup();
+            if (!response.IsSuccessful && response.StatusCode != HttpStatusCode.NotFound)
             {
-                TestContext.Progress.WriteLine(
-                    $"Warning: issue {issueNumber} not closed: HTTP {(int)cleanup.StatusCode}");
+                TestContext.Progress.WriteLine($"Warning: {subject}: HTTP {(int)response.StatusCode}");
             }
         }
         catch (HttpRequestException exception)
         {
-            TestContext.Progress.WriteLine(
-                $"Warning: failed to close issue {issueNumber}: {exception.Message}");
+            TestContext.Progress.WriteLine($"Warning: {subject} failed: {exception.Message}");
         }
     }
 

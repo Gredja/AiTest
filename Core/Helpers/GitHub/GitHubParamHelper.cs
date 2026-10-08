@@ -36,6 +36,9 @@ public static class GitHubParamHelper
     public static List<RequestDictionaryModel> MercyPreviewParam() =>
         [ParamHelper.Header(AcceptHeader, GitHubEndpoints.MercyPreviewAccept)];
 
+    public static List<RequestDictionaryModel> GitRefParam(string refPath) =>
+        [ParamHelper.UrlSegment("ref", refPath)];
+
     public static List<RequestDictionaryModel> UsernameParam(string username) =>
         [ParamHelper.UrlSegment("username", username)];
 

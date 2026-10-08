@@ -508,7 +508,6 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 **Negative:**
 - No auth → 401
 - Non-existent comment → 404
-- Non-existent issue → 404
 - Non-existent repo → 404
 
 ---
@@ -593,11 +592,11 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Response status is 204 No Content
 - Response body is empty
 
-**Negative:**
+**Negative (verified 2026-10-08):**
 - No auth → 401
-- Non-existent ref → 404
+- Non-existent ref → 422 Unprocessable Entity (earlier doc said 404 — probe returned 422)
 - Non-existent repo → 404
-- Attempt to delete default branch → 403 Forbidden, body has `message` (string: "Cannot delete the default branch")
+- Attempt to delete default branch → 422 Unprocessable Entity (earlier doc said 403 — probe returned 422)
 
 ---
 

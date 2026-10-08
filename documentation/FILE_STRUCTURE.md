@@ -135,7 +135,10 @@ Core/
 │   │   ├── CommitModelResponse.cs
 │   │   ├── ContributorModelResponse.cs
 │   │   ├── CreateCommentModelRequest.cs
+│   │   ├── CreateGitRefModelRequest.cs
 │   │   ├── CreateIssueModelRequest.cs
+│   │   ├── GitRefModelResponse.cs
+│   │   ├── GitRefObject.cs
 │   │   ├── IssueModelResponse.cs
 │   │   ├── JsonFields.cs
 │   │   ├── Label.cs
@@ -208,6 +211,7 @@ Api/
 │       │   └── GetContributorsTests.cs
 │       ├── IssueComments/
 │       │   ├── CreateCommentTests.cs
+│       │   ├── DeleteCommentTests.cs
 │       │   └── GetIssueCommentsTests.cs
 │       ├── Issues/
 │       │   ├── CreateIssueNegativeTests.cs
@@ -215,6 +219,9 @@ Api/
 │       │   ├── GetIssueByIdTests.cs
 │       │   ├── GetIssuesTests.cs
 │       │   └── UpdateIssueTests.cs
+│       ├── GitRefs/
+│       │   ├── CreateRefTests.cs
+│       │   └── DeleteRefTests.cs
 │       ├── Languages/
 │       │   └── GetLanguagesTests.cs
 │       ├── PublicRepos/

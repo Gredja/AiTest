@@ -20,7 +20,7 @@
 | 9 | **Commits & Releases** | GET /commits, /releases — status, contract, fields, negatives | Done (D8–D9) |
 | 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
 
-**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A; test-coverage.ps1 — грубая метрика) + 20 single-write tests (Phase 2 started: POST comment §18, PATCH issue §19); next: Phase 2 — remaining singles + E2E scenarios — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md).
+**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A) + 43 single-write tests (Phase 2: POST comment §18, PATCH issue §19, DELETE comment §20, POST/DELETE git refs §25–26); next: PR singles §21–23 → E2E scenarios — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md).
 
 ## 2. Out of Scope
 
