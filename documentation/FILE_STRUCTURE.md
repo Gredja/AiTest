@@ -202,6 +202,8 @@ Api/
 │       ├── Branches/
 │       │   ├── GetBranchByNameTests.cs
 │       │   └── GetBranchesTests.cs
+│       ├── Commits/
+│       │   └── GetCommitsTests.cs
 │       ├── Contributors/
 │       │   └── GetContributorsTests.cs
 │       ├── IssueComments/
@@ -221,6 +223,8 @@ Api/
 │       │   └── GetPullRequestsTests.cs
 │       ├── RateLimit/
 │       │   └── GetRateLimitTests.cs
+│       ├── Releases/
+│       │   └── GetReleasesTests.cs
 │       ├── Repos/
 │       │   ├── GetRepositoryTests.cs
 │       │   └── SampleTests.cs

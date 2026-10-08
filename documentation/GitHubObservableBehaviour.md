@@ -332,6 +332,42 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ---
 
+## 15a. GET /repos/{owner}/{repo}/commits
+
+- Response status is 200 OK
+- Response body is a JSON array
+- Each object has: `sha` (string, 40 lowercase hex chars), `commit.message` (string, non-empty), `html_url` (url starting with `https://github.com/`)
+- `sha` values are unique within the list
+- Content-Type is application/json
+
+**Edge:**
+- `per_page=abc` → 200 OK, invalid query param silently ignored (documented GitHub behavior, verified 2026-10-08)
+
+**Negative:**
+- Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Non-existent owner → 404
+- Invalid token → 401, `message`: "Bad credentials"
+
+---
+
+## 15b. GET /repos/{owner}/{repo}/releases
+
+- Response status is 200 OK
+- Response body is a JSON array
+- Each object has: `id` (integer > 0), `tag_name` (string, non-empty), `draft`/`prerelease` (boolean), `created_at` (ISO 8601)
+- Content-Type is application/json
+
+**Edge:**
+- Repo with no releases → 200 OK, empty array `[]` (sandbox `Gredja/AiTest` state, verified 2026-10-08)
+- `per_page=abc` → 200 OK, invalid query param silently ignored
+
+**Negative:**
+- Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Non-existent owner → 404
+- Invalid token → 401, `message`: "Bad credentials"
+
+---
+
 ## 16. GET /rate_limit
 
 - Response status is 200 OK
