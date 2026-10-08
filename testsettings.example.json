@@ -1,0 +1,19 @@
+{
+  "MaxResponseTimeMs": 5000,
+  "SkipSslValidation": true,
+  "JsonPlaceholder": {
+    "BaseUrl": "https://jsonplaceholder.typicode.com",
+    "ExpectedPostCount": 100,
+    "ExpectedTodoCount": 200,
+    "ExpectedAlbumCount": 100,
+    "ExpectedCommentCount": 500,
+    "ExpectedPhotoCount": 5000,
+    "ExpectedUserCount": 10
+  },
+  "GitHub": {
+    "BaseUrl": "https://api.github.com",
+    "Token": "",
+    "TestRepo": "Gredja/AiTest",
+    "TestUsername": "Gredja"
+  }
+}

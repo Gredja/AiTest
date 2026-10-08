@@ -6,7 +6,6 @@ using FluentAssertions;
 using RestSharp;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
-using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -138,6 +137,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Put_NonExistentId_ReturnsInternalServerError()
     {
         var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
+        allPosts.ShouldHaveStatusCode(HttpStatusCode.OK);
         var nonExistentId = allPosts.Data!.Max(post => post.Id) + 1;
 
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _putBody,
@@ -177,7 +177,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.13 PUT without title returns 400")]
     public async Task UpdatePost_Put_MissingTitle_ReturnsBadRequest()
     {
-        var body = new Dictionary<string, object> { ["body"] = "Body", [UserIdKey] = TestUserId };
+        var body = new Dictionary<string, object> { [JsonFields.Body] = "Body", [JsonFields.UserId] = TestUserId };
         var response = await Put<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, body,
             IdParam(TestPostId));
 
@@ -190,7 +190,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.14 PUT without body returns 400")]
     public async Task UpdatePost_Put_MissingBody_ReturnsBadRequest()
     {
-        var body = new Dictionary<string, object> { ["title"] = "Title", [UserIdKey] = TestUserId };
+        var body = new Dictionary<string, object> { [JsonFields.Title] = "Title", [JsonFields.UserId] = TestUserId };
         var response = await Put<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, body,
             IdParam(TestPostId));
 
@@ -203,7 +203,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.15 PUT without userId returns 400")]
     public async Task UpdatePost_Put_MissingUserId_ReturnsBadRequest()
     {
-        var body = new Dictionary<string, object> { ["title"] = "Title", ["body"] = "Body" };
+        var body = new Dictionary<string, object> { [JsonFields.Title] = "Title", [JsonFields.Body] = "Body" };
         var response = await Put<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, body,
             IdParam(TestPostId));
 
@@ -243,6 +243,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Patch_NonExistentId_ReturnsNotFound()
     {
         var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
+        allPosts.ShouldHaveStatusCode(HttpStatusCode.OK);
         var nonExistentId = allPosts.Data!.Max(post => post.Id) + 1;
 
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _patchBody,

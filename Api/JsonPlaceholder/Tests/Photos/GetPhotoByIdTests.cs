@@ -83,6 +83,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_NonExistentId_ReturnsNotFound()
     {
         var allPhotos = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.Photos);
+        allPhotos.ShouldHaveStatusCode(HttpStatusCode.OK);
         var maxPhotoId = allPhotos.Data!.Max(photo => photo.Id);
         var nonExistentId = maxPhotoId + 1;
 

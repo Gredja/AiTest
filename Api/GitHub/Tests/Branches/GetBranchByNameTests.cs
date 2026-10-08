@@ -15,8 +15,7 @@ namespace Api.GitHub.Branches;
 [Category("GitHub")]
 public class GetBranchByNameTests : GitHubTestBase
 {
-    private const int ShaHexLength = 40;
-    private static readonly Regex _shaHexPattern = new("^[0-9a-f]+$", RegexOptions.Compiled);
+    private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
 
     private string _slashBranchName = string.Empty;
 
@@ -76,8 +75,7 @@ public class GetBranchByNameTests : GitHubTestBase
         var response = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
 
-        response.Data!.Commit.Sha.Should().HaveLength(ShaHexLength);
-        _shaHexPattern.IsMatch(response.Data.Commit.Sha).Should().BeTrue("commit.sha must be hex chars");
+        response.Data!.Commit.Sha.Should().MatchRegex(_shaHexPattern, "commit.sha must be 40 lowercase hex chars");
     }
 
     [Test]

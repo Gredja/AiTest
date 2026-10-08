@@ -5,7 +5,6 @@ public static class GitHubEndpoints
     public static string BaseUrl => TestConfig.GitHubBaseUrl;
     public static string Token => TestConfig.GitHubToken;
 
-    public const string NonExistentRepo = "this-repo-definitely-does-not-exist-12345";
     public const string NonExistentUser = "this-user-definitely-does-not-exist-12345";
     public const string NonExistentRepoName = "nonexistent";
     public const string NonExistentBranchName = "nonexistent-branch-12345";

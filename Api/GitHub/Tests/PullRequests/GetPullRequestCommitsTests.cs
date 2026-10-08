@@ -4,6 +4,7 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
@@ -15,7 +16,7 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class GetPullRequestCommitsTests : GitHubTestBase
 {
-    private const string Sha40HexPattern = "^[0-9a-f]{40}$";
+    private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
     private const string GithubUrlPrefix = "https://github.com/";
 
     private int _existingPullNumber;
@@ -27,6 +28,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         pulls.ShouldHaveStatusCode(HttpStatusCode.OK);
+        pulls.Data.Should().NotBeEmpty("repo must keep at least one PR — Entry Criteria, documentation/GitHubTestingStructure.md");
 
         _existingPullNumber = pulls.Data!.Max(pullRequest => pullRequest.Number);
         _nonExistentPullNumber = _existingPullNumber + GitHubEndpoints.NonExistentIdOffset;
@@ -70,7 +72,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
 
         foreach (var pullRequestCommit in response.Data!)
         {
-            pullRequestCommit.Sha.Should().MatchRegex(Sha40HexPattern, "sha must be 40 hex chars");
+            pullRequestCommit.Sha.Should().MatchRegex(_shaHexPattern, "sha must be 40 hex chars");
         }
 
         response.Data.Select(pullRequestCommit => pullRequestCommit.Sha).Should().OnlyHaveUniqueItems();

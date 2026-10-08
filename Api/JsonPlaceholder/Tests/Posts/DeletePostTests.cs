@@ -75,6 +75,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     public async Task DeletePost_NonExistentId_ReturnsNotFound()
     {
         var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
+        allPosts.ShouldHaveStatusCode(HttpStatusCode.OK);
         var nonExistentId = allPosts.Data!.Max(post => post.Id) + 1;
 
         var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,

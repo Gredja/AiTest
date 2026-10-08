@@ -81,6 +81,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
     public async Task GetCommentsByPost_NonExistentPostId_ReturnsEmpty()
     {
         var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
+        allPosts.ShouldHaveStatusCode(HttpStatusCode.OK);
         var maxPostId = allPosts.Data!.Max(post => post.Id);
         var nonExistentPostId = maxPostId + 1;
 

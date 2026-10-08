@@ -13,7 +13,10 @@ Gredja/
 ├── Directory.Build.props          # File.TestLogger config (VSTestLogger, temp workspace dir)
 ├── .runsettings                  # VS Test Explorer: parallel sources → one report per run (CLI ignores it)
 ├── allureConfig.json
-├── testsettings.json
+├── testsettings.json               # not tracked — local overrides (falls back to the example)
+├── testsettings.example.json       # tracked template — build/tests work from a clean clone
+├── global.json                     # pinned SDK (10.0.401, rollForward: latestFeature)
+├── .editorconfig                   # IDE0005/IDE0007/IDE0161 — dotnet format enforces Rules/code.md
 ├── .env                          # secrets (not tracked)
 ├── .gitattributes                # line ending normalization
 ├── .gitignore

@@ -54,7 +54,7 @@ public static class TestRunReportGenerator
         var categories = TestSourceCategoryReader.Read(root);
         var rows = BuildRows(outcomes, categories);
         var fixtureByTest = rows
-            .Where(row => row.Result == "Failed")
+            .Where(row => row.Result == TestStatusNames.DisplayFailed)
             .GroupBy(row => row.Test)
             .ToDictionary(group => group.Key, group => group.First().Fixture);
         var failures = BuildFailures(fixtureByTest, outcomes);
@@ -165,9 +165,9 @@ public static class TestRunReportGenerator
 
     private static string MapStatus(string status) => status switch
     {
-        TestStatusNames.Passed => "Passed",
-        TestStatusNames.Skipped => "Skipped",
-        _ => "Failed"
+        TestStatusNames.Passed => TestStatusNames.DisplayPassed,
+        TestStatusNames.Skipped => TestStatusNames.DisplaySkipped,
+        _ => TestStatusNames.DisplayFailed
     };
 
     private static Dictionary<string, (string Message, string Trace)> BuildFailures(
@@ -202,17 +202,17 @@ public static class TestRunReportGenerator
     private static IEnumerable<string> BuildSummary(List<TestRunRow> rows)
     {
         var total = rows.Count;
-        var passed = rows.Count(row => row.Result == "Passed");
-        var failed = rows.Count(row => row.Result == "Failed");
-        var skipped = rows.Count(row => row.Result == "Skipped");
+        var passed = rows.Count(row => row.Result == TestStatusNames.DisplayPassed);
+        var failed = rows.Count(row => row.Result == TestStatusNames.DisplayFailed);
+        var skipped = rows.Count(row => row.Result == TestStatusNames.DisplaySkipped);
 
         yield return "## Summary";
         yield return string.Empty;
         yield return "| Result | Count | Percent |";
         yield return "|--------|------:|--------:|";
-        yield return $"| Passed | {passed} | {Percent(passed, total)} |";
-        yield return $"| Failed | {failed} | {Percent(failed, total)} |";
-        yield return $"| Skipped | {skipped} | {Percent(skipped, total)} |";
+        yield return $"| {TestStatusNames.DisplayPassed} | {passed} | {Percent(passed, total)} |";
+        yield return $"| {TestStatusNames.DisplayFailed} | {failed} | {Percent(failed, total)} |";
+        yield return $"| {TestStatusNames.DisplaySkipped} | {skipped} | {Percent(skipped, total)} |";
         yield return $"| **Total** | **{total}** | **{Percent(total, total)}** |";
         yield return string.Empty;
     }

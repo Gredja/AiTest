@@ -121,6 +121,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_NonExistentId_ReturnsNotFound()
     {
         var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
+        allPosts.ShouldHaveStatusCode(HttpStatusCode.OK);
         var maxPostId = allPosts.Data!.Max(post => post.Id);
         var nonExistentId = maxPostId + 1;
 

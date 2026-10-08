@@ -39,7 +39,14 @@ How to decide for value types: check the actual JSON response from the API. If t
 - `ModelResponse` suffix for responses, `ModelRequest` suffix for requests
 - No suffix for nested/supporting models
 - No abbreviations in class names
-- **Readable property names**: If a JSON field name is ambiguous or requires domain knowledge to understand (e.g. `bs`, `pk`, `ts`), rename the C# property to a meaningful name and add `[JsonPropertyName("original")]` for deserialization. Well-known abbreviations (`Lat`, `Lng`, `Url`, `Id`) — keep as-is. Example: `Bs` → `BusinessSlogan` + `[JsonPropertyName("bs")]`
+- **Readable property names**: If a JSON field name is ambiguous or requires domain knowledge to understand (e.g. `bs`, `pk`, `ts`), rename the C# property to a meaningful name and keep the wire name in `[JsonPropertyName(JsonFields.Original)]`. Well-known abbreviations (`Lat`, `Lng`, `Url`, `Id`) — keep as-is. Example: `Bs` → `BusinessSlogan` + `[JsonPropertyName(JsonFields.Bs)]`
+
+## JSON field names
+
+- Wire names live in exactly one place per domain: `Core/Models/{Service}/JsonFields.cs` (shared models — `Core/Models/Generic/JsonFields.cs`)
+- `[JsonPropertyName(...)]` only references `JsonFields` constants — never inline string literals
+- Tests that build raw payloads (dictionaries) or wire-named query keys use the same `JsonFields` constants — no copies in test helpers (`TitleKey`-style aliases are banned; the constant IS the key)
+- New wire name → add the constant to the matching `JsonFields` first, then use it everywhere
 
 ## Namespaces
 

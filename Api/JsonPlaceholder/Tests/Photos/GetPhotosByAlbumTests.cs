@@ -81,6 +81,7 @@ public class GetPhotosByAlbumTests : JsonPlaceholderRequestHelper
     public async Task GetPhotosByAlbum_NonExistentAlbumId_ReturnsEmpty()
     {
         var allAlbums = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
+        allAlbums.ShouldHaveStatusCode(HttpStatusCode.OK);
         var maxAlbumId = allAlbums.Data!.Max(album => album.Id);
         var nonExistentAlbumId = maxAlbumId + 1;
 

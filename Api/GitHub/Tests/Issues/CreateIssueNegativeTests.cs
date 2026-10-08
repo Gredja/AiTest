@@ -22,7 +22,7 @@ public class CreateIssueNegativeTests : GitHubTestBase
     [Description("17.2 POST without title returns 422 naming the missing field")]
     public async Task CreateIssue_MissingTitle_ReturnsUnprocessableEntity()
     {
-        var body = new Dictionary<string, object> { ["body"] = "Body without title" };
+        var body = new Dictionary<string, object> { [JsonFields.Body] = "Body without title" };
 
         var response = await Post<Dictionary<string, object>, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, body, TestRepoParam());
@@ -35,7 +35,7 @@ public class CreateIssueNegativeTests : GitHubTestBase
     [Description("17.3 POST with labels null returns 422 naming the invalid field")]
     public async Task CreateIssue_LabelsNull_ReturnsUnprocessableEntity()
     {
-        var body = new Dictionary<string, object?> { ["title"] = "Probe", ["labels"] = null };
+        var body = new Dictionary<string, object?> { [JsonFields.Title] = "Probe", [JsonFields.Labels] = null };
 
         var response = await Post<Dictionary<string, object?>, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, body, TestRepoParam());
@@ -52,7 +52,7 @@ public class CreateIssueNegativeTests : GitHubTestBase
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(new Dictionary<string, object> { ["title"] = "Probe", ["body"] = "Probe" });
+        request.AddJsonBody(new Dictionary<string, object> { [JsonFields.Title] = "Probe", [JsonFields.Body] = "Probe" });
 
         var response = await Client.ExecuteAsync(request);
 
@@ -64,7 +64,7 @@ public class CreateIssueNegativeTests : GitHubTestBase
     [Description("17.5 POST to non-existent repo returns 404 with documented message")]
     public async Task CreateIssue_NonExistentRepo_ReturnsNotFound()
     {
-        var body = new Dictionary<string, object> { ["title"] = "Probe" };
+        var body = new Dictionary<string, object> { [JsonFields.Title] = "Probe" };
 
         var response = await Post<Dictionary<string, object>, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, body,

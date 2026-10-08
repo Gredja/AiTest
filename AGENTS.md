@@ -20,7 +20,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 ## Rules
 
 ### Workflow
-Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию (включая удаления gitignored-файлов — в том же ходу, даже без коммита). Выполненные планы (`.mimocode/plans/`) — удалять сразу после реализации.
+Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию (включая удаления gitignored-файлов — в том же ходу, даже без коммита). Выполненные планы (`.mimocode/plans/`) — удалять сразу после реализации. Правило, выраженное как IDE0xxx → `.editorconfig` в том же изменении; новая формулировка правила сверяется с существующими `Rules/*.md` на противоречие.
 
 ### Code
 - Naming: PascalCase (classes, methods, properties, constants), camelCase (locals, params), `_camelCase` (private fields)
@@ -42,6 +42,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - Reference types (string, object, List): без `?`, без initializer
 - Value types (int, decimal, DateTime): `?` только если JSON-поле может быть null/absent
 - Namespace: `Core.Models.{Service}` (например `Core.Models.GitHub`). Чистые контейнеры данных — без конструкторов, валидации, логики
+- JSON-имена: только константы `JsonFields` своего домена (`Core/Models/{Service}/JsonFields.cs`) — не инлайн-литералы, не копии в тестовых хелперах
 
 ### Assertions
 - FluentAssertions (не NUnit Assert)
@@ -54,6 +55,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 
 ### Config
 - Base URL и эндпоинты в `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`. Никогда не хардкодить в тестах.
+- `testsettings.example.json` синхронен с `testsettings.json`; токен: JSON `Token` → env `GITHUB_PAT` → `.env` (`Rules/config.md`)
 
 ### Git
 - Repo: github.com/Gredja/AiTest.git, branch: `main`

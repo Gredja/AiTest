@@ -38,6 +38,7 @@ FluentAssertions (not NUnit Assert).
 - Use `AssertHelper.ShouldMatchRequest<TRequest, TResponse>()` after POST/PATCH
 - Helper maps request properties to response by name (case-insensitive)
 - Skips null values in request (only validates fields that were sent)
+- Comparison semantics (inside the helper): scalars/strings → `Be`; collections and nested objects → structural comparison (`BeEquivalentTo`) — plain `Be` on a collection is reference equality and fails every time; never hand-roll either variant in tests
 - Validate server-generated fields separately: `id`, `created_at`, `state`
 
 ## Notes

@@ -5,3 +5,12 @@ root = true
 # Rules/code.md: "Remove unused usings — Never leave dead imports behind."
 # Without this, `dotnet format --verify-no-changes` silently skips dead imports.
 dotnet_diagnostic.IDE0005.severity = warning
+
+# Rules/code.md: "use var wherever possible (explicit type only when var is not applicable)"
+dotnet_diagnostic.IDE0007.severity = warning
+csharp_style_var_when_type_is_apparent = true:warning
+csharp_style_var_elsewhere = true:warning
+
+# Rules/code.md: "File-scoped namespaces"
+dotnet_diagnostic.IDE0161.severity = warning
+csharp_style_namespace_declarations = file_scoped:warning

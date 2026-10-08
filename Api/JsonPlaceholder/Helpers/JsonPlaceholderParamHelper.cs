@@ -1,14 +1,13 @@
 using Core.Helpers;
 using Core.Models.Generic;
+using Core.Models.JsonPlaceholder;
 
 namespace Api.JsonPlaceholder.Helpers;
 
 public static class JsonPlaceholderParamHelper
 {
-    public const string UserIdKey = "userId";
-
     public static List<RequestDictionaryModel> UserIdParam(int userId) =>
-        [ParamHelper.Query(UserIdKey, userId)];
+        [ParamHelper.Query(JsonFields.UserId, userId)];
 
     public static List<RequestDictionaryModel> PostIdQueryParam(int postId) =>
         [ParamHelper.Query("postId", postId)];

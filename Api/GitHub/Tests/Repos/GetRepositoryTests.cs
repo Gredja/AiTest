@@ -86,7 +86,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(_testUsername, GitHubEndpoints.NonExistentRepo));
+            RepoParam(_testUsername, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

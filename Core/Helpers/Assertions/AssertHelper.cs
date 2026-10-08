@@ -78,8 +78,22 @@ public static class AssertHelper
             responseProperty.Should().NotBeNull($"response should have property '{requestProperty.Name}' matching request");
 
             var responseValue = responseProperty!.GetValue(response);
-            responseValue.Should().Be(requestValue, $"response.{responseProperty.Name} should match request.{requestProperty.Name}");
+            CompareValues(responseValue, requestValue, responseProperty.Name);
         }
+    }
+
+    private static void CompareValues(object? responseValue, object? requestValue, string propertyName)
+    {
+        var because = $"response.{propertyName} should match request.{propertyName}";
+
+        if (requestValue is string or ValueType)
+        {
+            responseValue.Should().Be(requestValue, because);
+            return;
+        }
+
+        // Collections and nested objects: Be() is reference equality for them — compare structurally
+        responseValue.Should().BeEquivalentTo(requestValue, because);
     }
 
     private static void ValidateProperty(string name, object? value, Attribute attribute)

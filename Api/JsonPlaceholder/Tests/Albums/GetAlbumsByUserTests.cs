@@ -81,6 +81,7 @@ public class GetAlbumsByUserTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumsByUser_NonExistentUserId_ReturnsEmpty()
     {
         var allUsers = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
+        allUsers.ShouldHaveStatusCode(HttpStatusCode.OK);
         var maxUserId = allUsers.Data!.Max(user => user.Id);
         var nonExistentUserId = maxUserId + 1;
 

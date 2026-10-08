@@ -6,7 +6,10 @@
 - Order of execution must not matter
 - Each test sets up its own data, doesn't rely on another test's side effects
 - Clean up in teardown if tests create resources
-- **Setup/teardown requests assert their status** — every GET/POST inside `[OneTimeSetUp]`/`[OneTimeTearDown]` gets `ShouldHaveStatusCode(...)` immediately after the call. A failed setup must fail with a clear status assertion, not a `NullReferenceException` mid-fixture (kills CI diagnostics)
+- **Setup requests assert their status** — every GET/POST inside `[OneTimeSetUp]` gets `ShouldHaveStatusCode(...)` immediately after the call. A failed setup must fail with a clear status assertion, not a `NullReferenceException` mid-fixture (kills CI diagnostics)
+- **Teardown/cleanup requests do NOT assert status** — `[OneTimeTearDown]` and in-test `finally` cleanup run under `try/catch` + warning (see "E2E cleanup"): a status assertion there would fail the run for a resource that can be cleaned manually and would mask the original test failure. Log the status code in the warning instead; never dereference the cleanup response body
+- **Status check before every `.Data` dereference** — not only in setups: when a test body reads `.Data!` or aggregates off a response, assert the status first; a 500 must fail as "expected 200, got 500", not as an NRE
+- **Aggregates need data first** — `Max`/`First` in `[OneTimeSetUp]` run only after `NotBeEmpty(...)` whose message points at Entry Criteria (`documentation/GitHubTestingStructure.md`); a bare `InvalidOperationException: Sequence contains no elements` explains nothing
 
 ## API testing patterns
 

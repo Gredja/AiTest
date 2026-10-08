@@ -6,8 +6,6 @@ using FluentAssertions;
 using RestSharp;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
-using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
-using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -124,7 +122,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.9 POST without title returns 400")]
     public async Task CreatePost_MissingTitle_ReturnsBadRequest()
     {
-        var post = new Dictionary<string, object> { [BodyKey] = "Body", [UserIdKey] = TestUserId };
+        var post = new Dictionary<string, object> { [JsonFields.Body] = "Body", [JsonFields.UserId] = TestUserId };
         var response = await Post<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.Posts, post);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
@@ -136,7 +134,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.10 POST without body returns 400")]
     public async Task CreatePost_MissingBody_ReturnsBadRequest()
     {
-        var post = new Dictionary<string, object> { [TitleKey] = "Title", [UserIdKey] = TestUserId };
+        var post = new Dictionary<string, object> { [JsonFields.Title] = "Title", [JsonFields.UserId] = TestUserId };
         var response = await Post<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.Posts, post);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
@@ -148,7 +146,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.11 POST without userId returns 400")]
     public async Task CreatePost_MissingUserId_ReturnsBadRequest()
     {
-        var post = new Dictionary<string, object> { [TitleKey] = "Title", [BodyKey] = "Body" };
+        var post = new Dictionary<string, object> { [JsonFields.Title] = "Title", [JsonFields.Body] = "Body" };
         var response = await Post<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.Posts, post);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
@@ -160,7 +158,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.12 POST with wrong field types returns 400")]
     public async Task CreatePost_WrongFieldTypes_ReturnsBadRequest()
     {
-        var post = new Dictionary<string, object> { [TitleKey] = 123, [BodyKey] = true, [UserIdKey] = NotANumberUserId };
+        var post = new Dictionary<string, object> { [JsonFields.Title] = 123, [JsonFields.Body] = true, [JsonFields.UserId] = NotANumberUserId };
         var response = await Post<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.Posts, post);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);

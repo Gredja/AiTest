@@ -28,12 +28,23 @@ public static class TestConfig
                 return token;
             }
 
-            return ReadTokenFromEnvFile();
+            return ReadTokenFromEnvironment();
         }
     }
 
     public static string GitHubTestRepo => GitHub.GetProperty("TestRepo").GetString()!;
     public static string GitHubTestUsername => GitHub.GetProperty("TestUsername").GetString()!;
+
+    private static string ReadTokenFromEnvironment()
+    {
+        var envToken = Environment.GetEnvironmentVariable("GITHUB_PAT");
+        if (!string.IsNullOrEmpty(envToken))
+        {
+            return envToken;
+        }
+
+        return ReadTokenFromEnvFile();
+    }
 
     private static string ReadTokenFromEnvFile()
     {

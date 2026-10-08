@@ -15,9 +15,8 @@ namespace Api.GitHub.Branches;
 [Category("GitHub")]
 public class GetBranchesTests : GitHubTestBase
 {
-    private const int ShaHexLength = 40;
     private const int SingleItemPageSize = 1;
-    private static readonly Regex _shaHexPattern = new("^[0-9a-f]+$", RegexOptions.Compiled);
+    private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
 
     [Test]
     [Category("HealthCheck")]
@@ -126,7 +125,6 @@ public class GetBranchesTests : GitHubTestBase
             TestRepoParam());
 
         response.Data.Should().OnlyContain(branch =>
-            branch.Commit.Sha.Length == ShaHexLength &&
             _shaHexPattern.IsMatch(branch.Commit.Sha));
     }
 

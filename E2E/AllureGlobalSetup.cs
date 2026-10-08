@@ -5,9 +5,6 @@ namespace E2E;
 [SetUpFixture]
 public class AllureGlobalSetup
 {
-    [OneTimeSetUp]
-    public void GlobalSetup() { }
-
     [OneTimeTearDown]
     public void GlobalTeardown()
     {

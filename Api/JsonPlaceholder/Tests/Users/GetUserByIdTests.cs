@@ -83,6 +83,7 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     public async Task GetUserById_NonExistentId_ReturnsNotFound()
     {
         var allUsers = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
+        allUsers.ShouldHaveStatusCode(HttpStatusCode.OK);
         var maxUserId = allUsers.Data!.Max(user => user.Id);
         var nonExistentId = maxUserId + 1;
 

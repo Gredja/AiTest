@@ -172,6 +172,20 @@ GITHUB_PAT=твой_личный_токен_здесь
 
 Токен нужен для тестов GitHub API.
 
+**Файл конфигурации тестов:** `testsettings.json` в корне (в `.gitignore`, в клоне его нет).
+Без него сборка и тесты работают: `Core.csproj` подставляет трекаемый `testsettings.example.json`.
+Если нужны свои значения — скопируй:
+
+```
+copy testsettings.example.json testsettings.json
+```
+
+**Порядок чтения токена** (`TestConfig.GitHubToken`, проверяй по коду, не по памяти):
+
+1. `GitHub.Token` из `testsettings.json`
+2. переменная окружения `GITHUB_PAT` (вариант для CI)
+3. строка `GITHUB_PAT=...` в `.env` (поиск вверх по дереву от каталога бинарников)
+
 ---
 
 ## Часть 5. Запуск
@@ -352,7 +366,7 @@ git checkout -b features/add-user-tests
 - Без аббревиатур: `response`, не `resp`
 - Лямбды: читаемое имя (`product => product.Id`), не однобуквенные (`p =>`)
 - Все API-запросы async (`ExecuteAsync`)
-- Без мёртвых `using` — удалять сразу вместе с кодом; enforcement: `.editorconfig` → `IDE0005 = warning`, ловится `dotnet format --verify-no-changes`
+- Без мёртвых `using` — удалять сразу вместе с кодом; enforcement: `.editorconfig` → `IDE0005`/`IDE0007` (`var`)/`IDE0161` (file-scoped namespace) = warning, ловится `dotnet format --verify-no-changes`
 - Маленькие методы, одно действие, максимум ~30 строк
 - Конкретные исключения вместо `Exception`, без `null!`
 - LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`
@@ -364,6 +378,7 @@ git checkout -b features/add-user-tests
 - Request модели: суффикс `ModelRequest` (без `Id`)
 - Вложенные/вспомогательные модели — без суффикса
 - Namespace: `Core.Models.{Service}` (например `Core.Models.GitHub`)
+- JSON-имена — только константы `JsonFields` своего домена (`Core/Models/{Service}/JsonFields.cs`): `[JsonPropertyName(JsonFields.X)]`, не инлайн-литералы, не копии в тестовых хелперах
 - Чистые контейнеры данных — без логики
 
 **Тесты:**
@@ -372,14 +387,14 @@ git checkout -b features/add-user-tests
 - Обязательные поля request body → тест на КАЖДОЕ отсутствующее поле (`*_Missing{Field}_*`); пустой body не заменяет проверку полей
 - Негативы считаются по АКТИВНЫМ тестам (`[Ignore]` не в счёт); когда полезные режимы исчерпаны — фиксируй достигнутое, не плоди дубли
 - Non-existent ID: динамически `maxId + 1`; если в том же ране есть concurrent-записи (solution-ран Api + E2E) — `maxId + Offset` (`GitHubEndpoints.NonExistentIdOffset = 100`); stateless mock (JP) остаётся на `maxId + 1`; волатильные сущности (имена живых веток) — только dynamic lookup либо запись в Entry Criteria
-- Setup/teardown: каждый запрос в `[OneTimeSetUp]`/`[OneTimeTearDown]` сразу проверяет статус (`ShouldHaveStatusCode`) — иначе падение токена даёт NRE посреди фикстуры; cleanup везде, включая `finally` внутри теста — `try/catch` + warning (cleanup = warning, не failure, и не подмена исходного исключения)
+- Setup/teardown: каждый запрос в `[OneTimeSetUp]` сразу проверяет статус (`ShouldHaveStatusCode`) — иначе падение токена даёт NRE посреди фикстуры; в `[OneTimeTearDown]`/`finally` cleanup статус НЕ проверяется — `try/catch` + warning (cleanup = warning, не failure, и не подмена исходного исключения); перед ЛЮБЫМ разыменованием `.Data` — status-assert (в том числе в телах тестов), `Max`/`First` в setup — только после `NotBeEmpty` с сообщением про Entry Criteria
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveError()` (статус + читаемый message + совпадение с документированным в OB), `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
 - Категории: тип сервиса (JsonPlaceholder/GitHub/GitHubE2E) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно
-- После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()`
+- После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()` (внутри хелпера: скаляр/строка → `Be`, коллекции и вложенные объекты → структурное сравнение)
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown — cleanup = удаление, ЕСЛИ API позволяет; нет endpoint удаления → soft-close (GitHub issues: PATCH `state=closed`, DELETE → 404)
 - Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure); КАЖДЫЙ POST-flow включает проверку скорости добавления записи — `*_RecordVisibleWithinTimeLimit` (Performance): `WaitHelper.WaitUntilAsync` с timeout `MaxResponseTimeMs`, ассерт `IsSuccess` + диагностика через `Elapsed`/`Attempts`/`LastValue` (mock-API без persistence — тест с `[Ignore]`)
 - Ожидание условий (API с задержкой видимости): `WaitHelper.WaitUntilAsync(action, condition, timeout?, interval?)` → `WaitResult<T>` (`IsSuccess`/`Elapsed`/`Attempts`/`LastValue`) в `Core/Helpers/Waiting/`; дефолты 30s/2s; ассерт на `Elapsed` для time-limit тестов (`*_AppearsWithinTimeLimit`, категория Performance). Мгновенные API и latency одного запроса — не через хелпер (Stopwatch + `MaxResponseTimeMs`)
@@ -391,6 +406,7 @@ git checkout -b features/add-user-tests
 - Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
 - Параллелизм тестов: механизм включён (`[assembly: Parallelizable(Fixtures)]` в `Api/AssemblyInfo.cs` и `E2E/AssemblyInfo.cs`), число потоков = **1 по умолчанию**; менять через `.runsettings` (`<NUnit><NumberOfTestWorkers>`) или CLI: `dotnet test -- NUnit.NumberOfTestWorkers=8` (на 8 потоках solution-ран ~10s вместо ~57s)
 - Перед коммитом: `dotnet format` + `dotnet test` должны пройти
+- SDK пин: `global.json` → `10.0.401`, `rollForward: latestFeature` — сборка на другой машине берёт ближайший совместимый SDK, а не случайный
 - Коммиты только по запросу
 - Гигиена репо: корень — только файлы проекта; вывод инструментов → gitignored/%TEMP%; после массовых правок `git add -A` без EOL-warning (`.gitattributes`: .cs/.csproj → CRLF, .md → LF); структурные изменения включают удаления gitignored-файлов → `FILE_STRUCTURE.md`/`AGENTS.md` обновлять в том же ходу, даже без коммита
 - Генерация тестов — только через скиллы `.mimocode/skills/*`; параллельные библиотеки промптов запрещены (`Prompts/` удалён из-за дрейфа содержания)

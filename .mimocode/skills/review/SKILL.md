@@ -84,7 +84,8 @@ Working dir: {working_dir}
    - Both dimensions applied
 
    Test practices (Rules/test-practices.md):
-   - Every request in [OneTimeSetUp]/[OneTimeTearDown] asserts its status (no bare Data! dereference)
+   - Every request in [OneTimeSetUp] asserts its status (no bare Data! dereference); teardown/cleanup never asserts status — try/catch + warning only
+   - Status check before any `.Data` dereference, including test bodies; NotBeEmpty before Max/First in setups
    - Cleanup everywhere, incl. in-test `finally` — try/catch + warning, never an unhandled exception
    - ShouldMatchRequest() after POST/PATCH — no hand-rolled field-by-field comparisons
    - No hardcoded volatile entities (live branch names → dynamic lookup or Entry Criteria)
@@ -95,6 +96,7 @@ Working dir: {working_dir}
    - Inconsistencies: different patterns for same operation across services
    - Missing coverage: endpoints without tests
    - Naming consistency across files
+   - False-positive guards (verify BEFORE flagging): `[Ignore]`d negatives — check the documented ceiling first (`documentation/*TestPlan.md` → "Negative Floor Status", OB); unused endpoint constants — check `.mimocode/plans/` (they may be planned endpoints with ready designs)
 
 5. Classify each issue:
    - major — must fix (rule violation, potential bug, security issue)
