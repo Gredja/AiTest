@@ -138,4 +138,28 @@ public class GetIssueByIdTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("10.11 Content-Type is application/json")]
+    public async Task GetIssueById_ContentTypeIsJson()
+    {
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
+    }
+
+    [Test]
+    [Category("Performance")]
+    [Description("10.12 Response time < 5 seconds")]
+    public async Task GetIssueById_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
 }

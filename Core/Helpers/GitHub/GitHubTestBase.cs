@@ -20,6 +20,12 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         return GitHubParamHelper.RepoParam(owner, repo);
     }
 
+    protected static List<RequestDictionaryModel> PullParams(int pullNumber) =>
+        [.. TestRepoParam(), .. GitHubParamHelper.PullRequestNumberParam(pullNumber)];
+
+    protected static List<RequestDictionaryModel> MercyPreviewRepoParams() =>
+        [.. TestRepoParam(), .. GitHubParamHelper.MercyPreviewParam()];
+
     protected static (string Owner, string Repo) ParseRepo() => ParseRepo(TestConfig.GitHubTestRepo);
 
     protected async Task<RestResponse> ExecuteWithAuthorization(

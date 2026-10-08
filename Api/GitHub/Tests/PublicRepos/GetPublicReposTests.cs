@@ -88,4 +88,16 @@ public class GetPublicReposTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
+
+    [Test]
+    [Category("Performance")]
+    [Description("8.7 Response time < 5 seconds")]
+    public async Task GetPublicRepos_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories);
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
 }

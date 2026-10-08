@@ -179,4 +179,17 @@ public class GetIssueCommentsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
+
+    [Test]
+    [Category("Performance")]
+    [Description("11.10 Response time < 5 seconds")]
+    public async Task GetIssueComments_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
 }

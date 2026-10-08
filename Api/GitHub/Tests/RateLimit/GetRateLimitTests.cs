@@ -102,4 +102,14 @@ public class GetRateLimitTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("6.9 Content-Type is application/json")]
+    public async Task GetRateLimit_ContentTypeIsJson()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
+    }
 }

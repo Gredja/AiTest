@@ -61,4 +61,27 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Count.Should().BeLessThanOrEqualTo(DefaultPageSize);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("9.5 Invalid token returns 401")]
+    public async Task GetAuthenticatedUserRepos_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.AuthenticatedUserRepos, InvalidAuthorization);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+    }
+
+    [Test]
+    [Category("Performance")]
+    [Description("9.6 Response time < 5 seconds")]
+    public async Task GetAuthenticatedUserRepos_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos);
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
 }

@@ -1,5 +1,4 @@
 using Core.Models.GitHub;
-using Core.Models.Generic;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -34,16 +33,13 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         _nonExistentPullNumber = _existingPullNumber + GitHubEndpoints.NonExistentIdOffset;
     }
 
-    private List<RequestDictionaryModel> PullCommitsParams(int pullNumber) =>
-        [.. TestRepoParam(), .. PullRequestNumberParam(pullNumber)];
-
     [Test]
     [Category("HealthCheck")]
     [Description("9b.1 GET /pulls/{pull_number}/commits for existing PR returns 200 OK")]
     public async Task GetPullRequestCommits_ReturnsOk()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -54,7 +50,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_ResponseMatchesContract()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -68,7 +64,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_ShasAreValidAndUnique()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         foreach (var pullRequestCommit in response.Data!)
         {
@@ -84,7 +80,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_MessageIsNotEmpty()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         foreach (var pullRequestCommit in response.Data!)
         {
@@ -98,7 +94,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_ContentTypeIsJson()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -109,7 +105,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_ReturnsNonEmptyList()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty("PR has commits");
@@ -121,7 +117,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_HtmlUrlHasGithubPrefix()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         foreach (var pullRequestCommit in response.Data!)
         {
@@ -136,7 +132,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -148,7 +144,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_NonExistentPullRequest_ReturnsNotFound()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(_nonExistentPullNumber));
+            PullParams(_nonExistentPullNumber));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
@@ -159,7 +155,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_ZeroPullNumber_ReturnsNotFound()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(0));
+            PullParams(0));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
@@ -170,7 +166,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_NegativePullNumber_ReturnsNotFound()
     {
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
-            PullCommitsParams(-1));
+            PullParams(-1));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
@@ -207,7 +203,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
     public async Task GetPullRequestCommits_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.RepoPullRequestCommits, InvalidAuthorization, PullCommitsParams(_existingPullNumber));
+            GitHubEndpoints.RepoPullRequestCommits, InvalidAuthorization, PullParams(_existingPullNumber));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }

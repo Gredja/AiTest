@@ -13,6 +13,7 @@
 
 ## API testing patterns
 
+- **Test classes contain only tests** — `[Test]` methods, `[OneTimeSetUp]`/`[OneTimeTearDown]` lifecycle, and test data (constants, state fields). No helper methods inside `*Tests.cs`: shared request/param builders live in base classes (`GitHubTestBase` → `PullParams`, `MercyPreviewRepoParams`) or param helpers; when 2+ test classes grow the same private builder — extract it to the base, never duplicate
 - Use Given/When/Then structure (Arrange/Act/Assert)
 - Check HTTP status code and response body separately — don't combine
 - Verify content type when relevant

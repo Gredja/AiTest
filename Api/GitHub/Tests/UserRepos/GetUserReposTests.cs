@@ -87,4 +87,17 @@ public class GetUserReposTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
     }
+
+    [Test]
+    [Category("Performance")]
+    [Description("7.7 Response time < 5 seconds")]
+    public async Task GetUserRepos_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
+            UsernameParam(_testUsername));
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
 }

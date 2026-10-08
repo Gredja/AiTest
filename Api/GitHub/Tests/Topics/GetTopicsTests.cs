@@ -1,5 +1,4 @@
 using Core.Models.GitHub;
-using Core.Models.Generic;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -19,16 +18,13 @@ public class GetTopicsTests : GitHubTestBase
     private static readonly Regex _topicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
     private const string SpecialCharsSegment = "sp@ec!al";
 
-    private List<RequestDictionaryModel> TopicsParams() =>
-        [.. TestRepoParam(), .. MercyPreviewParam()];
-
     [Test]
     [Category("HealthCheck")]
     [Description("14.1 GET /topics with mercy-preview Accept returns 200 OK")]
     public async Task GetTopics_ReturnsOk()
     {
         var response = await Get<TopicsModelResponse>(GitHubEndpoints.RepoTopics,
-            TopicsParams());
+            MercyPreviewRepoParams());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -39,7 +35,7 @@ public class GetTopicsTests : GitHubTestBase
     public async Task GetTopics_ResponseMatchesContract()
     {
         var response = await Get<TopicsModelResponse>(GitHubEndpoints.RepoTopics,
-            TopicsParams());
+            MercyPreviewRepoParams());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -52,7 +48,7 @@ public class GetTopicsTests : GitHubTestBase
     public async Task GetTopics_NamesMatchPattern()
     {
         var response = await Get<TopicsModelResponse>(GitHubEndpoints.RepoTopics,
-            TopicsParams());
+            MercyPreviewRepoParams());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Names.Should().OnlyContain(
@@ -66,7 +62,7 @@ public class GetTopicsTests : GitHubTestBase
     public async Task GetTopics_NamesAreUnique()
     {
         var response = await Get<TopicsModelResponse>(GitHubEndpoints.RepoTopics,
-            TopicsParams());
+            MercyPreviewRepoParams());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Names.Should().OnlyHaveUniqueItems();
@@ -78,7 +74,7 @@ public class GetTopicsTests : GitHubTestBase
     public async Task GetTopics_ContentTypeIsJson()
     {
         var response = await Get<TopicsModelResponse>(GitHubEndpoints.RepoTopics,
-            TopicsParams());
+            MercyPreviewRepoParams());
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -89,7 +85,7 @@ public class GetTopicsTests : GitHubTestBase
     public async Task GetTopics_RepoWithoutTopics_ReturnsOkWithNames()
     {
         var response = await Get<TopicsModelResponse>(GitHubEndpoints.RepoTopics,
-            TopicsParams());
+            MercyPreviewRepoParams());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Names.Should().NotBeNull("names array must be present even when empty — OB §14");
@@ -126,7 +122,7 @@ public class GetTopicsTests : GitHubTestBase
     public async Task GetTopics_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.RepoTopics, InvalidAuthorization, TopicsParams());
+            GitHubEndpoints.RepoTopics, InvalidAuthorization, MercyPreviewRepoParams());
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }

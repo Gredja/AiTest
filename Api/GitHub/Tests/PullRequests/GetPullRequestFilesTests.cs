@@ -1,5 +1,4 @@
 using Core.Models.GitHub;
-using Core.Models.Generic;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -35,16 +34,13 @@ public class GetPullRequestFilesTests : GitHubTestBase
         _nonExistentPullNumber = _existingPullNumber + GitHubEndpoints.NonExistentIdOffset;
     }
 
-    private List<RequestDictionaryModel> PullFilesParams(int pullNumber) =>
-        [.. TestRepoParam(), .. PullRequestNumberParam(pullNumber)];
-
     [Test]
     [Category("HealthCheck")]
     [Description("9a.1 GET /pulls/{pull_number}/files for existing PR returns 200 OK")]
     public async Task GetPullRequestFiles_ReturnsOk()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -55,7 +51,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_ResponseMatchesContract()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -69,7 +65,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_HasValidFields()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         foreach (var file in response.Data!)
         {
@@ -85,7 +81,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_ContentTypeIsJson()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
@@ -96,7 +92,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_ReturnsNonEmptyList()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty("PR has changed files");
@@ -108,7 +104,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_FilenamesAreUnique()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         response.Data!.Select(file => file.Filename).Should().OnlyHaveUniqueItems();
     }
@@ -119,7 +115,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_ChangeCountsAreNonNegative()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
 
         foreach (var file in response.Data!)
         {
@@ -136,7 +132,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_existingPullNumber));
+            PullParams(_existingPullNumber));
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
@@ -148,7 +144,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_NonExistentPullRequest_ReturnsNotFound()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(_nonExistentPullNumber));
+            PullParams(_nonExistentPullNumber));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
@@ -159,7 +155,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_ZeroPullNumber_ReturnsNotFound()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(0));
+            PullParams(0));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
@@ -170,7 +166,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_NegativePullNumber_ReturnsNotFound()
     {
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
-            PullFilesParams(-1));
+            PullParams(-1));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
@@ -207,7 +203,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
     public async Task GetPullRequestFiles_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.RepoPullRequestFiles, InvalidAuthorization, PullFilesParams(_existingPullNumber));
+            GitHubEndpoints.RepoPullRequestFiles, InvalidAuthorization, PullParams(_existingPullNumber));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }

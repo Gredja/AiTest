@@ -18,7 +18,7 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 - Comments, Albums, Photos, Todos, Users — GET (all, by parent/ID)
 
 ### GitHub REST API v3 — https://api.github.com
-- Repos, Issues, PRs, Branches, Users, Rate Limit — GET
+- Repositories, Issues, PRs, Branches, Users, Commits, Releases, Contributors, Languages, Topics, Tags, Rate Limit — GET (full Phase 1 coverage)
 - Issues, Comments, PRs, Branches — POST, PATCH, DELETE (single-endpoint in `Api/`, scenario chains in `E2E/`)
 
 ## Test Structure

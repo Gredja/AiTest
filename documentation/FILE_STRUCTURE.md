@@ -218,6 +218,7 @@ Api/
 │       ├── PublicRepos/
 │       │   └── GetPublicReposTests.cs
 │       ├── PullRequests/
+│       │   ├── GetPullRequestByIdTests.cs
 │       │   ├── GetPullRequestCommitsTests.cs
 │       │   ├── GetPullRequestFilesTests.cs
 │       │   └── GetPullRequestsTests.cs
@@ -235,7 +236,8 @@ Api/
 │       ├── UserRepos/
 │       │   └── GetUserReposTests.cs
 │       └── Users/
-│           └── GetUserTests.cs
+│           ├── GetUserTests.cs
+│           └── GetUsersTests.cs
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```
 

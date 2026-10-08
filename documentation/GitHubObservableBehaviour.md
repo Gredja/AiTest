@@ -96,6 +96,24 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ---
 
+## 3a. GET /users
+
+- Response status is 200 OK
+- Response body is a JSON array (default page: 30 items)
+- Each object has: `login` (string, non-empty, unique per list), `id` (integer > 0)
+- Content-Type is application/json
+- Response time < 5s
+
+**Pagination (documented edges, verified 2026-10-08):**
+- `?per_page=1` → exactly 1 item
+- `?per_page=abc`, `?since=abc`, `?page=-1` → 200 OK, invalid query params silently ignored
+
+**Negative:**
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- Ceiling: no path segments and all invalid queries are ignored → invalid-token 401 is the only active failure mode (1 < 5 floor; documented per ceiling rule)
+
+---
+
 ## 4. GET /users/{username}/repos
 
 - Response status is 200 OK
@@ -236,6 +254,24 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - Negative PR number → 404, body has `message` (string: "Not Found")
 - Non-existent repo → 404, body has `message` (string: "Not Found")
 - Non-existent owner → 404, body has `message` (string: "Not Found")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+
+---
+
+## 9c. GET /repos/{owner}/{repo}/pulls/{pull_number}
+
+- Response status is 200 OK
+- Response body is a JSON object
+- Object has: `id` (integer > 0), `number` (integer, equals {pull_number}), `title` (string, non-empty), `state` (string: "open" or "closed"), `user` (object), `created_at` (ISO 8601), `merged` (boolean, present)
+- Content-Type is application/json
+- Response time < 5s
+
+**Negative (verified 2026-10-08):**
+- Non-existent PR → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- PR number 0 → 404
+- Negative PR number (-1) → 404
+- Non-existent repo → 404
+- Non-existent owner → 404
 - Invalid token → 401, body has `message` (string: "Bad credentials")
 
 ---
