@@ -259,8 +259,7 @@ Api/
 │       │   └── GetReleasesTests.cs
 │       ├── Repos/
 │       │   ├── GetRepositoryTests.cs
-│       │   ├── GetReposTests.cs
-│       │   └── SampleTests.cs
+│       │   └── GetReposTests.cs
 │       ├── Tags/
 │       │   └── GetTagsTests.cs
 │       ├── Topics/

@@ -27,10 +27,12 @@ Each test method gets ONE primary category based on what it verifies:
 |----------|-----------|-------------|
 | `HealthCheck` | Status code checks only | Endpoint is alive, returns expected HTTP status (200, 201, etc.) |
 | `ContractCheck` | Response/request schema matches expected models | Use `ShouldHaveValidContract()` (JSON round-trip + attribute validation) |
-| `Smoke` | Basic functionality | Response not empty, correct count, content-type is JSON, correct data values |
-| `Regression` | Schema / field validation | Each field present and valid, `id` matches requested, `ShouldHaveValidFields()` |
+| `Smoke` | Basic functionality — checks of a single response | Response not empty, correct count, content-type is JSON, echo/returned data values |
+| `Regression` | Validation against a rule or invariant | Field patterns/formats, `id` matches requested, `ShouldHaveValidFields()`, state transitions and cross-step data integrity (E2E chains, quota decrements) |
 | `Negative` | Error handling | Non-existent ID, ID=0, negative ID, wrong data — all edge cases that should fail |
 | `Performance` | Response time | `ResponseTimeIsAcceptable` tests (GET endpoints) |
+
+**Boundary:** Smoke answers "is the response sane?" (one response, one look); Regression answers "does the data obey a rule?" (pattern, format, state machine, invariant across steps). When a test mixes both, the rule/invariant wins.
 
 ```csharp
 [Test]
@@ -61,6 +63,7 @@ public async Task GetAllPosts_EachItemHasValidFields()
 | `*_AllBelongToSameUser`, `*_ReturnsUpdatedTitle`, `*_ReturnsEmptyObject` | `Smoke` |
 | `*_EachItemHasValidFields`, `*_HasAllExpectedFields`, `*_HasValidFields` | `Regression` |
 | `*_IdMatchesRequested`, `*_ReturnsCorrectId` | `Regression` |
+| E2E scenario chains (create → verify → mutate → cleanup) | `Regression` |
 | `*_NonExistentId_*`, `*_ZeroId_*`, `*_NegativeId_*` | `Negative` |
 | `*_NonExistentUser_*` | `Negative` |
 | `*_ResponseTimeIsAcceptable` | `Performance` |
