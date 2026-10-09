@@ -1,4 +1,5 @@
 using Microsoft.Playwright;
+using Ui.Helper.UiHelper.CommonPages;
 
 namespace Ui.Helper.BrowserHelpers;
 
@@ -7,7 +8,14 @@ namespace Ui.Helper.BrowserHelpers;
 // (added by ui-test-gen).
 internal sealed class BrowserPw
 {
-    internal BrowserPw(IPage page) => Page = page;
+    internal BrowserPw(IPage page)
+    {
+        Page = page;
+        LoginPage = new LoginPage(page);
+        HeaderPage = new HeaderPage(page);
+    }
 
     internal IPage Page { get; }
+    internal LoginPage LoginPage { get; }
+    internal HeaderPage HeaderPage { get; }
 }

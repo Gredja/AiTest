@@ -18,6 +18,8 @@ public abstract class GitHubUiTestBase
     protected IPage Page { get; private set; } = null!;
     internal BrowserPw Browser { get; private set; } = null!;
 
+    protected virtual bool IsStorageStateEnabled => true;
+
     [OneTimeSetUp]
     public async Task LaunchBrowserAsync()
     {
@@ -31,10 +33,10 @@ public abstract class GitHubUiTestBase
     [SetUp]
     public async Task OpenContextAsync()
     {
-        var storageState = ResolveStorageStatePath();
+        var storageState = IsStorageStateEnabled ? ResolveStorageStatePath() : null;
         Context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
-            StorageStatePath = System.IO.File.Exists(storageState) ? storageState : null,
+            StorageStatePath = storageState is not null && System.IO.File.Exists(storageState) ? storageState : null,
             ViewportSize = new ViewportSize { Width = ViewportWidth, Height = ViewportHeight }
         });
         await Context.Tracing.StartAsync(new TracingStartOptions
@@ -89,6 +91,16 @@ public abstract class GitHubUiTestBase
         }
 
         _playwright?.Dispose();
+    }
+
+    protected async Task SaveStorageStateAsync()
+    {
+        var stateFile = new System.IO.FileInfo(ResolveStorageStatePath());
+        stateFile.Directory?.Create();
+        await Context.StorageStateAsync(new BrowserContextStorageStateOptions
+        {
+            Path = stateFile.FullName
+        });
     }
 
     // storageState and artifacts are resolved against the repository root so relative

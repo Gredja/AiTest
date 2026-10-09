@@ -19,7 +19,8 @@
   },
   "Ui": {
     "BaseUrl": "https://github.com",
-    "Headless": true,
-    "StatePath": ".auth/github-ui-state.json"
+    "Headless": false,
+    "StatePath": ".auth/github-ui-state.json",
+    "Username": "gredjapl"
   }
 }

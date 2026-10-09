@@ -322,11 +322,11 @@ Ui/
 │   ├── BrowserHelpers/
 │   │   └── BrowserPw.cs          # page-object wrapper: pages exposed as properties
 │   └── UiHelper/
-│       ├── CommonPages/          # cross-area pages (header, nav)
+│       ├── CommonPages/          # cross-area pages (header, nav): LoginPage, HeaderPage
 │       ├── BaseHelpers/          # shared page base classes
 │       └── GitHubStream/         # page-objects: {Area}/{Area}Page.cs
 ├── Data/                         # static test files (upload payloads)
-└── Test/GitHubStream/            # tests: {Area}/{Area}{Flow}Tests.cs
+└── Test/GitHubStream/            # tests: {Area}/{Area}{Flow}Tests.cs (Login/LoginSignInTests.cs)
 ```
 
 ## Rules/

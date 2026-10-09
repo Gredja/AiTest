@@ -161,6 +161,9 @@ MiMoCode хранит настройки в файле `~/.config/mimocode/mimoc
 
 ```
 GITHUB_PAT=твой_личный_токен_здесь
+
+GITHUB_UI_EMAIL=email_аккаунта_для_UI-входа
+GITHUB_UI_PASSWORD=пароль_аккаунта_для_UI-входа
 ```
 
 **Как получить токен:**
@@ -171,6 +174,8 @@ GITHUB_PAT=твой_личный_токен_здесь
 5. Скопируй токен и вставь в `.env`
 
 Токен нужен для тестов GitHub API.
+
+`GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` — креды для UI-теста входа (`TestConfig.UiLogin` / `TestConfig.UiPassword`; читаются только из процессного окружения или `.env`, без JSON-приоритета). Аккаунт должен поддерживать парольный вход: аккаунт, созданный через Google/Apple/passkey без пароля, отклоняет парольный вход («This account does not support password sign-in») — сначала создай пароль в Settings → Password and authentication.
 
 **Файл конфигурации тестов:** `testsettings.json` в корне (в `.gitignore`, в клоне его нет).
 Без него сборка и тесты работают: `Core.csproj` подставляет трекаемый `testsettings.example.json`.
@@ -264,13 +269,14 @@ Gredja/
 │   │   └── JsonPlaceholder/      # Баги JsonPlaceholder
 │   ├── GitHubTestingStructure.md # Структура тестирования
 │   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
+│   ├── GitHubUiObservableBehaviour.md # Наблюдаемое поведение GitHub UI (Web)
 │   ├── JsonPlaceholderObservableBehaviour.md # Наблюдаемое поведение JP API
 │   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
 │   └── README.md                 # Заглушка → ссылка на корневой README.md
 └── .mimocode/
     ├── skills/                  # Скиллы для MiMoCode
-    └── plans/                   # Активные планы работ (github-full-coverage.md и др.)
+    └── plans/                   # Активные планы работ (удаляются после реализации)
 ```
 
 **Проект тестирует два REST API:**
@@ -522,8 +528,8 @@ dotnet build
 - **MiMoCode:** https://github.com/XiaomiMiMo/MiMo-Code
 - **JSONPlaceholder:** https://jsonplaceholder.typicode.com
 - **GitHub API:** https://docs.github.com/en/rest
-- **Observable Behaviour (source of truth для тестов):** `documentation/JsonPlaceholderObservableBehaviour.md`, `documentation/GitHubObservableBehaviour.md` — читай OB своего сервиса
-- **Test Plan:** `documentation/JsonPlaceholderTestPlan.md`, `.mimocode/plans/github-full-coverage.md` — покрытие и статусы
+- **Observable Behaviour (source of truth для тестов):** `documentation/JsonPlaceholderObservableBehaviour.md`, `documentation/GitHubObservableBehaviour.md`, `documentation/GitHubUiObservableBehaviour.md` — читай OB своего сервиса
+- **Test Plan:** `documentation/JsonPlaceholderTestPlan.md`, `documentation/GitHubTestingStructure.md` — покрытие и статусы
 - **Правила:** `Rules/*.md` — код, ассерты, тест-практики
 
 ---
@@ -538,7 +544,7 @@ dotnet build
 - [ ] Установлен Git
 - [ ] Создан `~/.config/mimocode/mimocode.jsonc` (см. Часть 3)
 - [ ] Клонирован репозиторий
-- [ ] Создан `.env` с GITHUB_PAT (см. Часть 4)
+- [ ] Создан `.env` с GITHUB_PAT и кредами UI-входа (см. Часть 4)
 - [ ] `dotnet build` проходит без ошибок
 - [ ] `dotnet test` показывает пройденные тесты
 - [ ] `mimo` запускается и отвечает на сообщения

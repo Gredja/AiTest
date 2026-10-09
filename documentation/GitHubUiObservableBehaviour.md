@@ -27,6 +27,16 @@ When generating or reviewing GitHub UI tests, the AI agent:
 
 ---
 
+## Page: Login (UI-1)
+
+- URL: `https://github.com/login` — verified 2026-10-09
+- `GetByRole(Textbox, "Username or email address")`, `GetByRole(Textbox, "Password")` — verified 2026-10-09
+- `GetByRole(Button, "Sign in")` (exact name) — verified 2026-10-09
+- Success: redirect to `https://github.com/` (dashboard); header shows `GetByRole(Button, "Open user navigation menu")` — verified 2026-10-09
+- User menu: click → `GetByRole(Dialog, "User navigation")`; `GetByRole(Heading)` text contains the signed-in username — verified 2026-10-09
+- Prerequisites: credentials `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` in `.env`; the login test overrides `IsStorageStateEnabled => false` (anonymous context) and saves storageState only after the assert
+- Gotcha: an account created without a password (social login / passkey-only) fails with "This account does not support password sign-in" — fix: sign in via Google/Apple/passkey once, then Settings → Password and authentication → create a password (verified 2026-10-09)
+
 ## Page: Repository landing
 
 - Status: **draft — no verified locators yet** (scaffold 2026-10-09)

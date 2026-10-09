@@ -29,7 +29,7 @@ public static class TestConfig
                 return token;
             }
 
-            return ReadTokenFromEnvironment();
+            return ReadEnvironmentValue("GITHUB_PAT") ?? string.Empty;
         }
     }
 
@@ -40,6 +40,9 @@ public static class TestConfig
     public static string UiBaseUrl => GetRequiredString(Ui, BaseUrlKey);
     public static bool UiHeadless => GetRequiredBool(Ui, "Headless");
     public static string UiStatePath => GetRequiredString(Ui, "StatePath");
+    public static string UiUsername => GetRequiredString(Ui, "Username");
+    public static string UiLogin => GetRequiredEnvironmentValue("GITHUB_UI_EMAIL");
+    public static string UiPassword => GetRequiredEnvironmentValue("GITHUB_UI_PASSWORD");
 
     private static string GetRequiredString(JsonElement section, string key)
     {
@@ -67,18 +70,23 @@ public static class TestConfig
         return value.GetBoolean();
     }
 
-    private static string ReadTokenFromEnvironment()
+    private static string GetRequiredEnvironmentValue(string key) =>
+        ReadEnvironmentValue(key)
+            ?? throw new InvalidOperationException(
+                $"environment variable '{key}' not found (process environment or .env)");
+
+    private static string? ReadEnvironmentValue(string key)
     {
-        var envToken = Environment.GetEnvironmentVariable("GITHUB_PAT");
-        if (!string.IsNullOrEmpty(envToken))
+        var value = Environment.GetEnvironmentVariable(key);
+        if (!string.IsNullOrEmpty(value))
         {
-            return envToken;
+            return value;
         }
 
-        return ReadTokenFromEnvFile();
+        return ReadEnvFileValue(key);
     }
 
-    private static string ReadTokenFromEnvFile()
+    private static string? ReadEnvFileValue(string key)
     {
         var dir = AppContext.BaseDirectory;
         while (dir is not null)
@@ -90,15 +98,15 @@ public static class TestConfig
                 continue;
             }
 
-            var line = File.ReadAllLines(envFile).FirstOrDefault(line => line.StartsWith("GITHUB_PAT="));
+            var line = File.ReadAllLines(envFile).FirstOrDefault(candidate => candidate.StartsWith($"{key}="));
             if (line is not null)
             {
-                return line["GITHUB_PAT=".Length..];
+                return line[(key.Length + 1)..];
             }
 
             break;
         }
 
-        return string.Empty;
+        return null;
     }
 }
