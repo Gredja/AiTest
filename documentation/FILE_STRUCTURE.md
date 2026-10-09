@@ -350,6 +350,7 @@ Rules/
 
 ```
 documentation/
+├── AuditReport.md                # Отчёт полного аудита 2026-10-09 (находки, фиксы не применялись)
 ├── BugReportTemplate.md
 ├── Bugs/
 │   └── JsonPlaceholder/
