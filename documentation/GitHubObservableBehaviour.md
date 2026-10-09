@@ -419,6 +419,9 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - `rate.limit` is 5000 (auth) or 60 (no auth)
 - `rate.reset` is a unix timestamp in the future
 - Response headers include: `X-RateLimit-Remaining`, `X-RateLimit-Reset`, `X-RateLimit-Limit`
+- Counting responses' `X-RateLimit-Remaining` headers decrement by 1 per call (probe 2026-10-09: 4294 → 4289 over 6 calls) — this is the reliable real-time signal (verified 2026-10-09)
+- **Body may lag headers**: the `/rate_limit` body has been observed stale while headers showed the live counter (probe 2026-10-09: body `used=1` vs header `used=714` in the same minutes) — drain tests must read remaining/reset from `X-RateLimit-*` headers of counting responses, not from the body (verified 2026-10-09)
+- Calls to this endpoint itself do not count against the quota (per GitHub docs)
 - Content-Type is application/json
 
 **Negative:**

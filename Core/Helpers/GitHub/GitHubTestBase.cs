@@ -41,6 +41,11 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected static List<RequestDictionaryModel> CommentParams(long commentId) =>
         [.. TestRepoParam(), .. GitHubParamHelper.CommentIdParam(commentId)];
 
+    protected static string RateLimitHeaderValue(RestResponse response, string headerName) =>
+        response.Headers?
+            .FirstOrDefault(header => header.Name.Equals(headerName, StringComparison.OrdinalIgnoreCase))
+            ?.Value ?? string.Empty;
+
     protected static List<RequestDictionaryModel> IssueParams(int issueNumber) =>
         [.. TestRepoParam(), .. GitHubParamHelper.IssueNumberParam(issueNumber)];
 

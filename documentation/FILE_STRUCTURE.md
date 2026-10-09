@@ -302,6 +302,7 @@ E2E/
 │       ├── CommentChainTests.cs
 │       ├── IssueLifecycleTests.cs
 │       ├── PullRequestFlowTests.cs
+│       ├── RateLimitDrainTests.cs
 │       └── RepositoryHealthTests.cs
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```
