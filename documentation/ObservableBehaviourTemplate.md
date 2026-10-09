@@ -3,7 +3,7 @@
 **Project:** Gredja (.NET 10.0)
 **API Under Test:** {Service} API ({BaseUrl})
 **Date:** {Date}
-**Scope:** {GET / POST / PATCH / DELETE}
+**Scope:** {GET / POST / PUT / PATCH / DELETE}
 **Test Plan:** [{Service}TestPlan.md]({Service}TestPlan.md)
 
 ---
@@ -14,9 +14,9 @@ When generating or reviewing {Service} API tests, the AI agent:
 
 1. **Reads this document first** — before any code generation or review, loads the relevant endpoint section
 2. **Uses Positive bullets as assertions** — each `- Object has: \`field\` (type)` becomes a `.Should().Be()` / `.Should().NotBeNull()` / `.Should().BeGreaterThan()` call
-3. **Uses Negative bullets as test cases** — each negative bullet = one `[Category("Negative")]` test method
+3. **Uses Negative bullets as test cases** — each negative bullet = one `[Category("Negative")]` test method; when distinct failure modes are exhausted below the 5-negative floor, record a `Ceiling: {what's exhausted} — {N} < 5 floor documented per ceiling rule` bullet instead of padding (`Rules/test-practices.md` → "Ceiling rule")
 4. **Uses Validation Rules for model generation** — Response Field Constraints map directly to C# model properties with attributes (`[PositiveId]`, `[RequiredField]`, `[ValueRange]`)
-5. **Uses Request Body table for POST/PATCH tests** — required fields → mandatory assertions, optional fields → conditional assertions
+5. **Uses Request Body table for POST/PUT/PATCH tests** — required fields → mandatory assertions, optional fields → conditional assertions
 6. **Uses State transitions for E2E chains** — e.g. "state: open → closed" maps to PATCH test that verifies `state` changed
 7. **Uses Endpoint Priority for coverage ordering** — P0 first, P3 last when generating incrementally
 8. **Never invents fields** — only asserts fields listed in this document; if a field is missing from the response, reports it as a discrepancy
@@ -32,7 +32,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 | Category | Applies to | Example test name pattern |
 |----------|-----------|---------------------------|
 | `HealthCheck` | Status code checks only | `*_ReturnsOk`, `*_ReturnsCreated` |
-| `ContractCheck` | Response/request schema matches expected models — response always, request only for POST/PATCH | `*_ReturnsExpectedFields`, `*_RequestMatchesModel` |
+| `ContractCheck` | Response/request schema matches expected models — response always, request only for POST/PUT/PATCH | `*_ReturnsExpectedFields`, `*_RequestMatchesModel` |
 | `Smoke` | Basic functionality — not empty, correct count, content-type | `*_ReturnsNonEmptyList`, `*_ContentTypeIsJson` |
 | `Regression` | Schema / field validation via attributes | `*_EachItemHasValidFields`, `*_HasValidFields` |
 | `Negative` | Error handling — non-existent ID, bad input, missing auth | `*_NonExistentId_*`, `*_ZeroId_*` |
@@ -99,7 +99,20 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ---
 
-## 4. DELETE /{path}/{id}
+## 4. PUT /{path}/{id}
+
+- Request body: full resource — all fields required (`field` (type, required), `field` (type, required))
+- Response status is 200 OK
+- Response body is a JSON object with the stored fields
+- Content-Type is application/json
+
+**Negative:**
+- No auth → 401
+- Non-existent resource → 404
+
+---
+
+## 5. DELETE /{path}/{id}
 
 - Response status is 204 No Content
 - Response body is empty
@@ -144,6 +157,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 | Endpoint | Required Fields | Optional Fields | Invalid → Error |
 |---|---|---|---|
 | POST /path | `field` (type) | `field` (type) | Missing required → 422 |
+| PUT /path/{id} | all `field` (type) | — | Missing required → 422 |
 | PATCH /path/{id} | — | `field` (type) | |
 
 ### Response Field Constraints
@@ -198,6 +212,10 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 - 
 
+### Write Operation Risks
+
+- 
+
 ---
 
 ## Authoring Method
@@ -205,3 +223,4 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - **Structure + fields:** AI-drafted from {Service} API docs
 - **Edge cases + gotchas:** Human-reviewed from production incidents
 - **Risk framing:** Human-owned (business context)
+- **Verified claims are dated:** behavior confirmed by a live probe carries `(verified {Date})` or `probe {Date}`; an undated claim is an unverified draft

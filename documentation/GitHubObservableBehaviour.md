@@ -18,10 +18,9 @@ When generating or reviewing GitHub API tests, the AI agent:
 4. **Uses Validation Rules for model generation** — Response Field Constraints map directly to C# model properties with attributes (`[PositiveId]`, `[RequiredField]`, `[ValueRange]`)
 5. **Uses Request Body table for POST/PATCH tests** — required fields → mandatory assertions, optional fields → conditional assertions
 6. **Uses State transitions for E2E chains** — e.g. "state: open → closed" maps to PATCH test that verifies `state` changed
-7. **Uses Endpoint Priority for coverage ordering** — P0 first, P3 last when generating incrementally
-8. **Never invents fields** — only asserts fields listed in this document; if a field is missing from the response, reports it as a discrepancy
-9. **Uses Seed methodology** — for each endpoint: 5 seeds → expand to table with `# | Case | Category | Priority | Source seed` → enforce 5+ active negatives → see `Rules/test-practices.md` → "Seed methodology"
-10. **Uses Test Plan risks for coverage** — maps each Top-3 risk from `GitHubTestingStructure.md` to at least one test case; an uncovered risk is a coverage gap, reported in the review
+7. **Never invents fields** — only asserts fields listed in this document; if a field is missing from the response, reports it as a discrepancy
+8. **Uses Seed methodology** — for each endpoint: 5 seeds → expand to table with `# | Case | Category | Priority | Source seed` → enforce 5+ active negatives → see `Rules/test-practices.md` → "Seed methodology"
+9. **Uses Test Plan risks for coverage** — maps each Top-3 risk from `GitHubTestingStructure.md` to at least one test case; an uncovered risk is a coverage gap, reported in the review
 
 ---
 
@@ -37,15 +36,6 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 | `Regression` | Schema / field validation via attributes | `*_EachItemHasValidFields`, `*_HasValidFields` |
 | `Negative` | Error handling — non-existent ID, bad input, missing auth | `*_NonExistentId_*`, `*_ZeroId_*` |
 | `Performance` | Response time (GET list endpoints only) | `*_ResponseTimeIsAcceptable` |
-
----
-
-| Priority | Endpoints | Rationale |
-|---|---|---|
-| **P0 — Core** | Issues (CRUD), Issue Comments (CRUD), PRs (CRUD + merge) | Ядро GitHub — то, ради чего люди используют платформу. Баги здесь критичны. |
-| **P1 — Important** | Repos (read), Branches (CRUD), Rate Limit | Инфраструктура для Issues/PRs. Без репозиториев и веток E2E-цепочки не работают. |
-| **P2 — Useful** | Contributors, Languages, Topics, Tags | Метаданные репозитория. Полезны для мониторинга и аналитики, но не блокируют основной workflow. |
-| **P3 — Reference** | Users, User Repos, Auth Repos, Public Repos | Справочная информация. Критична для аутентификации и авторизации, но реже используется в E2E-тестах. |
 
 ---
 
