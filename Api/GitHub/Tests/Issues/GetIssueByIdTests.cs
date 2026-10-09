@@ -17,6 +17,27 @@ public class GetIssueByIdTests : GitHubTestBase
 {
     private const int ExistingIssueNumber = 5;
     private const string NonNumericIssueNumber = "abc";
+    private const string TestTitle = "Test issue for contract check";
+
+    private int? _createdIssueNumber;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
+        issues.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        if (issues.Data!.Count == 0)
+        {
+            var create = await Post<CreateIssueModelRequest, IssueModelResponse>(
+                GitHubEndpoints.RepoIssues,
+                new CreateIssueModelRequest { Title = TestTitle },
+                TestRepoParam());
+            create.ShouldHaveStatusCode(HttpStatusCode.Created);
+            _createdIssueNumber = create.Data!.Number;
+        }
+    }
 
     [Test]
     [Category("HealthCheck")]
@@ -61,6 +82,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         issues.ShouldHaveStatusCode(HttpStatusCode.OK);
+        issues.Data.Should().NotBeEmpty("Setup should have guaranteed at least one issue");
         var maxIssueNumber = issues.Data!.Max(issue => issue.Number);
         var nonExistentIssueNumber = maxIssueNumber + GitHubEndpoints.NonExistentIdOffset;
 
@@ -161,5 +183,32 @@ public class GetIssueByIdTests : GitHubTestBase
         stopwatch.Stop();
 
         stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdIssueNumber.HasValue)
+        {
+            try
+            {
+                // REST has no issue-delete endpoint (DELETE → 404, see OB §17) — cleanup closes instead
+                var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
+                    GitHubEndpoints.RepoIssueById,
+                    new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+                    [.. TestRepoParam(), .. IssueNumberParam(_createdIssueNumber.Value)]);
+
+                if (!cleanup.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: issue {_createdIssueNumber} not closed: HTTP {(int)cleanup.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to close issue {_createdIssueNumber}: {exception.Message}");
+            }
+        }
     }
 }

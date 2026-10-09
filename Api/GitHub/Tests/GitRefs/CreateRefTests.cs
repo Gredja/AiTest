@@ -179,14 +179,6 @@ public class CreateRefTests : GitHubTestBase
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        foreach (var refPath in _createdRefs)
-        {
-            await CleanupGitRefAsync(refPath);
-        }
-    }
     [Test]
     [Category("Performance")]
     [Description("25.10 Created ref becomes visible within max response time")]
@@ -211,5 +203,14 @@ public class CreateRefTests : GitHubTestBase
             $"created ref should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
             $" waited {result.Elapsed}, attempts {result.Attempts}," +
             $" last status {result.LastValue?.StatusCode}");
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var refPath in _createdRefs)
+        {
+            await CleanupGitRefAsync(refPath);
+        }
     }
 }

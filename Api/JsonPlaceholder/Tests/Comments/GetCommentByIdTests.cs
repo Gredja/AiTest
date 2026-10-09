@@ -84,6 +84,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     {
         var allComments = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
         allComments.ShouldHaveStatusCode(HttpStatusCode.OK);
+        allComments.Data.Should().NotBeEmpty();
         var maxCommentId = allComments.Data!.Max(comment => comment.Id);
         var nonExistentId = maxCommentId + 1;
 

@@ -222,19 +222,6 @@ public class CreatePullRequestTests : GitHubTestBase
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
-    [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        foreach (var (number, headBranch, baseBranch) in _createdPullRequests)
-        {
-            await CleanupPullRequestAsync(number, headBranch, baseBranch);
-        }
-
-        foreach (var branchName in _createdBranchNames)
-        {
-            await CleanupGitRefAsync(branchName);
-        }
-    }
     [Test]
     [Category("Performance")]
     [Description("21.11 Created PR becomes visible within max response time")]
@@ -253,5 +240,19 @@ public class CreatePullRequestTests : GitHubTestBase
             $"created PR should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
             $" waited {result.Elapsed}, attempts {result.Attempts}," +
             $" last status {result.LastValue?.StatusCode}");
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        foreach (var (number, headBranch, baseBranch) in _createdPullRequests)
+        {
+            await CleanupPullRequestAsync(number, headBranch, baseBranch);
+        }
+
+        foreach (var branchName in _createdBranchNames)
+        {
+            await CleanupGitRefAsync(branchName);
+        }
     }
 }

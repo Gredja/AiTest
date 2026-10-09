@@ -32,7 +32,7 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().NotBeNull();
+        response.Data.Should().NotBeEmpty("user must have repos — Entry Criteria, documentation/GitHubTestingStructure.md");
         response.Data!.First().ShouldHaveValidContract();
     }
 

@@ -99,6 +99,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     {
         var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
         allPosts.ShouldHaveStatusCode(HttpStatusCode.OK);
+        allPosts.Data.Should().NotBeEmpty();
         var maxPostId = allPosts.Data!.Max(post => post.Id);
         var nonExistentId = maxPostId + 1;
 
