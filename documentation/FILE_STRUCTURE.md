@@ -293,7 +293,8 @@ E2E/
 ├── GitHub/
 │   ├── GitHubE2ETestBase.cs
 │   └── Tests/
-│       └── IssueLifecycleTests.cs
+│       ├── IssueLifecycleTests.cs
+│       └── PullRequestFlowTests.cs
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```
 

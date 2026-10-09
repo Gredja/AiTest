@@ -20,7 +20,7 @@
 | 9 | **Commits & Releases** | GET /commits, /releases — status, contract, fields, negatives | Done (D8–D9) |
 | 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
 
-**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A) + 68 single-write tests (Phase 2: §17–20 issues/comments, §21–23 PR create/patch/merge, §24 DELETE-not-supported, §25–26 git refs); scratch-PR pipeline = blob→tree→commit→branch→PR (infra OB §27); next: E2E scenarios 2.2–2.6 — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md).
+**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A) + 68 single-write tests (Phase 2: §17–20 issues/comments, §21–23 PR create/patch/merge, §24 DELETE-not-supported, §25–26 git refs); scratch-PR pipeline = blob→tree→commit→branch→PR (infra OB §27); next: E2E scenarios 2.3–2.6 — see [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md).
 
 ## 2. Out of Scope
 
