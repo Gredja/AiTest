@@ -58,10 +58,7 @@ public class GetUserPostsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.UsersPosts,
             IdParam(TestUserId));
 
-        foreach (var post in response.Data!)
-        {
-            post.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(post => post.ShouldHaveValidFields());
     }
 
     [Test]

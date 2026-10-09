@@ -48,10 +48,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             TestRepoParam());
 
-        foreach (var pullRequest in response.Data!)
-        {
-            pullRequest.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(pullRequest => pullRequest.ShouldHaveValidFields());
     }
 
     [Test]

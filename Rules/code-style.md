@@ -15,6 +15,11 @@
 - Don't do multiple iterations over the same collection — chain or materialize once
 - Use `FirstOrDefault()` over `Where(...).FirstOrDefault()` when looking for one item
 
+## Loops
+
+- **Sync side-effect loop over a `List<T>` → `list.ForEach(item => ...)`**, not `foreach` (per-item asserts, register); one statement → inline lambda, several assertions → block lambda; lambda parameter is a readable singular noun
+- `foreach` stays only for: `async` bodies (teardown cleanup — `ForEach` has no async overload and `Task.WhenAll` would change ordering/parallelism), lazy/`IEnumerable`/array sources (no `ForEach` method — `File.ReadLines`, `Where(...)`, `Keys.OrderBy(...)`), iterators (`yield` is illegal inside a lambda), and multi-statement bodies with control flow (switch/if-heavy)
+
 ## Strings
 
 - Use interpolation `$"Hello {name}"` over concatenation `"Hello " + name`

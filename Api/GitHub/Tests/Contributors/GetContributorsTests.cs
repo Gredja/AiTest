@@ -51,11 +51,11 @@ public class GetContributorsTests : GitHubTestBase
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        foreach (var contributor in response.Data!)
+        response.Data!.ForEach(contributor =>
         {
             contributor.ShouldHaveValidFields();
             contributor.Contributions.Should().BeGreaterThan(0, "every contributor must have positive contributions");
-        }
+        });
     }
 
     [Test]

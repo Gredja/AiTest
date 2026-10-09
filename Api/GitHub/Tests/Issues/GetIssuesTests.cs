@@ -70,10 +70,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             TestRepoParam());
 
-        foreach (var issue in response.Data!)
-        {
-            issue.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(issue => issue.ShouldHaveValidFields());
     }
 
     [Test]

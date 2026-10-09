@@ -58,10 +58,7 @@ public class GetUserAlbumsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.UsersAlbums,
             IdParam(TestUserId));
 
-        foreach (var album in response.Data!)
-        {
-            album.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(album => album.ShouldHaveValidFields());
     }
 
     [Test]

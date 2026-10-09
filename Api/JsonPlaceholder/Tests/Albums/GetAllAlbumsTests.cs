@@ -65,10 +65,7 @@ public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
 
-        foreach (var album in response.Data!)
-        {
-            album.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(album => album.ShouldHaveValidFields());
     }
 
     [Test]

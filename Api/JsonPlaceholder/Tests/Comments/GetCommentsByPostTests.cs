@@ -58,10 +58,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
-        foreach (var comment in response.Data!)
-        {
-            comment.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(comment => comment.ShouldHaveValidFields());
     }
 
     [Test]

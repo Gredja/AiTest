@@ -14,6 +14,7 @@
     "BaseUrl": "https://api.github.com",
     "Token": "",
     "TestRepo": "Gredja/AiTest",
-    "TestUsername": "Gredja"
+    "TestUsername": "Gredja",
+    "CollaboratorUser": "gredjapl"
   }
 }

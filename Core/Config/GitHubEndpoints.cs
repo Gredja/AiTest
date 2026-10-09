@@ -51,6 +51,12 @@ public static class GitHubEndpoints
     public const string RepoGitBlobs = "/repos/{owner}/{repo}/git/blobs";
     public const string RepoGitTrees = "/repos/{owner}/{repo}/git/trees";
 
+    public const string RepoCollaborators = "/repos/{owner}/{repo}/collaborators";
+    public const string RepoCollaboratorPermission = "/repos/{owner}/{repo}/collaborators/{username}/permission";
+    public const string RepoCollaboratorByUsername = "/repos/{owner}/{repo}/collaborators/{username}";
+    public const string RepoInvitations = "/repos/{owner}/{repo}/invitations";
+    public const string RepoInvitationById = "/repos/{owner}/{repo}/invitations/{invitation_id}";
+
     public const string Users = "/users";
     public const string UsersById = "/users/{username}";
     public const string UsersRepos = "/users/{username}/repos";

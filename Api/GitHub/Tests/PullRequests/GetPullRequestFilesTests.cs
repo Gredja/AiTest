@@ -67,12 +67,12 @@ public class GetPullRequestFilesTests : GitHubTestBase
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
             PullParams(_existingPullNumber));
 
-        foreach (var file in response.Data!)
+        response.Data!.ForEach(file =>
         {
             file.Sha.Should().MatchRegex(_shaHexPattern, "sha must be 40 hex chars");
             file.Filename.Should().NotBeNullOrWhiteSpace();
             file.Status.Should().BeOneOf(ValidFileStatuses);
-        }
+        });
     }
 
     [Test]
@@ -117,12 +117,12 @@ public class GetPullRequestFilesTests : GitHubTestBase
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
             PullParams(_existingPullNumber));
 
-        foreach (var file in response.Data!)
+        response.Data!.ForEach(file =>
         {
             file.Additions.Should().BeGreaterThanOrEqualTo(0);
             file.Deletions.Should().BeGreaterThanOrEqualTo(0);
             file.Changes.Should().BeGreaterThanOrEqualTo(0);
-        }
+        });
     }
 
     [Test]

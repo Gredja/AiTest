@@ -45,6 +45,9 @@ public static class GitHubParamHelper
     public static List<RequestDictionaryModel> UsernameParam(string username) =>
         [ParamHelper.UrlSegment("username", username)];
 
+    public static List<RequestDictionaryModel> InvitationIdParam(long id) =>
+        [ParamHelper.UrlSegment("invitation_id", id)];
+
     public static List<RequestDictionaryModel> StateParam(string state) =>
         [ParamHelper.Query("state", state)];
 }

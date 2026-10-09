@@ -82,10 +82,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
-        foreach (var post in response.Data!)
-        {
-            post.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(post => post.ShouldHaveValidFields());
     }
 
     [Test]

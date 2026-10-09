@@ -369,7 +369,7 @@ git checkout -b features/add-user-tests
 - Без мёртвых `using` — удалять сразу вместе с кодом; enforcement: `.editorconfig` → `IDE0005`/`IDE0007` (`var`)/`IDE0161` (file-scoped namespace) = warning, ловится `dotnet format --verify-no-changes`
 - Маленькие методы, одно действие, максимум ~30 строк
 - Конкретные исключения вместо `Exception`, без `null!`
-- LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`
+- LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)`, `foreach` — только для async/ленивых источников (Rules/code-style.md → Loops)
 - Строки: интерполяция `$""`, `StringBuilder` в циклах
 - SOLID: один класс — одна задача, зависимости через интерфейсы
 

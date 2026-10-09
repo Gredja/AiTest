@@ -48,10 +48,7 @@ public class GetUsersTests : GitHubTestBase
         var response = await Get<List<UserModelResponse>>(GitHubEndpoints.Users);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        foreach (var user in response.Data!)
-        {
-            user.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(user => user.ShouldHaveValidFields());
     }
 
     [Test]

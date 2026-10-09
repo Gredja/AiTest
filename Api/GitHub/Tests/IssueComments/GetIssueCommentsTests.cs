@@ -102,10 +102,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
-        foreach (var comment in response.Data!)
-        {
-            comment.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(comment => comment.ShouldHaveValidFields());
     }
 
     [Test]

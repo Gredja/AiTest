@@ -50,10 +50,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
             TestRepoParam());
 
-        foreach (var branch in response.Data!)
-        {
-            branch.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(branch => branch.ShouldHaveValidFields());
     }
 
     [Test]

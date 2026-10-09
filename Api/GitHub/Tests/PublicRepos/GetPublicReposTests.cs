@@ -46,10 +46,7 @@ public class GetPublicReposTests : GitHubTestBase
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories);
 
-        foreach (var repo in response.Data!)
-        {
-            repo.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(repo => repo.ShouldHaveValidFields());
     }
 
     [Test]

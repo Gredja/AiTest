@@ -32,7 +32,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - Все API-запросы async (`ExecuteAsync`, не `Execute`)
 - Нет модификатора = private. Нет magic numbers. Нет вложенных ternary. `nameof()` для exceptions
 - Error handling: конкретные исключения, без `null!`, без exceptions для flow control
-- LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`, `FirstOrDefault()` вместо `Where().FirstOrDefault()`
+- LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`, `FirstOrDefault()` вместо `Where().FirstOrDefault()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)` (async/ленивые источники → `foreach`, `Rules/code-style.md` → Loops)
 - Strings: интерполяция `$""`, `StringBuilder` в циклах, `IsNullOrEmpty()` вместо `.Length == 0`
 - Null safety: `?.` для safe navigation, `??` для fallback, `is not null` вместо `!= null`
 - SOLID: один класс — одна задача, зависимости через интерфейсы, расширяемость через наследование

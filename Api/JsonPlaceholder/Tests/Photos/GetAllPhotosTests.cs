@@ -65,10 +65,7 @@ public class GetAllPhotosTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.Photos);
 
-        foreach (var photo in response.Data!)
-        {
-            photo.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(photo => photo.ShouldHaveValidFields());
     }
 
     [Test]

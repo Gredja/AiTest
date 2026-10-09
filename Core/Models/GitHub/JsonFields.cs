@@ -22,6 +22,7 @@ public static class JsonFields
     public const string Protected = "protected";
     public const string PublicRepos = "public_repos";
     public const string RawUrl = "raw_url";
+    public const string RoleName = "role_name";
     public const string StargazersCount = "stargazers_count";
     public const string State = "state";
     public const string TagName = "tag_name";

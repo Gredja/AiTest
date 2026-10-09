@@ -34,6 +34,7 @@ public static class TestConfig
 
     public static string GitHubTestRepo => GitHub.GetProperty("TestRepo").GetString()!;
     public static string GitHubTestUsername => GitHub.GetProperty("TestUsername").GetString()!;
+    public static string GitHubCollaboratorUser => GitHub.GetProperty("CollaboratorUser").GetString()!;
 
     private static string ReadTokenFromEnvironment()
     {

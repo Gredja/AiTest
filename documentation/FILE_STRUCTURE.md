@@ -131,6 +131,7 @@ Core/
 │   │   └── JsonFields.cs
 │   ├── GitHub/
 │   │   ├── Requests/
+│   │   │   ├── CreateCollaboratorModelRequest.cs
 │   │   │   ├── CreateCommentModelRequest.cs
 │   │   │   ├── CreateGitBlobModelRequest.cs
 │   │   │   ├── CreateGitCommitModelRequest.cs
@@ -142,13 +143,16 @@ Core/
 │   │   │   └── UpdatePullRequestModelRequest.cs
 │   │   ├── Responses/
 │   │   │   ├── BranchModelResponse.cs
+│   │   │   ├── CollaboratorModelResponse.cs
 │   │   │   ├── CommentModelResponse.cs
 │   │   │   ├── CommitModelResponse.cs
 │   │   │   ├── ContributorModelResponse.cs
 │   │   │   ├── GitCommitModelResponse.cs
 │   │   │   ├── GitRefModelResponse.cs
 │   │   │   ├── GitShaModelResponse.cs
+│   │   │   ├── InvitationModelResponse.cs
 │   │   │   ├── IssueModelResponse.cs
+│   │   │   ├── PermissionModelResponse.cs
 │   │   │   ├── PullRequestCommitModelResponse.cs
 │   │   │   ├── PullRequestFileModelResponse.cs
 │   │   │   ├── PullRequestModelResponse.cs
@@ -159,6 +163,7 @@ Core/
 │   │   │   ├── TopicsModelResponse.cs
 │   │   │   └── UserModelResponse.cs
 │   │   ├── BranchCommit.cs
+│   │   ├── CollaboratorPermissions.cs
 │   │   ├── CommitAuthor.cs
 │   │   ├── CommitInfo.cs
 │   │   ├── GitCommitTree.cs
@@ -293,6 +298,7 @@ E2E/
 ├── GitHub/
 │   ├── GitHubE2ETestBase.cs
 │   └── Tests/
+│       ├── CollaboratorPermissionTests.cs
 │       ├── CommentChainTests.cs
 │       ├── IssueLifecycleTests.cs
 │       ├── PullRequestFlowTests.cs

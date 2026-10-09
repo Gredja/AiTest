@@ -599,6 +599,76 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 ---
 
+## 28. GET /repos/{owner}/{repo}/collaborators
+
+- Response status is 200 OK
+- Response body is a JSON array
+- Each object has: `login` (string), `id` (integer > 0), `type` (string: "User"), `permissions` (object: `admin`/`maintain`/`push`/`triage`/`pull` — booleans), `role_name` (string) (verified 2026-10-09)
+- Sandbox owner entry: `role_name` = "admin", all five permission flags true (verified 2026-10-09)
+- Pending (unaccepted) invitees are NOT listed — invitation acceptance is required first (verified 2026-10-09)
+- Content-Type is application/json
+
+**Negative:**
+- Non-existent repo → 404, body has `message` (string: "Not Found")
+
+---
+
+## 28a. GET /repos/{owner}/{repo}/collaborators/{username}/permission
+
+- Response status is 200 OK
+- Response body is a JSON object: `permission` (string: "admin" | "write" | "read" | "none"), `role_name` (string), `user` (object) (verified 2026-10-09)
+- Repo owner → `permission` = "admin", `role_name` = "admin" (verified 2026-10-09)
+- Existing user who is not a collaborator on a PUBLIC repo → `permission` = "read" (public base access; verified 2026-10-09)
+- User with a pending invitation → still `permission` = "read", `role_name` = "read" — invite grants nothing until accepted (verified 2026-10-09)
+- Content-Type is application/json
+
+**Negative:**
+- Non-existent user → 404, body has `message` (string: "Not Found") (verified 2026-10-09)
+- Non-existent repo → 404
+
+---
+
+## 28b. PUT /repos/{owner}/{repo}/collaborators/{username}
+
+- Request body: `permission` (string, required — "pull" | "push" | "admin" | "maintain" | "triage")
+- New invitation → Response status is **201 Created** (verified 2026-10-09)
+- Response body is the invitation object: `id` (integer > 0), `invitee` (object with `login`), `inviter` (object with `login`), `permissions` (string — "write" for push, unlike the boolean object of the same name in §28), `created_at` (datetime), `url`, `html_url` (verified 2026-10-09)
+- The invitee does not become a collaborator until the invitation is accepted; until then `GET /collaborators` is unchanged (verified 2026-10-09)
+- Content-Type is application/json
+
+**Negative (verified 2026-10-09):**
+- `permission: "pull"` on a PUBLIC repo → 422, body `message`: "Validation Failed", `errors`: "Cannot assign {username} permission of read" (read is already everyone's base access on a public repo)
+- Non-existent user → 404, body has `message` (string: "Not Found")
+- No auth → 401
+- Invalid token → 401
+
+---
+
+## 28c. GET /repos/{owner}/{repo}/invitations
+
+- Response status is 200 OK
+- Response body is a JSON array of invitation objects (§28b shape) plus `expired` (boolean) (verified 2026-10-09)
+- No pending invitations → 200 OK, empty array `[]` (verified 2026-10-09)
+- Content-Type is application/json
+
+**Negative:**
+- Non-existent repo → 404
+
+---
+
+## 28d. DELETE /repos/{owner}/{repo}/invitations/{invitation_id}
+
+- Response status is **204 No Content** — revokes the invitation (verified 2026-10-09)
+- Revoked invitation disappears from `GET /invitations`; collaborators list stays unchanged (verified 2026-10-09)
+- Idempotent for cleanup: re-revoke → 404 (tolerated by cleanup helpers)
+
+**Negative (verified 2026-10-09):**
+- Non-existent invitation id → 404, body has `message` (string: "Not Found"), `documentation_url` contains `/collaborators/invitations#delete-a-repository-invitation`
+- No auth → 401
+- Invalid token → 401
+
+---
+
 # READ OPERATIONS
 
 ---
@@ -662,6 +732,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 | POST /pulls | `title` (string), `head` (string), `base` (string) | `body` (string), `issue` (integer) | Missing required → 422; `head`=`base` → 422 |
 | PATCH /pulls/{n} | — | `title`, `body`, `state` ("open"\|"closed") | Invalid `state` → 422 |
 | PUT /pulls/{n}/merge | — | `commit_title`, `commit_message`, `merge_method` ("merge"\|"squash"\|"rebase") | Already merged → 405; conflicts → 405 |
+| PUT /collaborators/{username} | `permission` (string: "pull"\|"push"\|"admin"\|"maintain"\|"triage") | — | `pull` on public repo → 422; non-existent user → 404 |
 | DELETE /issues/{n} | — | — | — |
 | DELETE /issues/{n}/comments/{id} | — | — | — |
 | POST /git/refs | `ref` (string, e.g. "refs/heads/feature"), `sha` (string, 40 hex) | — | Missing required → 422; sha invalid → 422; ref exists → 422 |

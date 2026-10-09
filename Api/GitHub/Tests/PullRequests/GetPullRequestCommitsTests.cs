@@ -66,10 +66,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
-        foreach (var pullRequestCommit in response.Data!)
-        {
-            pullRequestCommit.Sha.Should().MatchRegex(_shaHexPattern, "sha must be 40 hex chars");
-        }
+        response.Data!.ForEach(pullRequestCommit => pullRequestCommit.Sha.Should().MatchRegex(_shaHexPattern, "sha must be 40 hex chars"));
 
         response.Data.Select(pullRequestCommit => pullRequestCommit.Sha).Should().OnlyHaveUniqueItems();
     }
@@ -82,10 +79,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
-        foreach (var pullRequestCommit in response.Data!)
-        {
-            pullRequestCommit.Commit.Message.Should().NotBeNullOrWhiteSpace();
-        }
+        response.Data!.ForEach(pullRequestCommit => pullRequestCommit.Commit.Message.Should().NotBeNullOrWhiteSpace());
     }
 
     [Test]
@@ -119,10 +113,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
-        foreach (var pullRequestCommit in response.Data!)
-        {
-            pullRequestCommit.HtmlUrl.Should().StartWith(GithubUrlPrefix);
-        }
+        response.Data!.ForEach(pullRequestCommit => pullRequestCommit.HtmlUrl.Should().StartWith(GithubUrlPrefix));
     }
 
     [Test]

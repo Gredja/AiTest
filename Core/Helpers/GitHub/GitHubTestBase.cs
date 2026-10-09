@@ -72,6 +72,19 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             $"close issue {issueNumber}");
     }
 
+    protected async Task CleanupInvitationAsync(long? invitationId)
+    {
+        if (!invitationId.HasValue)
+        {
+            return;
+        }
+
+        await RunCleanupAsync(
+            () => Delete<object>(GitHubEndpoints.RepoInvitationById,
+                [.. TestRepoParam(), .. GitHubParamHelper.InvitationIdParam(invitationId.Value)]),
+            $"revoke invitation {invitationId}");
+    }
+
     // Accepts any of the three forms callers hold ("refs/heads/x", "heads/x", "x") —
     // the endpoint wants exactly "heads/x"; a wrong form 404s and the NotFound
     // tolerance would silently leak the branch

@@ -58,10 +58,7 @@ public class GetPhotosByAlbumTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.PhotosByAlbum,
             AlbumIdQueryParam(TestAlbumId));
 
-        foreach (var photo in response.Data!)
-        {
-            photo.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(photo => photo.ShouldHaveValidFields());
     }
 
     [Test]

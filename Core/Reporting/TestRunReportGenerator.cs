@@ -136,12 +136,7 @@ public static class TestRunReportGenerator
         List<TestOutcome> outcomes,
         Dictionary<string, Queue<(string Fixture, string Category)>> categories)
     {
-        var rows = new List<TestRunRow>();
-
-        foreach (var outcome in outcomes)
-        {
-            rows.Add(CreateRow(outcome, categories));
-        }
+        var rows = outcomes.Select(outcome => CreateRow(outcome, categories)).ToList();
 
         return rows.OrderBy(row => row.Fixture).ThenBy(row => row.Test).ToList();
     }

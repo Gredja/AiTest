@@ -77,10 +77,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(TestUserId));
 
-        foreach (var todo in response.Data!)
-        {
-            todo.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(todo => todo.ShouldHaveValidFields());
     }
 
     [Test]

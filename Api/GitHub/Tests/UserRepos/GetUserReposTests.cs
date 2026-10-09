@@ -48,10 +48,7 @@ public class GetUserReposTests : GitHubTestBase
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
             UsernameParam(_testUsername));
 
-        foreach (var repo in response.Data!)
-        {
-            repo.ShouldHaveValidFields();
-        }
+        response.Data!.ForEach(repo => repo.ShouldHaveValidFields());
     }
 
     [Test]
