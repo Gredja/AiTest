@@ -54,6 +54,17 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ---
 
+## 1a. GET /repos (no such route)
+
+- The bare collection route **does not exist** — probe 2026-10-08: `GET /repos` → 404, body has `message` (string: "Not Found")
+- Functionality is covered by `GET /repositories` (§2) and `GET /user/repos` (§5)
+- Covered by a documented no-route test so `GitHubEndpoints.Repos` carries a verifying test instead of dead code
+
+**Negative:**
+- `GET /repos` → 404, body has `message` (string: "Not Found") (verified 2026-10-09)
+
+---
+
 ## 2. GET /repositories
 
 - Response status is 200 OK

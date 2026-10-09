@@ -86,21 +86,6 @@ internal static class AllureTestResultBuilder
 
     private static void AddOptionalLabels(List<Dictionary<string, string>> labels, TestResultParams resultParams)
     {
-        if (resultParams.Epic is not null)
-        {
-            labels.Add(new() { [NameKey] = "epic", [ValueKey] = resultParams.Epic });
-        }
-
-        if (resultParams.Feature is not null)
-        {
-            labels.Add(new() { [NameKey] = "feature", [ValueKey] = resultParams.Feature });
-        }
-
-        if (resultParams.Story is not null)
-        {
-            labels.Add(new() { [NameKey] = "story", [ValueKey] = resultParams.Story });
-        }
-
         if (resultParams.Categories is not null)
         {
             foreach (var category in resultParams.Categories)

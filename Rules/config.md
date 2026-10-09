@@ -10,3 +10,5 @@
 - `testsettings.json` — local config, gitignored; `testsettings.example.json` — tracked template, must stay in sync: when a key is added/renamed in `testsettings.json`, mirror it in the example in the same change (a clean clone builds and runs from the example alone)
 - GitHub token precedence (`TestConfig.GitHubToken`): `GitHub.Token` in testsettings.json → environment variable `GITHUB_PAT` (CI) → `GITHUB_PAT=` line in `.env` (dev)
 - Never put real tokens in `testsettings.example.json` or any tracked file
+- Required string keys throw a clear `InvalidOperationException` naming the missing key at first access (`TestConfig.GetRequiredString`) — never a bare `NullReferenceException` from `GetString()!`
+- `SkipSslValidation` disables TLS certificate validation for the GitHub client (external audit Minor 13) — kept deliberately for proxied dev runners; do not enable in CI without a documented reason

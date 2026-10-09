@@ -232,7 +232,7 @@ Gredja/
 │   │   ├── Http/                 # RequestHelper (Get/Post/Put/Patch/Delete) + JsonPlaceholder/GitHubRequestHelper
 │   │   ├── Params/               # Общие IdParam/UrlSegment/Query
 │   │   ├── Assertions/           # ShouldHaveStatusCode и др.
-│   │   ├── Data/                 # DataGenerator: RandomString/RandomInt для write-данных
+│   │   ├── Data/                 # DataGenerator: RandomString/RandomIntExclusive для write-данных
 │   │   ├── Waiting/              # WaitHelper: асинхронное ожидание условия (polling)
 │   │   └── GitHub/               # GitHubTestBase + GitHubParamHelper
 │   ├── Logging/                   # Лог действий (Serilog → %TEMP%\GredjaTestRun) + test-results-*.log

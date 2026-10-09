@@ -15,9 +15,9 @@ public static class TestConfig
     public static int MaxResponseTimeMs => _root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
     public static bool IsSslValidationSkipped => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
 
-    public static string JsonPlaceholderBaseUrl => JsonPlaceholder.GetProperty(BaseUrlKey).GetString()!;
+    public static string JsonPlaceholderBaseUrl => GetRequiredString(JsonPlaceholder, BaseUrlKey);
 
-    public static string GitHubBaseUrl => GitHub.GetProperty(BaseUrlKey).GetString()!;
+    public static string GitHubBaseUrl => GetRequiredString(GitHub, BaseUrlKey);
     public static string GitHubToken
     {
         get
@@ -32,9 +32,20 @@ public static class TestConfig
         }
     }
 
-    public static string GitHubTestRepo => GitHub.GetProperty("TestRepo").GetString()!;
-    public static string GitHubTestUsername => GitHub.GetProperty("TestUsername").GetString()!;
-    public static string GitHubCollaboratorUser => GitHub.GetProperty("CollaboratorUser").GetString()!;
+    public static string GitHubTestRepo => GetRequiredString(GitHub, "TestRepo");
+    public static string GitHubTestUsername => GetRequiredString(GitHub, "TestUsername");
+    public static string GitHubCollaboratorUser => GetRequiredString(GitHub, "CollaboratorUser");
+
+    private static string GetRequiredString(JsonElement section, string key)
+    {
+        if (!section.TryGetProperty(key, out var value))
+        {
+            throw new InvalidOperationException($"testsettings.json: missing required key '{key}'");
+        }
+
+        return value.GetString()
+            ?? throw new InvalidOperationException($"testsettings.json: key '{key}' must be a string");
+    }
 
     private static string ReadTokenFromEnvironment()
     {

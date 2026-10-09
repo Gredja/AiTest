@@ -75,7 +75,7 @@ Core/
 │   ├── Assertions/
 │   │   └── AssertHelper.cs        # ShouldHaveValidContract, ShouldHaveValidFields, etc.
 │   ├── Data/
-│   │   └── DataGenerator.cs       # RandomString/RandomInt for varying write payloads
+│   │   └── DataGenerator.cs       # RandomString/RandomIntExclusive for varying write payloads
 │   ├── GitHub/
 │   │   ├── GitHubParamHelper.cs
 │   │   └── GitHubTestBase.cs
@@ -259,6 +259,7 @@ Api/
 │       │   └── GetReleasesTests.cs
 │       ├── Repos/
 │       │   ├── GetRepositoryTests.cs
+│       │   ├── GetReposTests.cs
 │       │   └── SampleTests.cs
 │       ├── Tags/
 │       │   └── GetTagsTests.cs
@@ -269,7 +270,7 @@ Api/
 │       └── Users/
 │           ├── GetUserTests.cs
 │           └── GetUsersTests.cs
-└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
+└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md; duplicated per test assembly (SetUpFixture, audit P2.3)
 ```
 
 ## AllureAdapter/
@@ -304,7 +305,7 @@ E2E/
 │       ├── PullRequestFlowTests.cs
 │       ├── RateLimitDrainTests.cs
 │       └── RepositoryHealthTests.cs
-└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
+└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md; duplicated per test assembly (SetUpFixture, audit P2.3)
 ```
 
 ## Rules/

@@ -286,7 +286,7 @@ public async Task OneTimeTearDown()
 - **Negative tests:** `[Ignore]` with explanation for API known bugs — see `Rules/test-practices.md`
 - **Access modifiers:** narrowest possible — private > protected > public — see `Rules/code.md`
 - **Request/Response comparison:** Use `ShouldMatchRequest()` for POST/PATCH — see `Rules/assertions.md`
-- **Write payloads:** vary fields per run via `Core/Helpers/Data/DataGenerator` (`RandomString`, `RandomInt`); semantic negative-test data stays as named constants — see `Rules/test-practices.md` → "Test data for write operations"
+- **Write payloads:** vary fields per run via `Core/Helpers/Data/DataGenerator` (`RandomString`, `RandomIntExclusive`); semantic negative-test data stays as named constants — see `Rules/test-practices.md` → "Test data for write operations"
 
 ### Step 6: Safety Check
 

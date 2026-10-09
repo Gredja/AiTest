@@ -31,12 +31,12 @@ public static class AssertHelper
     {
         response.StatusCode.Should().Be(expected);
 
-        var content = response.Content;
+        var content = response.Content ?? string.Empty;
         content.Should().NotBeNullOrWhiteSpace("error response must carry a body");
 
-        var error = JsonSerializer.Deserialize<ErrorMessageModelResponse>(content!);
-        error.Should().NotBeNull("error body must be valid JSON");
-        error!.Message.Should().NotBeNullOrWhiteSpace("error message must be readable and explain the problem");
+        var error = JsonSerializer.Deserialize<ErrorMessageModelResponse>(content)
+            ?? throw new InvalidOperationException("error body must be valid JSON");
+        error.Message.Should().NotBeNullOrWhiteSpace("error message must be readable and explain the problem");
         error.Message.Should().Be(expectedMessage, "error message must match the documented Observable Behaviour value");
 
         return error;
