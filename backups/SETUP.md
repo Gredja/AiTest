@@ -391,7 +391,7 @@ git checkout -b features/add-user-tests
 - Setup/teardown: каждый запрос в `[OneTimeSetUp]` сразу проверяет статус (`ShouldHaveStatusCode`) — иначе падение токена даёт NRE посреди фикстуры; в `[OneTimeTearDown]`/`finally` cleanup статус НЕ проверяется — `try/catch` + warning (cleanup = warning, не failure, и не подмена исходного исключения); перед ЛЮБЫМ разыменованием `.Data` — status-assert (в том числе в телах тестов), `Max`/`First` в setup — только после `NotBeEmpty` с сообщением про Entry Criteria
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
-- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveError()` (статус + читаемый message + совпадение с документированным в OB), `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()`
+- Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveError()` (статус + читаемый message + совпадение с документированным в OB), `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()` — эти три собирают все нарушения в один failure (`AssertionScope`); прямые `x.Should()` в тестах — fail-fast
 - Категории: тип сервиса (JsonPlaceholder/GitHub/GitHubE2E) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно

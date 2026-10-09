@@ -4,6 +4,7 @@ using System.Text.Json;
 using Core.Attributes;
 using Core.Models.Generic;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using RestSharp;
 
 namespace Core.Helpers;
@@ -33,23 +34,30 @@ public static class AssertHelper
 
     public static void ShouldHaveValidContract<T>(this T entity) where T : class
     {
-        entity.Should().BeJsonSerializable();
-        entity.ShouldHaveValidFields();
+        // Soft: serializability + every field violation reported in one failure, not one per rerun
+        using (new AssertionScope())
+        {
+            entity.Should().BeJsonSerializable();
+            entity.ShouldHaveValidFields();
+        }
     }
 
     public static void ShouldHaveValidFields<T>(this T entity) where T : class
     {
         entity.Should().NotBeNull();
 
-        var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-
-        foreach (var property in properties)
+        using (new AssertionScope())
         {
-            var value = property.GetValue(entity);
+            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-            foreach (var attribute in property.GetCustomAttributes())
+            foreach (var property in properties)
             {
-                ValidateProperty(property.Name, value, attribute);
+                var value = property.GetValue(entity);
+
+                foreach (var attribute in property.GetCustomAttributes())
+                {
+                    ValidateProperty(property.Name, value, attribute);
+                }
             }
         }
     }
@@ -64,21 +72,29 @@ public static class AssertHelper
         var requestProperties = typeof(TRequest).GetProperties(BindingFlags.Public | BindingFlags.Instance);
         var responseProperties = typeof(TResponse).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-        foreach (var requestProperty in requestProperties)
+        using (new AssertionScope())
         {
-            var requestValue = requestProperty.GetValue(request);
-            if (requestValue is null)
+            foreach (var requestProperty in requestProperties)
             {
-                continue;
+                var requestValue = requestProperty.GetValue(request);
+                if (requestValue is null)
+                {
+                    continue;
+                }
+
+                var responseProperty = responseProperties.FirstOrDefault(property =>
+                    property.Name.Equals(requestProperty.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (responseProperty is null)
+                {
+                    responseProperty.Should().NotBeNull(
+                        $"response should have property '{requestProperty.Name}' matching request");
+                    continue;
+                }
+
+                var responseValue = responseProperty.GetValue(response);
+                CompareValues(responseValue, requestValue, responseProperty.Name);
             }
-
-            var responseProperty = responseProperties.FirstOrDefault(property =>
-                property.Name.Equals(requestProperty.Name, StringComparison.OrdinalIgnoreCase));
-
-            responseProperty.Should().NotBeNull($"response should have property '{requestProperty.Name}' matching request");
-
-            var responseValue = responseProperty!.GetValue(response);
-            CompareValues(responseValue, requestValue, responseProperty.Name);
         }
     }
 
