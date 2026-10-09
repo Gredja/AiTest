@@ -3,7 +3,6 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
@@ -15,7 +14,6 @@ namespace Api.GitHub.Topics;
 [Category("GitHub")]
 public class GetTopicsTests : GitHubTestBase
 {
-    private static readonly Regex _topicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
     private const string SpecialCharsSegment = "sp@ec!al";
 
     [Test]
@@ -52,7 +50,7 @@ public class GetTopicsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Names.Should().OnlyContain(
-            name => _topicNamePattern.IsMatch(name),
+            name => TopicNamePattern.IsMatch(name),
             "topic names must be lowercase alphanumeric with hyphens");
     }
 

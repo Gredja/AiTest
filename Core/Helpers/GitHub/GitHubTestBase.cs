@@ -4,6 +4,7 @@ using Core.Models.GitHub;
 using NUnit.Framework;
 using RestSharp;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Core.Helpers.GitHub;
 
@@ -15,6 +16,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected const string InvalidToken = "ghp_invalidtoken123";
     protected const string InvalidAuthorization = $"Bearer {InvalidToken}";
     protected const string SinceParamKey = "since";
+
+    protected static readonly Regex TopicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
 
     private const string ScratchFileName = "audit-scratch.txt";
     private const string FileMode644 = "100644";

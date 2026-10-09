@@ -9,6 +9,7 @@ public static class JsonFields
     public const string Body = "body";
     public const string ContentsUrl = "contents_url";
     public const string CreatedAt = "created_at";
+    public const string DefaultBranch = "default_branch";
     public const string Draft = "draft";
     public const string ForksCount = "forks_count";
     public const string FullName = "full_name";

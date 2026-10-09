@@ -35,6 +35,9 @@ public class RepositoryModelResponse
 
     public string Language { get; set; }
 
+    [JsonPropertyName(JsonFields.DefaultBranch)]
+    public string DefaultBranch { get; set; }
+
     [JsonPropertyName(JsonFields.StargazersCount)]
     public int StargazersCount { get; set; }
 

@@ -295,7 +295,8 @@ E2E/
 │   └── Tests/
 │       ├── CommentChainTests.cs
 │       ├── IssueLifecycleTests.cs
-│       └── PullRequestFlowTests.cs
+│       ├── PullRequestFlowTests.cs
+│       └── RepositoryHealthTests.cs
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ```
 
