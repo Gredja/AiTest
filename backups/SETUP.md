@@ -251,6 +251,7 @@ Gredja/
 │   │   └── Users/                # Тесты пользователей
 │   └── GitHub/Tests/             # Тесты GitHub API (Auth/, Issues/, Repos/ и др.)
 ├── E2E/                          # E2E тесты (цепочки связей)
+├── Ui/                           # UI-тесты (Playwright + Chromium, storageState)
 ├── AllureAdapter/                  # Allure-адаптер
 ├── Scripts/                      # Скрипты (allure-report.ps1, test-coverage.ps1)
 ├── Rules/                        # Правила кодирования
@@ -309,6 +310,7 @@ MiMoCode:
 | `/review-pr` | Ревью pull request |
 | `/api-test-gen` | Генерирует тесты для нового API endpoint (читает Observable Behaviour) |
 | `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations |
+| `/ui-test-gen` | Генерирует UI-тесты Playwright (page-objects, live-снапшоты локаторов) |
 | `/coverage` | Запускает тесты + считает code coverage (coverlet) + file coverage (endpoint→test) |
 | `/update-docs` | Обновляет .md файлы проекта после структурных изменений |
 | `/gredja-rules` | Показывает правила проекта |
@@ -371,6 +373,7 @@ git checkout -b features/add-user-tests
 - Конкретные исключения вместо `Exception`, без `null!`
 - LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)`, `foreach` — только для async/ленивых источников (Rules/code-style.md → Loops)
 - Regex: только когда предикат читается хуже; паттерн — именованный `static readonly` + словесный комментарий над ним; дубли в 2+ файлах → base/хелпер (Rules/code-style.md → Regex)
+- UI: role/label-based локаторы только после живого снапшота; write через UI → cleanup через API (Rules/ui-testing.md)
 - Строки: интерполяция `$""`, `StringBuilder` в циклах
 - SOLID: один класс — одна задача, зависимости через интерфейсы
 
@@ -393,7 +396,7 @@ git checkout -b features/add-user-tests
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveError()` (статус + читаемый message + совпадение с документированным в OB), `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()` — эти три собирают все нарушения в один failure (`AssertionScope`); прямые `x.Should()` в тестах — fail-fast
-- Категории: тип сервиса (JsonPlaceholder/GitHub/GitHubE2E) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
+- Категории: тип сервиса (JsonPlaceholder/GitHub/GitHubE2E/GitHubUi) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()` (внутри хелпера: скаляр/строка → `Be`, коллекции и вложенные объекты → структурное сравнение)

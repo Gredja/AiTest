@@ -310,6 +310,25 @@ E2E/
 └── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md; duplicated per test assembly (SetUpFixture, audit P2.3)
 ```
 
+## Ui/
+
+```
+Ui/
+├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
+├── AssemblyInfo.cs               # [assembly: Parallelizable(Fixtures)] + LevelOfParallelism(1)
+├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
+├── Helper/
+│   ├── GitHubUiTestBase.cs       # browser fixture: Chromium → context(storageState) → Page; artifacts on failure
+│   ├── BrowserHelpers/
+│   │   └── BrowserPw.cs          # page-object wrapper: pages exposed as properties
+│   └── UiHelper/
+│       ├── CommonPages/          # cross-area pages (header, nav)
+│       ├── BaseHelpers/          # shared page base classes
+│       └── GitHubStream/         # page-objects: {Area}/{Area}Page.cs
+├── Data/                         # static test files (upload payloads)
+└── Test/GitHubStream/            # tests: {Area}/{Area}{Flow}Tests.cs
+```
+
 ## Rules/
 
 ```

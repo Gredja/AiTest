@@ -49,3 +49,6 @@ black-white-cat/
 
 ## Playwright CLI (local)
 .playwright-cli/
+
+## Playwright storage state (manual login bootstrap)
+.auth/

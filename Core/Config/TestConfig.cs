@@ -11,6 +11,7 @@ public static class TestConfig
 
     private static JsonElement JsonPlaceholder => _root.RootElement.GetProperty("JsonPlaceholder");
     private static JsonElement GitHub => _root.RootElement.GetProperty("GitHub");
+    private static JsonElement Ui => _root.RootElement.GetProperty("Ui");
 
     public static int MaxResponseTimeMs => _root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
     public static bool IsSslValidationSkipped => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
@@ -36,6 +37,10 @@ public static class TestConfig
     public static string GitHubTestUsername => GetRequiredString(GitHub, "TestUsername");
     public static string GitHubCollaboratorUser => GetRequiredString(GitHub, "CollaboratorUser");
 
+    public static string UiBaseUrl => GetRequiredString(Ui, BaseUrlKey);
+    public static bool UiHeadless => GetRequiredBool(Ui, "Headless");
+    public static string UiStatePath => GetRequiredString(Ui, "StatePath");
+
     private static string GetRequiredString(JsonElement section, string key)
     {
         if (!section.TryGetProperty(key, out var value))
@@ -45,6 +50,21 @@ public static class TestConfig
 
         return value.GetString()
             ?? throw new InvalidOperationException($"testsettings.json: key '{key}' must be a string");
+    }
+
+    private static bool GetRequiredBool(JsonElement section, string key)
+    {
+        if (!section.TryGetProperty(key, out var value))
+        {
+            throw new InvalidOperationException($"testsettings.json: missing required key '{key}'");
+        }
+
+        if (value.ValueKind is not JsonValueKind.True and not JsonValueKind.False)
+        {
+            throw new InvalidOperationException($"testsettings.json: key '{key}' must be a boolean");
+        }
+
+        return value.GetBoolean();
     }
 
     private static string ReadTokenFromEnvironment()

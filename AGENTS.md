@@ -6,6 +6,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 ## Project Structure
 
 - `Api/` — NUnit API-тесты (JsonPlaceholder, GitHub), включая одиночные write-тесты
+- `Ui/` — NUnit UI-тесты (Playwright .NET + Chromium): page-objects в `Ui/Helper/UiHelper/`, тесты в `Ui/Test/`, авторизация через storageState (bootstrap = [Explicit]-тест), write через UI → cleanup через API; правила — `Rules/ui-testing.md`
 - `E2E/` — NUnit E2E тесты: ТОЛЬКО сценарные цепочки (create → verify → mutate → cleanup)
 - `Core/Models/` — модели ответов/запросов
 - `Core/Helpers/` — общие хелперы по подпапкам: `Http/` (request-инфраструктура: `RequestHelper`, `JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — вариативные write-данные), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`); нужны E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`

@@ -16,5 +16,10 @@
     "TestRepo": "Gredja/AiTest",
     "TestUsername": "Gredja",
     "CollaboratorUser": "gredjapl"
+  },
+  "Ui": {
+    "BaseUrl": "https://github.com",
+    "Headless": true,
+    "StatePath": ".auth/github-ui-state.json"
   }
 }
