@@ -5,10 +5,16 @@ namespace Core.Logging;
 internal static class TestSourceCategoryReader
 {
     private static readonly string[] _serviceCategories = ["JsonPlaceholder", "GitHub", "GitHubE2E"];
+
+    // Matches `public [modifiers] class Name` declarations — captures the class name
     private static readonly Regex _classRegex = new(
         @"public\s+(?:sealed\s+|abstract\s+|static\s+|partial\s+)*class\s+(\w+)", RegexOptions.Compiled);
+
+    // Matches `public async Task[<T>] MethodName` signatures — captures the method name
     private static readonly Regex _methodRegex = new(
         @"public\s+async\s+Task(?:<[^>]+>)?\s+(\w+)", RegexOptions.Compiled);
+
+    // Matches [Category("Value")] attributes — captures the category value
     private static readonly Regex _categoryRegex = new(@"Category\(""(\w+)""\)", RegexOptions.Compiled);
 
     internal static Dictionary<string, Queue<(string Fixture, string Category)>> Read(string root)

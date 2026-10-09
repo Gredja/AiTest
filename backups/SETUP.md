@@ -370,6 +370,7 @@ git checkout -b features/add-user-tests
 - Маленькие методы, одно действие, максимум ~30 строк
 - Конкретные исключения вместо `Exception`, без `null!`
 - LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)`, `foreach` — только для async/ленивых источников (Rules/code-style.md → Loops)
+- Regex: только когда предикат читается хуже; паттерн — именованный `static readonly` + словесный комментарий над ним; дубли в 2+ файлах → base/хелпер (Rules/code-style.md → Regex)
 - Строки: интерполяция `$""`, `StringBuilder` в циклах
 - SOLID: один класс — одна задача, зависимости через интерфейсы
 

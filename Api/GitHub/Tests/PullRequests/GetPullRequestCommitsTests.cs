@@ -3,7 +3,6 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
@@ -15,7 +14,6 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class GetPullRequestCommitsTests : GitHubTestBase
 {
-    private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
     private const string GithubUrlPrefix = "https://github.com/";
 
     private int _existingPullNumber;
@@ -66,7 +64,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
-        response.Data!.ForEach(pullRequestCommit => pullRequestCommit.Sha.Should().MatchRegex(_shaHexPattern, "sha must be 40 hex chars"));
+        response.Data!.ForEach(pullRequestCommit => pullRequestCommit.Sha.ShouldHaveValidSha());
 
         response.Data.Select(pullRequestCommit => pullRequestCommit.Sha).Should().OnlyHaveUniqueItems();
     }

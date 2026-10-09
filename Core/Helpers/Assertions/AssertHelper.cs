@@ -13,6 +13,16 @@ public static class AssertHelper
 {
     public const string JsonContentType = "application/json";
 
+    private const int GitShaLength = 40;
+
+    // Git sha: exactly 40 lowercase hex chars (sha-1), e.g. "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b"
+    public static bool IsGitSha(this string sha) =>
+        sha is { Length: GitShaLength }
+        && sha.All(character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
+
+    public static void ShouldHaveValidSha(this string sha) =>
+        IsGitSha(sha).Should().BeTrue($"'{sha}' must be a {GitShaLength}-char lowercase hex git sha");
+
     public static void ShouldHaveStatusCode(this RestResponse response, HttpStatusCode expected) =>
         response.StatusCode.Should().Be(expected);
 

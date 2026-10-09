@@ -3,7 +3,6 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
@@ -15,7 +14,6 @@ namespace Api.GitHub.Commits;
 [Category("GitHub")]
 public class GetCommitsTests : GitHubTestBase
 {
-    private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
     private const int SingleItemPageSize = 1;
     private const string InvalidPerPage = "abc";
     private const string SpecialCharsSegment = "sp@ec!al";
@@ -56,7 +54,7 @@ public class GetCommitsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(
-            commit => _shaHexPattern.IsMatch(commit.Sha) && commit.Commit.Message.Length > 0,
+            commit => commit.Sha.IsGitSha() && commit.Commit.Message.Length > 0,
             "every commit needs a 40-hex sha and a non-empty message");
     }
 

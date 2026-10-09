@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
@@ -16,7 +15,6 @@ namespace Api.GitHub.Branches;
 public class GetBranchesTests : GitHubTestBase
 {
     private const int SingleItemPageSize = 1;
-    private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
 
     [Test]
     [Category("HealthCheck")]
@@ -122,7 +120,7 @@ public class GetBranchesTests : GitHubTestBase
             TestRepoParam());
 
         response.Data.Should().OnlyContain(branch =>
-            _shaHexPattern.IsMatch(branch.Commit.Sha));
+            branch.Commit.Sha.IsGitSha());
     }
 
     [Test]

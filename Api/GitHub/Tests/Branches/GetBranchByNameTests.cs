@@ -3,7 +3,6 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
@@ -15,7 +14,6 @@ namespace Api.GitHub.Branches;
 [Category("GitHub")]
 public class GetBranchByNameTests : GitHubTestBase
 {
-    private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
 
     private const int MaxBranchesPage = 100;
     private string _slashBranchName = string.Empty;
@@ -77,7 +75,7 @@ public class GetBranchByNameTests : GitHubTestBase
         var response = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
 
-        response.Data!.Commit.Sha.Should().MatchRegex(_shaHexPattern, "commit.sha must be 40 lowercase hex chars");
+        response.Data!.Commit.Sha.ShouldHaveValidSha();
     }
 
     [Test]

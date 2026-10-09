@@ -3,7 +3,6 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
@@ -15,7 +14,6 @@ namespace Api.GitHub.Tags;
 [Category("GitHub")]
 public class GetTagsTests : GitHubTestBase
 {
-    private static readonly Regex _shaHexPattern = new("^[0-9a-f]{40}$", RegexOptions.Compiled);
     private const string SpecialCharsSegment = "sp@ec!al";
 
     [Test]
@@ -56,7 +54,7 @@ public class GetTagsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(
-            tag => tag.Name.Length > 0 && _shaHexPattern.IsMatch(tag.Commit.Sha),
+            tag => tag.Name.Length > 0 && tag.Commit.Sha.IsGitSha(),
             "every tag needs a non-empty name and a 40-hex commit.sha");
     }
 

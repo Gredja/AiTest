@@ -17,7 +17,6 @@ public class CreateRefTests : GitHubTestBase
 {
     private const string BranchPrefix = $"{RefsHeadsPrefix}audit-";
     private const string MissingSha = "0000000000000000000000000000000000000000";
-    private const int ShaHexLength = 40;
 
     private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
@@ -76,7 +75,7 @@ public class CreateRefTests : GitHubTestBase
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data!.Object.Type.Should().Be("commit");
-        created.Data.Object.Sha.Should().HaveLength(ShaHexLength);
+        created.Data!.Object.Sha.ShouldHaveValidSha();
     }
 
     [Test]

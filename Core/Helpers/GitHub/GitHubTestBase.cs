@@ -17,6 +17,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected const string InvalidAuthorization = $"Bearer {InvalidToken}";
     protected const string SinceParamKey = "since";
 
+    // GitHub topic naming: lowercase letters, digits and hyphens (OB §14), e.g. "api-v2"
     protected static readonly Regex TopicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
 
     private const string ScratchFileName = "audit-scratch.txt";
