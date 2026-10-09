@@ -300,7 +300,10 @@ E2E/
 │   └── Tests/
 │       ├── CollaboratorPermissionTests.cs
 │       ├── CommentChainTests.cs
+│       ├── FailedWriteTests.cs
+│       ├── GitRefLifecycleTests.cs
 │       ├── IssueLifecycleTests.cs
+│       ├── IssueStateMachineTests.cs
 │       ├── PullRequestFlowTests.cs
 │       ├── RateLimitDrainTests.cs
 │       └── RepositoryHealthTests.cs

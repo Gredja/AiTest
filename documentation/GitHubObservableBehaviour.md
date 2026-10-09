@@ -562,7 +562,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Invalid token → 401, message `Bad credentials`
 - Non-existent PR → 404
 - Non-existent repo → 404
-- Already merged PR → 200 with `message` "Pull Request successfully merged" (idempotent — earlier doc claim of 405 not reproduced; closed-unmerged PR also merges with 200)
+- Already merged PR → 200 with `message` "Pull Request successfully merged" once the merge state has settled (probe ×3, 2026-10-09); an **immediate** second PUT may race the settling state and return **405** (observed 2026-10-09 — poll until settled instead of asserting instant idempotency)
 - Ceiling: all other modes collapse to 200 — 4 < 5 floor documented per ceiling rule
 
 ---
@@ -745,7 +745,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 | PATCH /issues/{n} | — | `title`, `body`, `state` ("open"\|"closed"), `labels` | Invalid `state` → 422 |
 | POST /pulls | `title` (string), `head` (string), `base` (string) | `body` (string), `issue` (integer) | Missing required → 422; `head`=`base` → 422 |
 | PATCH /pulls/{n} | — | `title`, `body`, `state` ("open"\|"closed") | Invalid `state` → 422 |
-| PUT /pulls/{n}/merge | — | `commit_title`, `commit_message`, `merge_method` ("merge"\|"squash"\|"rebase") | Already merged → 405; conflicts → 405 |
+| PUT /pulls/{n}/merge | — | `commit_title`, `commit_message`, `merge_method` ("merge"\|"squash"\|"rebase") | Immediate re-merge → 405 (settles to 200); conflicts → 405 |
 | PUT /collaborators/{username} | `permission` (string: "pull"\|"push"\|"admin"\|"maintain"\|"triage") | — | `pull` on public repo → 422; non-existent user → 404 |
 | DELETE /issues/{n} | — | — | — |
 | DELETE /issues/{n}/comments/{id} | — | — | — |

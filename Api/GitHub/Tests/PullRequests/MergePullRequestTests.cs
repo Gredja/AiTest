@@ -42,7 +42,7 @@ public class MergePullRequestTests : GitHubTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("23.2 Re-merge returns 200 (idempotent, documented)")]
+    [Description("23.2 Re-merge returns 200 (idempotent once the merge state settles)")]
     public async Task MergePullRequest_Twice_Returns200Again()
     {
         var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
@@ -56,11 +56,18 @@ public class MergePullRequestTests : GitHubTestBase
             PullParams(pullNumber));
         first.ShouldHaveStatusCode(HttpStatusCode.OK);
 
-        var second = await Put<Dictionary<string, object>, object>(
-            GitHubEndpoints.RepoPullRequestMerge,
-            new Dictionary<string, object>(),
-            PullParams(pullNumber));
-        second.ShouldHaveStatusCode(HttpStatusCode.OK);
+        // An immediate second PUT may race the settling merge state (405 observed 2026-10-09) —
+        // idempotency is only guaranteed once the merge has settled, so poll
+        var second = await WaitHelper.WaitUntilAsync(
+            () => Put<Dictionary<string, object>, object>(
+                GitHubEndpoints.RepoPullRequestMerge,
+                new Dictionary<string, object>(),
+                PullParams(pullNumber)),
+            response => response.StatusCode == HttpStatusCode.OK);
+        second.IsSuccess.Should().BeTrue(
+            $"re-merge must be idempotent 200 once the merge settles;" +
+            $" elapsed {second.Elapsed}, attempts {second.Attempts}," +
+            $" last status {second.LastValue?.StatusCode}");
     }
 
     [Test]
