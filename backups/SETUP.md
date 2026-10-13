@@ -230,9 +230,11 @@ Gredja/
 ├── README.md                     # Обзор проекта (GitHub рендерит как главную страницу)
 ├── AGENTS.md                     # Описание проекта для ИИ-агента
 ├── Core/
-│   ├── Config/                   # URL и пути к API endpoint'ам
+│   ├── Config/                   # URL, пути endpoint'ов, конфиг, тексты ошибок
 │   │   ├── JsonPlaceholderEndpoints.cs
-│   │   └── GitHubEndpoints.cs
+│   │   ├── GitHubEndpoints.cs
+│   │   ├── GitHubErrors.cs
+│   │   └── TestConfig.cs         # читает testsettings.json (+ env fallback)
 │   ├── Helpers/                  # Тестовая инфраструктура (всегда здесь, даже для E2E)
 │   │   ├── Http/                 # RequestHelper (Get/Post/Put/Patch/Delete) + JsonPlaceholder/GitHubRequestHelper
 │   │   ├── Params/               # Общие IdParam/UrlSegment/Query
@@ -258,7 +260,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report.ps1, test-coverage.ps1)
+├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, normalize-eol)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── metrics.md                    # Метрики AI-использования (tests/time/cost)
@@ -311,9 +313,11 @@ MiMoCode:
 |---------|-----------|
 | `/test` | Запускает все тесты + пишет TestRunReport-*.md в `TestResults/` |
 | `/test-report` | Запускает тесты + генерирует Allure-отчёт |
-| `/commit` | Форматирование + ревью + тесты + синк бэкапов + коммит + пуш |
+| `/commit` | Форматирование + HealthCheck + коммит + пуш |
+| `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
+| `/audit` | Аудит кодовой базы по Rules + фиксы одобренных находок |
 | `/api-test-gen` | Генерирует тесты для нового API endpoint (читает Observable Behaviour) |
 | `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations |
 | `/ui-test-gen` | Генерирует UI-тесты Playwright (page-objects, live-снапшоты локаторов) |

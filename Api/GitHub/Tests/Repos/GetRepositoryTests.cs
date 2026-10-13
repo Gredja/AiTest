@@ -51,6 +51,7 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
         response.Data!.Name.Should().Be(repo);
         response.Data.Owner.Login.Should().Be(owner);
@@ -111,6 +112,7 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Name.Should().Be(repo);
         response.Data.Owner.Login.Should().Be(owner);
     }
@@ -125,6 +127,8 @@ public class GetRepositoryTests : GitHubTestBase
         var response2 = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             TestRepoParam());
 
+        response1.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response2.ShouldHaveStatusCode(HttpStatusCode.OK);
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Name.Should().Be(response2.Data!.Name);
     }

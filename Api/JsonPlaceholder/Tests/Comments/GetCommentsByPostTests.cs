@@ -47,6 +47,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
 
@@ -58,6 +59,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(comment => comment.ShouldHaveValidFields());
     }
 
@@ -69,6 +71,7 @@ public class GetCommentsByPostTests : JsonPlaceholderRequestHelper
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.CommentsByPost,
             PostIdQueryParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Should().OnlyContain(comment => comment.PostId == TestPostId);
     }
 

@@ -33,26 +33,9 @@ public class FailedWriteTests : GitHubE2ETestBase
     [Description("E2E-9 Failed write leaves no side effects: PR without commits → 422 → no PR leaked")]
     public async Task FailedWrite_NoCommitsPr_LeavesNoSideEffects()
     {
-        var branchName = $"audit-e2e-neg-{DataGenerator.RandomString(8)}";
-        var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
-            GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{branchName}", Sha = _baseSha },
-            TestRepoParam());
-        if (branch.Data is not null)
-        {
-            _createdBranches.Add(branchName);
-        }
-
-        branch.ShouldHaveStatusCode(HttpStatusCode.Created);
-
-        var branchVisible = await WaitHelper.WaitUntilAsync(
-            () => Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, TestRepoParam()),
-            response => response.StatusCode == HttpStatusCode.OK
-                && response.Data!.Any(item => item.Name == branchName));
-        branchVisible.IsSuccess.Should().BeTrue(
-            $"created branch must appear in the branches list;" +
-            $" elapsed {branchVisible.Elapsed}, attempts {branchVisible.Attempts}," +
-            $" last status {branchVisible.LastValue?.StatusCode}");
+        var branchName = $"audit-e2e-neg-{DataGenerator.RandomString(TitleRandomLength)}";
+        await CreateBranchTrackedAsync(branchName, _baseSha, _createdBranches);
+        await WaitUntilBranchVisibleAsync(branchName, present: true);
 
         var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,

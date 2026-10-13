@@ -63,6 +63,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
             IdParam(TestAlbumId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -74,6 +75,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
             IdParam(TestAlbumId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(TestAlbumId);
     }
 
@@ -152,6 +154,8 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
         var response2 = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
             IdParam(TestAlbumId));
 
+        response1.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response2.ShouldHaveStatusCode(HttpStatusCode.OK);
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
     }

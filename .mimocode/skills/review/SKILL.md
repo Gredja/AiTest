@@ -30,15 +30,23 @@ Working dir: {working_dir}
 1. Read all Rules/*.md files for project rules context.
 
 2. Read ALL .cs files (excluding obj/ directories):
-   - Core/Attributes/*.cs
+   - Core/Attributes/**/*.cs
    - Core/Config/*.cs
-   - Core/Helpers/*.cs
+   - Core/Helpers/**/*.cs
    - Core/Models/**/*.cs
-   - Api/JsonPlaceholder/Tests/*.cs
-   - Api/AllureGlobalSetup.cs
-   - AllureAdapter/Helpers/*.cs
-   - Ui/Tests/*.cs
-   - Ui/AllureGlobalSetup.cs
+   - Core/Logging/*.cs
+   - Core/Reporting/*.cs
+   - Api/JsonPlaceholder/Tests/**/*.cs
+   - Api/JsonPlaceholder/Helpers/*.cs
+   - Api/GitHub/Tests/**/*.cs
+   - Api/GitHub/Helpers/*.cs (if present)
+   - Api/TestReportSetup.cs
+   - E2E/GitHub/Tests/**/*.cs
+   - E2E/TestReportSetup.cs
+   - AllureAdapter/**/*.cs
+   - Ui/Helper/**/*.cs
+   - Ui/Test/**/*.cs
+   - Ui/TestReportSetup.cs
 
 3. Review EACH file against ALL project rules:
 

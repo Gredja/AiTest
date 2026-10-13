@@ -16,6 +16,7 @@ public class DeleteRefTests : GitHubTestBase
 {
     private const string RefPathPrefix = $"{HeadsPrefix}audit-";
     private const string NonExistentRefPath = $"{HeadsPrefix}nonexistent-branch-audit-12345";
+    private const int RandomNameLength = 8;
 
     private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
@@ -34,7 +35,7 @@ public class DeleteRefTests : GitHubTestBase
     [Description("26.1 DELETE /git/refs/{ref} removes a branch and returns 204")]
     public async Task DeleteRef_ReturnsNoContent()
     {
-        var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(8)}";
+        var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{refPath[HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
@@ -52,7 +53,7 @@ public class DeleteRefTests : GitHubTestBase
     [Description("26.2 Second delete of the same ref returns 422 (ref is gone)")]
     public async Task DeleteRef_Twice_Returns422()
     {
-        var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(8)}";
+        var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{refPath[HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());

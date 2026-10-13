@@ -15,7 +15,6 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected const int SmallPageSize = 2;
     protected const string InvalidToken = "ghp_invalidtoken123";
     protected const string InvalidAuthorization = $"Bearer {InvalidToken}";
-    protected const string SinceParamKey = "since";
 
     // GitHub topic naming: lowercase letters, digits and hyphens (OB §14), e.g. "api-v2"
     protected static readonly Regex TopicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
@@ -23,6 +22,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     private const string ScratchFileName = "audit-scratch.txt";
     private const string FileMode644 = "100644";
     private const string BlobType = "blob";
+    private const string ScratchBranchPrefix = "audit-";
+    private const int RandomNameLength = 8;
     protected const string RefsHeadsPrefix = "refs/heads/";
     protected const string HeadsPrefix = "heads/";
 
@@ -121,14 +122,52 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     // the new file guarantees both divergence and ≥1 changed file.
     protected async Task<(int Number, string HeadBranch, string BaseBranch)> CreateScratchPullRequestAsync(string title)
     {
-        var headBranch = $"audit-{DataGenerator.RandomString(8)}";
-        var baseBranch = $"audit-base-{DataGenerator.RandomString(8)}";
+        var headBranch = $"{ScratchBranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
+        var baseBranch = $"{ScratchBranchPrefix}base-{DataGenerator.RandomString(RandomNameLength)}";
 
+        var mainSha = await ResolveDefaultBranchShaAsync();
+        var commitSha = await CreateScratchCommitAsync(headBranch, mainSha);
+
+        // A merge must never target main (merged scratch data would change the repo — the
+        // "create then remove, never keep test records" rule): every PR gets its own base
+        // branch, deleted together with the head. Orphan blob/tree/commit objects are
+        // unreachable and harmless; branch and PR are cleaned on any partial failure.
+        PullRequestModelResponse? createdPull = null;
+        try
+        {
+            await CreateScratchRefsAsync(headBranch, baseBranch, commitSha, mainSha);
+            createdPull = await CreatePullRequestForScratchAsync(title, headBranch, baseBranch);
+
+            return (createdPull.Number, headBranch, baseBranch);
+        }
+        catch (Exception)
+        {
+            if (createdPull is not null)
+            {
+                await RunCleanupAsync(
+                    () => Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
+                        GitHubEndpoints.RepoPullRequestById,
+                        new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+                        PullParams(createdPull.Number)),
+                    $"close scratch pull request {createdPull.Number}");
+            }
+
+            await CleanupGitRefAsync(headBranch);
+            await CleanupGitRefAsync(baseBranch);
+            throw;
+        }
+    }
+
+    private async Task<string> ResolveDefaultBranchShaAsync()
+    {
         var mainBranch = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. GitHubParamHelper.BranchNameParam(GitHubEndpoints.DefaultBranch)]);
         mainBranch.ShouldHaveStatusCode(HttpStatusCode.OK);
-        var mainSha = mainBranch.Data!.Commit.Sha;
+        return mainBranch.Data!.Commit.Sha;
+    }
 
+    private async Task<string> CreateScratchCommitAsync(string headBranch, string mainSha)
+    {
         var mainCommit = await Get<GitCommitModelResponse>(GitHubEndpoints.RepoGitCommitsById,
             [.. TestRepoParam(), .. GitHubParamHelper.GitCommitParam(mainSha)]);
         mainCommit.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -168,60 +207,39 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             },
             TestRepoParam());
         commit.ShouldHaveStatusCode(HttpStatusCode.Created);
+        return commit.Data!.Sha;
+    }
 
-        // A merge must never target main (merged scratch data would change the repo — the
-        // "create then remove, never keep test records" rule): every PR gets its own base
-        // branch, deleted together with the head. Orphan blob/tree/commit objects are
-        // unreachable and harmless; branch and PR are cleaned on any partial failure.
-        PullRequestModelResponse? createdPull = null;
-        try
-        {
-            var head = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
-                GitHubEndpoints.RepoGitRefs,
-                new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{headBranch}", Sha = commit.Data!.Sha },
-                TestRepoParam());
-            head.ShouldHaveStatusCode(HttpStatusCode.Created);
+    private async Task CreateScratchRefsAsync(string headBranch, string baseBranch, string commitSha, string mainSha)
+    {
+        var head = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+            GitHubEndpoints.RepoGitRefs,
+            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{headBranch}", Sha = commitSha },
+            TestRepoParam());
+        head.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-            var baseRef = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
-                GitHubEndpoints.RepoGitRefs,
-                new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{baseBranch}", Sha = mainSha },
-                TestRepoParam());
-            baseRef.ShouldHaveStatusCode(HttpStatusCode.Created);
+        var baseRef = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
+            GitHubEndpoints.RepoGitRefs,
+            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{baseBranch}", Sha = mainSha },
+            TestRepoParam());
+        baseRef.ShouldHaveStatusCode(HttpStatusCode.Created);
+    }
 
-            var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
-                GitHubEndpoints.RepoPullRequests,
-                new CreatePullRequestModelRequest
-                {
-                    Title = title,
-                    Head = headBranch,
-                    Base = baseBranch
-                },
-                TestRepoParam());
-            createdPull = pullRequest.Data;
-            pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
-            if (createdPull is null)
+    private async Task<PullRequestModelResponse> CreatePullRequestForScratchAsync(string title, string headBranch, string baseBranch)
+    {
+        var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequests,
+            new CreatePullRequestModelRequest
             {
-                throw new InvalidOperationException("PR create returned 201 without a body");
-            }
+                Title = title,
+                Head = headBranch,
+                Base = baseBranch
+            },
+            TestRepoParam());
+        pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-            return (createdPull.Number, headBranch, baseBranch);
-        }
-        catch
-        {
-            if (createdPull is not null)
-            {
-                await RunCleanupAsync(
-                    () => Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
-                        GitHubEndpoints.RepoPullRequestById,
-                        new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
-                        PullParams(createdPull.Number)),
-                    $"close scratch pull request {createdPull.Number}");
-            }
-
-            await CleanupGitRefAsync(headBranch);
-            await CleanupGitRefAsync(baseBranch);
-            throw;
-        }
+        return pullRequest.Data
+            ?? throw new InvalidOperationException("PR create returned 201 without a body");
     }
 
     protected async Task CleanupPullRequestAsync(int? pullNumber, string headBranch, string baseBranch)

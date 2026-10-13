@@ -4,7 +4,7 @@
 **Surface under test:** GitHub web UI (https://github.com) — sandbox repo `Gredja/AiTest`
 **Date:** 2026-10-09
 **Scope:** UI pages and flows (Playwright, Chromium)
-**Test Plan:** [.mimocode/plans/ui-playwright-github.md](../.mimocode/plans/ui-playwright-github.md)
+**Test plan history:** retired (lifecycle — plans deleted after implementation); durable status lives in this document and `Rules/ui-testing.md`
 
 > Sections are added **per page** when locators are verified against a **live snapshot**
 > (workflow: `.mimocode/skills/ui-test-gen` → Step 1.2 / Step 5).
@@ -22,7 +22,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 4. **Puts actions in page-objects** — tests orchestrate and assert; they never contain raw locators
 5. **Cross-verifies writes via API** — UI creates, Core API reads back as the oracle (Core `RequestHelper`)
 6. **Cleans via API in teardown** — register-then-assert, `[OneTimeTearDown]` last member, warning-only cleanup
-7. **Never logs in/out inside tests** — storageState only; login = `[Explicit]` bootstrap
+7. **Never logs in/out inside feature tests** — they load storageState; the dedicated Smoke test `LoginSignInTests` signs in anonymously and saves the state file
 8. **Never invents text** — button/label texts come from snapshots; a missing text = re-snapshot, not guess
 
 ---

@@ -66,6 +66,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(TestUserId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
 
@@ -77,6 +78,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(TestUserId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(todo => todo.ShouldHaveValidFields());
     }
 
@@ -88,6 +90,7 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(TestUserId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Should().OnlyContain(todo => todo.UserId == TestUserId);
     }
 
@@ -119,6 +122,8 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
         var response5 = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.TodosByUser,
             UserIdParam(OtherUserId));
 
+        response1.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response5.ShouldHaveStatusCode(HttpStatusCode.OK);
         var ids1 = response1.Data!.Select(todo => todo.Id);
         var ids5 = response5.Data!.Select(todo => todo.Id);
         ids1.Should().NotBeEquivalentTo(ids5);

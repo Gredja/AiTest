@@ -17,6 +17,7 @@ public class CreateRefTests : GitHubTestBase
 {
     private const string BranchPrefix = $"{RefsHeadsPrefix}audit-";
     private const string MissingSha = "0000000000000000000000000000000000000000";
+    private const int RandomNameLength = 8;
 
     private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
@@ -35,7 +36,7 @@ public class CreateRefTests : GitHubTestBase
     [Description("25.1 POST /git/refs creates a branch and returns 201")]
     public async Task CreateRef_ReturnsCreated()
     {
-        var refName = $"{BranchPrefix}{DataGenerator.RandomString(8)}";
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
@@ -46,11 +47,11 @@ public class CreateRefTests : GitHubTestBase
     }
 
     [Test]
-    [Category("ContractCheck")]
+    [Category("Regression")]
     [Description("25.2 Response matches request")]
     public async Task CreateRef_MatchesRequest()
     {
-        var refName = $"{BranchPrefix}{DataGenerator.RandomString(8)}";
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var createRequest = new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha };
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs, createRequest, TestRepoParam());
@@ -67,7 +68,7 @@ public class CreateRefTests : GitHubTestBase
     [Description("25.3 object.type is commit")]
     public async Task CreateRef_ObjectTypeIsCommit()
     {
-        var refName = $"{BranchPrefix}{DataGenerator.RandomString(8)}";
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
@@ -89,7 +90,7 @@ public class CreateRefTests : GitHubTestBase
         };
         request.AddJsonBody(new CreateGitRefModelRequest
         {
-            Ref = $"{BranchPrefix}{DataGenerator.RandomString(8)}",
+            Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}",
             Sha = _baseSha
         });
         AddParams(request, TestRepoParam());
@@ -111,7 +112,7 @@ public class CreateRefTests : GitHubTestBase
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
         request.AddJsonBody(new CreateGitRefModelRequest
         {
-            Ref = $"{BranchPrefix}{DataGenerator.RandomString(8)}",
+            Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}",
             Sha = _baseSha
         });
         AddParams(request, TestRepoParam());
@@ -128,7 +129,7 @@ public class CreateRefTests : GitHubTestBase
     {
         var response = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{BranchPrefix}{DataGenerator.RandomString(8)}", Sha = MissingSha },
+            new CreateGitRefModelRequest { Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}", Sha = MissingSha },
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -150,7 +151,7 @@ public class CreateRefTests : GitHubTestBase
     [Description("25.8 Duplicate ref returns 422")]
     public async Task CreateRef_DuplicateRef_Returns422()
     {
-        var refName = $"{BranchPrefix}{DataGenerator.RandomString(8)}";
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var first = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
@@ -172,7 +173,7 @@ public class CreateRefTests : GitHubTestBase
     {
         var response = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{BranchPrefix}{DataGenerator.RandomString(8)}", Sha = _baseSha },
+            new CreateGitRefModelRequest { Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}", Sha = _baseSha },
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -183,7 +184,7 @@ public class CreateRefTests : GitHubTestBase
     [Description("25.10 Created ref becomes visible within max response time")]
     public async Task CreateRef_RecordVisibleWithinTimeLimit()
     {
-        var refName = $"{BranchPrefix}{DataGenerator.RandomString(8)}";
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());

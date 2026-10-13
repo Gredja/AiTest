@@ -20,6 +20,7 @@ public class CreatePullRequestTests : GitHubTestBase
     private readonly List<string> _createdBranchNames = [];
 
     private const int TitleRandomLength = 8;
+    private const string ProbeTitle = "probe";
 
     [Test]
     [Category("HealthCheck")]
@@ -79,7 +80,7 @@ public class CreatePullRequestTests : GitHubTestBase
         };
         request.AddJsonBody(new CreatePullRequestModelRequest
         {
-            Title = "probe",
+            Title = ProbeTitle,
             Head = GitHubEndpoints.DefaultBranch,
             Base = GitHubEndpoints.DefaultBranch
         });
@@ -102,7 +103,7 @@ public class CreatePullRequestTests : GitHubTestBase
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
         request.AddJsonBody(new CreatePullRequestModelRequest
         {
-            Title = "probe",
+            Title = ProbeTitle,
             Head = GitHubEndpoints.DefaultBranch,
             Base = GitHubEndpoints.DefaultBranch
         });
@@ -122,8 +123,8 @@ public class CreatePullRequestTests : GitHubTestBase
             GitHubEndpoints.RepoPullRequests,
             new Dictionary<string, object>
             {
-                [JsonFields.Title] = "probe",
-                [JsonFields.Body] = "probe",
+                [JsonFields.Title] = ProbeTitle,
+                [JsonFields.Body] = ProbeTitle,
                 [JsonFields.Base] = GitHubEndpoints.DefaultBranch
             },
             TestRepoParam());
@@ -140,7 +141,7 @@ public class CreatePullRequestTests : GitHubTestBase
             GitHubEndpoints.RepoPullRequests,
             new CreatePullRequestModelRequest
             {
-                Title = "probe",
+                Title = ProbeTitle,
                 Head = GitHubEndpoints.DefaultBranch,
                 Base = GitHubEndpoints.DefaultBranch
             },
@@ -177,7 +178,7 @@ public class CreatePullRequestTests : GitHubTestBase
     [Description("21.9 Head branch with no commits vs base returns 422")]
     public async Task CreatePullRequest_NoCommits_Returns422()
     {
-        var branchName = $"audit-{DataGenerator.RandomString(8)}";
+        var branchName = $"audit-{DataGenerator.RandomString(TitleRandomLength)}";
         var mainBranch = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
         mainBranch.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -195,7 +196,7 @@ public class CreatePullRequestTests : GitHubTestBase
             GitHubEndpoints.RepoPullRequests,
             new CreatePullRequestModelRequest
             {
-                Title = "probe",
+                Title = ProbeTitle,
                 Head = branchName,
                 Base = GitHubEndpoints.DefaultBranch
             },
@@ -213,7 +214,7 @@ public class CreatePullRequestTests : GitHubTestBase
             GitHubEndpoints.RepoPullRequests,
             new CreatePullRequestModelRequest
             {
-                Title = "probe",
+                Title = ProbeTitle,
                 Head = GitHubEndpoints.DefaultBranch,
                 Base = GitHubEndpoints.DefaultBranch
             },

@@ -49,6 +49,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _putBody,
             IdParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -71,6 +72,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _patchBody,
             IdParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Title.Should().Be(_patchBody.Title);
     }
 
@@ -82,6 +84,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _putBody,
             IdParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldMatchRequest(_putBody);
     }
 
@@ -93,6 +96,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _putBody,
             IdParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(TestPostId);
     }
 
@@ -116,6 +120,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _patchBody,
             IdParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Title.Should().Be(_patchBody.Title);
         response.Data!.Body.Should().NotBeNull();
     }

@@ -39,7 +39,7 @@ Read `Rules/*.md` for full project rules context.
 Against checklist:
 
 **Gredja-specific:**
-- Models: Model/Request suffix, Id field, property types
+- Models: ModelResponse/ModelRequest suffix, Id field, property types
 - Assertions: FluentAssertions only
 - Comments: no comments unless regex or non-obvious WHY
 - Naming: PascalCase/camelCase/_camelCase, no abbreviations

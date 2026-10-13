@@ -65,6 +65,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(file =>
         {
             file.Sha.ShouldHaveValidSha();
@@ -104,6 +105,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Select(file => file.Filename).Should().OnlyHaveUniqueItems();
     }
 
@@ -115,6 +117,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
         var response = await Get<List<PullRequestFileModelResponse>>(GitHubEndpoints.RepoPullRequestFiles,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(file =>
         {
             file.Additions.Should().BeGreaterThanOrEqualTo(0);

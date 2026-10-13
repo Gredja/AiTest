@@ -25,6 +25,11 @@ Read the relevant file before working on the corresponding entity:
 | `Rules/models.md` | Model/Request naming, property rules, namespaces |
 | `Rules/assertions.md` | FluentAssertions patterns, OnlyContain gotchas |
 | `Rules/code.md` | Naming, types, methods, general code style |
+| `Rules/code-style.md` | Error handling, LINQ, strings, null safety, magic strings |
+| `Rules/code-principles.md` | SOLID, general principles |
+| `Rules/test-practices.md` | Isolation, seed methodology, cleanup, non-existent IDs |
+| `Rules/categories.md` | Category-to-test mapping, check-type boundaries |
+| `Rules/ui-testing.md` | Playwright UI tests: locators, storageState, cleanup |
 | `Rules/comments.md` | When comments are needed (regex, non-obvious WHY only) |
 | `Rules/git.md` | Remote, branches, commits, secrets |
 | `Rules/workflow.md` | Plan → approval → changes → report |
@@ -33,7 +38,7 @@ Read the relevant file before working on the corresponding entity:
 ## Key Rules (quick reference)
 
 - **FluentAssertions only** — no `Assert.That()`
-- **Models:** `ModelResponse` suffix (response), `ModelRequest` suffix (request), nested/supporting models without suffix, `Id` always non-nullable
+- **Models:** `ModelResponse` suffix (response), `ModelRequest` suffix (request), nested/supporting models without suffix; value types `?` only if JSON field can be null/absent
 - **Lambda parameters:** readable singular noun (`product => product.Id`), never single-letter
 - **Reference types:** no `?`, no init. **Value types:** `?` if JSON field can be null
 - **No comments** unless regex pattern or non-obvious WHY

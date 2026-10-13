@@ -65,6 +65,7 @@ public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(album => album.ShouldHaveValidFields());
     }
 
@@ -86,6 +87,7 @@ public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var ids = response.Data!.Select(album => album.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
@@ -97,6 +99,7 @@ public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(album => album.UserId > 0);
     }
 

@@ -65,6 +65,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(comment => comment.ShouldHaveValidFields());
     }
 
@@ -86,6 +87,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var ids = response.Data!.Select(comment => comment.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
@@ -97,6 +99,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(comment => comment.PostId > 0);
     }
 

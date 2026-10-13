@@ -79,9 +79,16 @@ Example: `ProductModel` has `RatingModel Rating` — not inline anonymous type.
 ## What NOT to do
 
 - Don't add constructors unless needed for deserialization
-- Don't add validation attributes (validation is in tests, not in models)
 - Don't add methods or logic — models are pure data containers
 - Don't use `init` — use `{ get; set; }` for all properties
+
+## Contract-check attributes (exception)
+
+ContractCheck infrastructure lives on validation attributes (`[RequiredField]`, `[PositiveId]`, `[ValueRange]`) — models **may** carry these attributes. They are part of the assertion layer (`AssertHelper.ShouldHaveValidContract` / `ShouldHaveValidFields`), not business validation.
+
+## Wire-boolean naming exception
+
+Boolean properties whose JSON wire names are GitHub permission flags (`admin`, `maintain`, `push`, `triage`, `pull`) and similar contract keys keep the wire name without `Is`/`Has` prefix (e.g. `CollaboratorPermissions.Admin`). Renaming would obscure the wire mapping; when such a property is new, document the exception in the model file or OB section.
 
 ## Attributes
 

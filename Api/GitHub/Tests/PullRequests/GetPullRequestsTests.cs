@@ -27,7 +27,6 @@ public class GetPullRequestsTests : GitHubTestBase
 
     [Test]
     [Category("ContractCheck")]
-    [Ignore("Creating PR requires branch + commit — too complex for Setup")]
     [Description("5.2 Response matches expected contract")]
     public async Task GetPullRequests_ResponseMatchesContract()
     {
@@ -48,6 +47,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(pullRequest => pullRequest.ShouldHaveValidFields());
     }
 
@@ -59,6 +59,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var ids = response.Data!.Select(pullRequest => pullRequest.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
@@ -71,6 +72,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateOpen || pullRequest.State == GitHubEndpoints.StateClosed);
     }
 

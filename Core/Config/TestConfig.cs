@@ -38,7 +38,7 @@ public static class TestConfig
     public static string GitHubCollaboratorUser => GetRequiredString(GitHub, "CollaboratorUser");
 
     public static string UiBaseUrl => GetRequiredString(Ui, BaseUrlKey);
-    public static bool UiHeadless => GetRequiredBool(Ui, "Headless");
+    public static bool IsUiHeadless => GetRequiredBool(Ui, "Headless");
     public static string UiStatePath => GetRequiredString(Ui, "StatePath");
     public static string UiUsername => GetRequiredString(Ui, "Username");
     public static string UiLogin => GetRequiredEnvironmentValue("GITHUB_UI_EMAIL");

@@ -50,6 +50,21 @@ public static class TestRunReportGenerator
             return;
         }
 
+        var lines = AssembleReportLines(root, workspace, runStart, outcomeLogs, outcomes);
+
+        var resultsDirectory = Path.Combine(root, ResultsDirName);
+        Directory.CreateDirectory(resultsDirectory);
+        var reportFile = Path.Combine(resultsDirectory, $"{ReportPrefix}{runStart:yyyyMMdd-HHmmss}.md");
+        WriteWithRetry(reportFile, lines);
+    }
+
+    private static List<string> AssembleReportLines(
+        string root,
+        string workspace,
+        DateTime runStart,
+        List<string> outcomeLogs,
+        List<TestOutcome> outcomes)
+    {
         var actionLogs = CollectLogs(workspace, runStart, ActionLogPrefix);
         var categories = TestSourceCategoryReader.Read(root);
         var rows = BuildRows(outcomes, categories);
@@ -65,11 +80,7 @@ public static class TestRunReportGenerator
         lines.AddRange(BuildSummary(rows));
         lines.AddRange(BuildTests(rows));
         lines.AddRange(BuildFailedSection(failures, failedActions));
-
-        var resultsDirectory = Path.Combine(root, ResultsDirName);
-        Directory.CreateDirectory(resultsDirectory);
-        var reportFile = Path.Combine(resultsDirectory, $"{ReportPrefix}{runStart:yyyyMMdd-HHmmss}.md");
-        WriteWithRetry(reportFile, lines);
+        return lines;
     }
 
     private static void CleanupAccumulatedArtifacts()

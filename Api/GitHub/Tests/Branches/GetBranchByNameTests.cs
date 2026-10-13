@@ -64,6 +64,7 @@ public class GetBranchByNameTests : GitHubTestBase
         var response = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Name.Should().Be(GitHubEndpoints.DefaultBranch);
     }
 
@@ -75,6 +76,7 @@ public class GetBranchByNameTests : GitHubTestBase
         var response = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Commit.Sha.ShouldHaveValidSha();
     }
 

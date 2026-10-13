@@ -48,6 +48,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(branch => branch.ShouldHaveValidFields());
     }
 
@@ -107,6 +108,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var names = response.Data!.Select(branch => branch.Name);
         names.Should().OnlyHaveUniqueItems();
     }
@@ -119,6 +121,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(branch =>
             branch.Commit.Sha.IsGitSha());
     }

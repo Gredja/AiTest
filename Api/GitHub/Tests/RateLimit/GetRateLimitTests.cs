@@ -42,6 +42,7 @@ public class GetRateLimitTests : GitHubTestBase
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Rate.Remaining.Should().BeGreaterThan(0);
     }
 
@@ -52,6 +53,7 @@ public class GetRateLimitTests : GitHubTestBase
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var resetTime = DateTimeOffset.FromUnixTimeSeconds(response.Data!.Rate.Reset);
         resetTime.Should().BeAfter(DateTimeOffset.UtcNow);
     }
@@ -75,6 +77,7 @@ public class GetRateLimitTests : GitHubTestBase
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
         response.Data!.Resources.Should().NotBeNull();
         response.Data.Resources.Core.Should().NotBeNull();
@@ -89,6 +92,7 @@ public class GetRateLimitTests : GitHubTestBase
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Rate.Used.Should().BeGreaterThanOrEqualTo(0);
     }
 

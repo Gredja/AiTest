@@ -48,6 +48,7 @@ public class GetUserReposTests : GitHubTestBase
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
             UsernameParam(_testUsername));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(repo => repo.ShouldHaveValidFields());
     }
 

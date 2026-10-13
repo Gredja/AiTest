@@ -63,6 +63,7 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
             IdParam(TestUserId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -74,6 +75,7 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
             IdParam(TestUserId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(TestUserId);
     }
 
@@ -152,6 +154,8 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
         var response2 = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
             IdParam(TestUserId));
 
+        response1.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response2.ShouldHaveStatusCode(HttpStatusCode.OK);
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Name.Should().Be(response2.Data!.Name);
         response1.Data!.Email.Should().Be(response2.Data!.Email);

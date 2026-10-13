@@ -102,6 +102,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(comment => comment.ShouldHaveValidFields());
     }
 
@@ -113,6 +114,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var ids = response.Data!.Select(comment => comment.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
@@ -154,7 +156,7 @@ public class GetIssueCommentsTests : GitHubTestBase
     public async Task GetIssueComments_InvalidSince_Returns422()
     {
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber), Query(SinceParamKey, InvalidQueryValue)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber), Query(JsonFields.Since, InvalidQueryValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

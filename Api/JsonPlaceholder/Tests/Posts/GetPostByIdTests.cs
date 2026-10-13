@@ -78,6 +78,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             IdParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -89,6 +90,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             IdParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(TestPostId);
     }
 
@@ -166,6 +168,8 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
         var response2 = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             IdParam(TestPostId));
 
+        response1.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response2.ShouldHaveStatusCode(HttpStatusCode.OK);
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
         response1.Data!.Body.Should().Be(response2.Data!.Body);

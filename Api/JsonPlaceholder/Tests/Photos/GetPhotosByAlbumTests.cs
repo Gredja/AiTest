@@ -47,6 +47,7 @@ public class GetPhotosByAlbumTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.PhotosByAlbum,
             AlbumIdQueryParam(TestAlbumId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
 
@@ -58,6 +59,7 @@ public class GetPhotosByAlbumTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.PhotosByAlbum,
             AlbumIdQueryParam(TestAlbumId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(photo => photo.ShouldHaveValidFields());
     }
 
@@ -69,6 +71,7 @@ public class GetPhotosByAlbumTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.PhotosByAlbum,
             AlbumIdQueryParam(TestAlbumId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Should().OnlyContain(photo => photo.AlbumId == TestAlbumId);
     }
 

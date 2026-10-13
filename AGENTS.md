@@ -6,7 +6,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 ## Project Structure
 
 - `Api/` — NUnit API-тесты (JsonPlaceholder, GitHub), включая одиночные write-тесты
-- `Ui/` — NUnit UI-тесты (Playwright .NET + Chromium): page-objects в `Ui/Helper/UiHelper/`, тесты в `Ui/Test/`, авторизация через storageState (bootstrap = [Explicit]-тест), write через UI → cleanup через API; правила — `Rules/ui-testing.md`
+- `Ui/` — NUnit UI-тесты (Playwright .NET + Chromium): page-objects в `Ui/Helper/UiHelper/`, тесты в `Ui/Test/`, авторизация через storageState (`.auth/github-ui-state.json`): state обновляет автотест `LoginSignInTests` (логин по `GITHUB_UI_EMAIL`/`GITHUB_UI_PASSWORD`), остальные тесты state только читают; write через UI → cleanup через API; правила — `Rules/ui-testing.md`
 - `E2E/` — NUnit E2E тесты: ТОЛЬКО сценарные цепочки (create → verify → mutate → cleanup)
 - `Core/Models/` — модели ответов/запросов
 - `Core/Helpers/` — общие хелперы по подпапкам: `Http/` (request-инфраструктура: `RequestHelper`, `JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — вариативные write-данные), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`); нужны E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
@@ -64,7 +64,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - Изменения в `features/<topic>` ветках
 - Коммиты: только по запросу, английский, формат: action + object
 - Никогда не коммитить `.env` или токены
-- **Перед коммитом:** `dotnet format --verify-no-changes` + `dotnet test` — оба должны пройти
+- **Перед коммитом:** `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` — оба должны пройти (полный прогон — `/test`)
 
 ## Key Decisions
 - 0 и -1 — безопасные static IDs (всегда невалидные)

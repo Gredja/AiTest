@@ -1,5 +1,6 @@
 using Core.Models.Generic;
 using Core.Models.GitHub;
+using JsonFields = Core.Models.GitHub.JsonFields;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -46,6 +47,7 @@ public class GetPublicReposTests : GitHubTestBase
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(repo => repo.ShouldHaveValidFields());
     }
 
@@ -55,7 +57,7 @@ public class GetPublicReposTests : GitHubTestBase
     public async Task GetPublicRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
-            [new() { Type = ParamType.Parameter, Key = SinceParamKey, Value = FirstRepositoryId }]);
+            [new() { Type = ParamType.Parameter, Key = JsonFields.Since, Value = FirstRepositoryId }]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -70,7 +72,7 @@ public class GetPublicReposTests : GitHubTestBase
     public async Task GetPublicRepos_InvalidSince_Returns422()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
-            [Query(SinceParamKey, InvalidQueryValue)]);
+            [Query(JsonFields.Since, InvalidQueryValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

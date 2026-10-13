@@ -63,6 +63,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
             IdParam(TestPhotoId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -74,6 +75,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
             IdParam(TestPhotoId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Id.Should().Be(TestPhotoId);
     }
 
@@ -152,6 +154,8 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
         var response2 = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
             IdParam(TestPhotoId));
 
+        response1.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response2.ShouldHaveStatusCode(HttpStatusCode.OK);
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
         response1.Data!.Url.Should().Be(response2.Data!.Url);

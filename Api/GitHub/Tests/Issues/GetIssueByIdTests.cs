@@ -71,6 +71,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -122,6 +123,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Title.Should().NotBeNullOrWhiteSpace();
     }
 
@@ -135,6 +137,8 @@ public class GetIssueByIdTests : GitHubTestBase
         var response2 = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
+        response1.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response2.ShouldHaveStatusCode(HttpStatusCode.OK);
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Title.Should().Be(response2.Data!.Title);
     }

@@ -42,6 +42,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     {
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.ShouldHaveValidFields();
     }
 
@@ -52,6 +53,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     {
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.Title.Should().Be(_testPost.Title);
         response.Data!.Body.Should().Be(_testPost.Body);
         response.Data!.UserId.Should().Be(TestUserId);
@@ -64,6 +66,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     {
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.Id.Should().BeGreaterThan(0);
     }
 
@@ -74,6 +77,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     {
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.UserId.Should().Be(TestUserId);
     }
 
@@ -84,6 +88,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     {
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.ShouldMatchRequest(_testPost);
     }
 

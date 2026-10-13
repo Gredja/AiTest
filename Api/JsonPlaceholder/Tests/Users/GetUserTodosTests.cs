@@ -47,6 +47,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
             IdParam(TestUserId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
 
@@ -58,6 +59,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
             IdParam(TestUserId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(todo => todo.ShouldHaveValidFields());
     }
 
@@ -69,6 +71,7 @@ public class GetUserTodosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.UsersTodos,
             IdParam(TestUserId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Should().OnlyContain(todo => todo.UserId == TestUserId);
     }
 

@@ -45,7 +45,6 @@ graphify-out/
 ## MiMo Desktop pet (not tracked)
 black-white-cat/
 
-/testsettings.json
 
 ## Playwright CLI (local)
 .playwright-cli/

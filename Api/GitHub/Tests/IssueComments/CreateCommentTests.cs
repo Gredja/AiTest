@@ -43,7 +43,7 @@ public class CreateCommentTests : GitHubTestBase
     }
 
     [Test]
-    [Category("Smoke")]
+    [Category("Regression")]
     [Description("18.2 Response matches request")]
     public async Task CreateComment_MatchesRequest()
     {

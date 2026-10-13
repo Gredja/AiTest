@@ -102,16 +102,13 @@ Output as table: `# | Case | Category | Priority | Source seed`
 
 ### Step 4: Generate test class
 
-**Required pattern:**
+**Required pattern** (fixture-registry; cleanup ONLY in `[OneTimeTearDown]` LAST member — no per-test `[SetUp]`/`[TearDown]`):
 
 ```csharp
-using NUnit.Framework;
-using RestSharp;
-using Core.Config;
-using Core.Helpers;
-using System.Net;
-using FluentAssertions;
 using AllureAdapter;
+using Core.Config;
+using FluentAssertions;
+using System.Net;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace E2E.{Service}.Tests;
@@ -121,75 +118,49 @@ namespace E2E.{Service}.Tests;
 [Category("{Service}E2E")]
 public class {Endpoint}Tests : {Service}E2ETestBase
 {
-    private int _createdId;
-
-    [SetUp]
-    public async Task Setup()
-    {
-        // Create resource for test
-        var response = await Post<CreateRequest, ResponseModel>(
-            {Service}Endpoints.{Endpoint}, _testBody, ...);
-        response.ShouldHaveStatusCode(HttpStatusCode.Created);
-        _createdId = response.Data!.Id;
-    }
-
-    [TearDown]
-    public async Task Teardown()
-    {
-        // Always clean up — even if test failed
-        try
-        {
-            await Delete<object>({Service}Endpoints.{Endpoint}ById, IdParam(_createdId));
-        }
-        catch
-        {
-            // Log but don't fail teardown
-        }
-    }
+    private readonly List<int> _createdIds = [];
 
     [Test]
     [Category("Smoke")]
-    [Description("1.1 Create returns 201")]
+    [Description("E2E-1 Create returns 201")]
     public async Task Create_ReturnsCreated()
     {
-        // Resource already created in Setup
-        // Verify it exists
-        var response = await Get<ResponseModel>(
-            {Service}Endpoints.{Endpoint}ById, IdParam(_createdId));
+        var response = await Post<CreateRequestModel, ResponseModel>(
+            {Service}Endpoints.{Endpoint}, _testBody, ...);
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdIds.Add(response.Data!.Id);   // register-then-assert
 
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Id.Should().Be(_createdId);
+        var readBack = await Get<ResponseModel>(
+            {Service}Endpoints.{Endpoint}ById, IdParam(response.Data.Id));
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
+        readBack.Data!.Id.Should().Be(response.Data.Id);
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        // fixture-registry cleanup — warning-only, never fail the run;
+        // cleanup helpers live in the base class / helpers, NOT here
     }
 }
 ```
 
 **Key rules:**
-- `[SetUp]` creates the resource, stores ID in `_createdId`
-- `[TearDown]` always deletes — wrapped in try/catch to not mask test failures
-- Setup failure = test skipped (SetUpException), not failed
-- Each test is independent — Setup creates fresh resource every time
+- Cleanup ONLY in `[OneTimeTearDown]` (LAST class member) via fixture-registry — register IDs immediately after creation, BEFORE asserts (register-then-assert)
+- No per-test `[SetUp]`/`[TearDown]` cleanup (Rules/test-practices: teardown-last)
+- No helper methods inside `*Tests.cs` — cleanup chains go to the base class / helpers
+- Create inside the test (or `[OneTimeSetUp]` with status assert); setup failure must fail loudly, not skip
 - Use `ShouldMatchRequest()` for request/response comparison
 - **Test data:** fictional values only (public sandbox repo), vary ≥2 dimensions — see `Rules/test-practices.md` → "Test data for write operations"
 
-### Step 5: Generate cleanup helpers (if needed)
+### Step 5: Cleanup helpers live in base, not in tests
 
-For complex cleanup chains, add helper methods:
-
-```csharp
-private async Task CleanupComments(int issueNumber)
-{
-    var comments = await Get<List<CommentModel>>(..., IssueNumberParam(issueNumber));
-    foreach (var comment in comments.Data ?? new())
-    {
-        await Delete<object>(..., CommentIdParam(comment.Id));
-    }
-}
-```
+Complex cleanup chains (delete comments → then issue) belong in `{Service}E2ETestBase` (or a dedicated helper) — never as private methods in `*Tests.cs` (Rules/test-practices: no helpers in test classes).
 
 ### Step 6: Follow All Rules
 
 - **Code:** PascalCase, file-scoped namespaces, async, no magic numbers — see `Rules/code.md`
-- **Cleanup:** mandatory, try/catch in TearDown — see `Rules/test-practices.md`
+- **Cleanup:** mandatory, fixture-registry + `[OneTimeTearDown]` last — see `Rules/test-practices.md`
 - **Assertions:** ShouldHaveStatusCode, ShouldHaveValidFields, ShouldMatchRequest (reduces code vs manual field comparison) — see `Rules/assertions.md`
 - **Non-existent IDs:** dynamic (GET all → maxId + 1; concurrent runs → maxId + Offset) — see `Rules/test-practices.md`
 - **Mock API behavior:** `[Ignore]` with explanation for known mock limitations — see `Rules/test-practices.md`
@@ -213,14 +184,14 @@ private async Task CleanupComments(int issueNumber)
 
 ## Key Differences from api-test-gen
 
-| Aspect | api-test-gen (read-only) | e2e-test-gen (write) |
+| Aspect | api-test-gen (read + single writes) | e2e-test-gen (scenario chains) |
 |---|---|---|
-| HTTP methods | GET only | POST, PATCH, DELETE |
-| Setup/Teardown | Not needed | Mandatory |
-| Resource cleanup | No | Yes — try/catch in TearDown |
-| Test independence | Stateless | Each test creates own resources |
+| HTTP methods | GET + single-endpoint write tests | multi-step POST/PATCH/DELETE scenarios |
+| Setup/Teardown | Guarantee Data / OneTimeSetUp for write singles | fixture-registry + OneTimeTearDown last |
+| Resource cleanup | Yes (write singles) | Yes — multi-step create→verify→mutate→cleanup |
+| Test independence | Stateless reads | Each chain creates own resources |
 | Sandbox repo | Reads from any repo | Writes only to sandbox |
-| Risk level | Low (no side effects) | High (creates/deletes resources) |
+| Risk level | Low–medium | High (creates/deletes resources) |
 | Mock behavior | Rarely ignored | Often ignored (mock APIs don't persist) |
 
 ---

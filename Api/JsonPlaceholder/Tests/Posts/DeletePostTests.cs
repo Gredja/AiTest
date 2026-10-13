@@ -38,6 +38,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
         var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
             IdParam(TestPostId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
     }
 

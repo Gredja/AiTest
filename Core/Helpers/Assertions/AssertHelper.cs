@@ -92,20 +92,30 @@ public static class AssertHelper
                     continue;
                 }
 
-                var responseProperty = responseProperties.FirstOrDefault(property =>
-                    property.Name.Equals(requestProperty.Name, StringComparison.OrdinalIgnoreCase));
-
-                if (responseProperty is null)
-                {
-                    responseProperty.Should().NotBeNull(
-                        $"response should have property '{requestProperty.Name}' matching request");
-                    continue;
-                }
-
-                var responseValue = responseProperty.GetValue(response);
-                CompareValues(responseValue, requestValue, responseProperty.Name);
+                CompareMatchingProperty(response, requestProperty, requestValue, responseProperties);
             }
         }
+    }
+
+    private static void CompareMatchingProperty<TResponse>(
+        TResponse response,
+        PropertyInfo requestProperty,
+        object requestValue,
+        PropertyInfo[] responseProperties)
+        where TResponse : class
+    {
+        var responseProperty = responseProperties.FirstOrDefault(property =>
+            property.Name.Equals(requestProperty.Name, StringComparison.OrdinalIgnoreCase));
+
+        if (responseProperty is null)
+        {
+            responseProperty.Should().NotBeNull(
+                $"response should have property '{requestProperty.Name}' matching request");
+            return;
+        }
+
+        var responseValue = responseProperty.GetValue(response);
+        CompareValues(responseValue, requestValue, responseProperty.Name);
     }
 
     private static void CompareValues(object? responseValue, object? requestValue, string propertyName)

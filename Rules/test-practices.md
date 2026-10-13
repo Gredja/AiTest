@@ -26,7 +26,8 @@
 
 - Dynamic only: `GET all → maxId + 1`
 - **When the same run writes concurrently** (solution run: Api + E2E together) — `maxId + 1` is racy: a parallel E2E write can create exactly that number and flip an expected 404 into 200. Use `maxId + Offset` instead (GitHub: `GitHubEndpoints.NonExistentIdOffset = 100`); stateless mocks (JSONPlaceholder) keep `maxId + 1` — nothing can create there
-- Never hardcode 999, 1000, or any static number
+- Never hardcode 999, 1000, or any static number that could become a real resource id
+- **Exception:** `0` and `-1` (and other non-positive / non-numeric literals) are always invalid — safe static values for negative segments
 - If API returns 200 instead of 404 — use `[Ignore]` with explanation of the bug
 - For negative tests with invalid types (0, negative, non-numeric) — use explicit values
 - **Volatile external entities as test data** (live branch names, temporary numbers) — dynamic lookup only; if a hardcoded dependency is unavoidable (e.g. a branch with a slash), register it in Entry Criteria (`documentation/GitHubTestingStructure.md`) and keep it alive for the suite's lifetime
@@ -85,6 +86,7 @@ When adding or changing endpoints, keep these documents in sync:
   `.mimocode/skills/*` — never create parallel prompt libraries (they silently drift;
   `Prompts/` was deleted for this reason)
 - **Risk coverage** — every Top-3 risk from `{Service}TestPlan.md` / `{Service}TestingStructure.md` must map to ≥1 test case; an uncovered risk is a coverage gap (found this way: PSD2 SCA risk had no test case — see `documentation/Katas/01-test-cases.md`)
+- **`[Description]` numbering = OB section numbers.** The number prefix in `[Description("N.M …")]` MUST match the Observable Behaviour section the test covers (`Description("17.2 …")` → OB §17.2). E2E scenario tests use the reserved prefix `E2E-N` (documented in the service's TestingStructure or OB). When adding a new test: look up the OB section number, never invent a free-running sequence. Known legacy drift in older GitHub/JP groups is tolerated until a dedicated renumber pass — do not expand the drift.
 
 ## Seed methodology for test generation
 

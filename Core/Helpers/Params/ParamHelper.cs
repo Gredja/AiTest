@@ -4,7 +4,9 @@ namespace Core.Helpers;
 
 public static class ParamHelper
 {
-    public const string IdKey = "id";
+    // Wire key "id" lives in Generic.JsonFields (internal) — this public alias is the
+    // only cross-service exposure; Api/E2E cannot see the internal constant.
+    public const string IdKey = JsonFields.Id;
 
     public static List<RequestDictionaryModel> IdParam(int id) =>
         [UrlSegment(IdKey, id)];

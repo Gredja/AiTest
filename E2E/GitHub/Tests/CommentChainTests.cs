@@ -17,27 +17,17 @@ public class CommentChainTests : GitHubE2ETestBase
     private const int ChainLength = 3;
 
     private readonly List<long> _createdCommentIds = [];
-
-    private int? _createdIssueNumber;
+    private readonly List<int> _createdIssueNumbers = [];
 
     [Test]
     [Category("Regression")]
     [Description("E2E-3 Comment chain: create issue → add comments → verify count and ordering")]
     public async Task CommentChain_Create_AddComments_VerifyCountAndOrdering()
     {
-        var issueRequest = new CreateIssueModelRequest
-        {
-            Title = $"Chain {DataGenerator.RandomString(TitleRandomLength)}"
-        };
-        var issue = await Post<CreateIssueModelRequest, IssueModelResponse>(
-            GitHubEndpoints.RepoIssues, issueRequest, TestRepoParam());
-        if (issue.Data is not null)
-        {
-            _createdIssueNumber = issue.Data.Number;
-        }
-
-        issue.ShouldHaveStatusCode(HttpStatusCode.Created);
-        var issueNumber = issue.Data!.Number;
+        var issue = await CreateIssueTrackedAsync(
+            new CreateIssueModelRequest { Title = $"Chain {DataGenerator.RandomString(TitleRandomLength)}" },
+            _createdIssueNumbers);
+        var issueNumber = issue.Number;
 
         var createdBodies = new List<string>();
         for (var index = 0; index < ChainLength; index++)
@@ -73,6 +63,9 @@ public class CommentChainTests : GitHubE2ETestBase
             await CleanupCommentAsync(commentId);
         }
 
-        await CleanupIssueAsync(_createdIssueNumber);
+        foreach (var issueNumber in _createdIssueNumbers)
+        {
+            await CleanupIssueAsync(issueNumber);
+        }
     }
 }

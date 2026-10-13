@@ -1,5 +1,6 @@
 using Core.Config;
 using Core.Models.Generic;
+using JsonFields = Core.Models.GitHub.JsonFields;
 
 namespace Core.Helpers.GitHub;
 
@@ -26,12 +27,12 @@ public static class GitHubParamHelper
 
     public static List<RequestDictionaryModel> PaginationParams(int page, int perPage) =>
         [
-            ParamHelper.Query("page", page),
+            ParamHelper.Query(JsonFields.Page, page),
             .. PerPageParam(perPage)
         ];
 
     public static List<RequestDictionaryModel> PerPageParam(object perPage) =>
-        [ParamHelper.Query("per_page", perPage)];
+        [ParamHelper.Query(JsonFields.PerPage, perPage)];
 
     public static List<RequestDictionaryModel> MercyPreviewParam() =>
         [ParamHelper.Header(AcceptHeader, GitHubEndpoints.MercyPreviewAccept)];
@@ -49,5 +50,5 @@ public static class GitHubParamHelper
         [ParamHelper.UrlSegment("invitation_id", id)];
 
     public static List<RequestDictionaryModel> StateParam(string state) =>
-        [ParamHelper.Query("state", state)];
+        [ParamHelper.Query(JsonFields.State, state)];
 }

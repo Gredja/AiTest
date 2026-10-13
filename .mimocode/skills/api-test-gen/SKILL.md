@@ -44,9 +44,9 @@ All paths use `{Service}` as the service name (PascalCase, matches directory nam
 | Observable Behaviour Template | `documentation/ObservableBehaviourTemplate.md` |
 | Endpoints config | `Core/Config/{Service}Endpoints.cs` |
 | Models | `Core/Models/{Service}/` |
-| Tests | `Api/{Service}/Tests/{Endpoint}Tests.cs` |
-| Param helper | `Api/Helpers/{Service}ParamHelper.cs` |
-| Namespace (tests) | `Api.{Service}.Tests` |
+| Tests | `Api/{Service}/Tests/{Category}/{Endpoint}Tests.cs` |
+| Param helper | JsonPlaceholder: `Api/JsonPlaceholder/Helpers/JsonPlaceholderParamHelper.cs`; GitHub: `Core/Helpers/GitHub/GitHubParamHelper.cs` |
+| Namespace (tests) | `Api.{Service}.{Category}` (e.g. `Api.GitHub.Issues`, `Api.JsonPlaceholder.Posts`) |
 | Namespace (models) | `Core.Models.{Service}` |
 | Category (class) | `[Category("{Service}")]` |
 
@@ -79,7 +79,7 @@ Add:
 Create or update models in `Core/Models/{Service}/`:
 
 **Main model** (`{Endpoint}Model.cs`):
-- Suffix: `Model` for response, `Request` for request body
+- Suffix: `ModelResponse` for response, `ModelRequest` for request body (nested/supporting models without suffix)
 - Always includes `Id` field with `[PositiveId]` attribute
 - Reference types (string, object, nested model): `[RequiredField]`, no `?`, no initializer
 - Value types (int, decimal, double): `?` only if JSON field can be null/absent
@@ -117,7 +117,8 @@ If models already exist — verify they match current API response.
 **Base class** — check if `{Service}RequestHelper` exists in `Core/Helpers/`. If not, create it extending `RequestHelper`. If it exists, use it.
 
 **Param helpers** — use shared helpers for URL segments and query parameters:
-- Use `using static Api.Helpers.{Service}ParamHelper;`
+- JsonPlaceholder: `using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;`
+- GitHub: `using static Core.Helpers.GitHub.GitHubParamHelper;`
 - If helper doesn't exist, create it with `ProductIdParam`/`UserIdParam`/`PostIdParam` as needed
 
 For custom params, use `ParamType` enum (from `Core.Models`) — never magic strings:
@@ -128,7 +129,7 @@ new() { Type = ParamType.Parameter, Key = "userId", Value = userId }
 
 **Request body** — extract repeated bodies to `static readonly` fields:
 ```csharp
-private static readonly PostModel TestPost = new() { UserId = 1, Title = "Test Post", Body = "Test Body" };
+private static readonly PostModelRequest TestPost = new() { UserId = 1, Title = "Test Post", Body = "Test Body" };
 ```
 
 **Pattern:** Use `ShouldHaveValidContract()` for ContractCheck (JSON round-trip + attribute validation). Use `ShouldHaveValidFields()` for Regression (attributes only). Use `ShouldMatchRequest()` for request/response comparison — replaces manual field-by-field assertions.
@@ -143,7 +144,7 @@ using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using AllureAdapter;
-using static Api.Helpers.{Service}ParamHelper;
+using static {ServiceParamHelperFullName};
 
 namespace Api.{Service}.Tests;
 
@@ -211,7 +212,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
         var stopwatch = Stopwatch.StartNew();
         var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         stopwatch.Stop();
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan({Service}Endpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]
@@ -221,7 +222,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     {
         var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount({Service}Endpoints.Expected{Endpoint}Count);
+        response.Data.Should().HaveCount(Expected{Endpoint}Count);  // const in Endpoints or test class
     }
 }
 ```
@@ -266,7 +267,7 @@ public async Task OneTimeTearDown()
 }
 ```
 - Do NOT use `[SetUp]`/`[TearDown]` for read-only tests — each test should be independent
-- `[SetUp]`/`[TearDown]` are for E2E tests with write operations — see `/e2e-test-gen`
+- Write flows: baseline GET + POST in `[OneTimeSetUp]`, cleanup in `[OneTimeTearDown]` (last member, fixture-registry) — see `Rules/test-practices.md`
 
 **Read-after-write visibility (when the endpoint's service supports POST):**
 - Extend the setup into an assertion: baseline GET → POST in `[OneTimeSetUp]` → tests assert the collection grew by exactly 1, set-diff by Id equals the created Id, and `ShouldMatchRequest()` compares the POST request against the new record in the GET response (all fields, not only Id) → `[OneTimeTearDown]` deletes the record (cleanup failure = warning, not test failure)

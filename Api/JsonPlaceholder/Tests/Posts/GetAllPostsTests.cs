@@ -82,6 +82,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(post => post.ShouldHaveValidFields());
     }
 
@@ -115,6 +116,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var ids = response.Data!.Select(post => post.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
@@ -126,6 +128,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(post => post.UserId > 0);
     }
 

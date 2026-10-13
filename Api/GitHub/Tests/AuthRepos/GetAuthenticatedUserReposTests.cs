@@ -43,6 +43,7 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.AuthenticatedUserRepos);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
         response.Data!.ForEach(repo => repo.ShouldHaveValidFields());
     }

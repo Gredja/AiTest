@@ -37,7 +37,7 @@ Check `Rules/code-style.md` rules:
 - Error handling (specific exceptions, no exception flow control)
 - LINQ (Any over Count, no unnecessary ToList)
 - Strings (interpolation, StringBuilder in loops)
-- Magic strings (3+ occurrences → const)
+- Magic strings (2+ occurrences of same meaning → const — see Rules/code-style.md)
 - Null safety (`is not null`, no `null!`, `?.` and `??`)
 - Pattern matching (switch expressions, `is` type pattern)
 

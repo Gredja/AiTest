@@ -14,8 +14,8 @@ Generates page-objects and NUnit UI tests for the Gredja `Ui/` project (Microsof
 ## Important (hard rules — read before anything else)
 
 1. **Locators are role/text/label-based only** — `GetByRole`, `GetByText`, `GetByLabel`, `GetByPlaceholder`. NEVER CSS-classes or XPath on the page under test (GitHub generates hashed BEM-classes that change between releases). Every locator must be verified against a **live snapshot** of the page before it is written (see Step 1).
-2. **No login/logout in tests** — the fixture loads `storageState` from `.auth/github-ui-state.json` (gitignored). A logout test breaks every parallel colleague; login is the `[Explicit]` bootstrap test only.
-3. **UI write → API cleanup** — resources created through the UI are removed in `[OneTimeTearDown]` (LAST member of the class) via the Core API helpers (`CleanupCommentAsync`, `CleanupIssueAsync` pattern: `RunCleanupAsync` = warning, never fail the run). Register in the registry immediately after creation, BEFORE any assert (register-then-assert).
+2. **No login/logout in feature tests** — the fixture loads `storageState` from `.auth/github-ui-state.json` (gitignored). A logout breaks every parallel colleague. Login is only the dedicated Smoke test `LoginSignInTests` (anonymous context, saves state after assert).
+3. **UI write → API cleanup** — resources created through the UI are removed in `[OneTimeTearDown]` (LAST member of the class) via Core API helpers by composition (`GitHubUiTestBase` does not inherit `GitHubTestBase`): issue → close via PATCH (warning-only, never fail the run). Register in the registry immediately after creation, BEFORE any assert (register-then-assert).
 4. **No `WaitForTimeout`** without a written WHY-comment — Playwright auto-waits on actionability; poll only for documented eventual-consistency with `WaitHelper`.
 5. **Test classes contain only tests** — actions live in page-objects, shared browser logic in the fixture; no private helper methods in `*Tests.cs`.
 6. **Never duplicate** — Glob/Grep existing page-objects and test classes first; extend, never create a second file for the same page.
@@ -51,7 +51,7 @@ If any is missing — ask before generating.
 
 ## Preconditions
 
-- `Ui/` project exists in `Gredja.slnx` (scaffold per `.mimocode/plans/ui-playwright-github.md`). If not — stop, tell the user the scaffold phase must run first.
+- `Ui/` project exists in `Gredja.slnx`. If not — stop, tell the user the scaffold phase must run first.
 - `testsettings.json` has `Ui` section; `.auth/` is gitignored; `Scripts/install-playwright.ps1` was executed (chromium installed).
 - Rules in context: `Rules/ui-testing.md`, `Rules/categories.md`, `Rules/test-practices.md` (teardown-last, register-then-assert, create→remove), `Rules/code.md`.
 
@@ -69,7 +69,7 @@ If any is missing — ask before generating.
 | Namespace (tests) | `Ui.Test.GitHubStream.{{area_name}}` |
 | Namespace (page-objects) | `Ui.Helper.UiHelper.GitHubStream.{{area_name}}` |
 | Service category (class) | `[Category("GitHubUi")]` |
-| Description reference | UI-OB section number, e.g. `"UI-3.2 Create issue via UI"` |
+| Description reference | UI-OB section number, e.g. `"UI-1 Ordinary login…"` |
 
 Before generating — verify the target directories exist; create missing page-object folder only after checking no sibling covers the same page.
 
@@ -88,7 +88,7 @@ Before generating — verify the target directories exist; create missing page-o
 
 - Map the flow to one test method (chain = one test, E2E-style) or several single-check tests.
 - Pick ONE check-type category per test per `Rules/categories.md` boundaries: Smoke = single-response sanity (content, count); Regression = rule/invariant/state-transition; Negative = error/404/empty states.
-- List UI-created resources → plan their API cleanup (issue → `CleanupIssueAsync` close, comment → `CleanupCommentAsync` delete).
+- List UI-created resources → plan their API cleanup (issue → close via PATCH; comment → API DELETE — Core `RequestHelper` by composition).
 - Prefer hybrid verification: **act via UI, assert via API** (Core `RequestHelper`) for created resources — the API read-back is the reliable oracle; UI asserts are for what only exists visually (badges, URLs, empty states).
 
 ### Step 3: Create/extend the page-object
@@ -112,7 +112,7 @@ internal class {{area_name}}Page
 
 - Methods = business actions (`OpenIssuesTab`, `CreateIssue`, `CloseIssue`), never raw clicks exposed to tests.
 - Locators inline per action (page under test = GitHub → role/text only); keep one locator per element, named by role+name.
-- If a base page-class pattern already exists in `Ui/Helper/UiHelper/BaseHelpers/` (XRM-style `CreateUpdatePage` analog) — inherit it, do not reinvent.
+- If a base page-class pattern already exists under `Ui/Helper/UiHelper/` — inherit it, do not reinvent.
 - Register new page in `BrowserPw` wrapper if the wrapper exposes pages as properties (follow the existing pattern).
 
 ### Step 4: Create the test class
@@ -127,23 +127,24 @@ public class {{area_name}}{{flow_name}}Tests : {{service_name}}UiTestBase
 {
     private const int TitleRandomLength = 8;
 
-    private readonly List<long> _createdIssueIds = [];   // registry, typed per resource
+    private readonly List<long> _createdIssueNumbers = [];   // registry, typed per resource
 
     [Test]
     [Category("Regression")]
-    [Description("UI-3.2 {{flow description}}")]
+    [Description("UI-{{section}} {{flow description}}")]
     public async Task {{area}}_{{Flow}}_{{Outcome}}()
     {
         var title = $"UI {DataGenerator.RandomString(TitleRandomLength)}";
 
         await Browser.SomePage.CreateIssue(title, body);
         // register-then-assert for every created resource:
-        // id resolved via API read-back → add to registry BEFORE content asserts
+        // id resolved via UI or API read-back → add to registry BEFORE content asserts
 
-        // API cross-verify (preferred oracle):
-        var created = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues, TestRepoParam());
-        created.ShouldHaveStatusCode(HttpStatusCode.OK);
-        created.Data.Should().Contain(issue => issue.Title == title);
+        // API cross-verify (preferred oracle) — compose Core RequestHelper on the UI base
+        // (status assert BEFORE .Data dereference, per Rules/test-practices):
+        // var created = await _gitHubRequestHelper.GetIssuesAsync(...);
+        // created.ShouldHaveStatusCode(HttpStatusCode.OK);
+        // created.Data.Should().Contain(issue => issue.Title == title);
 
         // UI-only asserts (what API cannot see): badges, URL, empty-state text
     }
@@ -151,10 +152,8 @@ public class {{area_name}}{{flow_name}}Tests : {{service_name}}UiTestBase
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
-        foreach (var id in _createdIssueIds)
-        {
-            await CleanupIssueAsync(id);   // warning-only, never fails the run
-        }
+        // cleanup via Core API by composition — close issue / delete comment;
+        // warning-only semantics, never fails the run
     }
 }
 ```
@@ -163,6 +162,7 @@ public class {{area_name}}{{flow_name}}Tests : {{service_name}}UiTestBase
 - `[OneTimeTearDown]` is the LAST class member; `[OneTimeSetUp]`/fields at top.
 - No `[Category]` check-type on the class; no service category on methods.
 - Do not paste screenshot/trace code — the base fixture captures artifacts on failure.
+- UI base has **no** `Get<>` / `ShouldHaveStatusCode` / `CleanupIssueAsync` members — wire Core helpers by composition (or extend the fixture) before using them in tests.
 
 ### Step 5: Sync UI Observable Behaviour
 
@@ -189,7 +189,7 @@ Append/extend `documentation/{{service_name}}UiObservableBehaviour.md` for every
 **User says:** «сгенерируй UI тест для создания issue через UI»
 → Step 1: read `GitHubUiObservableBehaviour.md` §Issues + snapshot `github.com/Gredja/AiTest/issues/new` → extract roles/labels
 → Step 3: `IssuesPage.CreateIssue(title, body)`
-→ Step 4: `IssueCreationTests.Issue_Create_AppearsInList` (Regression; API `Contain(Title)` cross-verify; registry → `CleanupIssueAsync`)
+→ Step 4: `IssueCreationTests.Issue_Create_AppearsInList` (Regression; API `Contain(Title)` cross-verify; registry → API close in teardown)
 → Step 5–7: OB section updated, format+filter run, report
 
 **User says:** «добавь проверку страницы PR»
@@ -202,9 +202,9 @@ Append/extend `documentation/{{service_name}}UiObservableBehaviour.md` for every
 | Error / symptom | Cause | Fix |
 |---|---|---|
 | `TimeoutException: locator not resolved` | stale selector or wrong role | re-snapshot the page; locator from live DOM only |
-| Test hangs on navigation | missing storageState / expired session | run `[Explicit]` bootstrap test to refresh `.auth/github-ui-state.json` |
+| Test hangs on navigation | missing storageState / expired session | run `dotnet test --filter LoginSignInTests` to refresh `.auth/github-ui-state.json` |
 | Flaky list-visibility assert | eventual list refresh | poll with `WaitHelper.WaitUntilAsync` (documented in UI-OB section), never `WaitForTimeout` |
-| `StorageStatePath not found` | bootstrap never ran | tell user to run `dotnet test --filter StorageStateBootstrap` once, headed, log in manually |
+| `StorageStatePath not found` | login test never ran | tell user to run `dotnet test --filter LoginSignInTests` once (credentials in env/.env) |
 | Test fails, no artifact | fixture not capturing | fix `UiTestBase` teardown (screenshot+trace) — not the test |
 | CSS selector temptation (`div.Box-row`) | shortcut | forbidden — role/text locator + snapshot verification |
 

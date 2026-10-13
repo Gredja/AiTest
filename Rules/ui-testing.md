@@ -12,7 +12,6 @@ Ui/
 │   ├── BrowserHelpers/BrowserPw.cs  # page-object wrapper: pages exposed as properties
 │   └── UiHelper/
 │       ├── CommonPages/          # cross-area pages (header, nav)
-│       ├── BaseHelpers/          # shared page base classes (list/create forms)
 │       └── GitHubStream/         # page-objects: {Area}/{Area}Page.cs
 ├── Data/                         # static test files (upload payloads)
 └── Test/GitHubStream/            # tests: {Area}/{Area}{Flow}Tests.cs
@@ -31,9 +30,10 @@ Ui/
 
 ## Auth (storageState)
 
-- Tests read `.auth/github-ui-state.json` (gitignored) — they never log in or log out (a logout breaks every other test in the run)
-- The one-time manual login is the `[Explicit]` bootstrap test (`dotnet test --filter StorageStateBootstrap`): headed window → human logs in (2FA/device check included) → state file saved
-- Expired state = re-run bootstrap; never paste passwords into tests, code, or config (`GITHUB_UI_PASSWORD` lives in `.env` only if a password flow is ever added)
+- Feature tests read `.auth/github-ui-state.json` (gitignored) — they never log in or log out (a logout breaks every other test in the run)
+- State is refreshed by the automated Smoke test `LoginSignInTests` (`dotnet test --filter LoginSignInTests`): anonymous context (`IsStorageStateEnabled => false`) → sign in with `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` → assert signed-in menu → `SaveStorageStateAsync()`
+- Credentials are required env vars (`.env` / environment): never paste passwords into tests, code, or config files
+- Expired state = re-run `LoginSignInTests`
 
 ## Waits
 
@@ -44,7 +44,8 @@ Ui/
 ## Cleanup (UI write → API cleanup)
 
 - Every resource created through the UI is registered **before any assert** (register-then-assert) and removed in `[OneTimeTearDown]` — the LAST class member
-- Cleanup goes through the Core API helpers (`CleanupIssueAsync`, `CleanupCommentAsync` → `RunCleanupAsync`): warning, never fail the run; GitHub issues cannot be deleted → close via PATCH (OB §17)
+- Cleanup uses Core API helpers (composition — `GitHubUiTestBase` does **not** inherit `GitHubTestBase`): call `RequestHelper`/service request helpers from the test base or a dedicated UI cleanup helper; warning-only (`RunCleanupAsync` semantics — never fail the run)
+- GitHub issues cannot be deleted → close via PATCH (OB §17)
 - Create → remove, never retain test records (sandbox repo)
 
 ## Artifacts
@@ -57,7 +58,7 @@ Ui/
 
 - Service category on class: `[Category("GitHubUi")]` (exactly one; check-type categories only on methods)
 - Check-type per `Rules/categories.md` boundaries: Smoke = single-view sanity, Regression = rule/invariant/state-transition, Negative = error/404/empty states
-- `[Description]` references the UI Observable Behaviour section, e.g. `"UI-3.2 Create issue via UI"`
+- `[Description]` references the UI Observable Behaviour section, e.g. `"UI-1 Ordinary login…"` (only numbered sections so far — see GitHubUiObservableBehaviour)
 
 ## Verification (after every generation)
 

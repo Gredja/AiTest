@@ -45,6 +45,7 @@ public class GetUserTests : GitHubTestBase
     {
         var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
         response.Data!.Login.Should().Be(_testUsername);
     }
@@ -89,6 +90,7 @@ public class GetUserTests : GitHubTestBase
     {
         var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Login.Should().Be(_testUsername);
     }
 
@@ -100,6 +102,8 @@ public class GetUserTests : GitHubTestBase
         var response1 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
         var response2 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
 
+        response1.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response2.ShouldHaveStatusCode(HttpStatusCode.OK);
         response1.Data!.Id.Should().Be(response2.Data!.Id);
         response1.Data!.Login.Should().Be(response2.Data!.Login);
     }

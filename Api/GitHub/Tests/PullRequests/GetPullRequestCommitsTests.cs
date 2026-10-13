@@ -64,6 +64,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(pullRequestCommit => pullRequestCommit.Sha.ShouldHaveValidSha());
 
         response.Data.Select(pullRequestCommit => pullRequestCommit.Sha).Should().OnlyHaveUniqueItems();
@@ -77,6 +78,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(pullRequestCommit => pullRequestCommit.Commit.Message.Should().NotBeNullOrWhiteSpace());
     }
 
@@ -111,6 +113,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(pullRequestCommit => pullRequestCommit.HtmlUrl.Should().StartWith(GithubUrlPrefix));
     }
 

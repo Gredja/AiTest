@@ -70,6 +70,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(issue => issue.ShouldHaveValidFields());
     }
 
@@ -81,6 +82,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var ids = response.Data!.Select(issue => issue.Id);
         ids.Should().OnlyHaveUniqueItems();
     }
@@ -93,6 +95,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateOpen || issue.State == GitHubEndpoints.StateClosed);
     }
 
@@ -196,7 +199,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_InvalidSince_Returns422()
     {
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
-            [.. TestRepoParam(), Query(SinceParamKey, InvalidQueryValue)]);
+            [.. TestRepoParam(), Query(JsonFields.Since, InvalidQueryValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

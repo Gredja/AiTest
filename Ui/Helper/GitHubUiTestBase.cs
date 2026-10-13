@@ -13,10 +13,16 @@ public abstract class GitHubUiTestBase
 
     private IPlaywright? _playwright;
     private IBrowser? _browser;
+    private IBrowserContext? _context;
+    private IPage? _page;
+    private BrowserPw? _browserWrapper;
 
-    protected IBrowserContext Context { get; private set; } = null!;
-    protected IPage Page { get; private set; } = null!;
-    internal BrowserPw Browser { get; private set; } = null!;
+    protected IBrowserContext Context => _context
+        ?? throw new InvalidOperationException("Context not initialized — OpenContextAsync has not run");
+    protected IPage Page => _page
+        ?? throw new InvalidOperationException("Page not initialized — OpenContextAsync has not run");
+    internal BrowserPw Browser => _browserWrapper
+        ?? throw new InvalidOperationException("Browser wrapper not initialized — OpenContextAsync has not run");
 
     protected virtual bool IsStorageStateEnabled => true;
 
@@ -26,7 +32,7 @@ public abstract class GitHubUiTestBase
         _playwright = await Microsoft.Playwright.Playwright.CreateAsync();
         _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
-            Headless = TestConfig.UiHeadless
+            Headless = TestConfig.IsUiHeadless
         });
     }
 
@@ -34,27 +40,27 @@ public abstract class GitHubUiTestBase
     public async Task OpenContextAsync()
     {
         var storageState = IsStorageStateEnabled ? ResolveStorageStatePath() : null;
-        Context = await _browser!.NewContextAsync(new BrowserNewContextOptions
+        _context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
             StorageStatePath = storageState is not null && System.IO.File.Exists(storageState) ? storageState : null,
             ViewportSize = new ViewportSize { Width = ViewportWidth, Height = ViewportHeight }
         });
-        await Context.Tracing.StartAsync(new TracingStartOptions
+        await _context.Tracing.StartAsync(new TracingStartOptions
         {
             Screenshots = true,
             Snapshots = true
         });
 
-        Page = await Context.NewPageAsync();
-        Page.SetDefaultTimeout(UiTimeoutMs);
-        Page.SetDefaultNavigationTimeout(UiTimeoutMs);
-        Browser = new BrowserPw(Page);
+        _page = await _context.NewPageAsync();
+        _page.SetDefaultTimeout(UiTimeoutMs);
+        _page.SetDefaultNavigationTimeout(UiTimeoutMs);
+        _browserWrapper = new BrowserPw(_page);
     }
 
     [TearDown]
     public async Task CloseContextAsync()
     {
-        if (Context is null)
+        if (_context is null)
         {
             return;
         }
@@ -63,23 +69,25 @@ public abstract class GitHubUiTestBase
         {
             var artifacts = ResolveArtifactsDirectory();
             var name = SanitizeFileName(TestContext.CurrentContext.Test.Name);
-            await Page.ScreenshotAsync(new PageScreenshotOptions
+            await _page!.ScreenshotAsync(new PageScreenshotOptions
             {
                 Path = Path.Combine(artifacts, $"{name}.png"),
                 FullPage = true
             });
-            await Context.Tracing.StopAsync(new TracingStopOptions
+            await _context.Tracing.StopAsync(new TracingStopOptions
             {
                 Path = Path.Combine(artifacts, $"{name}.zip")
             });
         }
         else
         {
-            await Context.Tracing.StopAsync();
+            await _context.Tracing.StopAsync();
         }
 
-        await Context.CloseAsync();
-        Context = null!;
+        await _context.CloseAsync();
+        _context = null;
+        _page = null;
+        _browserWrapper = null;
     }
 
     [OneTimeTearDown]

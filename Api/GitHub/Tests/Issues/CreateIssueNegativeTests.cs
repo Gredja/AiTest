@@ -14,8 +14,7 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class CreateIssueNegativeTests : GitHubTestBase
 {
-    private const string MissingTitleErrorMessage = "Invalid request.\n\n\"title\" wasn't supplied.";
-    private const string LabelsNullErrorMessage = "Invalid request.\n\nFor 'properties/labels', nil is not an array.";
+    private const string ProbeTitle = "Probe";
     private const int ExistingIssueNumber = 5;
 
     [Test]
@@ -28,7 +27,7 @@ public class CreateIssueNegativeTests : GitHubTestBase
         var response = await Post<Dictionary<string, object>, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, body, TestRepoParam());
 
-        response.ShouldHaveError(HttpStatusCode.UnprocessableEntity, MissingTitleErrorMessage);
+        response.ShouldHaveError(HttpStatusCode.UnprocessableEntity, GitHubErrors.MissingTitle);
     }
 
     [Test]
@@ -36,12 +35,12 @@ public class CreateIssueNegativeTests : GitHubTestBase
     [Description("17.3 POST with labels null returns 422 naming the invalid field")]
     public async Task CreateIssue_LabelsNull_ReturnsUnprocessableEntity()
     {
-        var body = new Dictionary<string, object?> { [JsonFields.Title] = "Probe", [JsonFields.Labels] = null };
+        var body = new Dictionary<string, object?> { [JsonFields.Title] = ProbeTitle, [JsonFields.Labels] = null };
 
         var response = await Post<Dictionary<string, object?>, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, body, TestRepoParam());
 
-        response.ShouldHaveError(HttpStatusCode.UnprocessableEntity, LabelsNullErrorMessage);
+        response.ShouldHaveError(HttpStatusCode.UnprocessableEntity, GitHubErrors.LabelsNull);
     }
 
     [Test]
@@ -53,7 +52,7 @@ public class CreateIssueNegativeTests : GitHubTestBase
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(new Dictionary<string, object> { [JsonFields.Title] = "Probe", [JsonFields.Body] = "Probe" });
+        request.AddJsonBody(new Dictionary<string, object> { [JsonFields.Title] = ProbeTitle, [JsonFields.Body] = ProbeTitle });
 
         var response = await Client.ExecuteAsync(request);
 
@@ -65,7 +64,7 @@ public class CreateIssueNegativeTests : GitHubTestBase
     [Description("17.5 POST to non-existent repo returns 404 with documented message")]
     public async Task CreateIssue_NonExistentRepo_ReturnsNotFound()
     {
-        var body = new Dictionary<string, object> { [JsonFields.Title] = "Probe" };
+        var body = new Dictionary<string, object> { [JsonFields.Title] = ProbeTitle };
 
         var response = await Post<Dictionary<string, object>, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, body,

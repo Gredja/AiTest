@@ -82,6 +82,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(todo => todo.ShouldHaveValidFields());
     }
 
@@ -115,6 +116,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         var ids = response.Data!.Select(todo => todo.Id);
         ids.Should().OnlyHaveUniqueItems();
     }

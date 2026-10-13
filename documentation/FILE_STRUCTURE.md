@@ -21,6 +21,8 @@ Gredja/
 ├── .gitattributes                # line ending normalization
 ├── .gitignore
 ├── .graphifyignore
+├── .auth/                       # not tracked — Playwright storageState
+├── .playwright-cli/             # not tracked — local CLI cache
 ├── allure-results/              # not tracked
 ├── TestResults/                 # not tracked — ONLY TestRunReport-*.md (raw logs in %TEMP%\GredjaTestRun)
 ├── .mimocode/
@@ -47,9 +49,11 @@ Gredja/
 │       ├── review-pr/SKILL.md
 │       ├── test/SKILL.md
 │       ├── test-report/SKILL.md
+│       ├── ui-test-gen/SKILL.md
 │       └── update-docs/SKILL.md
 ├── Scripts/
 │   ├── allure-report.ps1
+│   ├── install-playwright.ps1    # playwright install chromium (+ deps)
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   └── test-coverage.ps1
 └── backups/
@@ -323,7 +327,6 @@ Ui/
 │   │   └── BrowserPw.cs          # page-object wrapper: pages exposed as properties
 │   └── UiHelper/
 │       ├── CommonPages/          # cross-area pages (header, nav): LoginPage, HeaderPage
-│       ├── BaseHelpers/          # shared page base classes
 │       └── GitHubStream/         # page-objects: {Area}/{Area}Page.cs
 ├── Data/                         # static test files (upload payloads)
 └── Test/GitHubStream/            # tests: {Area}/{Area}{Flow}Tests.cs (Login/LoginSignInTests.cs)
@@ -343,6 +346,7 @@ Rules/
 ├── git.md
 ├── models.md
 ├── test-practices.md
+├── ui-testing.md
 └── workflow.md
 ```
 
@@ -364,6 +368,7 @@ documentation/
 ├── GeneralPlan.md                # Permanent user backlog (never deleted)
 ├── GitHubObservableBehaviour.md
 ├── GitHubTestingStructure.md
+├── GitHubUiObservableBehaviour.md
 ├── JsonPlaceholderObservableBehaviour.md
 ├── JsonPlaceholderTestPlan.md
 ├── ObservableBehaviourTemplate.md

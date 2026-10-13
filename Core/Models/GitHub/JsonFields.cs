@@ -17,6 +17,8 @@ public static class JsonFields
     public const string Labels = "labels";
     public const string MergedAt = "merged_at";
     public const string OpenIssuesCount = "open_issues_count";
+    public const string Page = "page";
+    public const string PerPage = "per_page";
     public const string Private = "private";
     public const string Prerelease = "prerelease";
     public const string Protected = "protected";
@@ -24,6 +26,7 @@ public static class JsonFields
     public const string RawUrl = "raw_url";
     public const string RoleName = "role_name";
     public const string StargazersCount = "stargazers_count";
+    public const string Since = "since";
     public const string State = "state";
     public const string TagName = "tag_name";
     public const string Title = "title";
