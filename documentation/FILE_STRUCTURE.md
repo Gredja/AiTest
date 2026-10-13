@@ -81,6 +81,7 @@ Core/
 │   ├── Data/
 │   │   └── DataGenerator.cs       # RandomString/RandomIntExclusive for varying write payloads
 │   ├── GitHub/
+│   │   ├── GitHubCleanupHelper.cs # shared cleanup core (Api/E2E delegation + Ui composition)
 │   │   ├── GitHubParamHelper.cs
 │   │   └── GitHubTestBase.cs
 │   ├── Http/

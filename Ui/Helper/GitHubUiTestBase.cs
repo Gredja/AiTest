@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Helpers.GitHub;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
 using Ui.Helper.BrowserHelpers;
@@ -16,6 +17,9 @@ public abstract class GitHubUiTestBase
     private IBrowserContext? _context;
     private IPage? _page;
     private BrowserPw? _browserWrapper;
+
+    // API cleanup by composition — GitHubUiTestBase does not inherit GitHubTestBase
+    protected GitHubCleanupHelper Cleanup { get; } = new();
 
     protected IBrowserContext Context => _context
         ?? throw new InvalidOperationException("Context not initialized — OpenContextAsync has not run");

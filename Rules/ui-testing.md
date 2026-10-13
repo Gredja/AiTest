@@ -44,8 +44,7 @@ Ui/
 ## Cleanup (UI write → API cleanup)
 
 - Every resource created through the UI is registered **before any assert** (register-then-assert) and removed in `[OneTimeTearDown]` — the LAST class member
-- Cleanup uses Core API helpers (composition — `GitHubUiTestBase` does **not** inherit `GitHubTestBase`): call `RequestHelper`/service request helpers from the test base or a dedicated UI cleanup helper; warning-only (`RunCleanupAsync` semantics — never fail the run)
-- GitHub issues cannot be deleted → close via PATCH (OB §17)
+- Cleanup via composition: `GitHubUiTestBase.Cleanup` is a `GitHubCleanupHelper` (Core) — same warning-only semantics as Api/E2E (`RunCleanupAsync` never fails the run); issue → close via PATCH (OB §17), comment → API DELETE
 - Create → remove, never retain test records (sandbox repo)
 
 ## Artifacts

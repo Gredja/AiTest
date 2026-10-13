@@ -1,7 +1,6 @@
 using Core.Config;
 using Core.Models.Generic;
 using Core.Models.GitHub;
-using NUnit.Framework;
 using RestSharp;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -51,71 +50,15 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected static List<RequestDictionaryModel> IssueParams(int issueNumber) =>
         [.. TestRepoParam(), .. GitHubParamHelper.IssueNumberParam(issueNumber)];
 
-    protected async Task CleanupCommentAsync(long? commentId)
-    {
-        if (!commentId.HasValue)
-        {
-            return;
-        }
+    private readonly GitHubCleanupHelper _cleanup = new();
 
-        await RunCleanupAsync(
-            () => Delete<object>(GitHubEndpoints.RepoIssueCommentById, CommentParams(commentId.Value)),
-            $"delete comment {commentId}");
-    }
+    protected Task CleanupCommentAsync(long? commentId) => _cleanup.CleanupCommentAsync(commentId);
 
-    protected async Task CleanupIssueAsync(int? issueNumber)
-    {
-        if (!issueNumber.HasValue)
-        {
-            return;
-        }
+    protected Task CleanupIssueAsync(int? issueNumber) => _cleanup.CleanupIssueAsync(issueNumber);
 
-        // REST has no issue-delete endpoint (DELETE → 404, OB §17) — cleanup closes instead
-        await RunCleanupAsync(
-            () => Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                GitHubEndpoints.RepoIssueById,
-                new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                IssueParams(issueNumber.Value)),
-            $"close issue {issueNumber}");
-    }
+    protected Task CleanupInvitationAsync(long? invitationId) => _cleanup.CleanupInvitationAsync(invitationId);
 
-    protected async Task CleanupInvitationAsync(long? invitationId)
-    {
-        if (!invitationId.HasValue)
-        {
-            return;
-        }
-
-        await RunCleanupAsync(
-            () => Delete<object>(GitHubEndpoints.RepoInvitationById,
-                [.. TestRepoParam(), .. GitHubParamHelper.InvitationIdParam(invitationId.Value)]),
-            $"revoke invitation {invitationId}");
-    }
-
-    // Accepts any of the three forms callers hold ("refs/heads/x", "heads/x", "x") —
-    // the endpoint wants exactly "heads/x"; a wrong form 404s and the NotFound
-    // tolerance would silently leak the branch
-    protected async Task CleanupGitRefAsync(string refPath)
-    {
-        string path;
-        if (refPath.StartsWith(RefsHeadsPrefix, StringComparison.Ordinal))
-        {
-            path = $"{HeadsPrefix}{refPath[RefsHeadsPrefix.Length..]}";
-        }
-        else if (refPath.StartsWith(HeadsPrefix, StringComparison.Ordinal))
-        {
-            path = refPath;
-        }
-        else
-        {
-            path = $"{HeadsPrefix}{refPath}";
-        }
-
-        await RunCleanupAsync(
-            () => Delete<object>(GitHubEndpoints.RepoGitRefById,
-                [.. TestRepoParam(), .. GitHubParamHelper.GitRefParam(path)]),
-            $"delete ref {path}");
-    }
+    protected Task CleanupGitRefAsync(string refPath) => _cleanup.CleanupGitRefAsync(refPath);
 
     // Scratch PR pipeline: changed blob → tree → commit → branch → PR. A same-tree commit gives
     // "No commits between" (OB §21) and an empty files list for the dynamic-max PR fixtures —
@@ -142,18 +85,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         }
         catch (Exception)
         {
-            if (createdPull is not null)
-            {
-                await RunCleanupAsync(
-                    () => Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
-                        GitHubEndpoints.RepoPullRequestById,
-                        new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
-                        PullParams(createdPull.Number)),
-                    $"close scratch pull request {createdPull.Number}");
-            }
-
-            await CleanupGitRefAsync(headBranch);
-            await CleanupGitRefAsync(baseBranch);
+            await CleanupPullRequestAsync(createdPull?.Number, headBranch, baseBranch);
             throw;
         }
     }
@@ -242,39 +174,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             ?? throw new InvalidOperationException("PR create returned 201 without a body");
     }
 
-    protected async Task CleanupPullRequestAsync(int? pullNumber, string headBranch, string baseBranch)
-    {
-        if (pullNumber.HasValue)
-        {
-            await RunCleanupAsync(
-                () => Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
-                    GitHubEndpoints.RepoPullRequestById,
-                    new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
-                    PullParams(pullNumber.Value)),
-                $"close pull request {pullNumber}");
-        }
-
-        await CleanupGitRefAsync(headBranch);
-        await CleanupGitRefAsync(baseBranch);
-    }
-
-    // One cleanup core for every entity: warn, never fail the run (Rules/test-practices.md → E2E cleanup)
-    private async Task RunCleanupAsync<T>(Func<Task<T>> cleanup, string subject)
-        where T : RestResponse
-    {
-        try
-        {
-            var response = await cleanup();
-            if (!response.IsSuccessful && response.StatusCode != HttpStatusCode.NotFound)
-            {
-                TestContext.Progress.WriteLine($"Warning: {subject}: HTTP {(int)response.StatusCode}");
-            }
-        }
-        catch (HttpRequestException exception)
-        {
-            TestContext.Progress.WriteLine($"Warning: {subject} failed: {exception.Message}");
-        }
-    }
+    protected Task CleanupPullRequestAsync(int? pullNumber, string headBranch, string baseBranch) =>
+        _cleanup.CleanupPullRequestAsync(pullNumber, headBranch, baseBranch);
 
     protected static (string Owner, string Repo) ParseRepo() => ParseRepo(TestConfig.GitHubTestRepo);
 

@@ -419,8 +419,8 @@ git checkout -b features/add-user-tests
 **Workflow:**
 - План → одобение → изменения → отчёт
 - Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
-- Параллелизм тестов: механизм включён (`[assembly: Parallelizable(Fixtures)]` в `Api/AssemblyInfo.cs` и `E2E/AssemblyInfo.cs`), число потоков = **1 по умолчанию**; менять через `.runsettings` (`<NUnit><NumberOfTestWorkers>`) или CLI: `dotnet test -- NUnit.NumberOfTestWorkers=8` (на 8 потоках solution-ран ~10s вместо ~57s)
-- Перед коммитом: `dotnet format` + `dotnet test` должны пройти
+- Параллелизм тестов: механизм включён (`[assembly: Parallelizable(Fixtures)]` в `Api/E2E/Ui AssemblyInfo.cs`), число потоков = **8** в `.runsettings` (`<NUnit><NumberOfTestWorkers>`); файл авто-применяется на каждый `dotnet test` через `RunSettingsFilePath` в `Directory.Build.props`; точечно: `dotnet test` с `NUnit.NumberOfTestWorkers=N` в adapter-секции (после двойного тире)
+- Перед коммитом: `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` должны пройти (полный прогон — `/test`)
 - SDK пин: `global.json` → `10.0.401`, `rollForward: latestFeature` — сборка на другой машине берёт ближайший совместимый SDK, а не случайный
 - Коммиты только по запросу
 - Гигиена репо: корень — только файлы проекта; вывод инструментов → gitignored/%TEMP%; после массовых правок `git add -A` без EOL-warning (`.gitattributes`: .cs/.csproj → CRLF, .md → LF; LF-файлы от инструментов нормализует `Scripts/normalize-eol.ps1` — перед add запускает `/commit`); структурные изменения включают удаления gitignored-файлов → `FILE_STRUCTURE.md`/`AGENTS.md` обновлять в том же ходу, даже без коммита
