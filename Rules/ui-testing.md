@@ -25,11 +25,13 @@ Ui/
 
 - **Role/text/label only**: `GetByRole`, `GetByText`, `GetByLabel`, `GetByPlaceholder`
 - NEVER CSS-classes or XPath on the tested site (generated class names change between releases)
-- Every locator is verified against a **live snapshot** of the page before it is written (agent: use the `playwright` skill); undated selector claims in the UI Observable Behaviour are drafts
+- **Reuse before extract** — on similar pages, apply locators/patterns already verified on other pages (shared header, tab counts `Open (N)`/`Closed (N)`, level-N headings) instead of snapshotting everything again; snapshot only the page-unique elements, or re-snapshot when an existing locator fails
+- New locators are verified against a **live snapshot** before they are written (agent: use the `playwright` skill — one session, multiple navigations for speed); undated claims in the UI Observable Behaviour are drafts
 - One locator per element; locator lives in the page-object, not in tests
 
 ## Auth (storageState)
 
+- **All UI tests use the `gredjapl` account** (fresh dedicated UI account; API tests keep `Gredja` via `GitHub.TestUsername`). Assert username via `TestConfig.UiUsername` (`Ui.Username` in testsettings.json)
 - Feature tests read `.auth/github-ui-state.json` (gitignored) — they never log in or log out (a logout breaks every other test in the run)
 - State is refreshed by the automated Smoke test `LoginSignInTests` (`dotnet test --filter LoginSignInTests`): anonymous context (`IsStorageStateEnabled => false`) → sign in with `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` → assert signed-in menu → `SaveStorageStateAsync()`
 - Credentials are required env vars (`.env` / environment): never paste passwords into tests, code, or config files

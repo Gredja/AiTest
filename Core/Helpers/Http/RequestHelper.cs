@@ -112,13 +112,16 @@ public class RequestHelper
 
     private void AddGitHubAuth(RestRequest request)
     {
-        if (!ReferenceEquals(Client, _gitHubClient) || string.IsNullOrEmpty(_githubToken.Value))
+        var token = GitHubAuthToken;
+        if (!ReferenceEquals(Client, _gitHubClient) || string.IsNullOrEmpty(token))
         {
             return;
         }
 
-        request.AddHeader(AuthorizationHeader, $"Bearer {_githubToken.Value}");
+        request.AddHeader(AuthorizationHeader, $"Bearer {token}");
     }
+
+    protected virtual string? GitHubAuthToken => _githubToken.Value;
 
     protected static void AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
     {

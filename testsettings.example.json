@@ -21,6 +21,7 @@
     "BaseUrl": "https://github.com",
     "Headless": false,
     "StatePath": ".auth/github-ui-state.json",
+    "TestRepo": "gredjapl/ui-sandbox",
     "Username": "gredjapl"
   }
 }

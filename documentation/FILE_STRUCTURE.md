@@ -83,7 +83,8 @@ Core/
 │   ├── GitHub/
 │   │   ├── GitHubCleanupHelper.cs # shared cleanup core (Api/E2E delegation + Ui composition)
 │   │   ├── GitHubParamHelper.cs
-│   │   └── GitHubTestBase.cs
+│   │   ├── GitHubTestBase.cs
+│   │   └── UiSandboxCleanupHelper.cs # UI sandbox (gredjapl/ui-sandbox) via GITHUB_UI_PAT
 │   ├── Http/
 │   │   ├── GitHubRequestHelper.cs
 │   │   ├── JsonPlaceholderRequestHelper.cs
@@ -320,17 +321,23 @@ E2E/
 ```
 Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
-├── AssemblyInfo.cs               # [assembly: Parallelizable(Fixtures)] + LevelOfParallelism(1)
+├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ├── Helper/
-│   ├── GitHubUiTestBase.cs       # browser fixture: Chromium → context(storageState) → Page; artifacts on failure
+│   ├── GitHubUiTestBase.cs       # browser fixture + UiSandboxCleanupHelper (GITHUB_UI_PAT)
 │   ├── BrowserHelpers/
 │   │   └── BrowserPw.cs          # page-object wrapper: pages exposed as properties
 │   └── UiHelper/
 │       ├── CommonPages/          # cross-area pages (header, nav): LoginPage, HeaderPage
-│       └── GitHubStream/         # page-objects: {Area}/{Area}Page.cs
+│       └── GitHubStream/
+│           ├── Issues/           # IssueCreatePage, IssueDetailPage, CommentForm
+│           └── Repository/       # RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
 ├── Data/                         # static test files (upload payloads)
-└── Test/GitHubStream/            # tests: {Area}/{Area}{Flow}Tests.cs (Login/LoginSignInTests.cs)
+└── Test/GitHubStream/
+    ├── Issues/                   # IssuesUiTests
+    ├── Login/                    # LoginSignInTests, AuthStateUiTests
+    ├── Pulls/                    # PullsUiTests
+    └── Repository/               # RepositoryUiTests
 ```
 
 ## Rules/

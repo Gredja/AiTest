@@ -18,8 +18,9 @@ public abstract class GitHubUiTestBase
     private IPage? _page;
     private BrowserPw? _browserWrapper;
 
-    // API cleanup by composition — GitHubUiTestBase does not inherit GitHubTestBase
-    protected GitHubCleanupHelper Cleanup { get; } = new();
+    // API cleanup against ui-sandbox (GITHUB_UI_PAT) by composition —
+    // GitHubUiTestBase does not inherit GitHubTestBase
+    protected UiSandboxCleanupHelper Cleanup { get; } = new();
 
     protected IBrowserContext Context => _context
         ?? throw new InvalidOperationException("Context not initialized — OpenContextAsync has not run");

@@ -37,28 +37,49 @@ When generating or reviewing GitHub UI tests, the AI agent:
 - Prerequisites: credentials `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` in `.env`; the login test overrides `IsStorageStateEnabled => false` (anonymous context) and saves storageState only after the assert
 - Gotcha: an account created without a password (social login / passkey-only) fails with "This account does not support password sign-in" — fix: sign in via Google/Apple/passkey once, then Settings → Password and authentication → create a password (verified 2026-10-09)
 
-## Page: Repository landing
+## Page: Repository landing (ui-sandbox)
 
-- Status: **draft — no verified locators yet** (scaffold 2026-10-09)
+- URL: `https://github.com/gredjapl/ui-sandbox` — verified 2026-10-13
+- `button "main branch"` (default-branch switcher, text `main`) — verified 2026-10-13
+- `link "README.md, (File)"` in the file tree — verified 2026-10-13
+- TestRepo path comes from `TestConfig.UiTestRepo` — never hardcode the repo in page-objects
 
-## Page: Issues list
+## Page: Issues list (ui-sandbox, empty)
 
-- Status: **draft — no verified locators yet**
+- URL: `.../issues` — verified 2026-10-13
+- `heading "Issues" level=1` · `link "New issue"` — verified 2026-10-13
+- Empty state: `heading "No results matched your search"` — verified 2026-10-13
+- Tab counter renders `Open (0)` anonymous / `Open 0` authenticated — parse with `Open\D*(\d+)` regex
 
-## Page: Issue detail
+## Page: Issue create form (ui-sandbox)
 
-- Status: **draft — no verified locators yet**
+- URL: `.../issues/new` (requires auth; anonymous → `/login?return_to=...`) — verified 2026-10-13
+- `heading "Create new issue" level=1` — verified 2026-10-13
+- `textbox "Add a title"` (placeholder `Title`, aria-required) — verified 2026-10-13
+- `textbox "Markdown value"` (description textarea, placeholder `Type your description here…`) — verified 2026-10-13
+- Submit: accessible name is **`Create ( control enter )`** (shortcut hint in name) — `GetByRole(Button, Name = "Create ( control enter )")` — verified 2026-10-13
+- `button "Cancel"` — verified 2026-10-13
 
-## Page: Issue create form
+## Page: Pull requests list (ui-sandbox, empty)
 
-- Status: **draft — requires authenticated storageState**
+- URL: `.../pulls` — verified 2026-10-13
+- Empty state: `heading "No pull requests matched your search"` — verified 2026-10-13
+- Tab counters: same `Open 0` / `Closed 0` format as Issues when authenticated — verified 2026-10-13
 
----
+## Page: Code view (ui-sandbox)
+
+- URL: `.../tree/main` — verified 2026-10-13
+- `link "README.md, (File)"` — verified 2026-10-13
+
+## Page: 404
+
+- Non-existent repo → `img` alt: `404 "This is not the web page you are looking for"` — verified 2026-10-13
 
 ## Gotchas (verified as they are discovered)
 
 - Login wall: anonymous writers are redirected to `/login` — auth-dependent sections must document their storageState prerequisite
-- (empty)
+- Tab counter format differs anonymous (`Open (0)`) vs authenticated (`Open 0`) — count parsers must accept both
+- UI fixtures share one storageState file → assembly is `ParallelScope.None`; parallel login raced with state readers (failed 20s timeouts)
 
 ---
 

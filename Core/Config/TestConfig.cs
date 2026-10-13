@@ -41,8 +41,10 @@ public static class TestConfig
     public static bool IsUiHeadless => GetRequiredBool(Ui, "Headless");
     public static string UiStatePath => GetRequiredString(Ui, "StatePath");
     public static string UiUsername => GetRequiredString(Ui, "Username");
+    public static string UiTestRepo => GetRequiredString(Ui, "TestRepo");
     public static string UiLogin => GetRequiredEnvironmentValue("GITHUB_UI_EMAIL");
     public static string UiPassword => GetRequiredEnvironmentValue("GITHUB_UI_PASSWORD");
+    public static string UiApiToken => GetRequiredEnvironmentValue("GITHUB_UI_PAT");
 
     private static string GetRequiredString(JsonElement section, string key)
     {

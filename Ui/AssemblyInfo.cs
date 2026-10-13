@@ -1,5 +1,5 @@
-// Fixtures run in parallel with each other; tests inside a fixture stay sequential.
-// Worker count defaults to 1 — change via .runsettings (<NUnit><NumberOfTestWorkers>)
-// or CLI: dotnet test -- NUnit.NumberOfTestWorkers=4
-[assembly: Parallelizable(ParallelScope.Fixtures)]
-[assembly: LevelOfParallelism(1)]
+// UI tests run sequentially regardless of NumberOfTestWorkers in .runsettings:
+// all fixtures share one storageState file (.auth/github-ui-state.json) —
+// a concurrent LoginSignIn would race with feature tests reading the state.
+// API/E2E keep the 8 workers from .runsettings.
+[assembly: Parallelizable(ParallelScope.None)]

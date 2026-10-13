@@ -164,6 +164,7 @@ GITHUB_PAT=твой_личный_токен_здесь
 
 GITHUB_UI_EMAIL=email_аккаунта_для_UI-входа
 GITHUB_UI_PASSWORD=пароль_аккаунта_для_UI-входа
+GITHUB_UI_PAT=токен_для_UI-sandbox_репозитория
 ```
 
 **Как получить токен:**
@@ -175,7 +176,7 @@ GITHUB_UI_PASSWORD=пароль_аккаунта_для_UI-входа
 
 Токен нужен для тестов GitHub API.
 
-`GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` — креды для UI-теста входа (`TestConfig.UiLogin` / `TestConfig.UiPassword`; читаются только из процессного окружения или `.env`, без JSON-приоритета). Аккаунт должен поддерживать парольный вход: аккаунт, созданный через Google/Apple/passkey без пароля, отклоняет парольный вход («This account does not support password sign-in») — сначала создай пароль в Settings → Password and authentication.
+`GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` — креды для UI-теста входа (`TestConfig.UiLogin` / `TestConfig.UiPassword`; читаются только из процессного окружения или `.env`, без JSON-приоритета). Аккаунт должен поддерживать парольный вход: аккаунт, созданный через Google/Apple/passkey без пароля, отклоняет парольный вход («This account does not support password sign-in») — сначала создай пароль в Settings → Password and authentication. `GITHUB_UI_PAT` — токен для API-действий UI-тестов в песочнице `gredjapl/ui-sandbox` (`TestConfig.UiApiToken`); аккаунт UI — `gredjapl` (`Ui.Username`), API-тесты продолжают работать на `Gredja` (`GitHub.TestUsername`, `GITHUB_PAT`).
 
 **Файл конфигурации тестов:** `testsettings.json` в корне (в `.gitignore`, в клоне его нет).
 Без него сборка и тесты работают: `Core.csproj` подставляет трекаемый `testsettings.example.json`.
@@ -419,7 +420,7 @@ git checkout -b features/add-user-tests
 **Workflow:**
 - План → одобение → изменения → отчёт
 - Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
-- Параллелизм тестов: механизм включён (`[assembly: Parallelizable(Fixtures)]` в `Api/E2E/Ui AssemblyInfo.cs`), число потоков = **8** в `.runsettings` (`<NUnit><NumberOfTestWorkers>`); файл авто-применяется на каждый `dotnet test` через `RunSettingsFilePath` в `Directory.Build.props`; точечно: `dotnet test` с `NUnit.NumberOfTestWorkers=N` в adapter-секции (после двойного тире)
+- Параллелизм тестов: Api/E2E — **8 потоков** (`.runsettings` `<NUnit><NumberOfTestWorkers>`, авто-применяется через `RunSettingsFilePath` в `Directory.Build.props`); Ui — **последовательно** (`[assembly: Parallelizable(None)]` в `Ui/AssemblyInfo.cs` — фикстуры делят один storageState); точечно: `dotnet test` с `NUnit.NumberOfTestWorkers=N` в adapter-секции (после двойного тире)
 - Перед коммитом: `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` должны пройти (полный прогон — `/test`)
 - SDK пин: `global.json` → `10.0.401`, `rollForward: latestFeature` — сборка на другой машине берёт ближайший совместимый SDK, а не случайный
 - Коммиты только по запросу

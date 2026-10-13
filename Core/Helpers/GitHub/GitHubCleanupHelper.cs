@@ -22,7 +22,7 @@ public class GitHubCleanupHelper : GitHubRequestHelper
         }
 
         await RunCleanupAsync(
-            () => Delete<object>(GitHubEndpoints.RepoIssueCommentById, CommentParams(commentId.Value)),
+            () => Delete<object>(GitHubEndpoints.RepoIssueCommentById, CommentParams(commentId.Value, TestRepoParam())),
             $"delete comment {commentId}");
     }
 
@@ -38,7 +38,7 @@ public class GitHubCleanupHelper : GitHubRequestHelper
             () => Patch<UpdateIssueModelRequest, IssueModelResponse>(
                 GitHubEndpoints.RepoIssueById,
                 new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                IssueParams(issueNumber.Value)),
+                IssueParams(issueNumber.Value, TestRepoParam())),
             $"close issue {issueNumber}");
     }
 
@@ -88,7 +88,7 @@ public class GitHubCleanupHelper : GitHubRequestHelper
                 () => Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
                     GitHubEndpoints.RepoPullRequestById,
                     new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
-                    PullParams(pullNumber.Value)),
+                    PullParams(pullNumber.Value, TestRepoParam())),
                 $"close pull request {pullNumber}");
         }
 
@@ -96,21 +96,23 @@ public class GitHubCleanupHelper : GitHubRequestHelper
         await CleanupGitRefAsync(baseBranch);
     }
 
-    private static List<RequestDictionaryModel> TestRepoParam()
+    private List<RequestDictionaryModel> TestRepoParam()
     {
-        var (owner, repo) = ParseRepo(TestConfig.GitHubTestRepo);
+        var (owner, repo) = ParseRepo(RepoFullName);
 
         return GitHubParamHelper.RepoParam(owner, repo);
     }
 
-    private static List<RequestDictionaryModel> PullParams(int pullNumber) =>
-        [.. TestRepoParam(), .. GitHubParamHelper.PullRequestNumberParam(pullNumber)];
+    protected virtual string RepoFullName => TestConfig.GitHubTestRepo;
 
-    private static List<RequestDictionaryModel> CommentParams(long commentId) =>
-        [.. TestRepoParam(), .. GitHubParamHelper.CommentIdParam(commentId)];
+    private static List<RequestDictionaryModel> PullParams(int pullNumber, List<RequestDictionaryModel> testRepo) =>
+        [.. testRepo, .. GitHubParamHelper.PullRequestNumberParam(pullNumber)];
 
-    private static List<RequestDictionaryModel> IssueParams(int issueNumber) =>
-        [.. TestRepoParam(), .. GitHubParamHelper.IssueNumberParam(issueNumber)];
+    private static List<RequestDictionaryModel> CommentParams(long commentId, List<RequestDictionaryModel> testRepo) =>
+        [.. testRepo, .. GitHubParamHelper.CommentIdParam(commentId)];
+
+    private static List<RequestDictionaryModel> IssueParams(int issueNumber, List<RequestDictionaryModel> testRepo) =>
+        [.. testRepo, .. GitHubParamHelper.IssueNumberParam(issueNumber)];
 
     private static (string Owner, string Repo) ParseRepo(string fullName)
     {
