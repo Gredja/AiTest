@@ -23,5 +23,9 @@ internal sealed class IssueCreatePage
         await _page.GetByRole(AriaRole.Textbox, new() { Name = "Markdown value" }).FillAsync(description);
         // accessible name includes the shortcut hint: "Create ( control enter )" — verified 2026-10-13
         await _page.GetByRole(AriaRole.Button, new() { Name = "Create ( control enter )" }).ClickAsync();
+
+        // submit is a POST followed by a client-side redirect — wait for the heading that only exists
+        // on the new issue page: rendering it implies the URL is already /issues/<number>
+        await _page.GetByRole(AriaRole.Heading).Filter(new() { HasTextString = title }).First.WaitForAsync();
     }
 }

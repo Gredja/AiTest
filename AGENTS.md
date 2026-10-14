@@ -87,6 +87,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - `Rules/git.md` — remote, commits, secrets, repo hygiene
 - `Rules/workflow.md` — plan → approval → changes → report
 - `Rules/categories.md` — test categories
+- `Rules/ui-testing.md` — UI-тесты (Playwright): структура page-objects, локаторы, auth/storageState, waits (ожидание исхода действия до assert), cleanup, категории
 
 ## AI Onboarding (для новичка)
 

@@ -334,8 +334,8 @@ Ui/
 │           └── Repository/       # RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
 ├── Data/                         # static test files (upload payloads)
 └── Test/GitHubStream/
-    ├── Issues/                   # IssuesUiTests
-    ├── Login/                    # LoginSignInTests, AuthStateUiTests
+    ├── Issues/                   # IssuesUiTests, IssueUiTests
+    ├── Login/                    # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
     ├── Pulls/                    # PullsUiTests
     └── Repository/               # RepositoryUiTests
 ```

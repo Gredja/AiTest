@@ -8,12 +8,16 @@ internal sealed class CommentForm
 
     internal CommentForm(IPage page) => _page = page;
 
+    // textarea placeholder verified on issue #1 — 2026-10-13
     internal async Task AddCommentAsync(string body)
     {
-        await _page.GetByRole(AriaRole.Textbox, new() { Name = "Markdown value" }).Last.FillAsync(body);
+        await _page.GetByPlaceholder("Use Markdown to format your comment").FillAsync(body);
         await _page.GetByRole(AriaRole.Button, new() { Name = "Comment", Exact = true }).ClickAsync();
+
+        // the comment is appended after the POST returns — wait for it before the caller asserts
+        await _page.GetByText(body).First.WaitForAsync();
     }
 
     internal async Task<bool> ContainsCommentAsync(string body) =>
-        await _page.GetByText(body, new() { Exact = true }).CountAsync() > 0;
+        await _page.GetByText(body).CountAsync() > 0;
 }

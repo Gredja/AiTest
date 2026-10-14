@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Helpers;
 using Microsoft.Playwright;
 
 namespace Ui.Helper.UiHelper.GitHubStream.Repository;
@@ -30,4 +31,19 @@ internal sealed class IssuesPage
 
         return match.Success ? int.Parse(match.Groups[1].Value) : -1;
     }
+
+    internal async Task<bool> ContainsIssueWithTitleAsync(string title) =>
+        await _page.GetByRole(AriaRole.Link).Filter(new() { HasTextString = title }).CountAsync() > 0;
+
+    // The list is indexed asynchronously after a write: the page loaded right after a create
+    // can still miss the new issue (verified 2026-10-14) — poll with a reload instead of
+    // a single instant count, per Rules/test-practices.md read-after-write
+    internal async Task<WaitResult<bool>> WaitForIssueWithTitleAsync(string title) =>
+        await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                await _page.ReloadAsync();
+                return await ContainsIssueWithTitleAsync(title);
+            },
+            found => found);
 }
