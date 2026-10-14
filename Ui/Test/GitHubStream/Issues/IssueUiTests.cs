@@ -1,5 +1,6 @@
 using Core.Config;
 using Core.Helpers;
+using Core.Helpers.GitHub;
 using Core.Models.GitHub;
 using FluentAssertions;
 using AllureAdapter;
@@ -65,6 +66,7 @@ public class IssueUiTests : GitHubUiTestBase
         await Browser.IssueDetailPage.OpenAsync(issueNumber);
 
         await Browser.CommentForm.AddCommentAsync(body);
+        await RegisterCommentIdAsync(issueNumber, body);
 
         (await Browser.CommentForm.ContainsCommentAsync(body)).Should().BeTrue("comment must appear in the thread");
     }
@@ -107,6 +109,7 @@ public class IssueUiTests : GitHubUiTestBase
         await Browser.IssueDetailPage.OpenAsync(issueNumber);
 
         await Browser.CommentForm.AddCommentAsync(body);
+        await RegisterCommentIdAsync(issueNumber, body);
 
         (await Browser.CommentForm.ContainsCommentAsync(body)).Should().BeTrue("added comment must be visible");
     }
@@ -130,11 +133,31 @@ public class IssueUiTests : GitHubUiTestBase
         return issueNumber;
     }
 
+    // The UI never exposes the comment id, but cleanup deletes by id — read it back via API before
+    // the assert (register-then-assert), polling over the read-after-write indexing lag
+    private async Task RegisterCommentIdAsync(int issueNumber, string body)
+    {
+        var found = await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                var response = await Cleanup.Get<List<CommentModelResponse>>(
+                    GitHubEndpoints.RepoIssueComments,
+                    [.. RepoParams(), .. GitHubParamHelper.IssueNumberParam(issueNumber)]);
+
+                return response.Data?.FirstOrDefault(comment => comment.Body == body);
+            },
+            comment => comment is not null);
+
+        found.LastValue.Should().NotBeNull(
+            $"comment must be readable via API for cleanup (attempts={found.Attempts}, elapsed={found.Elapsed})");
+        _createdCommentIds.Add(found.LastValue!.Id);
+    }
+
     private static List<Core.Models.Generic.RequestDictionaryModel> RepoParams()
     {
         var parts = TestConfig.UiTestRepo.Split('/');
 
-        return Core.Helpers.GitHub.GitHubParamHelper.RepoParam(parts[0], parts[1]);
+        return GitHubParamHelper.RepoParam(parts[0], parts[1]);
     }
 
     [OneTimeTearDown]
