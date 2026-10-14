@@ -1,7 +1,7 @@
 # GitHub Testing Structure
 
 **Project:** Gredja (.NET 10.0)
-**Date:** 2026-09-30
+**Date:** 2026-10-14
 
 ---
 
@@ -19,8 +19,9 @@
 | 8 | **Repo metadata** | GET /contributors, /languages, /topics, /tags — status, contract, fields, negatives | Done (D4–D7) |
 | 9 | **Commits & Releases** | GET /commits, /releases — status, contract, fields, negatives | Done (D8–D9) |
 | 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
+| 11 | **GitHub UI (Playwright)** | Web UI: ordinary login / sign-out, auth state, repo landing, code view, 404, issues & PRs lists, issue create/close/reopen/edit + comments — page-objects, storageState auth, write via UI → cleanup via API | Done (14 tests, `Ui/`) |
 
-**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A) + 68 single-write tests (Phase 2: §17–20 issues/comments, §21–23 PR create/patch/merge, §24 DELETE-not-supported, §25–26 git refs); scratch-PR pipeline = blob→tree→commit→branch→PR (infra OB §27); E2E scenarios 2.1–2.9 complete — remaining work: P3.1 CI/CD research — see [.mimocode/plans/project-audit-2026-10-09.md](../.mimocode/plans/project-audit-2026-10-09.md).
+**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A) + 68 single-write tests (Phase 2: §17–20 issues/comments, §21–23 PR create/patch/merge, §24 DELETE-not-supported, §25–26 git refs); scratch-PR pipeline = blob→tree→commit→branch→PR (infra OB §27); E2E scenarios 2.1–2.9 complete; UI suite 14 tests (6 read-only + 6 issue write + login/logout) — remaining work: CI/CD research — tracked in the permanent backlog [GeneralPlan.md](GeneralPlan.md) → "Research: is CI/CD needed for this project?".
 
 ## 2. Out of Scope
 
@@ -53,10 +54,10 @@ The team loses trust in the suite and stops running it — the moment coverage s
 
 ## 4. Entry Criteria
 
-- [ ] GitHub personal access token present in `.env` (`GITHUB_TOKEN`)
-- [ ] Token has `public_repo` scope (minimum for read operations)
+- [ ] GitHub personal access token present in `.env` (`GITHUB_PAT`, classic with `repo` scope — JSON `Token` → env → `.env`)
 - [ ] `dotnet restore` and `dotnet build` succeed without errors
 - [ ] Target repo `Gredja/AiTest` is accessible (not deleted, not renamed)
+- [ ] UI credentials present in `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) and storageState `.auth/github-ui-state.json` is fresh (re-run `LoginSignInTests` when it expires)
 - [ ] Test issue #5 exists in the target repo
 - [ ] Test PR #5 exists (needed for design D1–D2: PR files/commits)
 - [ ] Default branch `main` exists (needed for design D3)

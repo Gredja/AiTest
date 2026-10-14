@@ -208,9 +208,14 @@ cd AiTest
 ```
 dotnet build                       # должна компилироваться без ошибок
 dotnet test --verbosity minimal    # штатный запуск всех тестов: пишет TestRunReport-*.md в TestResults/
+./Scripts/install-playwright.ps1   # один раз: Chromium для UI-тестов
+dotnet test --filter Category=GitHubUi      # только UI-сьют (Playwright)
+dotnet test --filter LoginSignInTests       # обновить .auth/github-ui-state.json (UI-тесты его читают)
 ```
 
 Отчёт — таблица по каждому тесту + итог (количество и проценты), создаётся автоматически после любого `dotnet test`. Фильтр: `dotnet test --verbosity minimal --filter "Category=HealthCheck"`.
+
+UI-тестам нужны креды из `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) и свежий storageState: если он протух, сначала `LoginSignInTests` — он логинится анонимно, проверяет меню юзера и сохраняет state-файл.
 
 ### 5.3. Запусти MiMoCode
 

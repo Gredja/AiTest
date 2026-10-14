@@ -57,7 +57,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 
 ### Config
 - Base URL и эндпоинты в `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`. Никогда не хардкодить в тестах.
-- `testsettings.example.json` синхронен с `testsettings.json`; токен: JSON `Token` → env `GITHUB_PAT` → `.env` (`Rules/config.md`)
+- `testsettings.example.json` синхронен с `testsettings.json`; токен: JSON `Token` → env `GITHUB_PAT` → `.env` (`Rules/config.md`); два GitHub-аккаунта не смешивать: API/E2E = `Gredja`, UI = `gredjapl` (`Rules/config.md` → GitHub identities)
 
 ### Git
 - Repo: github.com/Gredja/AiTest.git, branch: `main`

@@ -4,7 +4,7 @@
 **API Under Test:** GitHub REST API v3 (https://api.github.com)
 **Date:** 2026-02-21
 **Scope:** GET (Phase 1) + POST/PATCH/DELETE (Phase 2 E2E)
-**Test Plan:** [.mimocode/plans/github-full-coverage.md](../.mimocode/plans/github-full-coverage.md)
+**Test Plan / scope:** [GitHubTestingStructure.md](GitHubTestingStructure.md) (phases, entry/exit criteria; plans in `.mimocode/plans/` are deleted after implementation)
 
 ---
 

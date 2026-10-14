@@ -12,3 +12,9 @@
 - Never put real tokens in `testsettings.example.json` or any tracked file
 - Required string keys throw a clear `InvalidOperationException` naming the missing key at first access (`TestConfig.GetRequiredString`) — never a bare `NullReferenceException` from `GetString()!`
 - `SkipSslValidation` disables TLS certificate validation for the GitHub client (external audit Minor 13) — kept deliberately for proxied dev runners; do not enable in CI without a documented reason
+
+## GitHub identities
+
+- Two identities, **do not merge**: API/E2E authenticate as `Gredja` (`GITHUB_PAT`, classic with `repo`) against `Gredja/AiTest`; UI tests authenticate as `gredjapl` (`GITHUB_UI_PAT`, fine-grained) against `gredjapl/ui-sandbox`
+- Why they stay apart: gredjapl has read-only access to `Gredja/AiTest` (writes would 403), and a shared account would merge the 5000 req/h rate-limit quotas — `RateLimitDrainTests` would starve the UI suite (confirmed 2026-10-14)
+- Git pushes of the project code use the git credential manager, never these tokens

@@ -1,6 +1,6 @@
 # Gredja
 
-Test application for learning AI-Native SDLC. Project for API test automation.
+Test application for learning AI-Native SDLC. API, E2E and UI test automation project.
 
 ## Technologies
 
@@ -8,6 +8,8 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 - NUnit 4.6.1
 - RestSharp 114.0.0
 - FluentAssertions 8.11.0
+- Microsoft.Playwright 1.63.0 (UI tests, Chromium)
+- Serilog 4.4.0 (action logging → `%TEMP%\GredjaTestRun`)
 - Allure (via custom AllureAdapter)
 - Coverlet (code coverage)
 
@@ -25,6 +27,7 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 
 - `Api/` — read-only API tests + single-endpoint write tests (NUnit + RestSharp)
 - `E2E/` — scenario chain tests: multi-step write flows only (NUnit + RestSharp)
+- `Ui/` — UI tests (Playwright .NET + Chromium): page-objects, storageState auth, write via UI → cleanup via API
 - `Core/Models/` — response/request models
 - `Core/Config/` — endpoint constants
 - `Core/Helpers/` — Http/, Assertions/, Params/, Data/, GitHub/ (request infra, asserts, params, data generators)
@@ -36,7 +39,10 @@ Test application for learning AI-Native SDLC. Project for API test automation.
 ```bash
 dotnet test Api/Api.csproj
 dotnet test E2E/E2E.csproj
+dotnet test --filter Category=GitHubUi   # UI suite (Playwright)
+dotnet test --filter LoginSignInTests    # refresh UI storageState after it expires
 dotnet test --filter Category=HealthCheck
+./Scripts/install-playwright.ps1  # one-time: install Chromium for UI tests
 ./Scripts/test-coverage.ps1  # run tests + coverage report
 ```
 
@@ -45,11 +51,12 @@ dotnet test --filter Category=HealthCheck
 - `documentation/GeneralPlan.md` — permanent user backlog (statuses TODO / IN PROGRESS / DONE, never deleted)
 - `documentation/JsonPlaceholderTestPlan.md` — JsonPlaceholder API test plan (coverage + negative floor status)
 - `documentation/JsonPlaceholderObservableBehaviour.md` — observable behaviour for JsonPlaceholder API
-- `.mimocode/plans/github-full-coverage.md` — GitHub API test plan (Phase 1 + Phase 2)
 - `documentation/GitHubTestingStructure.md` — scope, risks, entry/exit criteria
 - `documentation/GitHubObservableBehaviour.md` — observable behaviour for GitHub API
+- `documentation/GitHubUiObservableBehaviour.md` — observable behaviour for GitHub UI (verified locators, gotchas)
+- `documentation/FILE_STRUCTURE.md` — project layout
 - `documentation/ObservableBehaviourTemplate.md` — template for new services
-- `Rules/` — project rules (code, assertions, test practices, etc.)
+- `Rules/` — project rules (code, assertions, test practices, UI testing, etc.)
 
 ## Coverage
 

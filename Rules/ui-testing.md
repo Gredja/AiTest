@@ -27,6 +27,7 @@ Ui/
 - NEVER CSS-classes or XPath on the tested site (generated class names change between releases)
 - **Reuse before extract** — on similar pages, apply locators/patterns already verified on other pages (shared header, tab counts `Open (N)`/`Closed (N)`, level-N headings) instead of snapshotting everything again; snapshot only the page-unique elements, or re-snapshot when an existing locator fails
 - New locators are verified against a **live snapshot** before they are written (agent: use the `playwright` skill — one session, multiple navigations for speed); undated claims in the UI Observable Behaviour are drafts
+- A role+name locator that never resolves although the control is clearly visible → re-check its **accessible name** in the live snapshot: GitHub injects sr-only text into it (shortcut hint renders as `Save ( enter )`); match the visible label instead — `GetByText("Save", Exact = true)` (2026-10-14)
 - One locator per element; locator lives in the page-object, not in tests
 
 ## Auth (storageState)
@@ -54,12 +55,15 @@ Ui/
 - Every resource created through the UI is registered **before any assert** (register-then-assert) and removed in `[OneTimeTearDown]` — the LAST class member
 - Cleanup via composition: `GitHubUiTestBase.Cleanup` is a `GitHubCleanupHelper` (Core) — same warning-only semantics as Api/E2E (`RunCleanupAsync` never fails the run); issue → close via PATCH (OB §17), comment → API DELETE
 - Create → remove, never retain test records (sandbox repo)
+- The UI rarely exposes the resource id — read it back via API (`Cleanup.Get` matching the unique title/body) and register it **before** the assert; poll with `WaitHelper`, the API index lags the write (2026-10-14)
+- "Fresh sandbox" / empty-state tests assert a **data precondition**: a leftover open issue — or a resource whose registration was skipped by an earlier failed assert — turns them red; REST has no issue delete, so cleanup closes issues — close the leftovers to restore the precondition
 
 ## Artifacts
 
 - On failure the fixture saves `TestResults/ui-artifacts/{test-name}.png` (full page) and `.zip` (Playwright trace with snapshots)
 - `TestResults/` is covered by the existing age-based cleanup (7 days) — no new registration needed; the directory is gitignored
 - Tests never encode screenshot/trace calls — that is fixture code
+- Triage order: failure message in `%TEMP%\GredjaTestRun\test-results-*.log` → `.png`/`.zip` in `TestResults/ui-artifacts/` → `trace.trace` inside the zip (action timeline + DOM snapshot around every click)
 
 ## Categories and descriptions
 
