@@ -1,0 +1,63 @@
+name: Nightly full suite
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: nightly-full-suite
+  cancel-in-progress: false
+
+jobs:
+  full-suite:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
+      options: --user 1001
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Build
+        run: dotnet build
+
+      - name: Refresh UI storageState
+        env:
+          GITHUB_UI_EMAIL: ${{ secrets.GITHUB_UI_EMAIL }}
+          GITHUB_UI_PASSWORD: ${{ secrets.GITHUB_UI_PASSWORD }}
+        run: dotnet test --filter LoginSignInTests --verbosity minimal
+
+      - name: Run full suite
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+          GITHUB_UI_EMAIL: ${{ secrets.GITHUB_UI_EMAIL }}
+          GITHUB_UI_PASSWORD: ${{ secrets.GITHUB_UI_PASSWORD }}
+          GITHUB_UI_PAT: ${{ secrets.GITHUB_UI_PAT }}
+        run: dotnet test --verbosity minimal
+
+      - name: Rate limit budget
+        if: always()
+        env:
+          GITHUB_PAT: ${{ secrets.GITHUB_PAT }}
+        run: curl -s -H "Authorization: Bearer $GITHUB_PAT" https://api.github.com/rate_limit | grep -o '"remaining":[0-9]*' | head -2 || true
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-run-report
+          path: |
+            TestResults/*.md
+            allure-results/
+          retention-days: 7
+
+      - name: Upload UI failure traces
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: ui-artifacts
+          path: TestResults/ui-artifacts/
+          retention-days: 3
