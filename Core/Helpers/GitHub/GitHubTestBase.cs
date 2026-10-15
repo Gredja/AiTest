@@ -4,6 +4,7 @@ using Core.Models.GitHub;
 using RestSharp;
 using System.Net;
 using System.Text.RegularExpressions;
+using static Core.Helpers.TestDataConstants;
 
 namespace Core.Helpers.GitHub;
 
@@ -22,9 +23,6 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     private const string FileMode644 = "100644";
     private const string BlobType = "blob";
     private const string ScratchBranchPrefix = "audit-";
-    private const int RandomNameLength = 8;
-    protected const string RefsHeadsPrefix = "refs/heads/";
-    protected const string HeadsPrefix = "heads/";
 
     protected static List<RequestDictionaryModel> TestRepoParam()
     {
@@ -95,6 +93,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         var mainBranch = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. GitHubParamHelper.BranchNameParam(GitHubEndpoints.DefaultBranch)]);
         mainBranch.ShouldHaveStatusCode(HttpStatusCode.OK);
+
         return mainBranch.Data!.Commit.Sha;
     }
 
@@ -104,17 +103,41 @@ public abstract class GitHubTestBase : GitHubRequestHelper
             [.. TestRepoParam(), .. GitHubParamHelper.GitCommitParam(mainSha)]);
         mainCommit.ShouldHaveStatusCode(HttpStatusCode.OK);
 
+        var blobSha = await CreateScratchBlobAsync(headBranch);
+        var treeSha = await CreateScratchTreeAsync(headBranch, mainCommit.Data!.Tree.Sha, blobSha);
+
+        var commit = await Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
+            GitHubEndpoints.RepoGitCommits,
+            new CreateGitCommitModelRequest
+            {
+                Message = $"scratch {headBranch}",
+                Tree = treeSha,
+                Parents = [mainSha]
+            },
+            TestRepoParam());
+        commit.ShouldHaveStatusCode(HttpStatusCode.Created);
+
+        return commit.Data!.Sha;
+    }
+
+    private async Task<string> CreateScratchBlobAsync(string headBranch)
+    {
         var blob = await Post<CreateGitBlobModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitBlobs,
             new CreateGitBlobModelRequest { Content = $"scratch {headBranch}" },
             TestRepoParam());
         blob.ShouldHaveStatusCode(HttpStatusCode.Created);
 
+        return blob.Data!.Sha;
+    }
+
+    private async Task<string> CreateScratchTreeAsync(string headBranch, string baseTreeSha, string blobSha)
+    {
         var tree = await Post<CreateGitTreeModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitTrees,
             new CreateGitTreeModelRequest
             {
-                BaseTree = mainCommit.Data!.Tree.Sha,
+                BaseTree = baseTreeSha,
                 Tree =
                 [
                     new GitTreeEntry
@@ -122,37 +145,27 @@ public abstract class GitHubTestBase : GitHubRequestHelper
                         Path = ScratchFileName,
                         Mode = FileMode644,
                         Type = BlobType,
-                        Sha = blob.Data!.Sha
+                        Sha = blobSha
                     }
                 ]
             },
             TestRepoParam());
         tree.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        var commit = await Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
-            GitHubEndpoints.RepoGitCommits,
-            new CreateGitCommitModelRequest
-            {
-                Message = $"scratch {headBranch}",
-                Tree = tree.Data!.Sha,
-                Parents = [mainSha]
-            },
-            TestRepoParam());
-        commit.ShouldHaveStatusCode(HttpStatusCode.Created);
-        return commit.Data!.Sha;
+        return tree.Data!.Sha;
     }
 
     private async Task CreateScratchRefsAsync(string headBranch, string baseBranch, string commitSha, string mainSha)
     {
         var head = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{headBranch}", Sha = commitSha },
+            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{headBranch}", Sha = commitSha },
             TestRepoParam());
         head.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         var baseRef = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{baseBranch}", Sha = mainSha },
+            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{baseBranch}", Sha = mainSha },
             TestRepoParam());
         baseRef.ShouldHaveStatusCode(HttpStatusCode.Created);
     }

@@ -56,7 +56,7 @@ public static class AllureSkippedTestWriter
     {
         var categories = ReadCategories(method).Concat(ReadCategories(type))
             .Select(category => category.Trim())
-            .Where(category => category.Length > 0)
+            .Where(category => !string.IsNullOrWhiteSpace(category))
             .Distinct()
             .ToList();
 

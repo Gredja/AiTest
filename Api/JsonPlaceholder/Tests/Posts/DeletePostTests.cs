@@ -1,4 +1,5 @@
 using Core.Models.JsonPlaceholder;
+using GenericJsonFields = Core.Models.Generic.JsonFields;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -105,7 +106,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     public async Task DeletePost_InvalidSegment_ReturnsNotFound()
     {
         var response = await Delete<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            [UrlSegment(IdKey, NonNumericValue)]);
+            [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
@@ -116,7 +117,7 @@ public class DeletePostTests : JsonPlaceholderRequestHelper
     public async Task DeletePost_MalformedJson_ReturnsInternalServerError()
     {
         var request = new RestRequest(JsonPlaceholderEndpoints.PostsById, Method.Delete);
-        request.AddUrlSegment(IdKey, TestPostId);
+        request.AddUrlSegment(GenericJsonFields.Id, TestPostId);
         request.AddStringBody(MalformedJson, ContentType.Json);
 
         var response = await Client.ExecuteAsync(request);

@@ -1,3 +1,4 @@
+using Core.Config;
 using FluentAssertions;
 using AllureAdapter;
 using Ui.Helper;
@@ -18,6 +19,6 @@ public class AuthStateUiTests : GitHubUiTestBase
 
         var menuHeading = await Browser.HeaderPage.GetSignedInUsernameAsync();
 
-        menuHeading.Should().Contain("gredjapl", "UI session must be signed in as gredjapl");
+        menuHeading.Should().Contain(TestConfig.UiUsername, "UI session must be signed in as the configured UI account");
     }
 }

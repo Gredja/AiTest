@@ -5,12 +5,9 @@ using Ui.Helper.UiHelper.GitHubStream.Repository;
 
 namespace Ui.Helper.BrowserHelpers;
 
-// Page-object wrapper (XRM_Autotest pattern): every page-object receives the wrapper
-// in its constructor; pages are exposed here as properties as soon as they exist
-// (added by ui-test-gen).
-internal sealed class BrowserPw
+internal sealed class BrowserPlaywright
 {
-    internal BrowserPw(IPage page)
+    internal BrowserPlaywright(IPage page)
     {
         Page = page;
         LoginPage = new LoginPage(page);

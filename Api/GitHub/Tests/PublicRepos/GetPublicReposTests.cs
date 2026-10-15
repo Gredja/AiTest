@@ -65,7 +65,6 @@ public class GetPublicReposTests : GitHubTestBase
         response.Data!.Count.Should().BeGreaterThan(0);
     }
 
-
     [Test]
     [Category("Negative")]
     [Description("8.5 since=abc returns 422")]

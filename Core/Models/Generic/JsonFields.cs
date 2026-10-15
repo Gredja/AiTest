@@ -1,6 +1,6 @@
 namespace Core.Models.Generic;
 
-internal static class JsonFields
+public static class JsonFields
 {
     public const string DocumentationUrl = "documentation_url";
     public const string Id = "id";

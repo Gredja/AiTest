@@ -385,9 +385,10 @@ git checkout -b features/add-user-tests
 - Лямбды: читаемое имя (`product => product.Id`), не однобуквенные (`p =>`)
 - Все API-запросы async (`ExecuteAsync`)
 - Без мёртвых `using` — удалять сразу вместе с кодом; enforcement: `.editorconfig` → `IDE0005`/`IDE0007` (`var`)/`IDE0161` (file-scoped namespace) = warning, ловится `dotnet format --verify-no-changes`
-- Маленькие методы, одно действие, максимум ~30 строк
+- Маленькие методы, одно действие, максимум ~30 строк (для тестовых методов допустимо длиннее, если разбиение скрывает сценарий)
+- Комментарии: по умолчанию нет; крайняя мера — сначала рефакторинг ради ясности, комментарий только если код уже нельзя отрефакторить и он всё ещё непонятен (Rules/comments.md)
 - Конкретные исключения вместо `Exception`, без `null!`
-- LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)`, `foreach` — только для async/ленивых источников (Rules/code-style.md → Loops)
+- LINQ: `Any()` вместо `Count() > 0` (правило про метод `Count()`; `Count`-свойство List/Queue O(1) и допустимо для проверки пустоты), без лишних `.ToList()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)`, `foreach` — только для async/ленивых источников (Rules/code-style.md → Loops)
 - Regex: только когда предикат читается хуже; паттерн — именованный `static readonly` + словесный комментарий над ним; дубли в 2+ файлах → base/хелпер (Rules/code-style.md → Regex)
 - UI: role/label-based локаторы только после живого снапшота; write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert; presence-check на странице вне load-verified-листа — через `WaitFor*Async` → `WaitResult` в page-object, не мгновенный `CountAsync` (Rules/ui-testing.md → Waits)
 - Строки: интерполяция `$""`, `StringBuilder` в циклах
@@ -425,7 +426,7 @@ git checkout -b features/add-user-tests
 **Workflow:**
 - План → одобение → изменения → отчёт
 - Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
-- Параллелизм тестов: Api/E2E — **8 потоков** (`.runsettings` `<NUnit><NumberOfTestWorkers>`, авто-применяется через `RunSettingsFilePath` в `Directory.Build.props`); Ui — **последовательно** (`[assembly: Parallelizable(None)]` в `Ui/AssemblyInfo.cs` — фикстуры делят один storageState); точечно: `dotnet test` с `NUnit.NumberOfTestWorkers=N` в adapter-секции (после двойного тире)
+- Параллелизм тестов: Api/E2E — **1 поток** (`.runsettings` `<NUnit><NumberOfTestWorkers>`, авто-применяется через `RunSettingsFilePath` в `Directory.Build.props`; это supported-режим Rules/test-practices.md — 8 даёт гонки на shared guarantee data, точечно: `dotnet test` с `NUnit.NumberOfTestWorkers=N` в adapter-секции после двойного тире); Ui — **последовательно** (`[assembly: Parallelizable(None)]` в `Ui/AssemblyInfo.cs` — фикстуры делят один storageState)
 - Перед коммитом: `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` должны пройти (полный прогон — `/test`)
 - SDK пин: `global.json` → `10.0.401`, `rollForward: latestFeature` — сборка на другой машине берёт ближайший совместимый SDK, а не случайный
 - Коммиты только по запросу

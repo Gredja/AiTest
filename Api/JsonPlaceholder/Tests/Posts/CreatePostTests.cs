@@ -17,6 +17,11 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
     private const string IgnoreMissingFieldsBug = "JsonPlaceholder mock: accepts any body — missing required fields still return 201 — Bug: documentation/Bugs/JsonPlaceholder/JP-001-create-post-accepts-empty-body.md";
+    private const string SpecialCharsTitle = "Test special chars: <>&\"";
+    private const string MalformedJson = "{\"title\":";
+    private const string NonObjectJson = "\"just-a-string\"";
+    private const string NotANumberUserId = "not-a-number";
+
     private static readonly PostModelRequest _testPost = new()
     {
         UserId = TestUserId,
@@ -102,11 +107,6 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
     }
-
-    private const string SpecialCharsTitle = "Test special chars: <>&\"";
-    private const string MalformedJson = "{\"title\":";
-    private const string NonObjectJson = "\"just-a-string\"";
-    private const string NotANumberUserId = "not-a-number";
 
     [Test]
     [Category("Smoke")]
@@ -209,8 +209,6 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
         result.IsSuccess.Should().BeTrue(
-            $"created post should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
-            $" waited {result.Elapsed}, attempts {result.Attempts}," +
-            $" last status {result.LastValue?.StatusCode}");
+            $"created post should be visible within {TestConfig.MaxResponseTimeMs} ms; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }
 }

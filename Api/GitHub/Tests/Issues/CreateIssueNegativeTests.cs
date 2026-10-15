@@ -6,6 +6,7 @@ using System.Net;
 using RestSharp;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Issues;
 
@@ -14,8 +15,6 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class CreateIssueNegativeTests : GitHubTestBase
 {
-    private const string ProbeTitle = "Probe";
-    private const int ExistingIssueNumber = 5;
 
     [Test]
     [Category("Negative")]

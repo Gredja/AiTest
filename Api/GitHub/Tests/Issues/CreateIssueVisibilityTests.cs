@@ -45,9 +45,7 @@ public class CreateIssueVisibilityTests : GitHubTestBase
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
         result.IsSuccess.Should().BeTrue(
-            $"created issue should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
-            $" waited {result.Elapsed}, attempts {result.Attempts}," +
-            $" last status {result.LastValue?.StatusCode}");
+            $"created issue should be visible within {TestConfig.MaxResponseTimeMs} ms; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }
 
     [OneTimeTearDown]

@@ -16,7 +16,6 @@ namespace Api.GitHub.IssueComments;
 [Category("GitHub")]
 public class GetIssueCommentsTests : GitHubTestBase
 {
-    private const int ExistingIssueNumber = 5;
     private const int FirstIssueNumber = 1;
     private const string TestComment = "Test comment for contract check";
 
@@ -148,7 +147,6 @@ public class GetIssueCommentsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
-
 
     [Test]
     [Category("Negative")]

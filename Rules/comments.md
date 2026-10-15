@@ -4,6 +4,12 @@
 
 Code must speak for itself through clear names and structure.
 
+## Comments are a necessary evil
+
+A comment is the LAST resort. First refactor for clarity (extract, rename, restructure);
+add a comment only when the code cannot be refactored further and is still unclear.
+A comment that explains WHAT the code does means the code needs refactoring, not a comment.
+
 ## When comments ARE needed
 
 - **Regex** — extract pattern to `private static readonly Regex` field with `RegexOptions.Compiled`; never inline in test assertions

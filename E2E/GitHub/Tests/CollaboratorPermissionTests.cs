@@ -43,12 +43,12 @@ public class CollaboratorPermissionTests : GitHubE2ETestBase
         var owner = collaborators.Data!.FirstOrDefault(user => user.Login == TestConfig.GitHubTestUsername);
         owner.Should().NotBeNull("repo owner must be in the collaborators list");
         owner!.Permissions.Admin.Should().BeTrue("owner must hold admin permission");
-        owner.RoleName.Should().Be("admin", "owner role must be admin");
+        owner.RoleName.Should().Be(GitHubEndpoints.PermissionAdmin, "owner role must be admin");
 
         var ownerPermission = await Get<PermissionModelResponse>(GitHubEndpoints.RepoCollaboratorPermission,
             [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubTestUsername)]);
         ownerPermission.ShouldHaveStatusCode(HttpStatusCode.OK);
-        ownerPermission.Data!.Permission.Should().Be("admin", "owner must have admin permission");
+        ownerPermission.Data!.Permission.Should().Be(GitHubEndpoints.PermissionAdmin, "owner must have admin permission");
 
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
@@ -78,7 +78,7 @@ public class CollaboratorPermissionTests : GitHubE2ETestBase
         var inviteePermission = await Get<PermissionModelResponse>(GitHubEndpoints.RepoCollaboratorPermission,
             [.. TestRepoParam(), .. UsernameParam(collaboratorUser)]);
         inviteePermission.ShouldHaveStatusCode(HttpStatusCode.OK);
-        inviteePermission.Data!.Permission.Should().Be("read",
+        inviteePermission.Data!.Permission.Should().Be(GitHubEndpoints.PermissionRead,
             "pending invitation must not grant more than the public base access");
 
         var revoke = await Delete<object>(GitHubEndpoints.RepoInvitationById,
@@ -98,8 +98,5 @@ public class CollaboratorPermissionTests : GitHubE2ETestBase
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        await CleanupInvitationAsync(_createdInvitationId);
-    }
+    public async Task OneTimeTearDown() => await CleanupInvitationAsync(_createdInvitationId);
 }

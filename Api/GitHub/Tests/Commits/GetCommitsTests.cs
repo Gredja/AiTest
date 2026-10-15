@@ -15,8 +15,6 @@ namespace Api.GitHub.Commits;
 [Category("GitHub")]
 public class GetCommitsTests : GitHubTestBase
 {
-    private const string GitHubUrlPrefix = "https://github.com/";
-
     [Test]
     [Category("HealthCheck")]
     [Description("15a.1 GET /commits returns 200 OK")]
@@ -66,7 +64,7 @@ public class GetCommitsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(
-            commit => commit.HtmlUrl.StartsWith(GitHubUrlPrefix, StringComparison.Ordinal),
+            commit => commit.HtmlUrl.StartsWith(GitHubEndpoints.WebBaseUrl, StringComparison.Ordinal),
             "html_url must point at github.com");
     }
 

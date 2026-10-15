@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.GitRefs;
 
@@ -15,9 +16,8 @@ namespace Api.GitHub.GitRefs;
 [Category("GitHub")]
 public class CreateRefTests : GitHubTestBase
 {
-    private const string BranchPrefix = $"{RefsHeadsPrefix}audit-";
+    private const string BranchPrefix = $"{GitHubEndpoints.RefsHeadsPrefix}audit-";
     private const string MissingSha = "0000000000000000000000000000000000000000";
-    private const int RandomNameLength = 8;
 
     private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
@@ -75,7 +75,7 @@ public class CreateRefTests : GitHubTestBase
         _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
-        created.Data!.Object.Type.Should().Be("commit");
+        created.Data!.Object.Type.Should().Be(GitHubEndpoints.ObjectTypeCommit);
         created.Data!.Object.Sha.ShouldHaveValidSha();
     }
 
@@ -192,7 +192,7 @@ public class CreateRefTests : GitHubTestBase
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        var refPath = $"{HeadsPrefix}{refName[RefsHeadsPrefix.Length..]}";
+        var refPath = $"{GitHubEndpoints.HeadsPrefix}{refName[GitHubEndpoints.RefsHeadsPrefix.Length..]}";
         var result = await WaitHelper.WaitUntilAsync(
             () => Get<GitRefModelResponse>(GitHubEndpoints.RepoGitRefByName,
                 [.. TestRepoParam(), .. GitRefParam(refPath)]),
@@ -200,9 +200,7 @@ public class CreateRefTests : GitHubTestBase
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
         result.IsSuccess.Should().BeTrue(
-            $"created ref should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
-            $" waited {result.Elapsed}, attempts {result.Attempts}," +
-            $" last status {result.LastValue?.StatusCode}");
+            $"created ref should be visible within {TestConfig.MaxResponseTimeMs} ms; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }
 
     [OneTimeTearDown]

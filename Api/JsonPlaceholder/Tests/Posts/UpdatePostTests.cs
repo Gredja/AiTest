@@ -1,4 +1,5 @@
 using Core.Models.JsonPlaceholder;
+using GenericJsonFields = Core.Models.Generic.JsonFields;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -156,7 +157,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Put_InvalidSegment_ReturnsInternalServerError()
     {
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _putBody,
-            [UrlSegment(IdKey, NonNumericValue)]);
+            [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
     }
@@ -167,7 +168,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Put_MalformedJson_ReturnsInternalServerError()
     {
         var request = new RestRequest(JsonPlaceholderEndpoints.PostsById, Method.Put);
-        request.AddUrlSegment(IdKey, TestPostId);
+        request.AddUrlSegment(GenericJsonFields.Id, TestPostId);
         request.AddStringBody(MalformedJson, ContentType.Json);
 
         var response = await Client.ExecuteAsync(request);
@@ -220,7 +221,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Patch_MalformedJson_ReturnsInternalServerError()
     {
         var request = new RestRequest(JsonPlaceholderEndpoints.PostsById, Method.Patch);
-        request.AddUrlSegment(IdKey, TestPostId);
+        request.AddUrlSegment(GenericJsonFields.Id, TestPostId);
         request.AddStringBody(MalformedJson, ContentType.Json);
 
         var response = await Client.ExecuteAsync(request);
@@ -264,7 +265,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Patch_InvalidSegment_ReturnsNotFound()
     {
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _patchBody,
-            [UrlSegment(IdKey, NonNumericValue)]);
+            [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

@@ -9,7 +9,8 @@ Ui/
 ├── TestReportSetup.cs            # [SetUpFixture] — duplicated per test assembly (P2.3)
 ├── Helper/
 │   ├── GitHubUiTestBase.cs       # browser fixture: Chromium → context(storageState) → Page; artifacts on failure; page brought to front every test (browser window stays active)
-│   ├── BrowserHelpers/BrowserPw.cs  # page-object wrapper: pages exposed as properties
+│   ├── BrowserHelpers/BrowserPlaywright.cs  # page-object wrapper: pages exposed as properties
+│   ├── TabCountParser.cs          # tab counter text → int
 │   └── UiHelper/
 │       ├── CommonPages/          # cross-area pages (header, nav)
 │       └── GitHubStream/         # page-objects: {Area}/{Area}Page.cs
@@ -19,7 +20,7 @@ Ui/
 
 - Page-object method = business action (`CreateIssue(title, body)`), never a raw click
 - Test classes contain only tests — actions in page-objects, browser logic in the fixture
-- Register every new page-object as a property on `BrowserPw` (wrapper pattern)
+- Register every new page-object as a property on `BrowserPlaywright` (wrapper pattern)
 
 ## Locators
 

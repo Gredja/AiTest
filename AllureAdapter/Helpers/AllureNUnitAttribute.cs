@@ -127,10 +127,11 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             categories.AddRange(current.Properties[PropertyNames.Category]
                 .Cast<object>()
                 .Select(value => value?.ToString() ?? string.Empty)
-                .Where(value => value.Length > 0));
+                .Where(value => !string.IsNullOrWhiteSpace(value)));
         }
 
         var distinct = categories.Distinct().ToList();
+
         return distinct.Count > 0 ? distinct : null;
     }
 

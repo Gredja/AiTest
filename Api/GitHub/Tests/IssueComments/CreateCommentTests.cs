@@ -16,8 +16,6 @@ namespace Api.GitHub.IssueComments;
 [Category("GitHub")]
 public class CreateCommentTests : GitHubTestBase
 {
-    private const int TargetIssueNumber = 5;
-
     private static readonly CreateCommentModelRequest _testComment = new()
     {
         Body = $"Comment {DataGenerator.RandomString(BodyRandomLength)}"
@@ -31,7 +29,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_ReturnsCreated()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -48,7 +46,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_MatchesRequest()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -65,7 +63,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_VisibleInList()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -74,18 +72,14 @@ public class CreateCommentTests : GitHubTestBase
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
 
-        // exact "+1 count" is racy: parallel fixtures create/delete comments on the same issue
-        // (8 workers in .runsettings) — set-diff by id is the primary invariant
-        // (Rules/test-practices.md → Read-after-write visibility)
         var result = await WaitHelper.WaitUntilAsync(
-            () => Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments, IssueParams(TargetIssueNumber)),
+            () => Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments, IssueParams(ExistingIssueNumber)),
             response => response.StatusCode == HttpStatusCode.OK
                 && response.Data is not null
                 && response.Data.Any(comment => comment.Id == created.Data!.Id));
 
         result.IsSuccess.Should().BeTrue(
-            $"created comment must be visible in the issue comments list;" +
-            $" elapsed {result.Elapsed}, attempts {result.Attempts}");
+            $"created comment must be visible in the issue comments list; elapsed {result.Elapsed}, attempts {result.Attempts}");
     }
 
     [Test]
@@ -94,7 +88,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_RecordVisibleWithinTimeLimit()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -104,16 +98,14 @@ public class CreateCommentTests : GitHubTestBase
         created.Data.Should().NotBeNull();
 
         var result = await WaitHelper.WaitUntilAsync(
-            () => Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments, IssueParams(TargetIssueNumber)),
+            () => Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments, IssueParams(ExistingIssueNumber)),
             response => response.StatusCode == HttpStatusCode.OK
                 && response.Data is not null
                 && response.Data.Any(comment => comment.Id == created.Data!.Id),
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
         result.IsSuccess.Should().BeTrue(
-            $"created comment should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
-            $" waited {result.Elapsed}, attempts {result.Attempts}," +
-            $" last status {result.LastValue?.StatusCode}");
+            $"created comment should be visible within {TestConfig.MaxResponseTimeMs} ms; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }
 
     [Test]
@@ -122,7 +114,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_ContentTypeIsJson()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -141,7 +133,7 @@ public class CreateCommentTests : GitHubTestBase
             RequestFormat = DataFormat.Json
         };
         request.AddJsonBody(_testComment);
-        AddParams(request, IssueParams(TargetIssueNumber));
+        AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<CommentModelResponse>(request);
 
@@ -159,7 +151,7 @@ public class CreateCommentTests : GitHubTestBase
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
         request.AddJsonBody(_testComment);
-        AddParams(request, IssueParams(TargetIssueNumber));
+        AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<CommentModelResponse>(request);
 
@@ -172,7 +164,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_MissingBody_Returns422()
     {
         var response = await Post<Dictionary<string, object>, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, new Dictionary<string, object>(), IssueParams(TargetIssueNumber));
+            GitHubEndpoints.RepoIssueComments, new Dictionary<string, object>(), IssueParams(ExistingIssueNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

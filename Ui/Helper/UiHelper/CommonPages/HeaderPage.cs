@@ -6,12 +6,12 @@ namespace Ui.Helper.UiHelper.CommonPages;
 
 internal sealed class HeaderPage
 {
-    private static readonly TimeSpan MenuOpenTimeout = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan _menuOpenTimeout = TimeSpan.FromSeconds(5);
 
     // The menu renders ~300ms AFTER the click (measured 2026-10-14), and while it is open the
     // trigger loses its accessible name — a retry inside that window cannot find the button and
     // burns the whole 15s action timeout. The retry interval must stay well above the open latency.
-    private static readonly TimeSpan MenuOpenRetryInterval = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan _menuOpenRetryInterval = TimeSpan.FromSeconds(1);
 
     private readonly IPage _page;
 
@@ -64,10 +64,11 @@ internal sealed class HeaderPage
                 }
 
                 await menuButton.ClickAsync();
+
                 return false;
             },
             isOpen => isOpen,
-            MenuOpenTimeout,
-            MenuOpenRetryInterval);
+            timeout: _menuOpenTimeout,
+            interval: _menuOpenRetryInterval);
     }
 }

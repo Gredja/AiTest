@@ -29,7 +29,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - Без аббревиатур (`response`, не `resp`). Boolean: `Is`, `Has`, `Can`, `Should`
 - File-scoped namespaces, one class per file, use `var` wherever possible (explicit type only when `var` is not applicable, e.g. `null`, tuples)
 - Без мёртвых `using` — удалять в том же ходу, что и код (ловится `dotnet format` через `.editorconfig` IDE0005)
-- Methods: short, one responsibility, max ~30 lines, max 5 params
+- Methods: short, one responsibility, max ~30 lines (для тестовых методов допустимо длиннее, если разбиение скрывает сценарий — `Rules/code.md`), max 5 params
 - Все API-запросы async (`ExecuteAsync`, не `Execute`)
 - Нет модификатора = private. Нет magic numbers. Нет вложенных ternary. `nameof()` для exceptions
 - Error handling: конкретные исключения, без `null!`, без exceptions для flow control
@@ -53,6 +53,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 
 ### Comments
 - По умолчанию: без комментариев. Код говорит сам за себя.
+- Комментарий — крайняя мера: сначала рефакторинг ради ясности; комментарий только если код уже нельзя отрефакторить и он всё ещё непонятен (`Rules/comments.md`).
 - Исключения: regex-объяснения, TODO (только в dev, удалить до merge), non-obvious WHY
 
 ### Config

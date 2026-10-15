@@ -16,7 +16,6 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class GetIssueByIdTests : GitHubTestBase
 {
-    private const int ExistingIssueNumber = 5;
     private const string TestTitle = "Test issue for contract check";
 
     private int? _createdIssueNumber;

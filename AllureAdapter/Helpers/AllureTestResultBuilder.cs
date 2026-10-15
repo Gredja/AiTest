@@ -86,13 +86,8 @@ internal static class AllureTestResultBuilder
 
     private static void AddOptionalLabels(List<Dictionary<string, string>> labels, TestResultParams resultParams)
     {
-        if (resultParams.Categories is not null)
-        {
-            foreach (var category in resultParams.Categories)
-            {
-                labels.Add(new() { [NameKey] = "tag", [ValueKey] = category });
-            }
-        }
+        resultParams.Categories?.ForEach(category =>
+            labels.Add(new() { [NameKey] = "tag", [ValueKey] = category }));
     }
 
     private static string ExtractServiceName(string? testClassName)

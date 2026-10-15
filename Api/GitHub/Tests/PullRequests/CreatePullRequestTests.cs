@@ -19,8 +19,6 @@ public class CreatePullRequestTests : GitHubTestBase
     private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
     private readonly List<string> _createdBranchNames = [];
 
-    private const string ProbeTitle = "probe";
-
     [Test]
     [Category("HealthCheck")]
     [Description("21.1 POST /pulls creates a PR and returns 201")]
@@ -184,7 +182,7 @@ public class CreatePullRequestTests : GitHubTestBase
 
         var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{branchName}", Sha = mainBranch.Data!.Commit.Sha },
+            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", Sha = mainBranch.Data!.Commit.Sha },
             TestRepoParam());
 
         _createdBranchNames.Add(branchName);
@@ -237,9 +235,7 @@ public class CreatePullRequestTests : GitHubTestBase
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
         result.IsSuccess.Should().BeTrue(
-            $"created PR should be visible within {TestConfig.MaxResponseTimeMs} ms;" +
-            $" waited {result.Elapsed}, attempts {result.Attempts}," +
-            $" last status {result.LastValue?.StatusCode}");
+            $"created PR should be visible within {TestConfig.MaxResponseTimeMs} ms; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }
 
     [OneTimeTearDown]

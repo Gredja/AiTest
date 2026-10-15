@@ -39,6 +39,7 @@
 
 - Keep methods short and focused — one responsibility
 - Max ~30 lines; extract helper if longer
+- **Test methods: readability wins over the limit** — an E2E/scenario test may exceed ~30 lines when splitting it into step-helpers would obscure the chain (create → verify → mutate → cleanup reads as one story). The limit still applies to helpers/infrastructure the tests call
 - Max 5 parameters; use object/record for more
 
 ## Async
