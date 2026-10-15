@@ -34,8 +34,10 @@ PRs from `features/...` into `main` — only after review and approval.
 - Nightly red is a drift/flake report for the owner — it never blocks merges; the live suite is
   NEVER a required check (rate-limit exhaustion and external-API instability are the documented
   Top-3 risks — `documentation/GitHubTestingStructure.md`)
-- Repo secrets: `GITHUB_PAT`, `GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT` — values
-  live only in GitHub settings, never in the repo
+- Repo secrets — Actions rejects the `GITHUB_` prefix in secret names, so the names are
+  `TEST_PAT`, `UI_EMAIL`, `UI_PASSWORD`, `UI_PAT`; each workflow maps them to the env vars the
+  code reads (`GITHUB_PAT`, `GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) in its
+  `env:` block — values live only in GitHub settings, never in the repo
 - Artifacts: test report + allure 7 days; failure UI traces 3 days only (traces can embed
   credentials — keep retention short)
 
