@@ -20,6 +20,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Prepare headless testsettings for CI
+        run: sed 's/"Headless": false/"Headless": true/' testsettings.example.json > testsettings.json
+
       - name: Build
         run: dotnet build
 
