@@ -21,13 +21,15 @@ public class IssueUiTests : GitHubUiTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("UI-1 Issue create via UI: appears in list, registered for cleanup")]
+    [Description("UI-5 Issue create via UI: appears in list, registered for cleanup")]
     public async Task IssueCreate_ViaUI_AppearsInList()
     {
         var title = $"UI create {DataGenerator.RandomString(TitleRandomLength)}";
 
         await Browser.IssueCreatePage.OpenAsync();
-        (await Browser.IssueCreatePage.IsOpenAsync()).Should().BeTrue("create form must open");
+        var opened = await Browser.IssueCreatePage.WaitForOpenAsync();
+        opened.IsSuccess.Should().BeTrue(
+            $"create form must open (attempts={opened.Attempts}, elapsed={opened.Elapsed})");
         await Browser.IssueCreatePage.CreateIssueAsync(title, "Created through the UI create form");
 
         var issueNumber = Browser.IssueDetailPage.TryGetIssueNumberFromUrl();
@@ -44,11 +46,10 @@ public class IssueUiTests : GitHubUiTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("UI-2 Issue close via UI: shows Closed status")]
+    [Description("UI-6 Issue close via UI: shows Closed status")]
     public async Task IssueClose_ViaUI_ShowsClosedBadge()
     {
         var issueNumber = await CreateIssueViaApiAsync();
-        var title = $"UI close {DataGenerator.RandomString(TitleRandomLength)}";
         await Browser.IssueDetailPage.OpenAsync(issueNumber);
 
         await Browser.IssueDetailPage.CloseAsync();
@@ -58,7 +59,7 @@ public class IssueUiTests : GitHubUiTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("UI-3 Comment create via UI: visible in thread")]
+    [Description("UI-6 Comment create via UI: visible in thread")]
     public async Task CommentCreate_ViaUI_IsVisible()
     {
         var body = $"UI comment {DataGenerator.RandomString(TitleRandomLength)}";
@@ -73,7 +74,7 @@ public class IssueUiTests : GitHubUiTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("UI-5 Issue reopen via UI: returns to Open status")]
+    [Description("UI-6 Issue reopen via UI: returns to Open status")]
     public async Task IssueReopen_ViaUI_ReturnsToOpen()
     {
         var issueNumber = await CreateIssueViaApiAsync(closed: true);
@@ -101,7 +102,7 @@ public class IssueUiTests : GitHubUiTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("UI-7 Issue comment add via UI on API-created entity: visible in thread")]
+    [Description("UI-6 Issue comment add via UI on API-created entity: visible in thread")]
     public async Task IssueComment_Add_ShowsInThread()
     {
         var body = $"Hybrid comment {DataGenerator.RandomString(TitleRandomLength)}";

@@ -16,7 +16,7 @@ public class LogoutSignOutTests : GitHubUiTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("UI-13 Sign out via user menu: session ends, header offers Sign in")]
+    [Description("UI-2 Sign out via user menu: session ends, header offers Sign in")]
     public async Task Logout_SignOut_EndsSession()
     {
         await Browser.LoginPage.OpenAsync();

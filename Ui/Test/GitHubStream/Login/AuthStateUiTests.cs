@@ -11,7 +11,7 @@ public class AuthStateUiTests : GitHubUiTestBase
 {
     [Test]
     [Category("Smoke")]
-    [Description("UI-12 Auth state: user menu shows gredjapl")]
+    [Description("UI-1 Auth state: user menu shows gredjapl")]
     public async Task AuthState_UserMenu_ShowsGredjapl()
     {
         await Browser.RepositoryPage.OpenAsync();

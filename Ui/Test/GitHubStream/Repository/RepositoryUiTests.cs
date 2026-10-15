@@ -11,7 +11,7 @@ public class RepositoryUiTests : GitHubUiTestBase
 {
     [Test]
     [Category("Smoke")]
-    [Description("UI-2 Repository landing: default branch main, README visible")]
+    [Description("UI-3 Repository landing: default branch main, README visible")]
     public async Task RepositoryLanding_DefaultBranchAndReadme_Verify()
     {
         await Browser.RepositoryPage.OpenAsync();
@@ -25,7 +25,7 @@ public class RepositoryUiTests : GitHubUiTestBase
 
     [Test]
     [Category("Smoke")]
-    [Description("UI-5 Code view: file tree contains README.md")]
+    [Description("UI-8 Code view: file tree contains README.md")]
     public async Task CodeView_ReadmeVisible_Verify()
     {
         await Browser.CodePage.OpenAsync();
@@ -36,12 +36,13 @@ public class RepositoryUiTests : GitHubUiTestBase
 
     [Test]
     [Category("Negative")]
-    [Description("UI-7 Non-existent repo: 404 illustration message shown")]
+    [Description("UI-9 Non-existent repo: 404 illustration message shown")]
     public async Task NotFoundPage_Shows404Message()
     {
         await Browser.NotFoundPage.OpenAsync();
 
-        var has404 = await Browser.NotFoundPage.Has404MessageAsync();
-        has404.Should().BeTrue("GitHub serves the 404 illustration for missing repos");
+        var notFound = await Browser.NotFoundPage.WaitFor404MessageAsync();
+        notFound.IsSuccess.Should().BeTrue(
+            $"GitHub serves the 404 illustration for missing repos (attempts={notFound.Attempts}, elapsed={notFound.Elapsed})");
     }
 }

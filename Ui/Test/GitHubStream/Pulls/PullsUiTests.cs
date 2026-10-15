@@ -11,7 +11,7 @@ public class PullsUiTests : GitHubUiTestBase
 {
     [Test]
     [Category("Regression")]
-    [Description("UI-4 Pull requests list: empty state on fresh sandbox")]
+    [Description("UI-7 Pull requests list: empty state on fresh sandbox")]
     public async Task PullsList_EmptyState_Verify()
     {
         await Browser.PullsPage.OpenAsync();

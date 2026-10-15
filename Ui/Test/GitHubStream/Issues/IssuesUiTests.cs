@@ -11,7 +11,7 @@ public class IssuesUiTests : GitHubUiTestBase
 {
     [Test]
     [Category("Regression")]
-    [Description("UI-9 Issues list: empty state on fresh sandbox, New issue available")]
+    [Description("UI-4 Issues list: empty state on fresh sandbox, New issue available")]
     public async Task IssuesList_EmptyState_Verify()
     {
         await Browser.IssuesPage.OpenAsync();

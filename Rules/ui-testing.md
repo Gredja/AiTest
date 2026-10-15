@@ -35,7 +35,7 @@ Ui/
 - **All UI tests use the `gredjapl` account** (fresh dedicated UI account; API tests keep `Gredja` via `GitHub.TestUsername`). Assert username via `TestConfig.UiUsername` (`Ui.Username` in testsettings.json)
 - Feature tests read `.auth/github-ui-state.json` (gitignored) — they never log in or log out (a logout breaks every other test in the run)
 - State is refreshed by the automated Smoke test `LoginSignInTests` (`dotnet test --filter LoginSignInTests`): anonymous context (`IsStorageStateEnabled => false`) → sign in with `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` → assert signed-in menu → `SaveStorageStateAsync()`
-- The logout test (`LogoutSignOutTests`, UI-13) is the only test that signs out: it runs with `IsStorageStateEnabled => false` and never saves state. `/logout` opens an account chooser — click only the per-account `Sign out of {username}` button; the sibling `Sign out from all accounts` destroys the shared storageState session and breaks every other UI test
+- The logout test (`LogoutSignOutTests`, UI-2) is the only test that signs out: it runs with `IsStorageStateEnabled => false` and never saves state. `/logout` opens an account chooser — click only the per-account `Sign out of {username}` button; the sibling `Sign out from all accounts` destroys the shared storageState session and breaks every other UI test
 - Credentials are required env vars (`.env` / environment): never paste passwords into tests, code, or config files
 - Expired state = re-run `LoginSignInTests`
 
@@ -46,7 +46,7 @@ Ui/
 - Pattern for new tests: click → method waits for the element that exists only after the outcome → test asserts. Ambiguity rule: wait for a locator that cannot match before the outcome (button swap `Close issue` → `Reopen issue`), not for text that may already be on the page
 - An effect that can be swallowed (click landing before the header is wired up) → re-apply the action **bounded** until the post-condition holds, via `WaitHelper.WaitUntilAsync` with the state check **before** every retry — so an element that merely renders late is never toggled shut
 - Retry interval must exceed the effect's render latency: the user menu renders ~300ms after the click, so a 250ms retry re-clicked an already open menu, whose trigger then loses its accessible name and burns the whole 15s action timeout (2026-10-14)
-- Navigation is covered differently: `OpenAsync` relies on `GotoAsync` (waits for `load`) and GitHub server-renders list/page content (verified 2026-10-13: repo root, `tree/main`, issues list incl. empty state, pulls list incl. empty state), so an instant check after `OpenAsync` is not a race. Content that hydrates later (buttons/forms on the issue page) is already covered by auto-wait of the action that uses it
+- Navigation is covered differently: `OpenAsync` relies on `GotoAsync` (waits for `load`) and GitHub server-renders list/page content (verified 2026-10-13: repo root, `tree/main`, issues list incl. empty state, pulls list incl. empty state), so an instant check after `OpenAsync` is not a race. Content that hydrates later (buttons/forms on the issue page) is already covered by auto-wait of the action that uses it. A presence check on a page **outside** that verified list waits in the page-object instead of reading the count instantly: `WaitFor*Async` → `WaitResult<bool>` with `attempts`/`elapsed` in the assert message (e.g. `IssueCreatePage.WaitForOpenAsync`, `NotFoundPage.WaitFor404MessageAsync`)
 - Documented eventual consistency (list refresh after a write) → poll with `WaitHelper.WaitUntilAsync` and include `Elapsed`/`Attempts` in the failure message
 - Fixture sets 15s default action/navigation timeout (`UiTimeoutMs`)
 
@@ -69,7 +69,7 @@ Ui/
 
 - Service category on class: `[Category("GitHubUi")]` (exactly one; check-type categories only on methods)
 - Check-type per `Rules/categories.md` boundaries: Smoke = single-view sanity, Regression = rule/invariant/state-transition, Negative = error/404/empty states
-- `[Description]` references the UI Observable Behaviour section, e.g. `"UI-1 Ordinary login…"` (only numbered sections so far — see GitHubUiObservableBehaviour)
+- `[Description]` references the UI Observable Behaviour section, e.g. `"UI-1 Ordinary login…"` (every section is numbered `UI-N` in document order — see GitHubUiObservableBehaviour)
 
 ## Verification (after every generation)
 

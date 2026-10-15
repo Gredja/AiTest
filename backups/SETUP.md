@@ -389,7 +389,7 @@ git checkout -b features/add-user-tests
 - Конкретные исключения вместо `Exception`, без `null!`
 - LINQ: `Any()` вместо `Count() > 0`, без лишних `.ToList()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)`, `foreach` — только для async/ленивых источников (Rules/code-style.md → Loops)
 - Regex: только когда предикат читается хуже; паттерн — именованный `static readonly` + словесный комментарий над ним; дубли в 2+ файлах → base/хелпер (Rules/code-style.md → Regex)
-- UI: role/label-based локаторы только после живого снапшота; write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert (Rules/ui-testing.md → Waits)
+- UI: role/label-based локаторы только после живого снапшота; write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert; presence-check на странице вне load-verified-листа — через `WaitFor*Async` → `WaitResult` в page-object, не мгновенный `CountAsync` (Rules/ui-testing.md → Waits)
 - Строки: интерполяция `$""`, `StringBuilder` в циклах
 - SOLID: один класс — одна задача, зависимости через интерфейсы
 
