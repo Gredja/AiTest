@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.IssueComments;
 
@@ -16,7 +17,6 @@ namespace Api.GitHub.IssueComments;
 public class CreateCommentTests : GitHubTestBase
 {
     private const int TargetIssueNumber = 5;
-    private const int BodyRandomLength = 16;
 
     private static readonly CreateCommentModelRequest _testComment = new()
     {
@@ -64,10 +64,6 @@ public class CreateCommentTests : GitHubTestBase
     [Description("18.3 Created comment is visible in the issue comments list")]
     public async Task CreateComment_VisibleInList()
     {
-        var baseline = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments, IssueParams(TargetIssueNumber));
-        baseline.ShouldHaveStatusCode(HttpStatusCode.OK);
-        var baselineCount = baseline.Data!.Count;
-
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
         if (created.Data is not null)
@@ -78,11 +74,18 @@ public class CreateCommentTests : GitHubTestBase
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
 
-        var current = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments, IssueParams(TargetIssueNumber));
-        current.ShouldHaveStatusCode(HttpStatusCode.OK);
-        current.Data.Should().HaveCount(baselineCount + 1, "the list must grow by exactly one comment");
-        current.Data!.Select(comment => comment.Id)
-            .Should().Contain(created.Data!.Id, "created comment must be reachable via the list");
+        // exact "+1 count" is racy: parallel fixtures create/delete comments on the same issue
+        // (8 workers in .runsettings) — set-diff by id is the primary invariant
+        // (Rules/test-practices.md → Read-after-write visibility)
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments, IssueParams(TargetIssueNumber)),
+            response => response.StatusCode == HttpStatusCode.OK
+                && response.Data is not null
+                && response.Data.Any(comment => comment.Id == created.Data!.Id));
+
+        result.IsSuccess.Should().BeTrue(
+            $"created comment must be visible in the issue comments list;" +
+            $" elapsed {result.Elapsed}, attempts {result.Attempts}");
     }
 
     [Test]

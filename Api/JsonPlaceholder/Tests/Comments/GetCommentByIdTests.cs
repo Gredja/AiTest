@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Comments;
 
@@ -17,7 +18,6 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     private const int TestCommentId = 1;
     private const int BoundaryCommentId = 250;
     private const int LastCommentId = 500;
-    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -180,7 +180,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            [UrlSegment(IdKey, NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

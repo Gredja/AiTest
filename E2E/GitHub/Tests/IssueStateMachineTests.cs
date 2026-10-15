@@ -5,6 +5,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -13,8 +14,6 @@ namespace E2E.GitHub.Tests;
 [Category("GitHubE2E")]
 public class IssueStateMachineTests : GitHubE2ETestBase
 {
-    private const int TitleRandomLength = 8;
-
     private readonly List<int> _createdIssueNumbers = [];
 
     [Test]
@@ -23,7 +22,11 @@ public class IssueStateMachineTests : GitHubE2ETestBase
     public async Task IssueStateMachine_Open_Close_Reopen_VerifyFilters()
     {
         var created = await CreateIssueTrackedAsync(
-            new CreateIssueModelRequest { Title = $"State {DataGenerator.RandomString(TitleRandomLength)}" },
+            new CreateIssueModelRequest
+            {
+                Title = $"State {DataGenerator.RandomString(TitleRandomLength)}",
+                Body = $"State machine body {DataGenerator.RandomString(BodyRandomLength)}"
+            },
             _createdIssueNumbers);
         var issueNumber = created.Number;
 

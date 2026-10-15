@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Albums;
 
@@ -17,7 +18,6 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     private const int TestAlbumId = 1;
     private const int BoundaryAlbumId = 50;
     private const int LastAlbumId = 100;
-    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -179,7 +179,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            [UrlSegment(IdKey, NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

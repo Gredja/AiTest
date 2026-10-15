@@ -8,6 +8,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.PublicRepos;
 
@@ -64,7 +65,6 @@ public class GetPublicReposTests : GitHubTestBase
         response.Data!.Count.Should().BeGreaterThan(0);
     }
 
-    private const string InvalidQueryValue = "abc";
 
     [Test]
     [Category("Negative")]
@@ -72,7 +72,7 @@ public class GetPublicReposTests : GitHubTestBase
     public async Task GetPublicRepos_InvalidSince_Returns422()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
-            [Query(JsonFields.Since, InvalidQueryValue)]);
+            [Query(JsonFields.Since, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

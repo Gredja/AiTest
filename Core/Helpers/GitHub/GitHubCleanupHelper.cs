@@ -136,5 +136,10 @@ public class GitHubCleanupHelper : GitHubRequestHelper
         {
             TestContext.Progress.WriteLine($"Warning: {subject} failed: {exception.Message}");
         }
+        catch (OperationCanceledException exception)
+        {
+            // covers timeouts too — an unhandled cleanup exception would mask the original test failure
+            TestContext.Progress.WriteLine($"Warning: {subject} cancelled: {exception.Message}");
+        }
     }
 }

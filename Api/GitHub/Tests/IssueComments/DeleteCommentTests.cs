@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.IssueComments;
 
@@ -16,7 +17,6 @@ namespace Api.GitHub.IssueComments;
 public class DeleteCommentTests : GitHubTestBase
 {
     private const int TargetIssueNumber = 5;
-    private const int BodyRandomLength = 16;
     private const long NonExistentCommentId = 0;
 
     private static readonly CreateCommentModelRequest _testComment = new()

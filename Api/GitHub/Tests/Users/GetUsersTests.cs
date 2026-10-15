@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Users;
 
@@ -14,9 +15,6 @@ namespace Api.GitHub.Users;
 [Category("GitHub")]
 public class GetUsersTests : GitHubTestBase
 {
-    private const int SingleItemPageSize = 1;
-    private const string InvalidPerPage = "abc";
-
     [Test]
     [Category("HealthCheck")]
     [Description("3a.1 GET /users returns 200 OK")]
@@ -113,7 +111,7 @@ public class GetUsersTests : GitHubTestBase
     public async Task GetUsers_InvalidPerPage_ReturnsOk()
     {
         var response = await Get<List<UserModelResponse>>(GitHubEndpoints.Users,
-            [.. PerPageParam(InvalidPerPage)]);
+            [.. PerPageParam(NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }

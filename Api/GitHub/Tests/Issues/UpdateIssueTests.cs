@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Issues;
 
@@ -16,7 +17,6 @@ namespace Api.GitHub.Issues;
 public class UpdateIssueTests : GitHubTestBase
 {
     private const int TargetIssueNumber = 5;
-    private const int TitleRandomLength = 8;
     private const string InvalidStateValue = "bogus";
 
     private static readonly CreateIssueModelRequest _createRequest = new()

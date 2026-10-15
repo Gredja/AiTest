@@ -4,6 +4,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using AllureAdapter;
+using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -12,10 +13,8 @@ namespace E2E.GitHub.Tests;
 [Category("GitHubE2E")]
 public class IssueLifecycleTests : GitHubE2ETestBase
 {
-    private const int TitleRandomLength = 8;
-    private const int BodyRandomLength = 16;
-
     private readonly List<int> _createdIssueNumbers = [];
+    private readonly List<long> _createdCommentIds = [];
 
     [Test]
     [Category("Regression")]
@@ -36,16 +35,13 @@ public class IssueLifecycleTests : GitHubE2ETestBase
         {
             Body = $"Comment {DataGenerator.RandomString(BodyRandomLength)}"
         };
-        var comment = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, commentRequest, IssueParams(created.Number));
-        comment.ShouldHaveStatusCode(HttpStatusCode.Created);
-        comment.Data.Should().NotBeNull();
-        comment.Data!.ShouldMatchRequest(commentRequest);
+        var comment = await CreateCommentTrackedAsync(commentRequest, created.Number, _createdCommentIds);
+        comment.ShouldMatchRequest(commentRequest);
 
         var comments = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             IssueParams(created.Number));
         comments.ShouldHaveStatusCode(HttpStatusCode.OK);
-        comments.Data.Should().Contain(existing => existing.Id == comment.Data.Id,
+        comments.Data.Should().Contain(existing => existing.Id == comment.Id,
             "created comment must be reachable via its issue's comments endpoint");
 
         await PatchIssueStateAsync(created.Number, GitHubEndpoints.StateClosed);
@@ -55,6 +51,11 @@ public class IssueLifecycleTests : GitHubE2ETestBase
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
+        foreach (var commentId in _createdCommentIds)
+        {
+            await CleanupCommentAsync(commentId);
+        }
+
         foreach (var issueNumber in _createdIssueNumbers)
         {
             await CleanupIssueAsync(issueNumber);

@@ -125,8 +125,6 @@ namespace Ui.Test.GitHubStream.{{area_name}};
 [Category("GitHubUi")]
 public class {{area_name}}{{flow_name}}Tests : {{service_name}}UiTestBase
 {
-    private const int TitleRandomLength = 8;
-
     private readonly List<long> _createdIssueNumbers = [];   // registry, typed per resource
 
     [Test]
@@ -134,7 +132,7 @@ public class {{area_name}}{{flow_name}}Tests : {{service_name}}UiTestBase
     [Description("UI-{{section}} {{flow description}}")]
     public async Task {{area}}_{{Flow}}_{{Outcome}}()
     {
-        var title = $"UI {DataGenerator.RandomString(TitleRandomLength)}";
+        var title = $"UI {DataGenerator.RandomString(TestDataConstants.TitleRandomLength)}";
 
         await Browser.SomePage.CreateIssue(title, body);
         // register-then-assert for every created resource:
@@ -158,7 +156,7 @@ public class {{area_name}}{{flow_name}}Tests : {{service_name}}UiTestBase
 }
 ```
 
-- Title/body via `DataGenerator.RandomString` (fictional values, vary ≥2 dimensions) — see `Rules/test-practices.md` → Test data.
+- Title/body via `DataGenerator.RandomString` (fictional values, vary ≥2 dimensions) — see `Rules/test-practices.md` → Test data. Lengths and shared test-data values come from `TestDataConstants` (`Core/Helpers/Data/`) — never redeclare them locally.
 - `[OneTimeTearDown]` is the LAST class member; `[OneTimeSetUp]`/fields at top.
 - No `[Category]` check-type on the class; no service category on methods.
 - Do not paste screenshot/trace code — the base fixture captures artifacts on failure.

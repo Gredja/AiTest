@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Tags;
 
@@ -14,8 +15,6 @@ namespace Api.GitHub.Tags;
 [Category("GitHub")]
 public class GetTagsTests : GitHubTestBase
 {
-    private const string SpecialCharsSegment = "sp@ec!al";
-
     [Test]
     [Category("HealthCheck")]
     [Description("15.1 GET /tags returns 200 OK")]

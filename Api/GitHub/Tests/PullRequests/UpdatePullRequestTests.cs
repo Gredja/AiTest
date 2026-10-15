@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.PullRequests;
 
@@ -15,10 +16,8 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class UpdatePullRequestTests : GitHubTestBase
 {
-
     private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
 
-    private const int TitleRandomLength = 8;
     private const int ExistingPullNumber = 1;
 
     [Test]

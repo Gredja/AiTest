@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Issues;
 
@@ -191,7 +192,6 @@ public class GetIssuesTests : GitHubTestBase
         response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateClosed);
     }
 
-    private const string InvalidQueryValue = "abc";
 
     [Test]
     [Category("Negative")]
@@ -199,7 +199,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_InvalidSince_Returns422()
     {
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
-            [.. TestRepoParam(), Query(JsonFields.Since, InvalidQueryValue)]);
+            [.. TestRepoParam(), Query(JsonFields.Since, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

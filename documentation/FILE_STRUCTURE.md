@@ -79,7 +79,8 @@ Core/
 │   ├── Assertions/
 │   │   └── AssertHelper.cs        # ShouldHaveValidContract, ShouldHaveValidFields, etc.
 │   ├── Data/
-│   │   └── DataGenerator.cs       # RandomString/RandomIntExclusive for varying write payloads
+│   │   ├── DataGenerator.cs       # RandomString/RandomIntExclusive for varying write payloads
+│   │   └── TestDataConstants.cs    # shared test-data lengths/values — one meaning, one declaration
 │   ├── GitHub/
 │   │   ├── GitHubCleanupHelper.cs # shared cleanup core (Api/E2E delegation + Ui composition)
 │   │   ├── GitHubParamHelper.cs
@@ -161,6 +162,7 @@ Core/
 │   │   │   ├── PermissionModelResponse.cs
 │   │   │   ├── PullRequestCommitModelResponse.cs
 │   │   │   ├── PullRequestFileModelResponse.cs
+│   │   │   ├── PullRequestMergeModelResponse.cs
 │   │   │   ├── PullRequestModelResponse.cs
 │   │   │   ├── RateLimitModelResponse.cs
 │   │   │   ├── ReleaseModelResponse.cs

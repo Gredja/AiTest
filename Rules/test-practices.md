@@ -21,6 +21,7 @@
 - Verify content type when relevant
 - For negative tests — verify error message or status, not just "not success"
 - Prefer specific assertions over generic ones (check field values, not just "response is not null")
+- **Data-driven tests (`[TestCase]`/`[TestCaseSource]`)** — parameterize when several cases of the SAME endpoint differ only by input data: one body, every case listed separately in the test explorer (NUnit data-driven guidance). Duplication across endpoint classes is structural (1 endpoint = 1 test class) — never merge fixtures to deduplicate; share the repeated values via constants instead
 
 ## Non-existent IDs
 

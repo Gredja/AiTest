@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Photos;
 
@@ -17,7 +18,6 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     private const int TestPhotoId = 1;
     private const int BoundaryPhotoId = 2500;
     private const int LastPhotoId = 5000;
-    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -180,7 +180,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPhotoById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<PhotoModelResponse>(JsonPlaceholderEndpoints.PhotosById,
-            [UrlSegment(IdKey, NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

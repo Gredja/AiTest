@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Contributors;
 
@@ -14,9 +15,6 @@ namespace Api.GitHub.Contributors;
 [Category("GitHub")]
 public class GetContributorsTests : GitHubTestBase
 {
-    private const int SingleItemPageSize = 1;
-    private const string SpecialCharsSegment = "sp@ec!al";
-
     [Test]
     [Category("HealthCheck")]
     [Description("12.1 GET /contributors returns 200 OK")]

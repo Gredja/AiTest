@@ -66,7 +66,7 @@ public class CollaboratorPermissionTests : GitHubE2ETestBase
         pending.ShouldHaveStatusCode(HttpStatusCode.OK);
         var invitation = pending.Data!.FirstOrDefault(item => item.Invitee.Login == collaboratorUser);
         invitation.Should().NotBeNull("pending invitation must be listed after invite");
-        invitation!.Permissions.Should().Be(PendingPermissionValue);
+        invitation!.Permissions.Should().Be(PendingPermissionValue, "listed invitation must keep the requested write access");
         invitation.Expired.Should().BeFalse("fresh invitation must not be expired");
 
         var afterInvite = await Get<List<CollaboratorModelResponse>>(GitHubEndpoints.RepoCollaborators,

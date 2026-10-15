@@ -15,7 +15,9 @@ public static class JsonFields
     public const string FullName = "full_name";
     public const string HtmlUrl = "html_url";
     public const string Labels = "labels";
+    public const string Merged = "merged";
     public const string MergedAt = "merged_at";
+    public const string Message = "message";
     public const string OpenIssuesCount = "open_issues_count";
     public const string Page = "page";
     public const string PerPage = "per_page";

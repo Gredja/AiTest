@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.IssueComments;
 
@@ -148,7 +149,6 @@ public class GetIssueCommentsTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
-    private const string InvalidQueryValue = "abc";
 
     [Test]
     [Category("Negative")]
@@ -156,7 +156,7 @@ public class GetIssueCommentsTests : GitHubTestBase
     public async Task GetIssueComments_InvalidSince_Returns422()
     {
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
-            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber), Query(JsonFields.Since, InvalidQueryValue)]);
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber), Query(JsonFields.Since, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

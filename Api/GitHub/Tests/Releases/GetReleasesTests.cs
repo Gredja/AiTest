@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Releases;
 
@@ -14,9 +15,6 @@ namespace Api.GitHub.Releases;
 [Category("GitHub")]
 public class GetReleasesTests : GitHubTestBase
 {
-    private const string InvalidPerPage = "abc";
-    private const string SpecialCharsSegment = "sp@ec!al";
-
     [Test]
     [Category("HealthCheck")]
     [Description("15b.1 GET /releases returns 200 OK")]
@@ -113,7 +111,7 @@ public class GetReleasesTests : GitHubTestBase
     public async Task GetReleases_InvalidPerPage_ReturnsOk()
     {
         var response = await Get<List<ReleaseModelResponse>>(GitHubEndpoints.RepoReleases,
-            [.. TestRepoParam(), .. PerPageParam(InvalidPerPage)]);
+            [.. TestRepoParam(), .. PerPageParam(NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }

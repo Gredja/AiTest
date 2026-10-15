@@ -6,6 +6,7 @@ using System.Text.Json;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Languages;
 
@@ -14,9 +15,6 @@ namespace Api.GitHub.Languages;
 [Category("GitHub")]
 public class GetLanguagesTests : GitHubTestBase
 {
-    private const string SpecialCharsSegment = "sp@ec!al";
-    private const string InvalidPerPage = "abc";
-
     [Test]
     [Category("HealthCheck")]
     [Description("13.1 GET /languages returns 200 OK")]
@@ -101,7 +99,7 @@ public class GetLanguagesTests : GitHubTestBase
     public async Task GetLanguages_InvalidPerPage_ReturnsOk()
     {
         var response = await Get<Dictionary<string, long>>(GitHubEndpoints.RepoLanguages,
-            [.. TestRepoParam(), .. PerPageParam(InvalidPerPage)]);
+            [.. TestRepoParam(), .. PerPageParam(NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }

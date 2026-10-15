@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Commits;
 
@@ -14,9 +15,6 @@ namespace Api.GitHub.Commits;
 [Category("GitHub")]
 public class GetCommitsTests : GitHubTestBase
 {
-    private const int SingleItemPageSize = 1;
-    private const string InvalidPerPage = "abc";
-    private const string SpecialCharsSegment = "sp@ec!al";
     private const string GitHubUrlPrefix = "https://github.com/";
 
     [Test]
@@ -138,7 +136,7 @@ public class GetCommitsTests : GitHubTestBase
     public async Task GetCommits_InvalidPerPage_ReturnsOk()
     {
         var response = await Get<List<CommitModelResponse>>(GitHubEndpoints.RepoCommits,
-            [.. TestRepoParam(), .. PerPageParam(InvalidPerPage)]);
+            [.. TestRepoParam(), .. PerPageParam(NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }

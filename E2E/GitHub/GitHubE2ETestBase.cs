@@ -24,6 +24,20 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
         return created.Data!;
     }
 
+    protected async Task<CommentModelResponse> CreateCommentTrackedAsync(
+        CreateCommentModelRequest request, int issueNumber, List<long> createdCommentIds)
+    {
+        var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
+            GitHubEndpoints.RepoIssueComments, request, IssueParams(issueNumber));
+        if (created.Data is not null)
+        {
+            createdCommentIds.Add(created.Data.Id);
+        }
+
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        return created.Data!;
+    }
+
     protected async Task WaitUntilIssueInStateListAsync(int issueNumber, string state, bool present)
     {
         var result = await WaitHelper.WaitUntilAsync(

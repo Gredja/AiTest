@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Users;
 
@@ -17,7 +18,6 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     private const int TestUserId = 1;
     private const int BoundaryUserId = 5;
     private const int LastUserId = 10;
-    private const string NonNumericId = "abc";
 
     [Test]
     [Category("HealthCheck")]
@@ -180,7 +180,7 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
     public async Task GetUserById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<UserModelResponse>(JsonPlaceholderEndpoints.UsersById,
-            [UrlSegment(IdKey, NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

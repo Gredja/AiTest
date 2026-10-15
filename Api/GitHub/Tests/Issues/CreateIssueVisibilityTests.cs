@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Issues;
 
@@ -14,9 +15,6 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class CreateIssueVisibilityTests : GitHubTestBase
 {
-    private const int TitleRandomLength = 8;
-    private const int BodyRandomLength = 16;
-
     private readonly List<int> _createdIssueNumbers = [];
 
     [Test]

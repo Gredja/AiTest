@@ -5,6 +5,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -13,8 +14,6 @@ namespace E2E.GitHub.Tests;
 [Category("GitHubE2E")]
 public class FailedWriteTests : GitHubE2ETestBase
 {
-    private const int TitleRandomLength = 8;
-
     private readonly List<string> _createdBranches = [];
 
     private string _baseSha = string.Empty;

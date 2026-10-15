@@ -6,6 +6,7 @@ using FluentAssertions;
 using AllureAdapter;
 using System.Net;
 using Ui.Helper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Ui.Test.GitHubStream.Issues;
 
@@ -14,8 +15,6 @@ namespace Ui.Test.GitHubStream.Issues;
 [Category("GitHubUi")]
 public class IssueUiTests : GitHubUiTestBase
 {
-    private const int TitleRandomLength = 12;
-
     private readonly List<int> _createdIssueNumbers = [];
     private readonly List<long> _createdCommentIds = [];
 

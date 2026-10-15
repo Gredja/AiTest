@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Issues;
 
@@ -16,7 +17,6 @@ namespace Api.GitHub.Issues;
 public class GetIssueByIdTests : GitHubTestBase
 {
     private const int ExistingIssueNumber = 5;
-    private const string NonNumericIssueNumber = "abc";
     private const string TestTitle = "Test issue for contract check";
 
     private int? _createdIssueNumber;
@@ -149,7 +149,7 @@ public class GetIssueByIdTests : GitHubTestBase
     public async Task GetIssueById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-            [.. TestRepoParam(), UrlSegment("issue_number", NonNumericIssueNumber)]);
+            [.. TestRepoParam(), UrlSegment("issue_number", NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

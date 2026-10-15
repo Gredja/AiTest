@@ -6,6 +6,7 @@ using FluentAssertions;
 using RestSharp;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -16,12 +17,9 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestPostId = 1;
     private const int TestUserId = 1;
-    private const int TitleRandomLength = 8;
-    private const int BodyRandomLength = 16;
     private const string IgnorePutNoValidationBug = "JsonPlaceholder mock: PUT accepts body missing required fields — no validation — Bug: documentation/Bugs/JsonPlaceholder/JP-005-put-post-accepts-missing-required-fields.md";
     private const string IgnorePatchAnyIdBug = "JsonPlaceholder mock: PATCH returns 200 for any ID, including invalid and non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-006-patch-post-returns-200-for-any-id.md";
     private const string MalformedJson = "{\"title\":";
-    private const string NonNumericId = "abc";
     private static readonly PostModelRequest _putBody = new()
     {
         UserId = TestUserId,
@@ -158,7 +156,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Put_InvalidSegment_ReturnsInternalServerError()
     {
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _putBody,
-            [UrlSegment(IdKey, NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
     }
@@ -266,7 +264,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     public async Task UpdatePost_Patch_InvalidSegment_ReturnsNotFound()
     {
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, _patchBody,
-            [UrlSegment(IdKey, NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

@@ -4,6 +4,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using AllureAdapter;
+using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -12,8 +13,6 @@ namespace E2E.GitHub.Tests;
 [Category("GitHubE2E")]
 public class CommentChainTests : GitHubE2ETestBase
 {
-    private const int TitleRandomLength = 8;
-    private const int BodyRandomLength = 16;
     private const int ChainLength = 3;
 
     private readonly List<long> _createdCommentIds = [];
@@ -33,16 +32,10 @@ public class CommentChainTests : GitHubE2ETestBase
         for (var index = 0; index < ChainLength; index++)
         {
             var body = $"Chain {index} {DataGenerator.RandomString(BodyRandomLength)}";
-            var comment = await Post<CreateCommentModelRequest, CommentModelResponse>(
-                GitHubEndpoints.RepoIssueComments,
+            await CreateCommentTrackedAsync(
                 new CreateCommentModelRequest { Body = body },
-                IssueParams(issueNumber));
-            if (comment.Data is not null)
-            {
-                _createdCommentIds.Add(comment.Data.Id);
-            }
-
-            comment.ShouldHaveStatusCode(HttpStatusCode.Created);
+                issueNumber,
+                _createdCommentIds);
             createdBodies.Add(body);
         }
 

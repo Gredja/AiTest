@@ -5,6 +5,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -13,8 +14,6 @@ namespace E2E.GitHub.Tests;
 [Category("GitHubE2E")]
 public class PullRequestFlowTests : GitHubE2ETestBase
 {
-    private const int TitleRandomLength = 8;
-
     private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
 
     [Test]
@@ -32,10 +31,11 @@ public class PullRequestFlowTests : GitHubE2ETestBase
         created.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "freshly created PR must be open");
         created.Data.Title.Should().Be(title, "PR must echo the requested title");
 
-        var merged = await Put<Dictionary<string, object>, object>(
+        var merged = await Put<Dictionary<string, object>, PullRequestMergeModelResponse>(
             GitHubEndpoints.RepoPullRequestMerge, new Dictionary<string, object>(), PullParams(pullNumber));
         merged.ShouldHaveStatusCode(HttpStatusCode.OK);
-        merged.Data.Should().NotBeNull();
+        merged.Data.Should().NotBeNull("200 merge response must carry a body");
+        merged.Data!.Merged.Should().BeTrue("merge endpoint must report merged=true for a mergeable pull request");
 
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);

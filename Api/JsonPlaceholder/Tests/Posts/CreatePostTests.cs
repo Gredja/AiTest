@@ -6,6 +6,7 @@ using FluentAssertions;
 using RestSharp;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -15,8 +16,6 @@ namespace Api.JsonPlaceholder.Posts;
 public class CreatePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
-    private const int TitleRandomLength = 8;
-    private const int BodyRandomLength = 16;
     private const string IgnoreMissingFieldsBug = "JsonPlaceholder mock: accepts any body — missing required fields still return 201 — Bug: documentation/Bugs/JsonPlaceholder/JP-001-create-post-accepts-empty-body.md";
     private static readonly PostModelRequest _testPost = new()
     {

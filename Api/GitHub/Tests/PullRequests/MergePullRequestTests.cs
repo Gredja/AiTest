@@ -7,6 +7,7 @@ using FluentAssertions;
 using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.PullRequests;
 
@@ -15,10 +16,8 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class MergePullRequestTests : GitHubTestBase
 {
-
     private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
 
-    private const int TitleRandomLength = 8;
     private const int ExistingPullNumber = 1;
 
     [Test]
@@ -31,13 +30,14 @@ public class MergePullRequestTests : GitHubTestBase
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
-        var merged = await Put<Dictionary<string, object>, object>(
+        var merged = await Put<Dictionary<string, object>, PullRequestMergeModelResponse>(
             GitHubEndpoints.RepoPullRequestMerge,
             new Dictionary<string, object>(),
             PullParams(pullNumber));
 
         merged.ShouldHaveStatusCode(HttpStatusCode.OK);
-        merged.Data.Should().NotBeNull();
+        merged.Data.Should().NotBeNull("200 merge response must carry a body");
+        merged.Data!.Merged.Should().BeTrue("merge endpoint must report merged=true for a mergeable pull request");
     }
 
     [Test]
@@ -50,11 +50,18 @@ public class MergePullRequestTests : GitHubTestBase
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
-        var first = await Put<Dictionary<string, object>, object>(
-            GitHubEndpoints.RepoPullRequestMerge,
-            new Dictionary<string, object>(),
-            PullParams(pullNumber));
-        first.ShouldHaveStatusCode(HttpStatusCode.OK);
+        // a fresh PR's mergeability is computed asynchronously — the first PUT can also
+        // answer 405 while the state settles (same race as the second PUT, observed 2026-10-09)
+        var first = await WaitHelper.WaitUntilAsync(
+            () => Put<Dictionary<string, object>, object>(
+                GitHubEndpoints.RepoPullRequestMerge,
+                new Dictionary<string, object>(),
+                PullParams(pullNumber)),
+            response => response.StatusCode == HttpStatusCode.OK);
+        first.IsSuccess.Should().BeTrue(
+            $"first merge must return 200 once the PR is mergeable;" +
+            $" elapsed {first.Elapsed}, attempts {first.Attempts}," +
+            $" last status {first.LastValue?.StatusCode}");
 
         // An immediate second PUT may race the settling merge state (405 observed 2026-10-09) —
         // idempotency is only guaranteed once the merge has settled, so poll

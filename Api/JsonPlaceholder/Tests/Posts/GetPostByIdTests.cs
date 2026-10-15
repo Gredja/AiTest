@@ -6,6 +6,7 @@ using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -17,7 +18,6 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     private const int TestPostId = 1;
     private const int BoundaryPostId = 50;
     private const int LastPostId = 100;
-    private const string NonNumericId = "abc";
     private int? _createdPostId;
 
     [OneTimeSetUp]
@@ -181,7 +181,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            [UrlSegment(IdKey, NonNumericId)]);
+            [UrlSegment(IdKey, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

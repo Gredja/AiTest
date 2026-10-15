@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Branches;
 
@@ -14,8 +15,6 @@ namespace Api.GitHub.Branches;
 [Category("GitHub")]
 public class GetBranchesTests : GitHubTestBase
 {
-    private const int SingleItemPageSize = 1;
-
     [Test]
     [Category("HealthCheck")]
     [Description("4.1 GET /repos/{owner}/{repo}/branches returns 200 OK")]

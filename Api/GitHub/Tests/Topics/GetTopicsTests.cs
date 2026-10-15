@@ -6,6 +6,7 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Topics;
 
@@ -14,8 +15,6 @@ namespace Api.GitHub.Topics;
 [Category("GitHub")]
 public class GetTopicsTests : GitHubTestBase
 {
-    private const string SpecialCharsSegment = "sp@ec!al";
-
     [Test]
     [Category("HealthCheck")]
     [Description("14.1 GET /topics with mercy-preview Accept returns 200 OK")]

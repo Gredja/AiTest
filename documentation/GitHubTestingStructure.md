@@ -21,7 +21,7 @@
 | 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
 | 11 | **GitHub UI (Playwright)** | Web UI: ordinary login / sign-out, auth state, repo landing, code view, 404, issues & PRs lists, issue create/close/reopen/edit + comments — page-objects, storageState auth, write via UI → cleanup via API | Done (14 tests, `Ui/`) |
 
-**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A) + 68 single-write tests (Phase 2: §17–20 issues/comments, §21–23 PR create/patch/merge, §24 DELETE-not-supported, §25–26 git refs); scratch-PR pipeline = blob→tree→commit→branch→PR (infra OB §27); E2E scenarios 2.1–2.9 complete; UI suite 14 tests (6 read-only + 6 issue write + login/logout) — remaining work: CI/CD research — tracked in the permanent backlog [GeneralPlan.md](GeneralPlan.md) → "Research: is CI/CD needed for this project?".
+**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A) + 68 single-write tests (Phase 2: §17–20 issues/comments, §21–23 PR create/patch/merge, §24 DELETE-not-supported, §25–26 git refs); scratch-PR pipeline = blob→tree→commit→branch→PR (infra OB §27); E2E scenarios E2E-1–E2E-9 complete (§6); UI suite 14 tests (6 read-only + 6 issue write + login/logout) — remaining work: CI/CD research — tracked in the permanent backlog [GeneralPlan.md](GeneralPlan.md) → "Research: is CI/CD needed for this project?".
 
 ## 2. Out of Scope
 
@@ -76,3 +76,19 @@ The team loses trust in the suite and stops running it — the moment coverage s
 - [ ] Allure report generated with no broken/unknown statuses
 - [ ] `dotnet format --verify-no-changes` passes
 - [ ] Documents in sync: Test Plan statuses ↔ Observable Behaviour sections ↔ tests
+
+## 6. E2E scenario numbering
+
+The reserved `E2E-N` prefixes in `[Description]` (`Rules/test-practices.md` → Document sync) map 1:1 to the scenario classes in `E2E/GitHub/Tests/`:
+
+| Prefix | Test class | Scenario |
+|---|---|---|
+| E2E-1 | `IssueLifecycleTests` | create → comment → verify comment linked → close → verify state |
+| E2E-2 | `PullRequestFlowTests` | create branch → create PR → verify → merge → verify merged |
+| E2E-3 | `CommentChainTests` | create issue → add comments → verify count and ordering |
+| E2E-4 | `RepositoryHealthTests` | default branch, topics, visibility |
+| E2E-5 | `CollaboratorPermissionTests` | owner access → invite → verify pending → revoke |
+| E2E-6 | `RateLimitDrainTests` | consume calls → verify remaining decrements → reset is future |
+| E2E-7 | `GitRefLifecycleTests` | create branch → visible → duplicate 422 → delete → gone |
+| E2E-8 | `IssueStateMachineTests` | open → closed → reopen with list filters |
+| E2E-9 | `FailedWriteTests` | PR without commits → 422 → no side effects |
