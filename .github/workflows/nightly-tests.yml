@@ -17,7 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
-      options: --user 1001
     steps:
       - uses: actions/checkout@v6
 
