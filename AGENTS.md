@@ -17,6 +17,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - `documentation/` — документация проекта
 - `documentation/*ObservableBehaviour.md` — наблюдаемое поведение API (актуальные состояния, типы полей, негативные кейсы). **Читать при генерации и review тестов.**
 - `.mimocode/skills/` — скиллы для AI-агентов
+- `.github/workflows/` — CI: `pr-checks.yml` (required PR-gate: format всегда, HealthCheck для same-repo веток) и `nightly-tests.yml` (ночной informational-прогон); секреты — только в настройках репо, live-сьют никогда не required-check (`Rules/git.md` → CI)
 
 ## Rules
 
@@ -66,6 +67,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - Коммиты: только по запросу, английский, формат: action + object
 - Никогда не коммитить `.env` или токены
 - **Перед коммитом:** `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` — оба должны пройти (полный прогон — `/test`)
+- CI: PR-gate (`format` + `HealthCheck`) и ночной informational-прогон; live-сьют не ставить в required checks (`Rules/git.md` → CI)
 
 ## Key Decisions
 - 0 и -1 — безопасные static IDs (всегда невалидные)
@@ -85,7 +87,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - `Rules/test-practices.md` — test isolation, API patterns, non-existent IDs, E2E cleanup, artifact cleanup, seed methodology, document sync (incl. single-source guidance), read-after-write visibility
 - `Rules/comments.md` — when comments are needed in code
 - `Rules/config.md` — endpoints, configuration
-- `Rules/git.md` — remote, commits, secrets, repo hygiene
+- `Rules/git.md` — remote, commits, secrets, repo hygiene, CI
 - `Rules/workflow.md` — plan → approval → changes → report
 - `Rules/categories.md` — test categories
 - `Rules/ui-testing.md` — UI-тесты (Playwright): структура page-objects, локаторы, auth/storageState, waits (ожидание исхода действия до assert), cleanup, категории

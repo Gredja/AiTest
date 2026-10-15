@@ -21,9 +21,12 @@ Gredja/
 ├── .gitattributes                # line ending normalization
 ├── .gitignore
 ├── .graphifyignore
+├── .github/
+│   └── workflows/              # CI: pr-checks.yml (required PR-gate) + nightly-tests.yml (cron, main only)
 ├── .auth/                       # not tracked — Playwright storageState
 ├── .playwright-cli/             # not tracked — local CLI cache
 ├── allure-results/              # not tracked
+├── research/                    # not tracked — deep-research workspaces (gitignored)
 ├── TestResults/                 # not tracked — ONLY TestRunReport-*.md (raw logs in %TEMP%\GredjaTestRun)
 ├── .mimocode/
 │   ├── .gitignore

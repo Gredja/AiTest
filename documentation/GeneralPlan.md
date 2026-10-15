@@ -28,7 +28,7 @@ the only deliverable.
 
 ---
 
-## 2. Research: is CI/CD needed for this project? — TODO
+## 2. Research: is CI/CD needed for this project? — DONE
 
 **Wish (2026-10-02):** investigate whether CI/CD is needed for this project at all —
 if yes, what it would look like (trigger, gates, artifacts); if no, document why not.
@@ -36,6 +36,11 @@ Research/decision first, implementation only if the answer is "yes".
 
 **Status history:**
 - 2026-10-02 — `TODO`: added to backlog by user decision (research first, no implementation yet)
+- 2026-10-15 — `DONE`: research completed — `research/ci-cd-need/REPORT.md` (61 finding, primary sources).
+  Decision: full CI/CD NOT needed (CD has no referent without a deployable artifact; a live-API
+  merge-gate is rejected by flakiness data + GitHub rate limits + fork-secrets rules). Optional value =
+  a nightly informational run; implementation plan kept for the future:
+  `.mimocode/plans/ci-cd.md` (Phase 1 nightly workflow, Phase 2 data-driven PR-gate).
 
 ---
 

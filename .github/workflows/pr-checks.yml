@@ -1,0 +1,35 @@
+name: PR checks
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-checks-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Format
+        run: dotnet format --verify-no-changes
+
+      - name: HealthCheck (live GitHub API)
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GITHUB_PAT: ${{ secrets.TEST_PAT }}
+        run: dotnet test --filter Category=HealthCheck --verbosity minimal
+
+      - name: HealthCheck skipped for fork PRs
+        if: github.event.pull_request.head.repo.full_name != github.repository
+        run: echo "Repository secrets are not available to fork PRs — live checks skipped, format gate still applies"
