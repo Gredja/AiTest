@@ -1,0 +1,22 @@
+using System.Text.Json;
+
+namespace AllureAdapter.Helpers;
+
+internal static class AllureJsonWriter
+{
+    private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = false };
+
+    public static void WriteResultFile(string resultsDir, Dictionary<string, object> testResult)
+    {
+        var fileName = $"{Guid.NewGuid():N}-result.json";
+        var filePath = Path.Combine(resultsDir, fileName);
+        File.WriteAllText(filePath, JsonSerializer.Serialize(testResult, _jsonOptions));
+    }
+
+    public static void WriteContainerFile(string resultsDir, string uuid, Dictionary<string, object> container)
+    {
+        var fileName = $"{uuid}-container.json";
+        var filePath = Path.Combine(resultsDir, fileName);
+        File.WriteAllText(filePath, JsonSerializer.Serialize(container, _jsonOptions));
+    }
+}

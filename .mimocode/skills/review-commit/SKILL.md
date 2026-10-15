@@ -1,4 +1,4 @@
-﻿---
+---
 name: review-commit
 description: Use when the user says "review-commit", "/review-commit", "review code", "review changes", or wants to review local uncommitted code changes. Reviews all modified and new files against project rules and existing patterns. NOT for PR reviews (use /review-pr instead).
 ---
@@ -31,7 +31,7 @@ Collect three lists:
 
 - Existing similar files (e.g. if reviewing UserAssertHelper, also read ProductAssertHelper)
 - `Rules/*.md` — all rule files in Rules/ directory
-- `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs` — if any endpoint references changed
+- `Core/Config/JsonPlaceholderEndpoints.cs` and `Core/Config/GitHubEndpoints.cs` — if any endpoint references changed
 
 ## Step 4: Review each file against ALL project rules
 
@@ -39,7 +39,9 @@ Collect three lists:
 - Model rules (`Rules/models.md`): Model/Request suffixes, property types, pure data containers
 - Assertion rules (`Rules/assertions.md`): FluentAssertions only
 - Comment rules (`Rules/comments.md`): default = no comments
-- Config rules (`Rules/config.md`): Endpoints in FakeStoreEndpoints.cs/JsonPlaceholderEndpoints.cs, never hardcoded
+- Config rules (`Rules/config.md`): Endpoints in JsonPlaceholderEndpoints.cs/GitHubEndpoints.cs, never hardcoded
+- Test practices (`Rules/test-practices.md`): every request in `[OneTimeSetUp]` asserts its status; cleanup lives in `[OneTimeTearDown]` as the LAST class member (fixture-registry, register-then-assert, no per-test `finally`) via `RunCleanupAsync` = try/catch + warning, never a status assertion or an unhandled exception; status check before any `.Data` dereference and `NotBeEmpty` before `Max`/`First` in setups; `ShouldMatchRequest()` after POST/PATCH; no hardcoded volatile entities (live branch names etc. → dynamic lookup or Entry Criteria)
+- False-positive guards (verify BEFORE flagging): `[Ignore]`d negatives — check the documented ceiling first (`documentation/*TestPlan.md` → "Negative Floor Status", OB); unused endpoint constants — check `.mimocode/plans/` (they may be planned endpoints with ready designs)
 - Pattern consistency: compare against existing similar code, check for DRY violations
 
 ## Step 5: Classify each issue

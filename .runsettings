@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Test parallelism + VS Test Explorer settings.
+
+  Auto-applied on every `dotnet test` via RunSettingsFilePath in Directory.Build.props
+  (no settings flag needed). Per-run override: dotnet test with NUnit.NumberOfTestWorkers=N
+  passed in the adapter settings section after a double dash.
+
+  NumberOfTestWorkers — how many NUnit worker threads run fixtures in parallel.
+  Current: 8 (experimental — shared guarantee data may flake; set 1 for sequential).
+
+  MaxCpuCount is for Visual Studio Test Explorer only (CLI ignores it):
+  runs test sources in parallel so both assemblies of one selection are alive at the
+  same time and share a single run — one TestRunReport per run. No loggers here:
+  VS cannot resolve NuGet test loggers (it used to abort the run with
+  "Could not find a test logger 'File'").
+-->
+<RunSettings>
+  <RunConfiguration>
+    <MaxCpuCount>0</MaxCpuCount>
+  </RunConfiguration>
+  <NUnit>
+    <NumberOfTestWorkers>8</NumberOfTestWorkers>
+  </NUnit>
+</RunSettings>

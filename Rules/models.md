@@ -1,22 +1,29 @@
-﻿# Rules: Models
+# Rules: Models
 
 ## Types by purpose
 
-### Response models — suffix `Model`
+### Response models — suffix `ModelResponse`
 
 Describe JSON that the API **returns**. Used for deserialization of API responses.
 
 - Always includes `Id` field (server-generated)
-- May include nested models (e.g. `RatingModel` inside `ProductModel`)
+- May include nested models (e.g. `Rating` inside `ProductModelResponse`)
 - Match the full JSON structure from the API response
 
-### Request models — suffix `Request`
+### Request models — suffix `ModelRequest`
 
 Describe JSON that we **send** to the API. Used as request body for POST/PUT.
 
 - No `Id` field (server generates it)
 - Only fields the client must provide
 - For PUT — may include `Id` if the endpoint expects it in the body
+
+### Nested/supporting models — no suffix
+
+Models that are referenced by other models but not used directly in tests.
+
+- No `Model` suffix, no `Request`/`Response` suffix
+- Example: `Rating`, `UserName`, `Address`, `Geo`, `Commit`, `Label`
 
 ## Property rules
 
@@ -29,14 +36,31 @@ How to decide for value types: check the actual JSON response from the API. If t
 
 ## Naming
 
-- Model suffix for responses, Request suffix for requests
+- `ModelResponse` suffix for responses, `ModelRequest` suffix for requests
+- No suffix for nested/supporting models
 - No abbreviations in class names
-- **Readable property names**: If a JSON field name is ambiguous or requires domain knowledge to understand (e.g. `bs`, `pk`, `ts`), rename the C# property to a meaningful name and add `[JsonPropertyName("original")]` for deserialization. Well-known abbreviations (`Lat`, `Lng`, `Url`, `Id`) — keep as-is. Example: `Bs` → `BusinessSlogan` + `[JsonPropertyName("bs")]`
+- **Readable property names**: If a JSON field name is ambiguous or requires domain knowledge to understand (e.g. `bs`, `pk`, `ts`), rename the C# property to a meaningful name and keep the wire name in `[JsonPropertyName(JsonFields.Original)]`. Well-known abbreviations (`Lat`, `Lng`, `Url`, `Id`) — keep as-is. Example: `Bs` → `BusinessSlogan` + `[JsonPropertyName(JsonFields.Bs)]`
+
+## JSON field names
+
+- Wire names live in exactly one place per domain: `Core/Models/{Service}/JsonFields.cs` (shared models — `Core/Models/Generic/JsonFields.cs`)
+- `[JsonPropertyName(...)]` only references `JsonFields` constants — never inline string literals
+- Tests that build raw payloads (dictionaries) or wire-named query keys use the same `JsonFields` constants — no copies in test helpers (`TitleKey`-style aliases are banned; the constant IS the key)
+- New wire name → add the constant to the matching `JsonFields` first, then use it everywhere
 
 ## Namespaces
 
-- Regular models: `Core.Models`
+- Regular models: `Core.Models.{Service}` (e.g. `Core.Models.GitHub`, `Core.Models.JsonPlaceholder`) — nested/supporting models live in the same service namespace
 - Reusable generics: `Core.Models.Generic`
+
+## File layout
+
+Folders split by kind; **namespace stays flat** (`Core.Models.{Service}`) — no consumer `using` churn:
+
+- `Core/Models/{Service}/Requests/` — all `*ModelRequest.cs`
+- `Core/Models/{Service}/Responses/` — all `*ModelResponse.cs`
+- `Core/Models/{Service}/` (root) — nested/supporting models without suffix (`BranchCommit`, `Label`, `GitTreeEntry`…) + `JsonFields` constants
+- Same layout applies to `Core/Models/Generic/`
 
 ## Generic models
 
@@ -55,9 +79,16 @@ Example: `ProductModel` has `RatingModel Rating` — not inline anonymous type.
 ## What NOT to do
 
 - Don't add constructors unless needed for deserialization
-- Don't add validation attributes (validation is in tests, not in models)
 - Don't add methods or logic — models are pure data containers
 - Don't use `init` — use `{ get; set; }` for all properties
+
+## Contract-check attributes (exception)
+
+ContractCheck infrastructure lives on validation attributes (`[RequiredField]`, `[PositiveId]`, `[ValueRange]`) — models **may** carry these attributes. They are part of the assertion layer (`AssertHelper.ShouldHaveValidContract` / `ShouldHaveValidFields`), not business validation.
+
+## Wire-boolean naming exception
+
+Boolean properties whose JSON wire names are GitHub permission flags (`admin`, `maintain`, `push`, `triage`, `pull`) and similar contract keys keep the wire name without `Is`/`Has` prefix (e.g. `CollaboratorPermissions.Admin`). Renaming would obscure the wire mapping; when such a property is new, document the exception in the model file or OB section.
 
 ## Attributes
 

@@ -1,4 +1,4 @@
-﻿---
+---
 name: api-test-gen
 description: Use when the user wants to generate API tests for any service endpoint. Trigger on mentions of "api test gen", "generate API tests", "/api-test-gen", or testing a new endpoint.
 ---
@@ -15,7 +15,7 @@ Generates a complete set of NUnit API tests for any REST API service endpoint �
 
 | Placeholder | Description | Example value |
 |---|---|---|
-| `{{service_name}}` | API service (matches directory/class names) | FakeStore, JsonPlaceholder, Swapi |
+| `{{service_name}}` | API service (matches directory/class names) | JsonPlaceholder, GitHub, Swapi |
 | `{{endpoint_name}}` | Endpoint to test | users, posts, todos |
 
 ---
@@ -40,11 +40,13 @@ All paths use `{Service}` as the service name (PascalCase, matches directory nam
 
 | What | Path pattern |
 |---|---|
+| Observable Behaviour | `documentation/{Service}ObservableBehaviour.md` |
+| Observable Behaviour Template | `documentation/ObservableBehaviourTemplate.md` |
 | Endpoints config | `Core/Config/{Service}Endpoints.cs` |
 | Models | `Core/Models/{Service}/` |
-| Tests | `Api/{Service}/Tests/{Endpoint}Tests.cs` |
-| Param helper | `Api/Helpers/{Service}ParamHelper.cs` |
-| Namespace (tests) | `Api.{Service}.Tests` |
+| Tests | `Api/{Service}/Tests/{Category}/{Endpoint}Tests.cs` |
+| Param helper | JsonPlaceholder: `Api/JsonPlaceholder/Helpers/JsonPlaceholderParamHelper.cs`; GitHub: `Core/Helpers/GitHub/GitHubParamHelper.cs` |
+| Namespace (tests) | `Api.{Service}.{Category}` (e.g. `Api.GitHub.Issues`, `Api.JsonPlaceholder.Posts`) |
 | Namespace (models) | `Core.Models.{Service}` |
 | Category (class) | `[Category("{Service}")]` |
 
@@ -54,10 +56,13 @@ Before generating — verify that `Core/Config/{Service}Endpoints.cs` exists. If
 
 ### Step 1: Research the endpoint
 
-1. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
-2. Analyze the response structure — what fields, what types, what's nullable
-3. Check for sub-endpoints: `/{endpoint}/{id}`, nested resources
-4. Count total items (needed for `ExpectedCount`)
+0. **Read the existing code FIRST** — Glob/Grep for the endpoint's existing test class, models, and constants. Extend what exists; NEVER create duplicate files (both models failed this in `documentation/Katas/model-selection-note.md` — they generated new files instead of working with existing ones because they didn't read the project code first)
+1. **Check Observable Behaviour** — if `documentation/{Service}ObservableBehaviour.md` exists, read it first. It contains: expected status codes, response types, field definitions with types, pagination, filtering, and negative cases. Use it as the primary source for test design.
+2. **Create Observable Behaviour if missing** — if `documentation/{Service}ObservableBehaviour.md` does not exist, create it from `documentation/ObservableBehaviourTemplate.md`. Fill in: endpoint sections, field definitions, negative cases, validation rules, risk framing. This document is the source of truth for test generation.
+3. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
+4. Analyze the response structure — what fields, what types, what's nullable
+5. Check for sub-endpoints: `/{endpoint}/{id}`, nested resources
+6. Count total items (needed for `ExpectedCount`)
 
 ### Step 2: Add constants to Endpoints file
 
@@ -74,7 +79,7 @@ Add:
 Create or update models in `Core/Models/{Service}/`:
 
 **Main model** (`{Endpoint}Model.cs`):
-- Suffix: `Model` for response, `Request` for request body
+- Suffix: `ModelResponse` for response, `ModelRequest` for request body (nested/supporting models without suffix)
 - Always includes `Id` field with `[PositiveId]` attribute
 - Reference types (string, object, nested model): `[RequiredField]`, no `?`, no initializer
 - Value types (int, decimal, double): `?` only if JSON field can be null/absent
@@ -102,10 +107,18 @@ If models already exist — verify they match current API response.
 
 ### Step 4: Generate Tests
 
+**Seed methodology** — before writing code, plan test cases using Seed → Expand → Review:
+1. Write 5 seeds per endpoint (2 happy, 2 failure, 1 edge) — see `Rules/test-practices.md` → "Seed methodology"
+2. Expand to table: `# | Case | Category | Priority | Source seed` — with concrete example for the endpoint
+3. Enforce minimum 5 active negatives per endpoint (`[Ignore]`d don't count; mock-API exception + ceiling rule — see `Rules/test-practices.md` Step 4)
+4. **One negative test per required request field** — `*_Missing{Field}_*` for EVERY required body field (mandatory for all services; empty-body test doesn't substitute)
+5. Target ~15-20 unique test cases per endpoint
+
 **Base class** — check if `{Service}RequestHelper` exists in `Core/Helpers/`. If not, create it extending `RequestHelper`. If it exists, use it.
 
 **Param helpers** — use shared helpers for URL segments and query parameters:
-- Use `using static Api.Helpers.{Service}ParamHelper;`
+- JsonPlaceholder: `using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;`
+- GitHub: `using static Core.Helpers.GitHub.GitHubParamHelper;`
 - If helper doesn't exist, create it with `ProductIdParam`/`UserIdParam`/`PostIdParam` as needed
 
 For custom params, use `ParamType` enum (from `Core.Models`) — never magic strings:
@@ -116,10 +129,10 @@ new() { Type = ParamType.Parameter, Key = "userId", Value = userId }
 
 **Request body** — extract repeated bodies to `static readonly` fields:
 ```csharp
-private static readonly PostModel TestPost = new() { UserId = 1, Title = "Test Post", Body = "Test Body" };
+private static readonly PostModelRequest TestPost = new() { UserId = 1, Title = "Test Post", Body = "Test Body" };
 ```
 
-**Pattern:** Use `ShouldHaveValidFields()` via attributes — NOT per-field helpers.
+**Pattern:** Use `ShouldHaveValidContract()` for ContractCheck (JSON round-trip + attribute validation). Use `ShouldHaveValidFields()` for Regression (attributes only). Use `ShouldMatchRequest()` for request/response comparison — replaces manual field-by-field assertions.
 
 ```csharp
 using NUnit.Framework;
@@ -130,8 +143,8 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using TestAdapter;
-using static Api.Helpers.{Service}ParamHelper;
+using AllureAdapter;
+using static {ServiceParamHelperFullName};
 
 namespace Api.{Service}.Tests;
 
@@ -145,35 +158,46 @@ public class GetAll{Endpoint}Tests : {BaseClass}
     [Description("1.1 Status code is 200")]
     public async Task GetAll{Endpoint}_ReturnsOk()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     [Test]
+    [Category("ContractCheck")]
+    [Description("1.2 Response matches expected model schema")]
+    public async Task GetAll{Endpoint}_ResponseMatchesModel()
+    {
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidFields();
+    }
+
+    [Test]
     [Category("Smoke")]
-    [Description("1.2 Content-Type is application/json")]
+    [Description("1.3 Content-Type is application/json")]
     public async Task GetAll{Endpoint}_ContentTypeIsJson()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ContentType.Should().Contain("application/json");
     }
 
     [Test]
     [Category("Smoke")]
-    [Description("1.3 Response body is not empty")]
+    [Description("1.4 Response body is not empty")]
     public async Task GetAll{Endpoint}_ReturnsNonEmptyList()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
     }
 
     [Test]
     [Category("Regression")]
-    [Description("1.4 Each item has valid required fields (via attributes)")]
+    [Description("1.5 Each item has valid required fields (via attributes)")]
     public async Task GetAll{Endpoint}_EachItemHasValidFields()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         foreach (var item in response.Data!)
         {
             item.ShouldHaveValidFields();
@@ -182,45 +206,88 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 
     [Test]
     [Category("Performance")]
-    [Description("1.5 Response time < 5 seconds")]
+    [Description("1.6 Response time < 5 seconds")]
     public async Task GetAll{Endpoint}_ResponseTimeIsAcceptable()
     {
         var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         stopwatch.Stop();
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan({Service}Endpoints.MaxResponseTimeMs);
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
     }
 
     [Test]
     [Category("Smoke")]
-    [Description("1.6 Returns expected count")]
+    [Description("1.7 Returns expected count")]
     public async Task GetAll{Endpoint}_ReturnsExpectedCount()
     {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint}, Method.Get);
+        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount({Service}Endpoints.Expected{Endpoint}Count);
+        response.Data.Should().HaveCount(Expected{Endpoint}Count);  // const in Endpoints or test class
     }
 }
 ```
 
 **For negative tests (non-existent ID):**
-- Use dynamic approach: `GET all → maxId + 1`
+- Use dynamic approach: `GET all → maxId + 1` (concurrent writes in same run → `maxId + Offset`, see Rules/test-practices.md)
 - Never hardcode 999 or any static number
 - If API returns 200 instead of 404 — use `[Ignore]` with explanation
 
+**Optional Setup/Teardown for efficiency:**
+- Use `[OneTimeSetUp]` to fetch shared data once (e.g. `maxId` for dynamic negatives, item list for field validation)
+- **Guarantee Data:** if GET returns empty → POST create → track ID for cleanup
+- Store in `private` fields — reuse across tests in the class
+- `[OneTimeTearDown]` deletes created resources
+- Example:
+```csharp
+private List<{Endpoint}Model> _allItems;
+private int _maxId;
+private int? _createdId;
+
+[OneTimeSetUp]
+public async Task OneTimeSetup()
+{
+    var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
+    _allItems = response.Data!;
+    _maxId = _allItems.Max(x => x.Id);
+
+    if (_allItems.Count == 0)
+    {
+        var create = await Post<{Endpoint}Request, {Endpoint}Model>(
+            {Service}Endpoints.{Endpoint}, TestData);
+        _createdId = create.Data!.Id;
+        _allItems = (await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint})).Data!;
+    }
+}
+
+[OneTimeTearDown]
+public async Task OneTimeTearDown()
+{
+    if (_createdId.HasValue)
+        await Delete<object>($"{Service}Endpoints.{Endpoint}/{_createdId}");
+}
+```
+- Do NOT use `[SetUp]`/`[TearDown]` for read-only tests — each test should be independent
+- Write flows: baseline GET + POST in `[OneTimeSetUp]`, cleanup in `[OneTimeTearDown]` (last member, fixture-registry) — see `Rules/test-practices.md`
+
+**Read-after-write visibility (when the endpoint's service supports POST):**
+- Extend the setup into an assertion: baseline GET → POST in `[OneTimeSetUp]` → tests assert the collection grew by exactly 1, set-diff by Id equals the created Id, and `ShouldMatchRequest()` compares the POST request against the new record in the GET response (all fields, not only Id) → `[OneTimeTearDown]` deletes the record (cleanup failure = warning, not test failure)
+- Full pattern: `Rules/test-practices.md` → "Read-after-write visibility (GET + POST)"
+
 ### Step 5: Follow All Rules
 
-- **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers or strings
-- **Categories:** `[Category("{Service}")]` on class; `[Category("HealthCheck|Smoke|Regression|Negative|Performance")]` on every method — see `Rules/categories.md`
-- **Non-existent IDs:** Dynamic only — GET all → `maxId + 1`. Never static 999 or any hardcoded number
-- **Assertions:** FluentAssertions only. Use `ShouldHaveValidFields()` via attributes — not per-field helpers
-- **Attributes on separate lines above properties**, not inline
-- **Config:** Use `{Service}Endpoints.*` from appropriate Endpoints file — never hardcode URLs
-- **Comments:** No comments unless regex or non-obvious WHY
-- **Models:** pure data containers, no constructors, no validation logic. Check for shared base classes
-- **Negative tests:** `[Ignore]` attribute with explanation for API known bugs
-- **Access modifiers:** narrowest possible — private > protected > public
-- **Params:** Use `ParamType` enum for request parameters — never magic strings
+- **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers or strings — see `Rules/code.md`
+- **Code style:** error handling, LINQ, strings, null safety — see `Rules/code-style.md`
+- **Categories:** `[Category("{Service}")]` on class; test category on every method — see `Rules/categories.md`
+- **Non-existent IDs:** Dynamic only — GET all → `maxId + 1` (concurrent runs → `maxId + Offset`) — see `Rules/test-practices.md`
+- **Assertions:** FluentAssertions only — see `Rules/assertions.md`
+- **JSON parsing:** Always parse responses into typed models — never use `JsonElement` + `TryGetProperty` in tests. Create model for every nested JSON structure — see `Rules/assertions.md`
+- **Models:** suffix Model/Request, attributes on separate lines, pure data containers — see `Rules/models.md`
+- **Config:** Use `{Service}Endpoints.*` from Endpoints file — see `Rules/config.md`
+- **Comments:** No comments unless regex or non-obvious WHY — see `Rules/comments.md`
+- **Negative tests:** `[Ignore]` with explanation for API known bugs — see `Rules/test-practices.md`
+- **Access modifiers:** narrowest possible — private > protected > public — see `Rules/code.md`
+- **Request/Response comparison:** Use `ShouldMatchRequest()` for POST/PATCH — see `Rules/assertions.md`
+- **Write payloads:** vary fields per run via `Core/Helpers/Data/DataGenerator` (`RandomString`, `RandomIntExclusive`); semantic negative-test data stays as named constants — see `Rules/test-practices.md` → "Test data for write operations"
 
 ### Step 6: Safety Check
 
@@ -275,3 +342,10 @@ Show:
 | 1.0 | 2026-06-25 | Initial commit | Алексей |
 | 1.1 | 2026-06-25 | Added Purpose, Variable Placeholders table, Output Format Instruction, Peer Review | Алексей |
 | 1.2 | 2026-06-25 | Made service-agnostic: removed hardcoded FakeStore/JsonPlaceholder, added File Convention table, dynamic base class discovery | Алексей |
+| 1.3 | 2026-02-21 | Added Observable Behaviour document check in Step 1 — read `documentation/{Service}ObservableBehaviour.md` as primary source for test design | Алексей |
+| 1.4 | 2026-02-21 | Added Observable Behaviour template reference, auto-create from template if missing, document sync rule in test-practices.md | Алексей |
+| 1.5 | 2026-09-30 | Added Read-after-write visibility reference in Step 4 (GET+POST pattern) | MiMo |
+| 1.6 | 2026-09-30 | Fixed stale `Get<T>` signature in Step 4 template — removed `Method.Get` argument | MiMo |
+| 1.7 | 2026-09-30 | Step 1: added "read existing code first — never duplicate files" (from model-selection-note katka) | MiMo |
+| 1.8 | 2026-10-02 | Step 4: negative floor counts active tests only, mock-API list exception, one negative per required request field | MiMo |
+| 1.9 | 2026-10-02 | Step 5: write payloads vary via Core/Helpers/DataGenerator | MiMo |

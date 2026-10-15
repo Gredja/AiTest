@@ -1,0 +1,146 @@
+using Core.Models.JsonPlaceholder;
+using Core.Config;
+using Core.Helpers;
+using System.Diagnostics;
+using System.Net;
+using FluentAssertions;
+using AllureAdapter;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
+using static Core.Helpers.ParamHelper;
+
+namespace Api.JsonPlaceholder.Todos;
+
+[TestFixture]
+[AllureNUnit]
+[Category("JsonPlaceholder")]
+public class GetAllTodosTests : JsonPlaceholderRequestHelper
+{
+    private const int ExpectedTodoCount = 200;
+    private int? _createdTodoId;
+
+    [OneTimeSetUp]
+    public async Task OneTimeSetup()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        if (response.Data!.Count == 0)
+        {
+            var create = await Post<TodoModelRequest, TodoModelResponse>(JsonPlaceholderEndpoints.Todos, TestTodo);
+            create.ShouldHaveStatusCode(HttpStatusCode.Created);
+            _createdTodoId = create.Data!.Id;
+        }
+    }
+
+    [Test]
+    [Category("HealthCheck")]
+    [Description("7.1 Status code is 200")]
+    public async Task GetAllTodos_ReturnsOk()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+    }
+
+    [Test]
+    [Category("ContractCheck")]
+    [Description("7.2 Response matches expected contract")]
+    public async Task GetAllTodos_ResponseMatchesContract()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+        response.Data!.First().ShouldHaveValidContract();
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("7.3 Content-Type is application/json")]
+    public async Task GetAllTodos_ContentTypeIsJson()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("7.4 Response body is not empty")]
+    public async Task GetAllTodos_ReturnsNonEmptyList()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("7.5 Each item has valid fields")]
+    public async Task GetAllTodos_EachItemHasValidFields()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.ForEach(todo => todo.ShouldHaveValidFields());
+    }
+
+    [Test]
+    [Category("Performance")]
+    [Description("7.6 Response time < 5 seconds")]
+    public async Task GetAllTodos_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = Stopwatch.StartNew();
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("7.7 Returns exactly 200 todos")]
+    public async Task GetAllTodos_ReturnsExpectedCount()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().HaveCount(ExpectedTodoCount);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("7.8 All todo IDs are unique")]
+    public async Task GetAllTodos_AllIdsAreUnique()
+    {
+        var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        var ids = response.Data!.Select(todo => todo.Id);
+        ids.Should().OnlyHaveUniqueItems();
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_createdTodoId.HasValue)
+        {
+            try
+            {
+                var delete = await Delete<object>(JsonPlaceholderEndpoints.TodosById, IdParam(_createdTodoId.Value));
+
+                if (!delete.IsSuccessful)
+                {
+                    TestContext.Progress.WriteLine(
+                        $"Warning: todo {_createdTodoId} not deleted: HTTP {(int)delete.StatusCode}");
+                }
+            }
+            catch (HttpRequestException exception)
+            {
+                TestContext.Progress.WriteLine(
+                    $"Warning: failed to delete todo {_createdTodoId}: {exception.Message}");
+            }
+        }
+    }
+}

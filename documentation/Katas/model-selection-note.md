@@ -1,4 +1,4 @@
-﻿# Model Selection Note
+# Model Selection Note
 
 **Date:** 2026-06-25
 **Author:** Алексей — AQA Engineer
@@ -66,11 +66,11 @@ Write the generated files. Show files created/modified and test count summary.
 > [Description("5.1 GET /users/{id} — non-existent ID (maxId + 1) returns 404")]
 > public async Task GetUserById_NonExistentId_ReturnsNotFound()
 > {
->     var allUsers = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
+>     var allUsers = await Get<List<UserModel>>(FakeStoreEndpoints.Users);
 >     var maxId = allUsers.Data!.Max(u => u.Id);
 >     var nonExistentId = maxId + 1;
 >
->     var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(nonExistentId));
+>     var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, UserIdParam(nonExistentId));
 >     response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
 > }
 > ```
@@ -83,10 +83,10 @@ Write the generated files. Show files created/modified and test count summary.
 > [Description("3.1 GET /users/{id} — non-existent ID (maxId + 1) returns 404")]
 > public async Task GetUserById_NonExistentId_ReturnsNotFound()
 > {
->     var allUsers = await Get<List<UserModel>>(FakeStoreEndpoints.Users, Method.Get);
+>     var allUsers = await Get<List<UserModel>>(FakeStoreEndpoints.Users);
 >     var maxId = allUsers.Data!.Max(u => u.Id);
 >
->     var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, Method.Get, UserIdParam(maxId + 1));
+>     var response = await Get<UserModel>(FakeStoreEndpoints.UsersById, UserIdParam(maxId + 1));
 >     response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
 > }
 > ```

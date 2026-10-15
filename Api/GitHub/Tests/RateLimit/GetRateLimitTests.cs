@@ -1,0 +1,119 @@
+using Core.Config;
+using Core.Helpers;
+using Core.Helpers.GitHub;
+using Core.Models.GitHub;
+using System.Net;
+using FluentAssertions;
+using AllureAdapter;
+
+namespace Api.GitHub.RateLimit;
+
+[TestFixture]
+[AllureNUnit]
+[Category("GitHub")]
+public class GetRateLimitTests : GitHubTestBase
+{
+    [Test]
+    [Category("HealthCheck")]
+    [Description("6.1 GET /rate_limit returns 200 OK")]
+    public async Task GetRateLimit_ReturnsOk()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+    }
+
+    [Test]
+    [Category("ContractCheck")]
+    [Description("6.2 Response matches expected contract")]
+    public async Task GetRateLimit_ResponseMatchesContract()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.ShouldHaveValidContract();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("6.3 Rate limit remaining is positive")]
+    public async Task GetRateLimit_RemainingIsPositive()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Rate.Remaining.Should().BeGreaterThan(0);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("6.4 Rate limit reset is a future timestamp")]
+    public async Task GetRateLimit_ResetIsFuture()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        var resetTime = DateTimeOffset.FromUnixTimeSeconds(response.Data!.Rate.Reset);
+        resetTime.Should().BeAfter(DateTimeOffset.UtcNow);
+    }
+
+    [Test]
+    [Category("Performance")]
+    [Description("6.5 Response time < 5 seconds")]
+    public async Task GetRateLimit_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+        stopwatch.Stop();
+
+        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("6.6 Rate limit response has core and resources sections")]
+    public async Task GetRateLimit_HasAllSections()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeNull();
+        response.Data!.Resources.Should().NotBeNull();
+        response.Data.Resources.Core.Should().NotBeNull();
+        response.Data.Resources.Search.Should().NotBeNull();
+        response.Data.Rate.Should().NotBeNull();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("6.7 Rate limit used is non-negative")]
+    public async Task GetRateLimit_UsedIsNonNegative()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Rate.Used.Should().BeGreaterThanOrEqualTo(0);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("6.8 Invalid token returns 401")]
+    public async Task GetRateLimit_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RateLimit, InvalidAuthorization);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("6.9 Content-Type is application/json")]
+    public async Task GetRateLimit_ContentTypeIsJson()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
+    }
+}

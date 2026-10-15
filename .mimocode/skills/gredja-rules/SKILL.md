@@ -1,4 +1,4 @@
-﻿---
+---
 name: gredja-rules
 description: Use when the user asks about Gredja project rules, coding standards, or conventions. Entry point for all Gredja project rules.
 ---
@@ -9,12 +9,12 @@ Entry point for all Gredja project rules. Overview + pointers to detailed rule f
 
 ## Project
 
-Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). FakeStoreAPI for API testing.
+Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). JSONPlaceholder, GitHub API.
 
 - Repo: https://github.com/Gredja/AiTest.git
 - Branch: `main`, changes in `features/<topic>`
-- Test base class: `ApiTestBase` in `Api/ApiTestBase.cs`
-- Endpoints: `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`
+- Test base classes: `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`, `GitHubTestBase` (see `Core/Helpers/`)
+- Endpoints: `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`
 
 ## Rule Files
 
@@ -25,6 +25,11 @@ Read the relevant file before working on the corresponding entity:
 | `Rules/models.md` | Model/Request naming, property rules, namespaces |
 | `Rules/assertions.md` | FluentAssertions patterns, OnlyContain gotchas |
 | `Rules/code.md` | Naming, types, methods, general code style |
+| `Rules/code-style.md` | Error handling, LINQ, strings, null safety, magic strings |
+| `Rules/code-principles.md` | SOLID, general principles |
+| `Rules/test-practices.md` | Isolation, seed methodology, cleanup, non-existent IDs |
+| `Rules/categories.md` | Category-to-test mapping, check-type boundaries |
+| `Rules/ui-testing.md` | Playwright UI tests: locators, storageState, cleanup |
 | `Rules/comments.md` | When comments are needed (regex, non-obvious WHY only) |
 | `Rules/git.md` | Remote, branches, commits, secrets |
 | `Rules/workflow.md` | Plan → approval → changes → report |
@@ -33,10 +38,10 @@ Read the relevant file before working on the corresponding entity:
 ## Key Rules (quick reference)
 
 - **FluentAssertions only** — no `Assert.That()`
-- **Models:** `Model` suffix (response), `Request` suffix (request), `Id` always non-nullable
+- **Models:** `ModelResponse` suffix (response), `ModelRequest` suffix (request), nested/supporting models without suffix; value types `?` only if JSON field can be null/absent
+- **Lambda parameters:** readable singular noun (`product => product.Id`), never single-letter
 - **Reference types:** no `?`, no init. **Value types:** `?` if JSON field can be null
 - **No comments** unless regex pattern or non-obvious WHY
 - **No magic numbers** — extract to constants
-- **Non-existent IDs:** dynamic (GET all → maxId + 1), never static 999
-- **FakeStoreAPI:** returns 200 OK for non-existent IDs — mark tests with `[Ignore]`
+- **Non-existent IDs:** dynamic (GET all → maxId + 1; concurrent E2E writes → maxId + Offset), never static 999
 - **Commits:** only on user request, English, action + object format

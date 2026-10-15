@@ -1,4 +1,4 @@
-﻿---
+---
 name: commit
 description: Use when the user says "commit", "/commit", or wants to commit changes. Creates a commit with safety checks (format + HealthCheck tests) and pushes. If HealthCheck tests fail, commit is blocked.
 ---
@@ -36,7 +36,7 @@ If fails: run `dotnet format`, then re-verify. If still fails — report and STO
 
 Run `git diff` to see all unstaged changes.
 
-Read `Rules/code.md`, `Rules/models.md`, `Rules/comments.md`, `Rules/assertions.md` for full project rules.
+Read `Rules/code.md`, `Rules/code-style.md`, `Rules/code-principles.md`, `Rules/models.md`, `Rules/assertions.md`, `Rules/test-practices.md`, `Rules/comments.md` for full project rules.
 
 Review each changed file against ALL project rules:
 - Naming, types, file layout, methods, async, general (from code.md)
@@ -44,7 +44,7 @@ Review each changed file against ALL project rules:
 - Assertions: FluentAssertions only (from assertions.md)
 - Comments: default = no comments (from comments.md)
 - No magic numbers — extract to constants
-- Config: Endpoints in `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`, never hardcoded in tests
+- Config: Endpoints in `Core/Config/JsonPlaceholderEndpoints.cs` and `Core/Config/GitHubEndpoints.cs`, never hardcoded in tests
 
 If blocking issues found: report them and STOP. Do not commit.
 
@@ -58,25 +58,51 @@ dotnet test --verbosity minimal --filter Category=HealthCheck
 
 If ANY tests fail: report the failures and STOP. Do not commit.
 
-## Step 6: Stage, commit, push
+## Step 6: Sync backups
+
+Check if any of the following were changed in this commit:
+- `.mimocode/mimocode.jsonc` → update `backups/mimocode-project.jsonc`
+- `Rules/*.md` affecting test generation → update `backups/SETUP.md` (guidance sections)
+- **ALWAYS check `backups/SETUP.md`** — update if any of these changed:
+  - Skills (`*.mimocode/skills/`)
+  - Rules (`Rules/*.md`)
+  - Project structure (new directories, moved files)
+  - Observable Behaviour documents
+  - Config files (endpoints, env vars)
+  - AGENTS.md or README.md
+- Structural changes (new files, moved files, deleted files) → update `documentation/FILE_STRUCTURE.md`
+- **Fact verification for `backups/SETUP.md`**: when you edit (or add) a SETUP section, verify every factual claim in THAT section against the code — env var names (read `TestConfig.cs`, don't guess: `GITHUB_PAT`, not `GITHUB_TOKEN`), commands, file paths, URLs, tool flags. Syncing a line without checking what it asserts is not a sync — a wrong claim that "went through the sync" is worse than a stale one.
+
+If nothing changed — skip. If something changed — update the corresponding backup file.
+
+## Step 7: Stage, commit, push
 
 ```
+powershell -File Scripts/normalize-eol.ps1   # LF worktree files → CRLF, silences git EOL warnings
 git add -A
 git diff --cached --stat
 git commit -m "{message}"
 ```
 
+`git add -A` must produce NO "LF will be replaced by CRLF" warnings — if it does, run the
+normalizer and confirm `git status` stays empty of unintended changes (normalization is
+worktree-only; it never alters committed blobs).
+
 If branch is `main` — do NOT push. Report that push was skipped.
 Otherwise: `git push -u origin HEAD`
 
-## Step 7: Report
+## Step 8: Report
 
-- Branch name
-- Commit hash (from `git log -1 --format="%H"`)
-- Files changed
-- Commit message
-- Push status (pushed / skipped)
-- Review findings (if any)
+Report in execution order:
+
+- Branch name (Step 1)
+- Commit message (Step 2)
+- Format check: pass / fixed / failed (Step 3)
+- Review findings (Step 4)
+- Tests: pass / failed (Step 5)
+- Backup sync: synced / skipped with reason (Step 6)
+- Files changed, Commit hash (Step 7)
+- Push: pushed / skipped (Step 7)
 
 ---
 
@@ -89,3 +115,5 @@ Otherwise: `git push -u origin HEAD`
 - Never push to `main` without explicit confirmation
 - Commits: English only, format: action + object
 - Never commit `.env` or tokens
+- Always sync backups/ before commit if relevant files changed
+- Sync is change-driven AND fact-driven: touching a backups/SETUP.md line obliges you to verify that line's claim against the code

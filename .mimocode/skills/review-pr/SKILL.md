@@ -1,4 +1,4 @@
-﻿---
+---
 name: review-pr
 description: Use when the user says "review-pr", "/review-pr", or wants to review a pull request. Automated code review for Gredja pull requests.
 ---
@@ -39,14 +39,14 @@ Read `Rules/*.md` for full project rules context.
 Against checklist:
 
 **Gredja-specific:**
-- Models: Model/Request suffix, Id field, property types
+- Models: ModelResponse/ModelRequest suffix, Id field, property types
 - Assertions: FluentAssertions only
 - Comments: no comments unless regex or non-obvious WHY
 - Naming: PascalCase/camelCase/_camelCase, no abbreviations
 - Methods: max ~30 lines, one responsibility
 - No magic numbers/strings
-- Config: Endpoints in `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`
-- Non-existent IDs: dynamic (GET all → maxId + 1), not static 999
+- Config: Endpoints in `Core/Config/JsonPlaceholderEndpoints.cs` and `Core/Config/GitHubEndpoints.cs`
+- Non-existent IDs: dynamic (GET all → maxId + 1; concurrent writes → maxId + Offset), not static 999
 
 **General:**
 - No hardcoded secrets/tokens

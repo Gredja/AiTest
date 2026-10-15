@@ -1,4 +1,4 @@
-﻿## .NET
+## .NET
 bin/
 obj/
 *.user
@@ -36,11 +36,18 @@ testsettings.json
 ## Graphify (generated)
 graphify-out/
 
-## Documentation plans (not tracked)
-documentation/*Plan*.md
-
 ## AI plans (not tracked)
 .mimocode/plans/
 
 ## AI reviews (not tracked)
 .mimocode/reviews/
+
+## MiMo Desktop pet (not tracked)
+black-white-cat/
+
+
+## Playwright CLI (local)
+.playwright-cli/
+
+## Playwright storage state (manual login bootstrap)
+.auth/

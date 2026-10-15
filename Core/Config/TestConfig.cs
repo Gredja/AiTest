@@ -1,33 +1,114 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
 namespace Core.Config;
 
 public static class TestConfig
 {
-    private static readonly JsonDocument Root = JsonDocument.Parse(
+    private const string BaseUrlKey = "BaseUrl";
+
+    private static readonly JsonDocument _root = JsonDocument.Parse(
         File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "testsettings.json")));
 
-    private static JsonElement FakeStore => Root.RootElement.GetProperty("FakeStore");
-    private static JsonElement JsonPlaceholder => Root.RootElement.GetProperty("JsonPlaceholder");
+    private static JsonElement JsonPlaceholder => _root.RootElement.GetProperty("JsonPlaceholder");
+    private static JsonElement GitHub => _root.RootElement.GetProperty("GitHub");
+    private static JsonElement Ui => _root.RootElement.GetProperty("Ui");
 
-    public static int MaxResponseTimeMs => Root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
-    public static bool SkipSslValidation => Root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
+    public static int MaxResponseTimeMs => _root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
+    public static bool IsSslValidationSkipped => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
 
-    public static string FakeStoreBaseUrl => FakeStore.GetProperty("BaseUrl").GetString()!;
-    public static int ExpectedProductCount => FakeStore.GetProperty("ExpectedProductCount").GetInt32();
-    public static int ExpectedUserCount => FakeStore.GetProperty("ExpectedUserCount").GetInt32();
-    public static int ExpectedCartCount => FakeStore.GetProperty("ExpectedCartCount").GetInt32();
-    public static int ExpectedCategoryCount => FakeStore.GetProperty("ExpectedCategoryCount").GetInt32();
-    public static int ExpectedProductsInCategoryCount => FakeStore.GetProperty("ExpectedProductsInCategoryCount").GetInt32();
-    public static string TestCategoryName => FakeStore.GetProperty("TestCategoryName").GetString()!;
-    public static string LoginUsername => FakeStore.GetProperty("Login").GetProperty("Username").GetString()!;
-    public static string LoginPassword => FakeStore.GetProperty("Login").GetProperty("Password").GetString()!;
+    public static string JsonPlaceholderBaseUrl => GetRequiredString(JsonPlaceholder, BaseUrlKey);
 
-    public static string JsonPlaceholderBaseUrl => JsonPlaceholder.GetProperty("BaseUrl").GetString()!;
-    public static int ExpectedPostCount => JsonPlaceholder.GetProperty("ExpectedPostCount").GetInt32();
-    public static int ExpectedTodoCount => JsonPlaceholder.GetProperty("ExpectedTodoCount").GetInt32();
-    public static int ExpectedAlbumCount => JsonPlaceholder.GetProperty("ExpectedAlbumCount").GetInt32();
-    public static int ExpectedCommentCount => JsonPlaceholder.GetProperty("ExpectedCommentCount").GetInt32();
-    public static int ExpectedPhotoCount => JsonPlaceholder.GetProperty("ExpectedPhotoCount").GetInt32();
-    public static int JsonPlaceholderExpectedUserCount => JsonPlaceholder.GetProperty("ExpectedUserCount").GetInt32();
+    public static string GitHubBaseUrl => GetRequiredString(GitHub, BaseUrlKey);
+    public static string GitHubToken
+    {
+        get
+        {
+            var token = GitHub.GetProperty("Token").GetString();
+            if (!string.IsNullOrEmpty(token))
+            {
+                return token;
+            }
+
+            return ReadEnvironmentValue("GITHUB_PAT") ?? string.Empty;
+        }
+    }
+
+    public static string GitHubTestRepo => GetRequiredString(GitHub, "TestRepo");
+    public static string GitHubTestUsername => GetRequiredString(GitHub, "TestUsername");
+    public static string GitHubCollaboratorUser => GetRequiredString(GitHub, "CollaboratorUser");
+
+    public static string UiBaseUrl => GetRequiredString(Ui, BaseUrlKey);
+    public static bool IsUiHeadless => GetRequiredBool(Ui, "Headless");
+    public static string UiStatePath => GetRequiredString(Ui, "StatePath");
+    public static string UiUsername => GetRequiredString(Ui, "Username");
+    public static string UiTestRepo => GetRequiredString(Ui, "TestRepo");
+    public static string UiLogin => GetRequiredEnvironmentValue("GITHUB_UI_EMAIL");
+    public static string UiPassword => GetRequiredEnvironmentValue("GITHUB_UI_PASSWORD");
+    public static string UiApiToken => GetRequiredEnvironmentValue("GITHUB_UI_PAT");
+
+    private static string GetRequiredString(JsonElement section, string key)
+    {
+        if (!section.TryGetProperty(key, out var value))
+        {
+            throw new InvalidOperationException($"testsettings.json: missing required key '{key}'");
+        }
+
+        return value.GetString()
+            ?? throw new InvalidOperationException($"testsettings.json: key '{key}' must be a string");
+    }
+
+    private static bool GetRequiredBool(JsonElement section, string key)
+    {
+        if (!section.TryGetProperty(key, out var value))
+        {
+            throw new InvalidOperationException($"testsettings.json: missing required key '{key}'");
+        }
+
+        if (value.ValueKind is not JsonValueKind.True and not JsonValueKind.False)
+        {
+            throw new InvalidOperationException($"testsettings.json: key '{key}' must be a boolean");
+        }
+
+        return value.GetBoolean();
+    }
+
+    private static string GetRequiredEnvironmentValue(string key) =>
+        ReadEnvironmentValue(key)
+            ?? throw new InvalidOperationException(
+                $"environment variable '{key}' not found (process environment or .env)");
+
+    private static string? ReadEnvironmentValue(string key)
+    {
+        var value = Environment.GetEnvironmentVariable(key);
+        if (!string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        return ReadEnvFileValue(key);
+    }
+
+    private static string? ReadEnvFileValue(string key)
+    {
+        var dir = AppContext.BaseDirectory;
+        while (dir is not null)
+        {
+            var envFile = Path.Combine(dir, ".env");
+            if (!File.Exists(envFile))
+            {
+                dir = Directory.GetParent(dir)?.FullName;
+                continue;
+            }
+
+            var line = File.ReadAllLines(envFile).FirstOrDefault(candidate => candidate.StartsWith($"{key}="));
+            if (line is not null)
+            {
+                return line[(key.Length + 1)..];
+            }
+
+            break;
+        }
+
+        return null;
+    }
 }

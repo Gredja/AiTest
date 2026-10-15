@@ -1,12 +1,10 @@
-using NUnit.Framework;
-using TestAdapter.Helpers;
+using AllureAdapter.Helpers;
+
+namespace Api;
 
 [SetUpFixture]
 public class AllureGlobalSetup
 {
-    [OneTimeSetUp]
-    public void GlobalSetup() { }
-
     [OneTimeTearDown]
     public void GlobalTeardown()
     {

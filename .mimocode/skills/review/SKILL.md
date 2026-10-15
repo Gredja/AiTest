@@ -1,4 +1,4 @@
-﻿---
+---
 name: review
 description: Use when the user says "review", "/review", or wants a full project review. Reviews the entire Gredja codebase against all project rules. NOT for uncommitted changes (use /review-commit) or PR reviews (use /review-pr).
 ---
@@ -12,7 +12,7 @@ Review the entire Gredja project against all rules and patterns. Comprehensive a
 Run in parallel:
 - `Get-ChildItem -Recurse -Include "*.cs" | Where-Object { $_.FullName -notmatch "\\obj\\" }` — list all source files
 - Read `Rules/*.md` — all rule files
-- Read `Core/Config/FakeStoreEndpoints.cs` and `Core/Config/JsonPlaceholderEndpoints.cs`
+- Read `Core/Config/JsonPlaceholderEndpoints.cs` and `Core/Config/GitHubEndpoints.cs`
 
 ## Step 2: Spawn subagent (main agent)
 
@@ -30,16 +30,23 @@ Working dir: {working_dir}
 1. Read all Rules/*.md files for project rules context.
 
 2. Read ALL .cs files (excluding obj/ directories):
-   - Core/Attributes/*.cs
+   - Core/Attributes/**/*.cs
    - Core/Config/*.cs
-   - Core/Helpers/*.cs
+   - Core/Helpers/**/*.cs
    - Core/Models/**/*.cs
-   - Api/FakeStore/Tests/*.cs
-   - Api/JsonPlaceholder/Tests/*.cs
-   - Api/AllureGlobalSetup.cs
-   - TestAdapter/Helpers/*.cs
-   - Ui/Tests/*.cs
-   - Ui/AllureGlobalSetup.cs
+   - Core/Logging/*.cs
+   - Core/Reporting/*.cs
+   - Api/JsonPlaceholder/Tests/**/*.cs
+   - Api/JsonPlaceholder/Helpers/*.cs
+   - Api/GitHub/Tests/**/*.cs
+   - Api/GitHub/Helpers/*.cs (if present)
+   - Api/TestReportSetup.cs
+   - E2E/GitHub/Tests/**/*.cs
+   - E2E/TestReportSetup.cs
+   - AllureAdapter/**/*.cs
+   - Ui/Helper/**/*.cs
+   - Ui/Test/**/*.cs
+   - Ui/TestReportSetup.cs
 
 3. Review EACH file against ALL project rules:
 
@@ -51,7 +58,7 @@ Working dir: {working_dir}
    - Boolean prefixes: Is, Has, Can, Should
    - File-scoped namespaces
    - One class per file
-   - Explicit types > var (unless obvious)
+   - Use `var` wherever possible (explicit type only when `var` is not applicable)
    - Methods: short, one responsibility, max ~30 lines, max 5 params
    - All API requests async
    - No magic numbers
@@ -60,11 +67,11 @@ Working dir: {working_dir}
    - {} for all if blocks, even single-line
 
    Model rules (Rules/models.md):
-   - Response: suffix Model (includes Id)
-   - Request: suffix Request (no Id)
+   - Response: suffix ModelResponse (includes Id)
+   - Request: suffix ModelRequest (no Id)
    - Reference types: no ?, no initializer
    - Value types: ? only if JSON field can be null/absent
-   - Namespace: Core.Models
+   - Namespace: Core.Models.{Service}
    - Pure data containers — no constructors, validation, logic
 
    Assertion rules (Rules/assertions.md):
@@ -76,7 +83,7 @@ Working dir: {working_dir}
    - Exceptions: regex explanations, TODO (remove before merge), non-obvious WHY
 
    Config rules (Rules/config.md):
-   - Base URL and endpoints in FakeStoreEndpoints.cs/JsonPlaceholderEndpoints.cs
+   - Base URL and endpoints in JsonPlaceholderEndpoints.cs/GitHubEndpoints.cs
    - Never hardcode in tests
 
    Category rules (Rules/categories.md):
@@ -84,12 +91,20 @@ Working dir: {working_dir}
    - [Category] on [Test] method — check type
    - Both dimensions applied
 
+   Test practices (Rules/test-practices.md):
+   - Every request in [OneTimeSetUp] asserts its status (no bare Data! dereference); teardown/cleanup never asserts status — try/catch + warning only
+   - Status check before any `.Data` dereference, including test bodies; NotBeEmpty before Max/First in setups
+   - Cleanup lives in `[OneTimeTearDown]` — LAST member of the class, fixture-registry pattern (register-then-assert, no per-test `finally`), via `RunCleanupAsync` = try/catch + warning, never an unhandled exception or a status assertion; resources are DELETED after use (create → remove), never retained — no-delete APIs → closest cleanup (close issue/PR)
+   - ShouldMatchRequest() after POST/PATCH — no hand-rolled field-by-field comparisons
+   - No hardcoded volatile entities (live branch names → dynamic lookup or Entry Criteria)
+
 4. Cross-cutting checks:
    - Dead code: unused methods, unused models, unused using statements
    - DRY violations: repeated patterns that should be extracted
    - Inconsistencies: different patterns for same operation across services
    - Missing coverage: endpoints without tests
    - Naming consistency across files
+   - False-positive guards (verify BEFORE flagging): `[Ignore]`d negatives — check the documented ceiling first (`documentation/*TestPlan.md` → "Negative Floor Status", OB); unused endpoint constants — check `.mimocode/plans/` (they may be planned endpoints with ready designs)
 
 5. Classify each issue:
    - major — must fix (rule violation, potential bug, security issue)
