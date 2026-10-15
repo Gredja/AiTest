@@ -57,6 +57,7 @@ public abstract class GitHubUiTestBase
         });
 
         _page = await _context.NewPageAsync();
+        await _page.BringToFrontAsync();
         _page.SetDefaultTimeout(UiTimeoutMs);
         _page.SetDefaultNavigationTimeout(UiTimeoutMs);
         _browserWrapper = new BrowserPw(_page);

@@ -8,7 +8,7 @@ Ui/
 ├── AssemblyInfo.cs               # Parallelizable(Fixtures), LevelOfParallelism(1)
 ├── TestReportSetup.cs            # [SetUpFixture] — duplicated per test assembly (P2.3)
 ├── Helper/
-│   ├── GitHubUiTestBase.cs       # browser fixture: Chromium → context(storageState) → Page; artifacts on failure
+│   ├── GitHubUiTestBase.cs       # browser fixture: Chromium → context(storageState) → Page; artifacts on failure; page brought to front every test (browser window stays active)
 │   ├── BrowserHelpers/BrowserPw.cs  # page-object wrapper: pages exposed as properties
 │   └── UiHelper/
 │       ├── CommonPages/          # cross-area pages (header, nav)
