@@ -11,8 +11,6 @@ namespace Core.Helpers.GitHub;
 // Warning-only: never fails the run (Rules/test-practices.md → E2E cleanup).
 public class GitHubCleanupHelper : GitHubRequestHelper
 {
-    private const string RefsHeadsPrefix = "refs/heads/";
-    private const string HeadsPrefix = "heads/";
 
     public async Task CleanupCommentAsync(long? commentId)
     {
@@ -61,17 +59,17 @@ public class GitHubCleanupHelper : GitHubRequestHelper
     public async Task CleanupGitRefAsync(string refPath)
     {
         string path;
-        if (refPath.StartsWith(RefsHeadsPrefix, StringComparison.Ordinal))
+        if (refPath.StartsWith(GitHubEndpoints.RefsHeadsPrefix, StringComparison.Ordinal))
         {
-            path = $"{HeadsPrefix}{refPath[RefsHeadsPrefix.Length..]}";
+            path = $"{GitHubEndpoints.HeadsPrefix}{refPath[GitHubEndpoints.RefsHeadsPrefix.Length..]}";
         }
-        else if (refPath.StartsWith(HeadsPrefix, StringComparison.Ordinal))
+        else if (refPath.StartsWith(GitHubEndpoints.HeadsPrefix, StringComparison.Ordinal))
         {
             path = refPath;
         }
         else
         {
-            path = $"{HeadsPrefix}{refPath}";
+            path = $"{GitHubEndpoints.HeadsPrefix}{refPath}";
         }
 
         await RunCleanupAsync(
@@ -138,7 +136,6 @@ public class GitHubCleanupHelper : GitHubRequestHelper
         }
         catch (OperationCanceledException exception)
         {
-            // covers timeouts too — an unhandled cleanup exception would mask the original test failure
             TestContext.Progress.WriteLine($"Warning: {subject} cancelled: {exception.Message}");
         }
     }

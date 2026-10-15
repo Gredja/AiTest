@@ -1,4 +1,5 @@
 using Core.Models.JsonPlaceholder;
+using GenericJsonFields = Core.Models.Generic.JsonFields;
 using Core.Config;
 using Core.Helpers;
 using System.Diagnostics;
@@ -179,7 +180,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
     public async Task GetAlbumById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<AlbumModelResponse>(JsonPlaceholderEndpoints.AlbumsById,
-            [UrlSegment(IdKey, NonNumericValue)]);
+            [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

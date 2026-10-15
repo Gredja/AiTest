@@ -7,7 +7,10 @@
   passed in the adapter settings section after a double dash.
 
   NumberOfTestWorkers — how many NUnit worker threads run fixtures in parallel.
-  Current: 8 (experimental — shared guarantee data may flake; set 1 for sequential).
+  Current: 1 — the supported mode (Rules/test-practices.md → Test isolation).
+  8 was experimental and produced parallel-fixture races on shared guarantee data
+  (baseline counts against issue #5); re-enable higher values only with set-diff
+  invariants everywhere: pass NUnit.NumberOfTestWorkers=8 in adapter settings
 
   MaxCpuCount is for Visual Studio Test Explorer only (CLI ignores it):
   runs test sources in parallel so both assemblies of one selection are alive at the
@@ -20,6 +23,6 @@
     <MaxCpuCount>0</MaxCpuCount>
   </RunConfiguration>
   <NUnit>
-    <NumberOfTestWorkers>8</NumberOfTestWorkers>
+    <NumberOfTestWorkers>1</NumberOfTestWorkers>
   </NUnit>
 </RunSettings>

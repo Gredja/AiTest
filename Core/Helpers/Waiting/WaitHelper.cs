@@ -4,8 +4,8 @@ namespace Core.Helpers;
 
 public static class WaitHelper
 {
-    private static readonly TimeSpan DefaultTimeout = TimeSpan.FromSeconds(30);
-    private static readonly TimeSpan DefaultInterval = TimeSpan.FromSeconds(2);
+    private static readonly TimeSpan _defaultTimeout = TimeSpan.FromSeconds(30);
+    private static readonly TimeSpan _defaultInterval = TimeSpan.FromSeconds(2);
 
     public static async Task<WaitResult<T>> WaitUntilAsync<T>(
         Func<Task<T>> action,
@@ -13,8 +13,8 @@ public static class WaitHelper
         TimeSpan? timeout = null,
         TimeSpan? interval = null)
     {
-        var effectiveTimeout = timeout ?? DefaultTimeout;
-        var effectiveInterval = interval ?? DefaultInterval;
+        var effectiveTimeout = timeout ?? _defaultTimeout;
+        var effectiveInterval = interval ?? _defaultInterval;
 
         var stopwatch = Stopwatch.StartNew();
         var attempts = 0;

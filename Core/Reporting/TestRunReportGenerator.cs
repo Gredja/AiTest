@@ -10,6 +10,7 @@ public static class TestRunReportGenerator
     private const int RetryDelayMilliseconds = 200;
     private const int LogTimeSkewSeconds = 1;
     private const int DurationDecimalPlaces = 3;
+    private const double MillisecondsPerSecond = 1000.0;
     private const int ArtifactRetentionDays = 7;
     private const string ReportPrefix = "TestRunReport-";
     private const string CodeFence = "```";
@@ -80,6 +81,7 @@ public static class TestRunReportGenerator
         lines.AddRange(BuildSummary(rows));
         lines.AddRange(BuildTests(rows));
         lines.AddRange(BuildFailedSection(failures, failedActions));
+
         return lines;
     }
 
@@ -147,9 +149,11 @@ public static class TestRunReportGenerator
         List<TestOutcome> outcomes,
         Dictionary<string, Queue<(string Fixture, string Category)>> categories)
     {
-        var rows = outcomes.Select(outcome => CreateRow(outcome, categories)).ToList();
-
-        return rows.OrderBy(row => row.Fixture).ThenBy(row => row.Test).ToList();
+        return outcomes
+            .Select(outcome => CreateRow(outcome, categories))
+            .OrderBy(row => row.Fixture)
+            .ThenBy(row => row.Test)
+            .ToList();
     }
 
     private static TestRunRow CreateRow(
@@ -164,7 +168,7 @@ public static class TestRunReportGenerator
             (fixture, category) = queue.Dequeue();
         }
 
-        var duration = Math.Round(outcome.DurationMilliseconds / 1000.0, DurationDecimalPlaces);
+        var duration = Math.Round(outcome.DurationMilliseconds / MillisecondsPerSecond, DurationDecimalPlaces);
 
         return new TestRunRow(outcome.Name, fixture, category, MapStatus(outcome.Status), duration);
     }
@@ -272,6 +276,20 @@ public static class TestRunReportGenerator
     {
         yield return $"### {test}";
         yield return string.Empty;
+
+        foreach (var line in BuildFailureSection(failure))
+        {
+            yield return line;
+        }
+
+        foreach (var line in BuildActionsSection(actions))
+        {
+            yield return line;
+        }
+    }
+
+    private static IEnumerable<string> BuildFailureSection((string Message, string Trace) failure)
+    {
         yield return CodeFence;
 
         if (string.IsNullOrWhiteSpace(failure.Message) && string.IsNullOrWhiteSpace(failure.Trace))
@@ -293,6 +311,10 @@ public static class TestRunReportGenerator
 
         yield return CodeFence;
         yield return string.Empty;
+    }
+
+    private static IEnumerable<string> BuildActionsSection(List<string> actions)
+    {
         yield return "Actions:";
         yield return string.Empty;
         yield return CodeFence;

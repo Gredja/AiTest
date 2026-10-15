@@ -5,9 +5,8 @@ using Core.Reporting;
 
 namespace E2E;
 
-
 // Duplicated in Api/ and E2E/ deliberately: [SetUpFixture] must live inside each test
-// assembly - moving it to a referenced assembly breaks run-level setup discovery (audit P2.3)
+// assembly - moving it to a referenced assembly breaks run-level setup discovery
 [SetUpFixture]
 public class TestReportSetup
 {

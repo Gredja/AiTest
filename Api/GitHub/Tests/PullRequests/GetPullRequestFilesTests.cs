@@ -15,7 +15,7 @@ namespace Api.GitHub.PullRequests;
 public class GetPullRequestFilesTests : GitHubTestBase
 {
 
-    private static readonly string[] ValidFileStatuses = ["added", "modified", "removed", "renamed", "changed"];
+    private static readonly string[] _validFileStatuses = ["added", "modified", "removed", "renamed", "changed"];
 
     private int _existingPullNumber;
     private int _nonExistentPullNumber;
@@ -70,7 +70,7 @@ public class GetPullRequestFilesTests : GitHubTestBase
         {
             file.Sha.ShouldHaveValidSha();
             file.Filename.Should().NotBeNullOrWhiteSpace();
-            file.Status.Should().BeOneOf(ValidFileStatuses);
+            file.Status.Should().BeOneOf(_validFileStatuses);
         });
     }
 

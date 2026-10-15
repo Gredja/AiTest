@@ -1,4 +1,5 @@
 using Core.Models.JsonPlaceholder;
+using GenericJsonFields = Core.Models.Generic.JsonFields;
 using Core.Config;
 using Core.Helpers;
 using System.Diagnostics;
@@ -180,7 +181,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
     public async Task GetCommentById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<CommentModelResponse>(JsonPlaceholderEndpoints.CommentsById,
-            [UrlSegment(IdKey, NonNumericValue)]);
+            [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

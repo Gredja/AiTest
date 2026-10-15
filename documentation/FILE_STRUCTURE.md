@@ -277,7 +277,7 @@ Api/
 │       └── Users/
 │           ├── GetUserTests.cs
 │           └── GetUsersTests.cs
-└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md; duplicated per test assembly (SetUpFixture, audit P2.3)
+└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md; duplicated per test assembly (SetUpFixture)
 ```
 
 ## AllureAdapter/
@@ -315,7 +315,7 @@ E2E/
 │       ├── PullRequestFlowTests.cs
 │       ├── RateLimitDrainTests.cs
 │       └── RepositoryHealthTests.cs
-└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md; duplicated per test assembly (SetUpFixture, audit P2.3)
+└── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md; duplicated per test assembly (SetUpFixture)
 ```
 
 ## Ui/
@@ -328,7 +328,8 @@ Ui/
 ├── Helper/
 │   ├── GitHubUiTestBase.cs       # browser fixture + UiSandboxCleanupHelper (GITHUB_UI_PAT)
 │   ├── BrowserHelpers/
-│   │   └── BrowserPw.cs          # page-object wrapper: pages exposed as properties
+│   │   └── BrowserPlaywright.cs   # page-object wrapper: pages exposed as properties
+│   ├── TabCountParser.cs          # tab counter text → int ("Open (0)" / "Open 0")
 │   └── UiHelper/
 │       ├── CommonPages/          # cross-area pages (header, nav): LoginPage, HeaderPage
 │       └── GitHubStream/

@@ -16,7 +16,6 @@ namespace Api.GitHub.IssueComments;
 [Category("GitHub")]
 public class DeleteCommentTests : GitHubTestBase
 {
-    private const int TargetIssueNumber = 5;
     private const long NonExistentCommentId = 0;
 
     private static readonly CreateCommentModelRequest _testComment = new()
@@ -32,7 +31,7 @@ public class DeleteCommentTests : GitHubTestBase
     public async Task DeleteComment_ReturnsNoContent()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -52,7 +51,7 @@ public class DeleteCommentTests : GitHubTestBase
     public async Task DeleteComment_GoneAfterDelete()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(TargetIssueNumber));
+            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);

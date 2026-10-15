@@ -6,7 +6,7 @@ using Core.Reporting;
 namespace Ui;
 
 // Duplicated per test assembly deliberately: [SetUpFixture] must live inside the
-// assembly it configures — moving it to a referenced assembly breaks discovery (audit P2.3)
+// assembly it configures — moving it to a referenced assembly breaks discovery
 [SetUpFixture]
 public class TestReportSetup
 {

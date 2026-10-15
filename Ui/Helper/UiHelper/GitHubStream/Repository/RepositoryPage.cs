@@ -9,14 +9,12 @@ internal sealed class RepositoryPage
 
     internal RepositoryPage(IPage page) => _page = page;
 
-    internal async Task OpenAsync()
-    {
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}");
-    }
+    internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}");
 
     internal async Task<string> GetDefaultBranchAsync()
     {
         var branchButton = _page.GetByRole(AriaRole.Button, new() { Name = "main branch" });
+
         return (await branchButton.TextContentAsync())?.Trim() ?? string.Empty;
     }
 

@@ -7,16 +7,13 @@ namespace Ui.Helper.UiHelper.GitHubStream.Issues;
 internal sealed class IssueCreatePage
 {
     // matches the fixture's action timeout (GitHubUiTestBase.UiTimeoutMs)
-    private static readonly TimeSpan OpenTimeout = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan _openTimeout = TimeSpan.FromSeconds(15);
 
     private readonly IPage _page;
 
     internal IssueCreatePage(IPage page) => _page = page;
 
-    internal async Task OpenAsync()
-    {
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/new");
-    }
+    internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/new");
 
     // this page is outside the load-verified list in Rules/ui-testing.md → Waits,
     // so the presence check polls instead of reading the count instantly
@@ -25,10 +22,11 @@ internal sealed class IssueCreatePage
             async () =>
             {
                 var count = await _page.GetByRole(AriaRole.Heading, new() { Name = "Create new issue" }).CountAsync();
+
                 return count > 0;
             },
             isOpen => isOpen,
-            OpenTimeout);
+            _openTimeout);
 
     internal async Task CreateIssueAsync(string title, string description)
     {

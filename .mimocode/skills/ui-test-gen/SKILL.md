@@ -61,7 +61,7 @@ If any is missing — ask before generating.
 |---|---|
 | UI Observable Behaviour | `documentation/{{service_name}}UiObservableBehaviour.md` |
 | Base fixture (browser/context/page) | `Ui/Helper/{{service_name}}UiTestBase.cs` |
-| Browser wrapper (pages as properties) | `Ui/Helper/BrowserHelpers/BrowserPw.cs` |
+| Browser wrapper (pages as properties) | `Ui/Helper/BrowserHelpers/BrowserPlaywright.cs` |
 | Page-objects | `Ui/Helper/UiHelper/GitHubStream/{{area_name}}/{{area_name}}Page.cs` |
 | Shared pages (header, nav) | `Ui/Helper/UiHelper/CommonPages/` |
 | Tests | `Ui/Test/GitHubStream/{{area_name}}/{{area_name}}{{flow_name}}Tests.cs` |
@@ -113,7 +113,7 @@ internal class {{area_name}}Page
 - Methods = business actions (`OpenIssuesTab`, `CreateIssue`, `CloseIssue`), never raw clicks exposed to tests.
 - Locators inline per action (page under test = GitHub → role/text only); keep one locator per element, named by role+name.
 - If a base page-class pattern already exists under `Ui/Helper/UiHelper/` — inherit it, do not reinvent.
-- Register new page in `BrowserPw` wrapper if the wrapper exposes pages as properties (follow the existing pattern).
+- Register new page in `BrowserPlaywright` wrapper if the wrapper exposes pages as properties (follow the existing pattern).
 
 ### Step 4: Create the test class
 

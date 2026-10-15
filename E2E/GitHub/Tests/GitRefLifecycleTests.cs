@@ -4,6 +4,7 @@ using Core.Helpers;
 using System.Net;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -13,7 +14,6 @@ namespace E2E.GitHub.Tests;
 public class GitRefLifecycleTests : GitHubE2ETestBase
 {
     private const string RefPrefix = "audit-e2e-";
-    private const int RandomNameLength = 8;
 
     private readonly List<string> _createdRefs = [];
 
@@ -39,12 +39,12 @@ public class GitRefLifecycleTests : GitHubE2ETestBase
 
         var duplicate = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{refName}", Sha = _baseSha },
+            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{refName}", Sha = _baseSha },
             TestRepoParam());
         duplicate.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
 
         var deleted = await Delete<object>(GitHubEndpoints.RepoGitRefById,
-            [.. TestRepoParam(), .. GitRefParam($"{HeadsPrefix}{refName}")]);
+            [.. TestRepoParam(), .. GitRefParam($"{GitHubEndpoints.HeadsPrefix}{refName}")]);
         deleted.ShouldHaveStatusCode(HttpStatusCode.NoContent);
         await WaitUntilBranchVisibleAsync(refName, present: false);
     }

@@ -9,10 +9,8 @@ internal sealed class IssueDetailPage
 
     internal IssueDetailPage(IPage page) => _page = page;
 
-    internal async Task OpenAsync(int issueNumber)
-    {
+    internal async Task OpenAsync(int issueNumber) =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/{issueNumber}");
-    }
 
     internal int? TryGetIssueNumberFromUrl()
     {
@@ -46,10 +44,8 @@ internal sealed class IssueDetailPage
         await _page.GetByRole(AriaRole.Button, new() { Name = "Close issue" }).WaitForAsync();
     }
 
-    internal async Task BeginEditTitleAsync()
-    {
+    internal async Task BeginEditTitleAsync() =>
         await _page.GetByRole(AriaRole.Button, new() { Name = "Edit issue title" }).ClickAsync();
-    }
 
     internal async Task SaveTitleAsync(string newTitle)
     {

@@ -1,4 +1,5 @@
 using Core.Models.JsonPlaceholder;
+using GenericJsonFields = Core.Models.Generic.JsonFields;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -181,7 +182,7 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     public async Task GetPostById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<PostModelResponse>(JsonPlaceholderEndpoints.PostsById,
-            [UrlSegment(IdKey, NonNumericValue)]);
+            [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }

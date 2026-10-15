@@ -17,7 +17,7 @@ namespace Api.GitHub.Issues;
 public class GetIssuesTests : GitHubTestBase
 {
     private const string TestTitle = "Test issue for contract check";
-    private static readonly TimeSpan StateOpenConsistencyTimeout = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan _stateOpenConsistencyTimeout = TimeSpan.FromSeconds(10);
     private int? _createdIssueNumber;
 
     [OneTimeSetUp]
@@ -171,12 +171,10 @@ public class GetIssuesTests : GitHubTestBase
             response => response.StatusCode == HttpStatusCode.OK
                 && response.Data is not null
                 && response.Data.All(issue => issue.State == GitHubEndpoints.StateOpen),
-            timeout: StateOpenConsistencyTimeout);
+            timeout: _stateOpenConsistencyTimeout);
 
         result.IsSuccess.Should().BeTrue(
-            $"state=open must return only open issues;" +
-            $" waited {result.Elapsed}, attempts {result.Attempts}," +
-            $" last status {result.LastValue?.StatusCode}");
+            $"state=open must return only open issues; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
         result.LastValue!.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateOpen);
     }
 
@@ -192,7 +190,6 @@ public class GetIssuesTests : GitHubTestBase
         response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateClosed);
     }
 
-
     [Test]
     [Category("Negative")]
     [Description("3.13 since=abc returns 422")]
@@ -205,29 +202,6 @@ public class GetIssuesTests : GitHubTestBase
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_createdIssueNumber.HasValue)
-        {
-            try
-            {
-                // REST has no issue-delete endpoint (DELETE → 404, see OB §17) — cleanup closes instead
-                var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
-                    GitHubEndpoints.RepoIssueById,
-                    new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
-                    [.. TestRepoParam(), .. IssueNumberParam(_createdIssueNumber.Value)]);
-
-                if (!cleanup.IsSuccessful)
-                {
-                    TestContext.Progress.WriteLine(
-                        $"Warning: issue {_createdIssueNumber} not closed: HTTP {(int)cleanup.StatusCode}");
-                }
-            }
-            catch (HttpRequestException exception)
-            {
-                TestContext.Progress.WriteLine(
-                    $"Warning: failed to close issue {_createdIssueNumber}: {exception.Message}");
-            }
-        }
-    }
+    public async Task OneTimeTearDown() =>
+        await CleanupIssueAsync(_createdIssueNumber);
 }

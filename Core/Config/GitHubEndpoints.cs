@@ -17,6 +17,14 @@ public static class GitHubEndpoints
     public const string StateOpen = "open";
     public const string StateClosed = "closed";
     public const string StateAll = "all";
+    public const string PermissionAdmin = "admin";
+    public const string PermissionRead = "read";
+    public const string ObjectTypeCommit = "commit";
+
+    public const string RefsHeadsPrefix = "refs/heads/";
+    public const string HeadsPrefix = "heads/";
+
+    public const string WebBaseUrl = "https://github.com/";
 
     public const string Repos = "/repos";
     public const string Repositories = "/repositories";

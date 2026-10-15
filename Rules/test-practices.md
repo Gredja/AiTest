@@ -21,7 +21,7 @@
 - Verify content type when relevant
 - For negative tests — verify error message or status, not just "not success"
 - Prefer specific assertions over generic ones (check field values, not just "response is not null")
-- **Data-driven tests (`[TestCase]`/`[TestCaseSource]`)** — parameterize when several cases of the SAME endpoint differ only by input data: one body, every case listed separately in the test explorer (NUnit data-driven guidance). Duplication across endpoint classes is structural (1 endpoint = 1 test class) — never merge fixtures to deduplicate; share the repeated values via constants instead
+- **Data-driven tests (`[TestCase]`/`[TestCaseSource]`)** — parameterize when several cases of the SAME endpoint differ only by input data: one body, every case listed separately in the test explorer (NUnit data-driven guidance). Duplication across endpoint classes is structural (1 endpoint = 1 test class) — never merge fixtures to deduplicate; share the repeated values via constants instead. **Do NOT collapse cases when per-case names/descriptions/categories add diagnostic value in the report** (e.g. distinct `*_ZeroId_*`/`*_NegativeId_*` tests) — report clarity beats deduplication
 
 ## Non-existent IDs
 
@@ -213,6 +213,7 @@ public async Task OneTimeTearDown()
 - If POST does not persist (fake APIs, e.g. JSONPlaceholder) — `[Ignore]` with explanation of documented behavior
 - If this pattern always POSTs, count-based tests (`ExpectedCount`) must use a dynamic baseline, not a constant
 - GitHub: Phase 1 is read-only — apply this pattern in Phase 2 E2E (skill `/e2e-test-gen`); issue cleanup = `PATCH state=closed` (REST has no issue-delete endpoint — `DELETE /issues/{n}` → 404, see OB §17)
+- **GitHub deviation (documented)**: the canonical `*_ReturnsCreatedRecord` + `*_CreatedRecordMatchesRequest` pair is NOT required for GitHub single-write fixtures — read-after-write visibility for GitHub POSTs is covered by the E2E chains (`CommentChainTests`, `IssueLifecycleTests`, `PullRequestFlowTests`) and by in-class read-back asserts where present; JSONPlaceholder keeps the fake-API exception (JP-002). Do not treat the missing canonical pair in `Api/GitHub/Tests/**` as a gap
 
 ## Waiting for conditions (WaitHelper)
 

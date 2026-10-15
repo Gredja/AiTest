@@ -30,14 +30,17 @@ public class MergePullRequestTests : GitHubTestBase
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
-        var merged = await Put<Dictionary<string, object>, PullRequestMergeModelResponse>(
-            GitHubEndpoints.RepoPullRequestMerge,
-            new Dictionary<string, object>(),
-            PullParams(pullNumber));
+        var merged = await WaitHelper.WaitUntilAsync(
+            () => Put<Dictionary<string, object>, PullRequestMergeModelResponse>(
+                GitHubEndpoints.RepoPullRequestMerge,
+                new Dictionary<string, object>(),
+                PullParams(pullNumber)),
+            response => response.StatusCode == HttpStatusCode.OK);
 
-        merged.ShouldHaveStatusCode(HttpStatusCode.OK);
-        merged.Data.Should().NotBeNull("200 merge response must carry a body");
-        merged.Data!.Merged.Should().BeTrue("merge endpoint must report merged=true for a mergeable pull request");
+        merged.IsSuccess.Should().BeTrue(
+            $"merge must return 200 once the PR is mergeable; elapsed {merged.Elapsed}, attempts {merged.Attempts}, last status {merged.LastValue?.StatusCode}");
+        merged.LastValue!.Data.Should().NotBeNull("200 merge response must carry a body");
+        merged.LastValue!.Data!.Merged.Should().BeTrue("merge endpoint must report merged=true for a mergeable pull request");
     }
 
     [Test]
@@ -50,8 +53,6 @@ public class MergePullRequestTests : GitHubTestBase
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
-        // a fresh PR's mergeability is computed asynchronously — the first PUT can also
-        // answer 405 while the state settles (same race as the second PUT, observed 2026-10-09)
         var first = await WaitHelper.WaitUntilAsync(
             () => Put<Dictionary<string, object>, object>(
                 GitHubEndpoints.RepoPullRequestMerge,
@@ -59,9 +60,7 @@ public class MergePullRequestTests : GitHubTestBase
                 PullParams(pullNumber)),
             response => response.StatusCode == HttpStatusCode.OK);
         first.IsSuccess.Should().BeTrue(
-            $"first merge must return 200 once the PR is mergeable;" +
-            $" elapsed {first.Elapsed}, attempts {first.Attempts}," +
-            $" last status {first.LastValue?.StatusCode}");
+            $"first merge must return 200 once the PR is mergeable; elapsed {first.Elapsed}, attempts {first.Attempts}, last status {first.LastValue?.StatusCode}");
 
         // An immediate second PUT may race the settling merge state (405 observed 2026-10-09) —
         // idempotency is only guaranteed once the merge has settled, so poll
@@ -72,9 +71,7 @@ public class MergePullRequestTests : GitHubTestBase
                 PullParams(pullNumber)),
             response => response.StatusCode == HttpStatusCode.OK);
         second.IsSuccess.Should().BeTrue(
-            $"re-merge must be idempotent 200 once the merge settles;" +
-            $" elapsed {second.Elapsed}, attempts {second.Attempts}," +
-            $" last status {second.LastValue?.StatusCode}");
+            $"re-merge must be idempotent 200 once the merge settles; elapsed {second.Elapsed}, attempts {second.Attempts}, last status {second.LastValue?.StatusCode}");
     }
 
     [Test]

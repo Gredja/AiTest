@@ -25,6 +25,7 @@ internal static class ActionLogger
             .CreateLogger();
 
         AppDomain.CurrentDomain.ProcessExit += (_, _) => logger.Dispose();
+
         return logger;
     }
 }

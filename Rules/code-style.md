@@ -10,7 +10,7 @@
 
 ## LINQ
 
-- Prefer `Any()` over `Count() > 0`
+- Prefer `Any()` over `Count() > 0` — the rule targets the LINQ `Count()` method; the `Count` **property** on `List`/`Queue` is O(1) and allowed for emptiness checks
 - Avoid `.ToList()` inside a chain — materialize only when you need to iterate multiple times
 - Don't do multiple iterations over the same collection — chain or materialize once
 - Use `FirstOrDefault()` over `Where(...).FirstOrDefault()` when looking for one item

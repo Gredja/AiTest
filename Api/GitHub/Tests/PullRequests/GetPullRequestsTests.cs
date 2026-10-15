@@ -31,7 +31,7 @@ public class GetPullRequestsTests : GitHubTestBase
     public async Task GetPullRequests_ResponseMatchesContract()
     {
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            TestRepoParam());
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();

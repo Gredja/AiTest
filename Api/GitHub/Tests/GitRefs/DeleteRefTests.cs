@@ -6,6 +6,7 @@ using System.Net;
 using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.GitRefs;
 
@@ -14,9 +15,8 @@ namespace Api.GitHub.GitRefs;
 [Category("GitHub")]
 public class DeleteRefTests : GitHubTestBase
 {
-    private const string RefPathPrefix = $"{HeadsPrefix}audit-";
-    private const string NonExistentRefPath = $"{HeadsPrefix}nonexistent-branch-audit-12345";
-    private const int RandomNameLength = 8;
+    private const string RefPathPrefix = $"{GitHubEndpoints.HeadsPrefix}audit-";
+    private const string NonExistentRefPath = $"{GitHubEndpoints.HeadsPrefix}nonexistent-branch-audit-12345";
 
     private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
@@ -38,7 +38,7 @@ public class DeleteRefTests : GitHubTestBase
         var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{refPath[HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
+            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{refPath[GitHubEndpoints.HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
         _createdRefs.Add(refPath);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -56,7 +56,7 @@ public class DeleteRefTests : GitHubTestBase
         var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{refPath[HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
+            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{refPath[GitHubEndpoints.HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
         _createdRefs.Add(refPath);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -87,7 +87,7 @@ public class DeleteRefTests : GitHubTestBase
     {
         var response = await Delete<object>(
             GitHubEndpoints.RepoGitRefById,
-            [.. TestRepoParam(), .. GitRefParam($"{HeadsPrefix}{GitHubEndpoints.DefaultBranch}")]);
+            [.. TestRepoParam(), .. GitRefParam($"{GitHubEndpoints.HeadsPrefix}{GitHubEndpoints.DefaultBranch}")]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }

@@ -21,6 +21,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
         }
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+
         return created.Data!;
     }
 
@@ -35,6 +36,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
         }
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+
         return created.Data!;
     }
 
@@ -50,9 +52,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
 
         var verb = present ? "appear in" : "leave";
         result.IsSuccess.Should().BeTrue(
-            $"issue #{issueNumber} must {verb} ?state={state};" +
-            $" elapsed {result.Elapsed}, attempts {result.Attempts}," +
-            $" last status {result.LastValue?.StatusCode}");
+            $"issue #{issueNumber} must {verb} ?state={state}; elapsed {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }
 
     protected async Task<IssueModelResponse> PatchIssueStateAsync(int issueNumber, string state)
@@ -62,6 +62,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
             new UpdateIssueModelRequest { State = state },
             IssueParams(issueNumber));
         patched.ShouldHaveStatusCode(HttpStatusCode.OK);
+
         return patched.Data!;
     }
 
@@ -84,9 +85,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
 
         var verb = present ? "appear in" : "leave";
         result.IsSuccess.Should().BeTrue(
-            $"branch {branchName} must {verb} the branches list;" +
-            $" elapsed {result.Elapsed}, attempts {result.Attempts}," +
-            $" last status {result.LastValue?.StatusCode}");
+            $"branch {branchName} must {verb} the branches list; elapsed {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }
 
     protected async Task<GitRefModelResponse> CreateBranchTrackedAsync(
@@ -94,7 +93,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
     {
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{RefsHeadsPrefix}{branchName}", Sha = sha },
+            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", Sha = sha },
             TestRepoParam());
         if (created.Data is not null)
         {
@@ -102,6 +101,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
         }
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+
         return created.Data!;
     }
 }

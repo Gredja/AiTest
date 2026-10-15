@@ -9,12 +9,12 @@ public static class TestConfig
     private static readonly JsonDocument _root = JsonDocument.Parse(
         File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "testsettings.json")));
 
-    private static JsonElement JsonPlaceholder => _root.RootElement.GetProperty("JsonPlaceholder");
-    private static JsonElement GitHub => _root.RootElement.GetProperty("GitHub");
-    private static JsonElement Ui => _root.RootElement.GetProperty("Ui");
+    private static JsonElement JsonPlaceholder => GetRequiredSection("JsonPlaceholder");
+    private static JsonElement GitHub => GetRequiredSection("GitHub");
+    private static JsonElement Ui => GetRequiredSection("Ui");
 
-    public static int MaxResponseTimeMs => _root.RootElement.GetProperty("MaxResponseTimeMs").GetInt32();
-    public static bool IsSslValidationSkipped => _root.RootElement.GetProperty("SkipSslValidation").GetBoolean();
+    public static int MaxResponseTimeMs => GetRequiredInt("MaxResponseTimeMs");
+    public static bool IsSslValidationSkipped => GetRequiredBool(_root.RootElement, "SkipSslValidation");
 
     public static string JsonPlaceholderBaseUrl => GetRequiredString(JsonPlaceholder, BaseUrlKey);
 
@@ -23,7 +23,7 @@ public static class TestConfig
     {
         get
         {
-            var token = GitHub.GetProperty("Token").GetString();
+            var token = GitHub.TryGetProperty("Token", out var tokenValue) ? tokenValue.GetString() : null;
             if (!string.IsNullOrEmpty(token))
             {
                 return token;
@@ -45,6 +45,26 @@ public static class TestConfig
     public static string UiLogin => GetRequiredEnvironmentValue("GITHUB_UI_EMAIL");
     public static string UiPassword => GetRequiredEnvironmentValue("GITHUB_UI_PASSWORD");
     public static string UiApiToken => GetRequiredEnvironmentValue("GITHUB_UI_PAT");
+
+    private static JsonElement GetRequiredSection(string name) =>
+        _root.RootElement.TryGetProperty(name, out var section)
+            ? section
+            : throw new InvalidOperationException($"testsettings.json: missing required section '{name}'");
+
+    private static int GetRequiredInt(string key)
+    {
+        if (!_root.RootElement.TryGetProperty(key, out var value))
+        {
+            throw new InvalidOperationException($"testsettings.json: missing required key '{key}'");
+        }
+
+        if (value.ValueKind is not JsonValueKind.Number)
+        {
+            throw new InvalidOperationException($"testsettings.json: key '{key}' must be an integer");
+        }
+
+        return value.GetInt32();
+    }
 
     private static string GetRequiredString(JsonElement section, string key)
     {

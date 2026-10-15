@@ -16,7 +16,6 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class UpdateIssueTests : GitHubTestBase
 {
-    private const int TargetIssueNumber = 5;
     private const string InvalidStateValue = "bogus";
 
     private static readonly CreateIssueModelRequest _createRequest = new()
@@ -157,7 +156,7 @@ public class UpdateIssueTests : GitHubTestBase
             RequestFormat = DataFormat.Json
         };
         request.AddJsonBody(new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed });
-        AddParams(request, IssueParams(TargetIssueNumber));
+        AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<IssueModelResponse>(request);
 
@@ -175,7 +174,7 @@ public class UpdateIssueTests : GitHubTestBase
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
         request.AddJsonBody(new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed });
-        AddParams(request, IssueParams(TargetIssueNumber));
+        AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<IssueModelResponse>(request);
 
@@ -190,7 +189,7 @@ public class UpdateIssueTests : GitHubTestBase
         var response = await Patch<Dictionary<string, object?>, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById,
             new Dictionary<string, object?> { [JsonFields.Labels] = null },
-            IssueParams(TargetIssueNumber));
+            IssueParams(ExistingIssueNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
@@ -249,7 +248,7 @@ public class UpdateIssueTests : GitHubTestBase
             IssueParams(created.Data!.Number));
 
         bogus.ShouldHaveStatusCode(HttpStatusCode.OK);
-        bogus.Data!.State.Should().Be(GitHubEndpoints.StateOpen);
+        bogus.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "unrecognized state must be ignored — OB §19");
 
         var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             IssueParams(created.Data.Number));

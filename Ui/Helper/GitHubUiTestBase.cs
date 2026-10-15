@@ -1,7 +1,12 @@
 using Core.Config;
+using Core.Helpers;
 using Core.Helpers.GitHub;
+using Core.Models.GitHub;
+using Core.Models.Generic;
+using FluentAssertions;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
+using System.Net;
 using Ui.Helper.BrowserHelpers;
 
 namespace Ui.Helper;
@@ -16,7 +21,7 @@ public abstract class GitHubUiTestBase
     private IBrowser? _browser;
     private IBrowserContext? _context;
     private IPage? _page;
-    private BrowserPw? _browserWrapper;
+    private BrowserPlaywright? _browserWrapper;
 
     // API cleanup against ui-sandbox (GITHUB_UI_PAT) by composition —
     // GitHubUiTestBase does not inherit GitHubTestBase
@@ -26,7 +31,7 @@ public abstract class GitHubUiTestBase
         ?? throw new InvalidOperationException("Context not initialized — OpenContextAsync has not run");
     protected IPage Page => _page
         ?? throw new InvalidOperationException("Page not initialized — OpenContextAsync has not run");
-    internal BrowserPw Browser => _browserWrapper
+    internal BrowserPlaywright Browser => _browserWrapper
         ?? throw new InvalidOperationException("Browser wrapper not initialized — OpenContextAsync has not run");
 
     protected virtual bool IsStorageStateEnabled => true;
@@ -60,7 +65,7 @@ public abstract class GitHubUiTestBase
         await _page.BringToFrontAsync();
         _page.SetDefaultTimeout(UiTimeoutMs);
         _page.SetDefaultNavigationTimeout(UiTimeoutMs);
-        _browserWrapper = new BrowserPw(_page);
+        _browserWrapper = new BrowserPlaywright(_page);
     }
 
     [TearDown]
@@ -117,11 +122,58 @@ public abstract class GitHubUiTestBase
         });
     }
 
+    protected static List<RequestDictionaryModel> UiSandboxRepoParams()
+    {
+        var parts = TestConfig.UiTestRepo.Split('/');
+
+        return GitHubParamHelper.RepoParam(parts[0], parts[1]);
+    }
+
+    protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool closed = false)
+    {
+        var title = $"API setup {DataGenerator.RandomString(TestDataConstants.TitleRandomLength)}";
+        var created = await Cleanup.Post<CreateIssueModelRequest, IssueModelResponse>(
+            GitHubEndpoints.RepoIssues,
+            new CreateIssueModelRequest { Title = title },
+            UiSandboxRepoParams());
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        var issueNumber = created.Data!.Number;
+        createdIssueNumbers.Add(issueNumber);
+
+        if (closed)
+        {
+            await Cleanup.CleanupIssueAsync(issueNumber);
+        }
+
+        return issueNumber;
+    }
+
+    // The UI never exposes the comment id, but cleanup deletes by id — read it back via API before
+    // the assert (register-then-assert), polling over the read-after-write indexing lag
+    protected async Task RegisterCommentIdAsync(int issueNumber, string body, List<long> createdCommentIds)
+    {
+        var found = await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                var response = await Cleanup.Get<List<CommentModelResponse>>(
+                    GitHubEndpoints.RepoIssueComments,
+                    [.. UiSandboxRepoParams(), .. GitHubParamHelper.IssueNumberParam(issueNumber)]);
+
+                return response.Data?.FirstOrDefault(comment => comment.Body == body);
+            },
+            comment => comment is not null);
+
+        found.LastValue.Should().NotBeNull(
+            $"comment must be readable via API for cleanup (attempts={found.Attempts}, elapsed={found.Elapsed})");
+        createdCommentIds.Add(found.LastValue!.Id);
+    }
+
     // storageState and artifacts are resolved against the repository root so relative
     // config values work from bin/Debug output directories
     private static string ResolveStorageStatePath()
     {
         var statePath = TestConfig.UiStatePath;
+
         return Path.IsPathRooted(statePath)
             ? statePath
             : Path.Combine(ResolveRepositoryRoot(), statePath);

@@ -14,8 +14,6 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class GetPullRequestCommitsTests : GitHubTestBase
 {
-    private const string GithubUrlPrefix = "https://github.com/";
-
     private int _existingPullNumber;
     private int _nonExistentPullNumber;
 
@@ -114,7 +112,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
             PullParams(_existingPullNumber));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.ForEach(pullRequestCommit => pullRequestCommit.HtmlUrl.Should().StartWith(GithubUrlPrefix));
+        response.Data!.ForEach(pullRequestCommit => pullRequestCommit.HtmlUrl.Should().StartWith(GitHubEndpoints.WebBaseUrl));
     }
 
     [Test]
