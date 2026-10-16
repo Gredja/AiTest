@@ -8,6 +8,7 @@ public static class GitHubEndpoints
     public const string NonExistentUser = "this-user-definitely-does-not-exist-12345";
     public const string NonExistentRepoName = "nonexistent";
     public const string NonExistentBranchName = "nonexistent-branch-12345";
+    public const string NonExistentTagName = "nonexistent-release-tag-12345";
     public const string BranchWithSpacesName = "branch with spaces";
     public const string DefaultBranch = "main";
     public const string MercyPreviewAccept = "application/vnd.github.mercy-preview+json";
@@ -24,6 +25,8 @@ public static class GitHubEndpoints
 
     public const string RefsHeadsPrefix = "refs/heads/";
     public const string HeadsPrefix = "heads/";
+    public const string RefsTagsPrefix = "refs/tags/";
+    public const string TagsPrefix = "tags/";
 
     public const string WebBaseUrl = "https://github.com/";
 
@@ -51,6 +54,9 @@ public static class GitHubEndpoints
     public const string RepoTags = "/repos/{owner}/{repo}/tags";
     public const string RepoCommits = "/repos/{owner}/{repo}/commits";
     public const string RepoReleases = "/repos/{owner}/{repo}/releases";
+    public const string RepoReleasesLatest = "/repos/{owner}/{repo}/releases/latest";
+    public const string RepoReleaseByTag = "/repos/{owner}/{repo}/releases/tags/{release_tag}";
+    public const string RepoReleaseById = "/repos/{owner}/{repo}/releases/{release_id}";
 
     public const string RepoGitRefs = "/repos/{owner}/{repo}/git/refs";
     public const string RepoGitRefById = "/repos/{owner}/{repo}/git/refs/{ref}";
@@ -69,7 +75,12 @@ public static class GitHubEndpoints
     public const string Users = "/users";
     public const string UsersById = "/users/{username}";
     public const string UsersRepos = "/users/{username}/repos";
+    public const string AuthenticatedUser = "/user";
     public const string AuthenticatedUserRepos = "/user/repos";
+
+    public const string SearchRepositories = "/search/repositories";
+    public const string SearchIssues = "/search/issues";
+    public const string SearchUsers = "/search/users";
 
     public const string RateLimit = "/rate_limit";
 }

@@ -16,6 +16,9 @@ public class GetPullRequestByIdTests : GitHubTestBase
 {
     private int _existingPullNumber;
     private int _nonExistentPullNumber;
+    private int? _scratchPullNumber;
+    private string _scratchHeadBranch = string.Empty;
+    private string _scratchBaseBranch = string.Empty;
 
     [OneTimeSetUp]
     public async Task FetchPullNumbers()
@@ -170,5 +173,31 @@ public class GetPullRequestByIdTests : GitHubTestBase
             GitHubEndpoints.RepoPullRequestById, InvalidAuthorization, PullParams(1));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("9c.13 Open pull request has null merged_at")]
+    public async Task GetPullRequestById_MergedAtIsNullable()
+    {
+        var (number, headBranch, baseBranch) = await CreateScratchPullRequestAsync("merged-at-null probe");
+        _scratchPullNumber = number;
+        _scratchHeadBranch = headBranch;
+        _scratchBaseBranch = baseBranch;
+
+        var response = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
+            PullParams(number));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.MergedAt.Should().BeNull("an open pull request has not been merged yet");
+    }
+
+    [OneTimeTearDown]
+    public async Task OneTimeTearDown()
+    {
+        if (_scratchPullNumber.HasValue)
+        {
+            await CleanupPullRequestAsync(_scratchPullNumber, _scratchHeadBranch, _scratchBaseBranch);
+        }
     }
 }

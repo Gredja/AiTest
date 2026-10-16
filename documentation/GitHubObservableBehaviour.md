@@ -147,6 +147,18 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ---
 
+## 5a. GET /user
+
+- Response status is 200 OK (requires auth) (probed 2026-10-16)
+- Response body is a JSON object: `login` (string, matches the token account), `id` (integer > 0)
+- Content-Type is application/json
+
+**Negative (probed 2026-10-16):**
+- No auth header → 401, body has `message` (string: "Requires authentication"), `documentation_url` (url)
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+
+---
+
 ## 6. GET /repos/{owner}/{repo}/issues
 
 - Response status is 200 OK
@@ -154,6 +166,8 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - Each object has: `id` (integer), `title` (string), `state` (string: "open" | "closed"), `user` (object with `login`, `id`), `created_at` (datetime), `updated_at` (datetime), `labels` (array), `comments` (integer ≥ 0)
 - Content-Type is application/json
 - Response time < 5s
+- Gotcha (verified 2026-10-16): the list mixes issues and pull requests — PR items carry a
+  `pull_request` (object with `url`) field, plain issues omit it
 
 **Filtering:**
 - `?state=open` — all items have `state` = "open"
@@ -279,7 +293,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 - Response status is 200 OK
 - Response body is a JSON object
-- Object has: `id` (integer > 0), `number` (integer, equals {pull_number}), `title` (string, non-empty), `state` (string: "open" or "closed"), `user` (object), `created_at` (ISO 8601), `merged` (boolean, present)
+- Object has: `id` (integer > 0), `number` (integer, equals {pull_number}), `title` (string, non-empty), `state` (string: "open" or "closed"), `user` (object), `created_at` (ISO 8601), `merged` (boolean, present), `merged_at` (datetime — present on a merged PR, `null` on an open one; probed 2026-10-16)
 - Content-Type is application/json
 - Response time < 5s
 
@@ -418,6 +432,38 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
 - Non-existent owner → 404
 - Invalid token → 401, `message`: "Bad credentials"
+
+---
+
+## 15c. GET /repos/{owner}/{repo}/releases/latest
+
+- Returns the most recent non-draft, non-prerelease release → 200 OK, body is a §15b release
+  object (probed 2026-10-16)
+- Repo with no releases → 404 (sandbox baseline, probed 2026-10-16 — test fixtures create one
+  published release for the read tests)
+
+**Negative (probed 2026-10-16):**
+- Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+
+---
+
+## 15d. GET /repos/{owner}/{repo}/releases/tags/{release_tag}
+
+- Existing tag with a release → 200 OK, body `tag_name` equals the requested tag (probed 2026-10-16)
+
+**Negative (probed 2026-10-16):**
+- Non-existent tag → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+
+---
+
+## 15e. POST /repos/{owner}/{repo}/releases + DELETE /repos/{owner}/{repo}/releases/{release_id}
+
+**Infrastructure** (test fixtures create one published release on a fresh tag, then delete the
+release and the auto-created tag ref):
+- POST body: `tag_name` (string; auto-creates the tag on the default branch when absent), `name`
+  (string), `draft`/`prerelease` (boolean) → 201 Created, body is a release object (probed 2026-10-16)
+- DELETE → 204 No Content; re-delete → 404 (probed 2026-10-16)
+- The auto-created tag ref is removable via DELETE `/git/refs/tags/{tag}` → 204 (probed 2026-10-16)
 
 ---
 
@@ -708,6 +754,29 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Non-existent invitation id → 404, body has `message` (string: "Not Found"), `documentation_url` contains `/collaborators/invitations#delete-a-repository-invitation`
 - No auth → 401
 - Invalid token → 401
+
+---
+
+## 29. GET /search/repositories
+
+- `?q=` required → 200 OK, body: `total_count` (integer), `incomplete_results` (boolean),
+  `items` (array of repository objects) (probed 2026-10-16)
+
+**Negative (probed 2026-10-16):**
+- Missing `q` → 422, body has `message` (string: "Validation Failed"), `errors` (array:
+  resource "Search", field "q", code "missing")
+
+---
+
+## 29a. GET /search/issues
+
+- `?q=` required → 200 OK, body has `items` (array of issue objects) (probed 2026-10-16)
+
+---
+
+## 29b. GET /search/users
+
+- `?q=` required → 200 OK, body has `items` (array of user objects) (probed 2026-10-16)
 
 ---
 

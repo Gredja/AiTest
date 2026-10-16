@@ -56,6 +56,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
 
     protected Task CleanupInvitationAsync(long? invitationId) => _cleanup.CleanupInvitationAsync(invitationId);
 
+    protected Task CleanupReleaseAsync(long? releaseId) => _cleanup.CleanupReleaseAsync(releaseId);
+
     protected Task CleanupGitRefAsync(string refPath) => _cleanup.CleanupGitRefAsync(refPath);
 
     // Scratch PR pipeline: changed blob → tree → commit → branch → PR. A same-tree commit gives

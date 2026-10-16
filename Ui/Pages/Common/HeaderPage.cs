@@ -2,9 +2,9 @@ using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
 
-namespace Ui.Helper.UiHelper.CommonPages;
+namespace Ui.Pages.Common;
 
-internal sealed class HeaderPage
+internal sealed class HeaderPage(IPage page)
 {
     private static readonly TimeSpan _menuOpenTimeout = TimeSpan.FromSeconds(5);
 
@@ -13,39 +13,33 @@ internal sealed class HeaderPage
     // burns the whole 15s action timeout. The retry interval must stay well above the open latency.
     private static readonly TimeSpan _menuOpenRetryInterval = TimeSpan.FromSeconds(1);
 
-    private readonly IPage _page;
-
-    internal HeaderPage(IPage page) => _page = page;
+    private readonly IPage _page = page;
 
     internal async Task<string> GetSignedInUsernameAsync()
     {
-        var dialog = _page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" });
-        await OpenUserMenuAsync(dialog);
+        await OpenUserMenuAsync(_userNavigationDialog);
 
-        var heading = dialog.GetByRole(AriaRole.Heading);
-        await heading.WaitForAsync();
+        await _userNavigationHeading.WaitForAsync();
 
-        return (await heading.TextContentAsync())?.Trim() ?? string.Empty;
+        return (await _userNavigationHeading.TextContentAsync())?.Trim() ?? string.Empty;
     }
 
     // The item is a link (href /logout) whose accessible name comes from aria-labelledby — verified 2026-10-14
     internal async Task SignOutAsync()
     {
-        var dialog = _page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" });
-        await OpenUserMenuAsync(dialog);
+        await OpenUserMenuAsync(_userNavigationDialog);
 
-        await _page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true }).ClickAsync();
+        await _signOutLink.ClickAsync();
 
         // /logout is an account chooser, not the sign-out itself: the per-account submit carries the
         // username in its aria-label, while the sibling "Sign out from all accounts" sets destroy_all
         // and would kill the shared storageState session — it must never be clicked
-        await _page.GetByRole(AriaRole.Button, new() { Name = $"Sign out of {TestConfig.UiUsername}", Exact = true })
-            .ClickAsync();
-        await _page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true }).First.WaitForAsync();
+        await _accountSignOutButton.ClickAsync();
+        await _firstSignInLink.WaitForAsync();
     }
 
     internal async Task<bool> IsSignedOutAsync() =>
-        await _page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true }).CountAsync() > 0;
+        await _signInLink.CountAsync() > 0;
 
     // The click can be swallowed while the header is still wiring up — flaky right after the login
     // redirect (2026-10-14: menu never opened, dialog absent after 15s). The open dialog is the
@@ -53,8 +47,6 @@ internal sealed class HeaderPage
     // menu that merely renders late is never toggled shut.
     private async Task OpenUserMenuAsync(ILocator dialog)
     {
-        var menuButton = _page.GetByRole(AriaRole.Button, new() { Name = "Open user navigation menu" });
-
         await WaitHelper.WaitUntilAsync(
             async () =>
             {
@@ -63,7 +55,7 @@ internal sealed class HeaderPage
                     return true;
                 }
 
-                await menuButton.ClickAsync();
+                await _userMenuButton.ClickAsync();
 
                 return false;
             },
@@ -71,4 +63,12 @@ internal sealed class HeaderPage
             timeout: _menuOpenTimeout,
             interval: _menuOpenRetryInterval);
     }
+
+    private readonly ILocator _userNavigationDialog = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" });
+    private readonly ILocator _userNavigationHeading = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" }).GetByRole(AriaRole.Heading);
+    private readonly ILocator _signOutLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true });
+    private readonly ILocator _accountSignOutButton = page.GetByRole(AriaRole.Button, new() { Name = $"Sign out of {TestConfig.UiUsername}", Exact = true });
+    private readonly ILocator _signInLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true });
+    private readonly ILocator _firstSignInLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true }).First;
+    private readonly ILocator _userMenuButton = page.GetByRole(AriaRole.Button, new() { Name = "Open user navigation menu" });
 }

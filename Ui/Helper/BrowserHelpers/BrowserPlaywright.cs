@@ -1,7 +1,7 @@
 using Microsoft.Playwright;
-using Ui.Helper.UiHelper.CommonPages;
-using Ui.Helper.UiHelper.GitHubStream.Issues;
-using Ui.Helper.UiHelper.GitHubStream.Repository;
+using Ui.Pages.Common;
+using Ui.Pages.GitHubStream.Issues;
+using Ui.Pages.GitHubStream.Repository;
 
 namespace Ui.Helper.BrowserHelpers;
 

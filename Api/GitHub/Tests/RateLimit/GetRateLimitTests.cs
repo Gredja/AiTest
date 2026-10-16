@@ -13,6 +13,10 @@ namespace Api.GitHub.RateLimit;
 [Category("GitHub")]
 public class GetRateLimitTests : GitHubTestBase
 {
+    private const string RateLimitLimitHeader = "X-RateLimit-Limit";
+    private const string RateLimitRemainingHeader = "X-RateLimit-Remaining";
+    private const string RateLimitResetHeader = "X-RateLimit-Reset";
+
     [Test]
     [Category("HealthCheck")]
     [Description("6.1 GET /rate_limit returns 200 OK")]
@@ -115,5 +119,18 @@ public class GetRateLimitTests : GitHubTestBase
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
 
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("6.10 Response carries X-RateLimit headers")]
+    public async Task GetRateLimit_RateLimitHeadersPresent()
+    {
+        var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        RateLimitHeaderValue(response, RateLimitLimitHeader).Should().NotBeNullOrWhiteSpace();
+        RateLimitHeaderValue(response, RateLimitRemainingHeader).Should().NotBeNullOrWhiteSpace();
+        RateLimitHeaderValue(response, RateLimitResetHeader).Should().NotBeNullOrWhiteSpace();
     }
 }

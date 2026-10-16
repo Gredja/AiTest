@@ -53,19 +53,37 @@ public class GitHubCleanupHelper : GitHubRequestHelper
             $"revoke invitation {invitationId}");
     }
 
-    // Accepts any of the three forms callers hold ("refs/heads/x", "heads/x", "x") —
-    // the endpoint wants exactly "heads/x"; a wrong form 404s and the NotFound
-    // tolerance would silently leak the branch
+    public async Task CleanupReleaseAsync(long? releaseId)
+    {
+        if (!releaseId.HasValue)
+        {
+            return;
+        }
+
+        await RunCleanupAsync(
+            () => Delete<object>(GitHubEndpoints.RepoReleaseById,
+                [.. TestRepoParam(), .. GitHubParamHelper.ReleaseIdParam(releaseId.Value)]),
+            $"delete release {releaseId}");
+    }
+
+    // Accepts any of the forms callers hold ("refs/heads/x", "heads/x", "x", "tags/x",
+    // "refs/tags/x") — the endpoint wants "heads/x" or "tags/x"; a wrong form 404s and
+    // the NotFound tolerance would silently leak the ref
     public async Task CleanupGitRefAsync(string refPath)
     {
         string path;
-        if (refPath.StartsWith(GitHubEndpoints.RefsHeadsPrefix, StringComparison.Ordinal))
+        if (refPath.StartsWith(GitHubEndpoints.HeadsPrefix, StringComparison.Ordinal) ||
+            refPath.StartsWith(GitHubEndpoints.TagsPrefix, StringComparison.Ordinal))
+        {
+            path = refPath;
+        }
+        else if (refPath.StartsWith(GitHubEndpoints.RefsHeadsPrefix, StringComparison.Ordinal))
         {
             path = $"{GitHubEndpoints.HeadsPrefix}{refPath[GitHubEndpoints.RefsHeadsPrefix.Length..]}";
         }
-        else if (refPath.StartsWith(GitHubEndpoints.HeadsPrefix, StringComparison.Ordinal))
+        else if (refPath.StartsWith(GitHubEndpoints.RefsTagsPrefix, StringComparison.Ordinal))
         {
-            path = refPath;
+            path = $"{GitHubEndpoints.TagsPrefix}{refPath[GitHubEndpoints.RefsTagsPrefix.Length..]}";
         }
         else
         {

@@ -32,10 +32,12 @@ PRs from `features/...` into `main` — only after review and approval.
   unavailable to forks, and a missing required check would pend forever and block merges)
 - `.github/workflows/nightly-tests.yml` — informational API + E2E suite (`--filter
   "Category!=GitHubUi"`): cron `17 3 * * *` UTC (off the hour — GitHub delays/drops top-of-hour
-  schedules) + `workflow_dispatch`; sequential live suite inside the Playwright container (image
-  default user — no `--user` override); clean clone gets CI `testsettings.json` with
-  `Headless: true` generated from the example before build; cron auto-disables after 60 days of
-  repo inactivity (public repos)
+  schedules) + `workflow_dispatch`; two-pass via `Scripts/test-parallel-rerun.ps1` (`shell: pwsh`
+  on `ubuntu-latest` + setup-dotnet; no container — browsers are not needed once the UI leg is
+  excluded): pass 1 in 8 fixture workers, failed tests rerun sequentially (1 worker); only
+  persistent failures fail the run (flaky races self-heal, drift stays red); clean clone gets CI
+  `testsettings.json` with `Headless: true` generated from the example before build; cron
+  auto-disables after 60 days of repo inactivity (public repos)
 - **UI leg excluded (2026-10-15, user decision):** GitHub device verification (email OTP) fires
   on the `gredjapl` web login from CI runner IPs, so the in-run `LoginSignInTests` storageState
   refresh can never complete — nightly runs `Category!=GitHubUi`, UI suite stays local-only

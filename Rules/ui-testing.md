@@ -30,6 +30,15 @@ Ui/
 - New locators are verified against a **live snapshot** before they are written (agent: use the `playwright` skill — one session, multiple navigations for speed); undated claims in the UI Observable Behaviour are drafts
 - A role+name locator that never resolves although the control is clearly visible → re-check its **accessible name** in the live snapshot: GitHub injects sr-only text into it (shortcut hint renders as `Save ( enter )`); match the visible label instead — `GetByText("Save", Exact = true)` (2026-10-14)
 - One locator per element; locator lives in the page-object, not in tests
+- Locators are separate named entities (constants/fields) collected **at the bottom of the
+  page-object file**; methods use only these entities — never inline locators in method bodies
+  (2026-10-09)
+- **Locators exist ONLY on Page/Form classes** (single source of truth). Helpers and any other
+  shared code NEVER declare locators — they RECEIVE them as `ILocator` parameters from the
+  page/form that owns them; that removes selector duplication (2026-10-16). Chrome shared by
+  many pages (header/nav) lives in a page-object base class, not in helpers; when a helper
+  needs many elements, pass a small grouped object rather than growing the signature past
+  ~5 params
 
 ## Auth (storageState)
 

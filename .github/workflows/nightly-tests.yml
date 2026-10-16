@@ -15,10 +15,12 @@ concurrency:
 jobs:
   full-suite:
     runs-on: ubuntu-latest
-    container:
-      image: mcr.microsoft.com/playwright/dotnet:v1.63.0-noble
     steps:
       - uses: actions/checkout@v6
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
 
       - name: Prepare headless testsettings for CI
         run: |
@@ -27,10 +29,11 @@ jobs:
       - name: Build
         run: dotnet build
 
-      - name: Run API + E2E suite
+      - name: Run API + E2E suite (two-pass)
+        shell: pwsh
         env:
           GITHUB_PAT: ${{ secrets.TEST_PAT }}
-        run: dotnet test --filter "Category!=GitHubUi" --verbosity minimal
+        run: ./Scripts/test-parallel-rerun.ps1 -Filter "Category!=GitHubUi"
 
       - name: Rate limit budget
         if: always()
