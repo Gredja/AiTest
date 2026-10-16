@@ -16,6 +16,7 @@ namespace Api.JsonPlaceholder.Posts;
 public class CreatePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestUserId = 1;
+    private const int WrongFieldTypeValue = 123;
     private const string IgnoreMissingFieldsBug = "JsonPlaceholder mock: accepts any body — missing required fields still return 201 — Bug: documentation/Bugs/JsonPlaceholder/JP-001-create-post-accepts-empty-body.md";
     private const string SpecialCharsTitle = "Test special chars: <>&\"";
     private const string MalformedJson = "{\"title\":";
@@ -162,7 +163,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.12 POST with wrong field types returns 400")]
     public async Task CreatePost_WrongFieldTypes_ReturnsBadRequest()
     {
-        var post = new Dictionary<string, object> { [JsonFields.Title] = 123, [JsonFields.Body] = true, [JsonFields.UserId] = NotANumberUserId };
+        var post = new Dictionary<string, object> { [JsonFields.Title] = WrongFieldTypeValue, [JsonFields.Body] = true, [JsonFields.UserId] = NotANumberUserId };
         var response = await Post<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.Posts, post);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);

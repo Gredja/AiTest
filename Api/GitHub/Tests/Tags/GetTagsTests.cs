@@ -53,7 +53,7 @@ public class GetTagsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(
-            tag => tag.Name.Length > 0 && tag.Commit.Sha.IsGitSha(),
+            tag => !string.IsNullOrEmpty(tag.Name) && tag.Commit.Sha.IsGitSha(),
             "every tag needs a non-empty name and a 40-hex commit.sha");
     }
 

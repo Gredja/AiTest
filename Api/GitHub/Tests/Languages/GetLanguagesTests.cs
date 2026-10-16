@@ -89,7 +89,7 @@ public class GetLanguagesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(
-            language => language.Key.Length > 0,
+            language => !string.IsNullOrEmpty(language.Key),
             "language names must be non-empty");
     }
 
