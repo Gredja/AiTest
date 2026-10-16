@@ -27,19 +27,10 @@ jobs:
       - name: Build
         run: dotnet build
 
-      - name: Refresh UI storageState
-        env:
-          GITHUB_UI_EMAIL: ${{ secrets.UI_EMAIL }}
-          GITHUB_UI_PASSWORD: ${{ secrets.UI_PASSWORD }}
-        run: dotnet test --filter LoginSignInTests --verbosity minimal
-
-      - name: Run full suite
+      - name: Run API + E2E suite
         env:
           GITHUB_PAT: ${{ secrets.TEST_PAT }}
-          GITHUB_UI_EMAIL: ${{ secrets.UI_EMAIL }}
-          GITHUB_UI_PASSWORD: ${{ secrets.UI_PASSWORD }}
-          GITHUB_UI_PAT: ${{ secrets.UI_PAT }}
-        run: dotnet test --verbosity minimal
+        run: dotnet test --filter "Category!=GitHubUi" --verbosity minimal
 
       - name: Rate limit budget
         if: always()
@@ -57,11 +48,3 @@ jobs:
             TestResults/*.md
             allure-results/
           retention-days: 7
-
-      - name: Upload UI failure traces
-        if: failure()
-        uses: actions/upload-artifact@v7
-        with:
-          name: ui-artifacts
-          path: TestResults/ui-artifacts/
-          retention-days: 3
