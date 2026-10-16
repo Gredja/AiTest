@@ -24,6 +24,9 @@ public class IssueModelResponse : IdModel<long>
 
     public UserModelResponse Assignee { get; set; }
 
+    [JsonPropertyName(JsonFields.PullRequest)]
+    public IssuePullRequest PullRequest { get; set; }
+
     [JsonPropertyName(JsonFields.CreatedAt)]
     public DateTime CreatedAt { get; set; }
 

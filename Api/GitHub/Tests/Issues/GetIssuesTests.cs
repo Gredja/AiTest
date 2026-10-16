@@ -201,6 +201,19 @@ public class GetIssuesTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
 
+    [Test]
+    [Category("Regression")]
+    [Description("3.14 Issues list includes pull requests (pull_request field present)")]
+    public async Task GetIssues_ItemsIncludePullRequests()
+    {
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Any(issue => issue.PullRequest is not null).Should().BeTrue(
+            "GitHub serves pull requests through the issues endpoint — OB §6 gotcha");
+    }
+
     [OneTimeTearDown]
     public async Task OneTimeTearDown() =>
         await CleanupIssueAsync(_createdIssueNumber);

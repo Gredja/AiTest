@@ -280,6 +280,19 @@ public class GetIssueCommentsTests : GitHubTestBase
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 
+    [Test]
+    [Category("Regression")]
+    [Description("11.11 Comments are ordered by created_at ascending")]
+    public async Task GetIssueComments_OrderedByCreatedAt()
+    {
+        var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
+            [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().BeInAscendingOrder(comment => comment.CreatedAt,
+            "comments must come back in creation order — OB §8 gotcha");
+    }
+
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {

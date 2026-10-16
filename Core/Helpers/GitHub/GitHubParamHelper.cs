@@ -49,6 +49,15 @@ public static class GitHubParamHelper
     public static List<RequestDictionaryModel> InvitationIdParam(long id) =>
         [ParamHelper.UrlSegment("invitation_id", id)];
 
+    public static List<RequestDictionaryModel> ReleaseIdParam(long id) =>
+        [ParamHelper.UrlSegment("release_id", id)];
+
+    public static List<RequestDictionaryModel> ReleaseTagParam(string tag) =>
+        [ParamHelper.UrlSegment("release_tag", tag)];
+
+    public static List<RequestDictionaryModel> SearchQueryParam(string query) =>
+        [ParamHelper.Query(JsonFields.Q, query)];
+
     public static List<RequestDictionaryModel> StateParam(string state) =>
         [ParamHelper.Query(JsonFields.State, state)];
 }
