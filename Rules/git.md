@@ -8,6 +8,9 @@
 ## Branches
 
 - `main` — stable branch, do not touch directly
+- `main` is protected (2026-10-16): PR required (0 approvals) + required check `gate` with
+  strict up-to-date, no force pushes/deletions; `enforce_admins` is off — the admin can bypass
+  in a real emergency
 - All changes go into `features/...` branches
 - Format: `features/<topic>`
 

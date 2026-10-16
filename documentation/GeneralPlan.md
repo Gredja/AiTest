@@ -50,6 +50,9 @@ Research/decision first, implementation only if the answer is "yes".
   (`dotnet test --filter "Category!=GitHubUi"`), UI suite stays local-only; storageState-secret
   and OTP-automation alternatives rejected. `nightly-tests.yml` fixed (storageState step, UI
   secrets, ui-artifacts upload removed); branch protection on `main` still pending.
+- 2026-10-16 — `DONE`: PR #938 merged (`3fecd59`), first fully green nightly (run 38846547746,
+  all steps success), branch protection on `main` applied — required check `gate`, PR required
+  (0 approvals), strict up-to-date, no force pushes. CI/CD wish fulfilled end to end.
 
 ---
 
