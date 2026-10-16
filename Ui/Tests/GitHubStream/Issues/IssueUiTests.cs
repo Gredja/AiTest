@@ -4,7 +4,7 @@ using AllureAdapter;
 using Ui.Helper;
 using static Core.Helpers.TestDataConstants;
 
-namespace Ui.Test.GitHubStream.Issues;
+namespace Ui.Tests.GitHubStream.Issues;
 
 [TestFixture]
 [AllureNUnit]

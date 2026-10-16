@@ -339,7 +339,7 @@ Ui/
 │       ├── Issues/                 # IssueCreatePage, IssueDetailPage, CommentForm
 │       └── Repository/             # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
 ├── Data/                         # static test files (upload payloads)
-└── Test/GitHubStream/
+└── Tests/GitHubStream/
     ├── Issues/                   # IssuesUiTests, IssueUiTests
     ├── Login/                    # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
     ├── Pulls/                    # PullsUiTests

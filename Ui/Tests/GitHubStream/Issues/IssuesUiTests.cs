@@ -2,7 +2,7 @@ using FluentAssertions;
 using AllureAdapter;
 using Ui.Helper;
 
-namespace Ui.Test.GitHubStream.Issues;
+namespace Ui.Tests.GitHubStream.Issues;
 
 [TestFixture]
 [AllureNUnit]

@@ -3,7 +3,7 @@ using Core.Config;
 using FluentAssertions;
 using Ui.Helper;
 
-namespace Ui.Test.GitHubStream.Login;
+namespace Ui.Tests.GitHubStream.Login;
 
 [TestFixture]
 [AllureNUnit]
