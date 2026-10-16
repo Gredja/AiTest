@@ -46,7 +46,7 @@ public class CreatePullRequestTests : GitHubTestBase
             PullParams(pullNumber));
 
         readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-        readBack.Data!.Title.Should().Be(title, "PR must echo the requested title");
+        readBack.Data!.Title.Should().Be(title, PullRequestEchoTitleMessage);
         readBack.Data.State.Should().Be(GitHubEndpoints.StateOpen, "fresh PR must be open");
     }
 

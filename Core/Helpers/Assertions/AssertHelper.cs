@@ -109,6 +109,7 @@ public static class AssertHelper
         {
             responseProperty.Should().NotBeNull(
                 $"response should have property '{requestProperty.Name}' matching request");
+
             return;
         }
 
@@ -123,6 +124,7 @@ public static class AssertHelper
         if (requestValue is string or ValueType)
         {
             responseValue.Should().Be(requestValue, because);
+
             return;
         }
 

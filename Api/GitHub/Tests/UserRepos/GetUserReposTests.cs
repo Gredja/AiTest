@@ -60,7 +60,7 @@ public class GetUserReposTests : GitHubTestBase
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
             UsernameParam(GitHubEndpoints.NonExistentUser));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]

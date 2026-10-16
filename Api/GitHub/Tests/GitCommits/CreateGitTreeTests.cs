@@ -13,8 +13,6 @@ namespace Api.GitHub.GitCommits;
 public class CreateGitTreeTests : GitHubTestBase
 {
     private const string NonExistentSha = "0000000000000000000000000000000000000000";
-    private const string FileMode644 = "100644";
-    private const string BlobType = "blob";
     private const string ProbePath = "phase1-invalid-sha-probe.txt";
 
     private string _baseTreeSha = string.Empty;

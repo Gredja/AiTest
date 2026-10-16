@@ -144,13 +144,13 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
                 if (!delete.IsSuccessful)
                 {
                     TestContext.Progress.WriteLine(
-                        $"Warning: post {_createdPostId} not deleted: HTTP {(int)delete.StatusCode}");
+                        string.Format(PostNotDeletedWarningFormat, _createdPostId, (int)delete.StatusCode));
                 }
             }
             catch (HttpRequestException exception)
             {
                 TestContext.Progress.WriteLine(
-                    $"Warning: failed to delete post {_createdPostId}: {exception.Message}");
+                    string.Format(PostDeleteFailedWarningFormat, _createdPostId, exception.Message));
             }
         }
     }

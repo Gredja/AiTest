@@ -20,8 +20,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected static readonly Regex TopicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
 
     private const string ScratchFileName = "audit-scratch.txt";
-    private const string FileMode644 = "100644";
-    private const string BlobType = "blob";
+    protected const string FileMode644 = "100644";
+    protected const string BlobType = "blob";
     private const string ScratchBranchPrefix = "audit-";
 
     protected static List<RequestDictionaryModel> TestRepoParam()
@@ -55,6 +55,18 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected Task CleanupIssueAsync(int? issueNumber) => _cleanup.CleanupIssueAsync(issueNumber);
 
     protected Task CleanupInvitationAsync(long? invitationId) => _cleanup.CleanupInvitationAsync(invitationId);
+
+    protected async Task NormalizePendingCollaboratorInvitationsAsync()
+    {
+        var pending = await Get<List<InvitationModelResponse>>(GitHubEndpoints.RepoInvitations, TestRepoParam());
+        pending.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        foreach (var stale in pending.Data!
+                     .Where(item => item.Invitee.Login == TestConfig.GitHubCollaboratorUser))
+        {
+            await CleanupInvitationAsync(stale.Id);
+        }
+    }
 
     protected Task CleanupReleaseAsync(long? releaseId) => _cleanup.CleanupReleaseAsync(releaseId);
 

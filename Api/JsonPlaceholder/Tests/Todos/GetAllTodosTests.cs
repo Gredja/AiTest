@@ -133,13 +133,13 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
                 if (!delete.IsSuccessful)
                 {
                     TestContext.Progress.WriteLine(
-                        $"Warning: todo {_createdTodoId} not deleted: HTTP {(int)delete.StatusCode}");
+                        string.Format(TodoNotDeletedWarningFormat, _createdTodoId, (int)delete.StatusCode));
                 }
             }
             catch (HttpRequestException exception)
             {
                 TestContext.Progress.WriteLine(
-                    $"Warning: failed to delete todo {_createdTodoId}: {exception.Message}");
+                    string.Format(TodoDeleteFailedWarningFormat, _createdTodoId, exception.Message));
             }
         }
     }

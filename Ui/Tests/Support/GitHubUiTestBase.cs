@@ -126,7 +126,7 @@ public abstract class GitHubUiTestBase
         return GitHubParamHelper.RepoParam(parts[0], parts[1]);
     }
 
-    protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool closed = false)
+    protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool isClosed = false)
     {
         var title = $"API setup {DataGenerator.RandomString(TestDataConstants.TitleRandomLength)}";
         var created = await Cleanup.Post<CreateIssueModelRequest, IssueModelResponse>(
@@ -137,7 +137,7 @@ public abstract class GitHubUiTestBase
         var issueNumber = created.Data!.Number;
         createdIssueNumbers.Add(issueNumber);
 
-        if (closed)
+        if (isClosed)
         {
             await Cleanup.CleanupIssueAsync(issueNumber);
         }

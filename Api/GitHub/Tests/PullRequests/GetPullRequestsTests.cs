@@ -84,7 +84,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]

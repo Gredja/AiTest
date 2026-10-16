@@ -14,12 +14,10 @@ namespace Api.GitHub.Collaborators;
 [Category("GitHub")]
 public class CreateInvitationTests : GitHubTestBase
 {
-    private const string InvitePermission = "push";
-
     private long? _createdInvitationId;
 
-    [OneTimeSetUp]
-    public Task OneTimeSetup() => RemovePendingInvitationsAsync();
+    [SetUp]
+    public async Task NormalizePendingInvitations() => await NormalizePendingCollaboratorInvitationsAsync();
 
     [Test]
     [Category("HealthCheck")]
@@ -28,7 +26,7 @@ public class CreateInvitationTests : GitHubTestBase
     {
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
-            new CreateCollaboratorModelRequest { Permission = InvitePermission },
+            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
             [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
         if (invite.Data is not null)
         {
@@ -44,9 +42,6 @@ public class CreateInvitationTests : GitHubTestBase
     [Description("28b.2 Permission pull on a public repo returns 422")]
     public async Task CreateInvitation_PullOnPublicRepo_Returns422()
     {
-        // pending invitation from a sibling test would change PUT semantics — drop it first
-        await RemovePendingInvitationsAsync();
-
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
             new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPull },
@@ -62,22 +57,10 @@ public class CreateInvitationTests : GitHubTestBase
     {
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
-            new CreateCollaboratorModelRequest { Permission = InvitePermission },
+            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
             [.. TestRepoParam(), .. UsernameParam(GitHubEndpoints.NonExistentUser)]);
 
         invite.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
-    }
-
-    private async Task RemovePendingInvitationsAsync()
-    {
-        var pending = await Get<List<InvitationModelResponse>>(GitHubEndpoints.RepoInvitations, TestRepoParam());
-        pending.ShouldHaveStatusCode(HttpStatusCode.OK);
-
-        foreach (var stale in pending.Data!
-                     .Where(item => item.Invitee.Login == TestConfig.GitHubCollaboratorUser))
-        {
-            await CleanupInvitationAsync(stale.Id);
-        }
     }
 
     [OneTimeTearDown]

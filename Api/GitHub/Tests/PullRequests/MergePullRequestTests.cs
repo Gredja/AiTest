@@ -39,8 +39,8 @@ public class MergePullRequestTests : GitHubTestBase
 
         merged.IsSuccess.Should().BeTrue(
             $"merge must return 200 once the PR is mergeable; elapsed {merged.Elapsed}, attempts {merged.Attempts}, last status {merged.LastValue?.StatusCode}");
-        merged.LastValue!.Data.Should().NotBeNull("200 merge response must carry a body");
-        merged.LastValue!.Data!.Merged.Should().BeTrue("merge endpoint must report merged=true for a mergeable pull request");
+        merged.LastValue!.Data.Should().NotBeNull(MergeResponseHasBodyMessage);
+        merged.LastValue!.Data!.Merged.Should().BeTrue(MergeReportsMergedTrueMessage);
     }
 
     [Test]
@@ -135,7 +135,7 @@ public class MergePullRequestTests : GitHubTestBase
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         pulls.ShouldHaveStatusCode(HttpStatusCode.OK);
-        pulls.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
+        pulls.Data.Should().NotBeEmpty(EntryCriteriaRepoDataMessage);
         var nonExistentPullNumber = pulls.Data!.Max(pull => pull.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Put<Dictionary<string, object>, object>(

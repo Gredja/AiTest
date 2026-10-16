@@ -13,7 +13,6 @@ namespace E2E.GitHub.Tests;
 [Category("GitHubE2E")]
 public class CollaboratorPermissionTests : GitHubE2ETestBase
 {
-    private const string InvitePermission = "push";
     private const string PendingPermissionValue = "write";
 
     private long? _createdInvitationId;
@@ -52,7 +51,7 @@ public class CollaboratorPermissionTests : GitHubE2ETestBase
 
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
-            new CreateCollaboratorModelRequest { Permission = InvitePermission },
+            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
             [.. TestRepoParam(), .. UsernameParam(collaboratorUser)]);
         if (invite.Data is not null)
         {

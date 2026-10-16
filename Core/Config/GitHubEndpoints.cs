@@ -21,6 +21,7 @@ public static class GitHubEndpoints
     public const string PermissionAdmin = "admin";
     public const string PermissionRead = "read";
     public const string PermissionPull = "pull";
+    public const string PermissionPush = "push";
     public const string ObjectTypeCommit = "commit";
 
     public const string RefsHeadsPrefix = "refs/heads/";

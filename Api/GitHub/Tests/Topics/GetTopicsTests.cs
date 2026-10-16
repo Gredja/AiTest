@@ -50,7 +50,7 @@ public class GetTopicsTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Names.Should().OnlyContain(
             name => TopicNamePattern.IsMatch(name),
-            "topic names must be lowercase alphanumeric with hyphens");
+            TopicNameLowercaseMessage);
     }
 
     [Test]

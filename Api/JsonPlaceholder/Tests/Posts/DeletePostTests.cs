@@ -7,6 +7,7 @@ using FluentAssertions;
 using RestSharp;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Posts;
@@ -17,7 +18,6 @@ namespace Api.JsonPlaceholder.Posts;
 public class DeletePostTests : JsonPlaceholderRequestHelper
 {
     private const int TestPostId = 1;
-    private const string MalformedJson = "{\"title\":";
     private const string IgnoreDeleteNonExistentBug = "JsonPlaceholder mock: DELETE on any ID returns 200, even non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-003-delete-post-returns-200-for-non-existent-id.md";
 
     [Test]
