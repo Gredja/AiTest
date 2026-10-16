@@ -14,7 +14,7 @@ public abstract class GitHubUiTestBase
 {
     private const int ViewportWidth = 1440;
     private const int ViewportHeight = 900;
-    private const int UiTimeoutMs = 15_000;
+    internal const int UiTimeoutMs = 15_000;
 
     private IPlaywright? _playwright;
     private IBrowser? _browser;
@@ -22,8 +22,6 @@ public abstract class GitHubUiTestBase
     private IPage? _page;
     private BrowserPlaywright? _browserWrapper;
 
-    // API cleanup against ui-sandbox (GITHUB_UI_PAT) by composition —
-    // GitHubUiTestBase does not inherit GitHubTestBase
     protected UiSandboxCleanupHelper Cleanup { get; } = new();
 
     protected IBrowserContext Context => _context

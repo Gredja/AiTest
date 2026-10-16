@@ -1,7 +1,5 @@
 namespace Core.Helpers;
 
-// Shared test-data constants: one value, one meaning, declared once —
-// per-class redeclaration of the same semantic value violates Rules/code-style.md → Magic strings
 public static class TestDataConstants
 {
     public const int TitleRandomLength = 8;

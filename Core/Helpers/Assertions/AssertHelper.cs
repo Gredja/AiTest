@@ -43,7 +43,6 @@ public static class AssertHelper
 
     public static void ShouldHaveValidContract<T>(this T entity) where T : class
     {
-        // Soft: serializability + every field violation reported in one failure, not one per rerun
         using (new AssertionScope())
         {
             entity.Should().BeJsonSerializable();
@@ -127,7 +126,6 @@ public static class AssertHelper
             return;
         }
 
-        // Collections and nested objects: Be() is reference equality for them — compare structurally
         responseValue.Should().BeEquivalentTo(requestValue, because);
     }
 

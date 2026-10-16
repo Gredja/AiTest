@@ -1,20 +1,19 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
+using Ui.Tests.Support;
 
 namespace Ui.Pages.GitHubStream.Issues;
 
 internal sealed class IssueCreatePage(IPage page)
 {
-    // matches the fixture's action timeout (GitHubUiTestBase.UiTimeoutMs)
-    private static readonly TimeSpan _openTimeout = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan _openTimeout =
+        TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
 
     private readonly IPage _page = page;
 
     internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/new");
 
-    // this page is outside the load-verified list in Rules/ui-testing.md → Waits,
-    // so the presence check polls instead of reading the count instantly
     internal async Task<WaitResult<bool>> WaitForOpenAsync() =>
         await WaitHelper.WaitUntilAsync(
             async () =>
@@ -30,7 +29,7 @@ internal sealed class IssueCreatePage(IPage page)
     {
         await _titleTextbox.FillAsync(title);
         await _descriptionTextbox.FillAsync(description);
-        // accessible name includes the shortcut hint: "Create ( control enter )" — verified 2026-10-13
+        // accessible name includes the shortcut hint: "Create ( control enter )"
         await _createIssueButton.ClickAsync();
 
         // submit is a POST followed by a client-side redirect — wait for the heading that only exists

@@ -6,7 +6,6 @@ internal sealed class CommentForm(IPage page)
 {
     private readonly IPage _page = page;
 
-    // textarea placeholder verified on issue #1 — 2026-10-13
     internal async Task AddCommentAsync(string body)
     {
         await _commentTextarea.FillAsync(body);

@@ -1,21 +1,20 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
+using Ui.Tests.Support;
 
 namespace Ui.Pages.GitHubStream.Repository;
 
 internal sealed class NotFoundPage(IPage page)
 {
-    // matches the fixture's action timeout (GitHubUiTestBase.UiTimeoutMs)
-    private static readonly TimeSpan _messageTimeout = TimeSpan.FromSeconds(15);
+    private static readonly TimeSpan _messageTimeout =
+        TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
 
     private readonly IPage _page = page;
 
     internal async Task OpenAsync() =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/gredjapl/ui-sandbox-nonexistent-xyz404");
 
-    // this page is outside the load-verified list in Rules/ui-testing.md → Waits,
-    // so the presence check polls instead of reading the count instantly
     internal async Task<WaitResult<bool>> WaitFor404MessageAsync() =>
         await WaitHelper.WaitUntilAsync(
             async () =>

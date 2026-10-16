@@ -7,8 +7,6 @@ using System.Net;
 
 namespace Core.Helpers.GitHub;
 
-// Shared cleanup core for Api/E2E (via GitHubTestBase delegation) and Ui (composition).
-// Warning-only: never fails the run (Rules/test-practices.md → E2E cleanup).
 public class GitHubCleanupHelper : GitHubRequestHelper
 {
 

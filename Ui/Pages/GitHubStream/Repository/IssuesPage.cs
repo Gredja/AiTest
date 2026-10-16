@@ -27,9 +27,8 @@ internal sealed class IssuesPage(IPage page)
     internal async Task<bool> ContainsIssueWithTitleAsync(string title) =>
         await _issueLinks.Filter(new() { HasTextString = title }).CountAsync() > 0;
 
-    // The list is indexed asynchronously after a write: the page loaded right after a create
-    // can still miss the new issue (verified 2026-10-14) — poll with a reload instead of
-    // a single instant count, per Rules/test-practices.md read-after-write
+    // The list is indexed asynchronously after a write: a page loaded right after a create
+    // can still miss the new issue — poll with a reload instead of a single instant count
     internal async Task<WaitResult<bool>> WaitForIssueWithTitleAsync(string title) =>
         await WaitHelper.WaitUntilAsync(
             async () =>

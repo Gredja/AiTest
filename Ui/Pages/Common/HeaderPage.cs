@@ -24,7 +24,6 @@ internal sealed class HeaderPage(IPage page)
         return (await _userNavigationHeading.TextContentAsync())?.Trim() ?? string.Empty;
     }
 
-    // The item is a link (href /logout) whose accessible name comes from aria-labelledby — verified 2026-10-14
     internal async Task SignOutAsync()
     {
         await OpenUserMenuAsync(_userNavigationDialog);
