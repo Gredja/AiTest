@@ -65,7 +65,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 ### Git
 - Repo: github.com/Gredja/AiTest.git, branch: `main`
 - Изменения в `features/<topic>` ветках
-- Коммиты: только по запросу, английский, формат: action + object
+- Коммиты: ТОЛЬКО через скилл `/commit` (никогда вручную); только по запросу, английский, формат: action + object
 - Никогда не коммитить `.env` или токены
 - **Перед коммитом:** `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` — оба должны пройти (полный прогон — `/test`)
 - CI: PR-gate (`format` + `HealthCheck`) и ночной informational-прогон; live-сьют не ставить в required checks (`Rules/git.md` → CI)
