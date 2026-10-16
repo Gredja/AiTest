@@ -15,4 +15,6 @@ public static class DataGenerator
 
         return new string(characters);
     }
+
+    public static int RandomIntExclusive(int min, int max) => Random.Shared.Next(min, max);
 }
