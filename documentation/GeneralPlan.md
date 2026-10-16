@@ -41,6 +41,15 @@ Research/decision first, implementation only if the answer is "yes".
   merge-gate is rejected by flakiness data + GitHub rate limits + fork-secrets rules). Optional value =
   a nightly informational run; implementation plan kept for the future:
   `.mimocode/plans/ci-cd.md` (Phase 1 nightly workflow, Phase 2 data-driven PR-gate).
+- 2026-10-15 — `IN PROGRESS`: Phase 1+2 implemented and merged — `pr-checks.yml` (required-candidate
+  gate: format + HealthCheck) and `nightly-tests.yml` (cron + dispatch) live on `main`; gate verified
+  green on every CI PR. Nightly UI leg blocked by GitHub device verification (email OTP) on the
+  `gredjapl` web login from runner IPs — open decision in `.mimocode/plans/ci-cd.md` → Remaining #1;
+  branch protection pending. Rules: `Rules/git.md` → CI.
+- 2026-10-16 — `IN PROGRESS`: UI-leg decision (user): nightly excludes `GitHubUi`
+  (`dotnet test --filter "Category!=GitHubUi"`), UI suite stays local-only; storageState-secret
+  and OTP-automation alternatives rejected. `nightly-tests.yml` fixed (storageState step, UI
+  secrets, ui-artifacts upload removed); branch protection on `main` still pending.
 
 ---
 

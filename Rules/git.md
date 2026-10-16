@@ -27,19 +27,28 @@ PRs from `features/...` into `main` — only after review and approval.
 - `.github/workflows/pr-checks.yml` — required PR gate on `main`: `format` runs on every PR;
   live `HealthCheck` only for same-repo branches (fork PRs get an explicit stub — secrets are
   unavailable to forks, and a missing required check would pend forever and block merges)
-- `.github/workflows/nightly-tests.yml` — informational full suite: cron `17 3 * * *` UTC
-  (off the hour — GitHub delays/drops top-of-hour schedules) + `workflow_dispatch`; sequential
-  live suite inside the Playwright container; UI storageState refreshed in-run by
-  `LoginSignInTests`, never stored; cron auto-disables after 60 days of repo inactivity (public repos)
+- `.github/workflows/nightly-tests.yml` — informational API + E2E suite (`--filter
+  "Category!=GitHubUi"`): cron `17 3 * * *` UTC (off the hour — GitHub delays/drops top-of-hour
+  schedules) + `workflow_dispatch`; sequential live suite inside the Playwright container (image
+  default user — no `--user` override); clean clone gets CI `testsettings.json` with
+  `Headless: true` generated from the example before build; cron auto-disables after 60 days of
+  repo inactivity (public repos)
+- **UI leg excluded (2026-10-15, user decision):** GitHub device verification (email OTP) fires
+  on the `gredjapl` web login from CI runner IPs, so the in-run `LoginSignInTests` storageState
+  refresh can never complete — nightly runs `Category!=GitHubUi`, UI suite stays local-only
+  (alternatives storageState-secret / OTP automation rejected)
 - Nightly red is a drift/flake report for the owner — it never blocks merges; the live suite is
   NEVER a required check (rate-limit exhaustion and external-API instability are the documented
   Top-3 risks — `documentation/GitHubTestingStructure.md`)
+- **Workflow YAML gotcha:** GitHub's parser rejects a `: ` (colon-space) inside an unquoted
+  `run:` scalar — the workflow silently falls back to the filename as its name and
+  `workflow_dispatch` returns 422 "does not have 'workflow_dispatch' trigger". Any command
+  containing `: ` (curl headers, sed patterns) must use the block scalar `run: |`
 - Repo secrets — Actions rejects the `GITHUB_` prefix in secret names, so the names are
   `TEST_PAT`, `UI_EMAIL`, `UI_PASSWORD`, `UI_PAT`; each workflow maps them to the env vars the
   code reads (`GITHUB_PAT`, `GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) in its
   `env:` block — values live only in GitHub settings, never in the repo
-- Artifacts: test report + allure 7 days; failure UI traces 3 days only (traces can embed
-  credentials — keep retention short)
+- Artifacts: test report + allure 7 days (UI traces are not uploaded — UI suite is local-only)
 
 ## Secrets
 
