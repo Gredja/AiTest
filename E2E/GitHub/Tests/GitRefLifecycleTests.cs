@@ -35,7 +35,7 @@ public class GitRefLifecycleTests : GitHubE2ETestBase
     {
         var refName = $"{RefPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         await CreateBranchTrackedAsync(refName, _baseSha, _createdRefs);
-        await WaitUntilBranchVisibleAsync(refName, present: true);
+        await WaitUntilBranchVisibleAsync(refName, isPresent: true);
 
         var duplicate = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
@@ -46,7 +46,7 @@ public class GitRefLifecycleTests : GitHubE2ETestBase
         var deleted = await Delete<object>(GitHubEndpoints.RepoGitRefById,
             [.. TestRepoParam(), .. GitRefParam($"{GitHubEndpoints.HeadsPrefix}{refName}")]);
         deleted.ShouldHaveStatusCode(HttpStatusCode.NoContent);
-        await WaitUntilBranchVisibleAsync(refName, present: false);
+        await WaitUntilBranchVisibleAsync(refName, isPresent: false);
     }
 
     [OneTimeTearDown]

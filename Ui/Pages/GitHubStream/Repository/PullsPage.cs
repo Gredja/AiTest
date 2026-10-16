@@ -1,6 +1,6 @@
 using Core.Config;
 using Microsoft.Playwright;
-using Ui.Helper;
+using Ui.Tests.Support;
 
 namespace Ui.Pages.GitHubStream.Repository;
 

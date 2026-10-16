@@ -57,7 +57,7 @@ public class UpdateIssueTests : GitHubTestBase
         var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             IssueParams(created.Data.Number));
         readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-        readBack.Data!.Title.Should().Be(patchRequest.Title, "PATCH must persist the new title");
+        readBack.Data!.Title.Should().Be(patchRequest.Title, PatchPersistTitleMessage);
     }
 
     [Test]
@@ -86,7 +86,7 @@ public class UpdateIssueTests : GitHubTestBase
         var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             IssueParams(created.Data.Number));
         readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-        readBack.Data!.State.Should().Be(GitHubEndpoints.StateClosed, "closed state must persist");
+        readBack.Data!.State.Should().Be(GitHubEndpoints.StateClosed, ClosedStatePersistMessage);
     }
 
     [Test]
@@ -202,7 +202,7 @@ public class UpdateIssueTests : GitHubTestBase
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         issues.ShouldHaveStatusCode(HttpStatusCode.OK);
-        issues.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
+        issues.Data.Should().NotBeEmpty(EntryCriteriaRepoDataMessage);
         var nonExistentIssueNumber = issues.Data!.Max(issue => issue.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
@@ -248,13 +248,13 @@ public class UpdateIssueTests : GitHubTestBase
             IssueParams(created.Data!.Number));
 
         bogus.ShouldHaveStatusCode(HttpStatusCode.OK);
-        bogus.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "unrecognized state must be ignored — OB §19");
+        bogus.Data!.State.Should().Be(GitHubEndpoints.StateOpen, UnrecognizedStateIgnoredMessage);
 
         var readBack = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             IssueParams(created.Data.Number));
         readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
         readBack.Data!.State.Should().Be(GitHubEndpoints.StateOpen,
-            "unrecognized state must be ignored — OB §19");
+            UnrecognizedStateIgnoredMessage);
     }
 
     [OneTimeTearDown]

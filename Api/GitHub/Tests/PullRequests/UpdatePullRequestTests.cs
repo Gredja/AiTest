@@ -43,7 +43,7 @@ public class UpdatePullRequestTests : GitHubTestBase
         var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(pullNumber));
         readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-        readBack.Data!.Title.Should().Be(newTitle, "PATCH must persist the new title");
+        readBack.Data!.Title.Should().Be(newTitle, PatchPersistTitleMessage);
     }
 
     [Test]
@@ -69,7 +69,7 @@ public class UpdatePullRequestTests : GitHubTestBase
         var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(pullNumber));
         readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
-        readBack.Data!.State.Should().Be(GitHubEndpoints.StateClosed, "closed state must persist");
+        readBack.Data!.State.Should().Be(GitHubEndpoints.StateClosed, ClosedStatePersistMessage);
     }
 
     [Test]
@@ -133,7 +133,7 @@ public class UpdatePullRequestTests : GitHubTestBase
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         pulls.ShouldHaveStatusCode(HttpStatusCode.OK);
-        pulls.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
+        pulls.Data.Should().NotBeEmpty(EntryCriteriaRepoDataMessage);
         var nonExistentPullNumber = pulls.Data!.Max(pull => pull.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(

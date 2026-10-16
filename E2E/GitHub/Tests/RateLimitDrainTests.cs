@@ -4,6 +4,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using AllureAdapter;
+using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -15,9 +16,6 @@ public class RateLimitDrainTests : GitHubE2ETestBase
     private const int DrainCallCount = 5;
     private const int QuotaHeadroom = 10;
     private const int AuthenticatedRateLimit = 5000;
-    private const string RateLimitRemainingHeader = "X-RateLimit-Remaining";
-    private const string RateLimitLimitHeader = "X-RateLimit-Limit";
-    private const string RateLimitResetHeader = "X-RateLimit-Reset";
 
     [Test]
     [Category("Regression")]
@@ -33,14 +31,14 @@ public class RateLimitDrainTests : GitHubE2ETestBase
             var first = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, TestRepoParam());
             first.ShouldHaveStatusCode(HttpStatusCode.OK);
 
-            var limitHeader = RateLimitHeaderValue(first, RateLimitLimitHeader);
+            var limitHeader = RateLimitHeaderValue(first, GitHubHeaders.RateLimitLimit);
             limitHeader.Should().NotBeNullOrWhiteSpace("counting response must carry the rate limit header");
             var limit = int.Parse(limitHeader);
             limit.Should().Be(AuthenticatedRateLimit,
                 "authenticated primary quota must be 5000 per hour — OB §16");
 
-            var remainingHeader = RateLimitHeaderValue(first, RateLimitRemainingHeader);
-            remainingHeader.Should().NotBeNullOrWhiteSpace("counting response must carry the remaining quota header");
+            var remainingHeader = RateLimitHeaderValue(first, GitHubHeaders.RateLimitRemaining);
+            remainingHeader.Should().NotBeNullOrWhiteSpace(RateLimitRemainingHeaderMessage);
             remainingFirst = int.Parse(remainingHeader);
             remainingFirst.Should().BeGreaterThan(DrainCallCount + QuotaHeadroom,
                 "quota must have headroom for the drain budget — wait for the hourly reset");
@@ -52,11 +50,11 @@ public class RateLimitDrainTests : GitHubE2ETestBase
                 last.ShouldHaveStatusCode(HttpStatusCode.OK);
             }
 
-            var remainingLastHeader = RateLimitHeaderValue(last, RateLimitRemainingHeader);
-            remainingLastHeader.Should().NotBeNullOrWhiteSpace("counting response must carry the remaining quota header");
+            var remainingLastHeader = RateLimitHeaderValue(last, GitHubHeaders.RateLimitRemaining);
+            remainingLastHeader.Should().NotBeNullOrWhiteSpace(RateLimitRemainingHeaderMessage);
             remainingLast = int.Parse(remainingLastHeader);
 
-            var resetHeader = RateLimitHeaderValue(first, RateLimitResetHeader);
+            var resetHeader = RateLimitHeaderValue(first, GitHubHeaders.RateLimitReset);
             resetHeader.Should().NotBeNullOrWhiteSpace("counting response must carry the reset timestamp");
             resetTime = DateTimeOffset.FromUnixTimeSeconds(long.Parse(resetHeader));
 

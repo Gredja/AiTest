@@ -7,15 +7,14 @@ using FluentAssertions;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
 using System.Net;
-using Ui.Helper.BrowserHelpers;
 
-namespace Ui.Helper;
+namespace Ui.Tests.Support;
 
 public abstract class GitHubUiTestBase
 {
     private const int ViewportWidth = 1440;
     private const int ViewportHeight = 900;
-    private const int UiTimeoutMs = 15_000;
+    internal const int UiTimeoutMs = 15_000;
 
     private IPlaywright? _playwright;
     private IBrowser? _browser;
@@ -23,8 +22,6 @@ public abstract class GitHubUiTestBase
     private IPage? _page;
     private BrowserPlaywright? _browserWrapper;
 
-    // API cleanup against ui-sandbox (GITHUB_UI_PAT) by composition —
-    // GitHubUiTestBase does not inherit GitHubTestBase
     protected UiSandboxCleanupHelper Cleanup { get; } = new();
 
     protected IBrowserContext Context => _context
@@ -129,7 +126,7 @@ public abstract class GitHubUiTestBase
         return GitHubParamHelper.RepoParam(parts[0], parts[1]);
     }
 
-    protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool closed = false)
+    protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool isClosed = false)
     {
         var title = $"API setup {DataGenerator.RandomString(TestDataConstants.TitleRandomLength)}";
         var created = await Cleanup.Post<CreateIssueModelRequest, IssueModelResponse>(
@@ -140,7 +137,7 @@ public abstract class GitHubUiTestBase
         var issueNumber = created.Data!.Number;
         createdIssueNumbers.Add(issueNumber);
 
-        if (closed)
+        if (isClosed)
         {
             await Cleanup.CleanupIssueAsync(issueNumber);
         }

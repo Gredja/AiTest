@@ -1,10 +1,10 @@
 using Core.Helpers;
 using FluentAssertions;
 using AllureAdapter;
-using Ui.Helper;
+using Ui.Tests.Support;
 using static Core.Helpers.TestDataConstants;
 
-namespace Ui.Test.GitHubStream.Issues;
+namespace Ui.Tests.GitHubStream.Issues;
 
 [TestFixture]
 [AllureNUnit]
@@ -72,7 +72,7 @@ public class IssueUiTests : GitHubUiTestBase
     [Description("UI-6 Issue reopen via UI: returns to Open status")]
     public async Task IssueReopen_ViaUI_ReturnsToOpen()
     {
-        var issueNumber = await CreateIssueViaApiAsync(_createdIssueNumbers, closed: true);
+        var issueNumber = await CreateIssueViaApiAsync(_createdIssueNumbers, isClosed: true);
         await Browser.IssueDetailPage.OpenAsync(issueNumber);
 
         await Browser.IssueDetailPage.ReopenAsync();

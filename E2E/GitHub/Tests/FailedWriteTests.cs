@@ -34,7 +34,7 @@ public class FailedWriteTests : GitHubE2ETestBase
     {
         var branchName = $"audit-e2e-neg-{DataGenerator.RandomString(TitleRandomLength)}";
         await CreateBranchTrackedAsync(branchName, _baseSha, _createdBranches);
-        await WaitUntilBranchVisibleAsync(branchName, present: true);
+        await WaitUntilBranchVisibleAsync(branchName, isPresent: true);
 
         var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,

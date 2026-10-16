@@ -36,7 +36,7 @@ public class GetCommitsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
-        response.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
+        response.Data.Should().NotBeEmpty(EntryCriteriaRepoDataMessage);
         response.Data.First().ShouldHaveValidContract();
     }
 
@@ -50,7 +50,7 @@ public class GetCommitsTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(
-            commit => commit.Sha.IsGitSha() && commit.Commit.Message.Length > 0,
+            commit => commit.Sha.IsGitSha() && !string.IsNullOrEmpty(commit.Commit.Message),
             "every commit needs a 40-hex sha and a non-empty message");
     }
 

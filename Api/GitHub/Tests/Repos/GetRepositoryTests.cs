@@ -89,7 +89,7 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             RepoParam(_testUsername, GitHubEndpoints.NonExistentRepoName));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -100,7 +100,7 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -141,7 +141,7 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             RepoParam(InvalidOwnerName, _testUsername));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -152,6 +152,6 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             RepoParam(_testUsername, InvalidRepoName));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 }

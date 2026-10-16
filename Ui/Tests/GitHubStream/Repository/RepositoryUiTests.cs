@@ -1,8 +1,9 @@
 using FluentAssertions;
 using AllureAdapter;
-using Ui.Helper;
+using Core.Config;
+using Ui.Tests.Support;
 
-namespace Ui.Test.GitHubStream.Repository;
+namespace Ui.Tests.GitHubStream.Repository;
 
 [TestFixture]
 [AllureNUnit]
@@ -17,7 +18,7 @@ public class RepositoryUiTests : GitHubUiTestBase
         await Browser.RepositoryPage.OpenAsync();
 
         var branch = await Browser.RepositoryPage.GetDefaultBranchAsync();
-        branch.Should().Contain("main", "sandbox repo default branch is main");
+        branch.Should().Contain(GitHubEndpoints.DefaultBranch, "sandbox repo default branch is main");
 
         var hasReadme = await Browser.RepositoryPage.HasReadmeAsync();
         hasReadme.Should().BeTrue("repo root must list README.md");

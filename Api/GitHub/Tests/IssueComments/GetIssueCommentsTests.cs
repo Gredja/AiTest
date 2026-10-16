@@ -127,14 +127,14 @@ public class GetIssueCommentsTests : GitHubTestBase
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         issues.ShouldHaveStatusCode(HttpStatusCode.OK);
-        issues.Data.Should().NotBeEmpty("repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md");
+        issues.Data.Should().NotBeEmpty(EntryCriteriaRepoDataMessage);
         var maxIssueNumber = issues.Data!.Max(issue => issue.Number);
         var nonExistentIssueNumber = maxIssueNumber + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             [.. TestRepoParam(), .. IssueNumberParam(nonExistentIssueNumber)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -145,7 +145,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var response = await Get<List<CommentModelResponse>>(GitHubEndpoints.RepoIssueComments,
             [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName), .. IssueNumberParam(FirstIssueNumber)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]

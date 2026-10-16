@@ -29,13 +29,13 @@ public class PullRequestFlowTests : GitHubE2ETestBase
             PullParams(pullNumber));
         created.ShouldHaveStatusCode(HttpStatusCode.OK);
         created.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "freshly created PR must be open");
-        created.Data.Title.Should().Be(title, "PR must echo the requested title");
+        created.Data.Title.Should().Be(title, PullRequestEchoTitleMessage);
 
         var merged = await Put<Dictionary<string, object>, PullRequestMergeModelResponse>(
             GitHubEndpoints.RepoPullRequestMerge, new Dictionary<string, object>(), PullParams(pullNumber));
         merged.ShouldHaveStatusCode(HttpStatusCode.OK);
-        merged.Data.Should().NotBeNull("200 merge response must carry a body");
-        merged.Data!.Merged.Should().BeTrue("merge endpoint must report merged=true for a mergeable pull request");
+        merged.Data.Should().NotBeNull(MergeResponseHasBodyMessage);
+        merged.Data!.Merged.Should().BeTrue(MergeReportsMergedTrueMessage);
 
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);

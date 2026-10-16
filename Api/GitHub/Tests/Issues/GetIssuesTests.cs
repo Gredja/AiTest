@@ -16,7 +16,6 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class GetIssuesTests : GitHubTestBase
 {
-    private const string TestTitle = "Test issue for contract check";
     private static readonly TimeSpan _stateOpenConsistencyTimeout = TimeSpan.FromSeconds(10);
     private int? _createdIssueNumber;
 
@@ -31,7 +30,7 @@ public class GetIssuesTests : GitHubTestBase
         {
             var create = await Post<CreateIssueModelRequest, IssueModelResponse>(
                 GitHubEndpoints.RepoIssues,
-                new CreateIssueModelRequest { Title = TestTitle },
+                new CreateIssueModelRequest { Title = IssueContractCheckTitle },
                 TestRepoParam());
             create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdIssueNumber = create.Data!.Number;
@@ -59,7 +58,7 @@ public class GetIssuesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
-        response.Data.Should().NotBeEmpty("Setup should have guaranteed at least one issue");
+        response.Data.Should().NotBeEmpty(IssueListNotEmptyMessage);
         response.Data!.First().ShouldHaveValidContract();
     }
 
@@ -108,7 +107,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]

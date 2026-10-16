@@ -16,6 +16,5 @@ public static class DataGenerator
         return new string(characters);
     }
 
-    // Upper bound is exclusive (Random.Shared.Next semantics) — hence the name
     public static int RandomIntExclusive(int min, int max) => Random.Shared.Next(min, max);
 }

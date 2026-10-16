@@ -4,6 +4,7 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using AllureAdapter;
+using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -32,6 +33,6 @@ public class RepositoryHealthTests : GitHubE2ETestBase
         topics.ShouldHaveStatusCode(HttpStatusCode.OK);
         topics.Data!.Names.Should().OnlyContain(
             name => TopicNamePattern.IsMatch(name),
-            "topic names must be lowercase alphanumeric with hyphens");
+            TopicNameLowercaseMessage);
     }
 }

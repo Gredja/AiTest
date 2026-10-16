@@ -41,7 +41,7 @@ graphify-out/
 
 ## AI reviews (not tracked)
 .mimocode/reviews/
-
+.mimocode/tmp/
 ## MiMo Desktop pet (not tracked)
 black-white-cat/
 

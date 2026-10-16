@@ -6,7 +6,6 @@ using System.Net;
 using FluentAssertions;
 using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
-using static Core.Helpers.ParamHelper;
 using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Issues;
@@ -16,8 +15,6 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class GetIssueByIdTests : GitHubTestBase
 {
-    private const string TestTitle = "Test issue for contract check";
-
     private int? _createdIssueNumber;
 
     [OneTimeSetUp]
@@ -31,7 +28,7 @@ public class GetIssueByIdTests : GitHubTestBase
         {
             var create = await Post<CreateIssueModelRequest, IssueModelResponse>(
                 GitHubEndpoints.RepoIssues,
-                new CreateIssueModelRequest { Title = TestTitle },
+                new CreateIssueModelRequest { Title = IssueContractCheckTitle },
                 TestRepoParam());
             create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdIssueNumber = create.Data!.Number;
@@ -82,14 +79,14 @@ public class GetIssueByIdTests : GitHubTestBase
         var issues = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         issues.ShouldHaveStatusCode(HttpStatusCode.OK);
-        issues.Data.Should().NotBeEmpty("Setup should have guaranteed at least one issue");
+        issues.Data.Should().NotBeEmpty(IssueListNotEmptyMessage);
         var maxIssueNumber = issues.Data!.Max(issue => issue.Number);
         var nonExistentIssueNumber = maxIssueNumber + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(nonExistentIssueNumber)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -100,7 +97,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(0)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -111,7 +108,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(-1)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -148,9 +145,9 @@ public class GetIssueByIdTests : GitHubTestBase
     public async Task GetIssueById_InvalidSegment_ReturnsNotFound()
     {
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
-            [.. TestRepoParam(), UrlSegment("issue_number", NonNumericValue)]);
+            [.. TestRepoParam(), .. IssueNumberParam(NonNumericValue)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -161,7 +158,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(int.MaxValue)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]

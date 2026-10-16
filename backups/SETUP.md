@@ -269,7 +269,6 @@ Gredja/
 ├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, normalize-eol)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
-├── metrics.md                    # Метрики AI-использования (tests/time/cost)
 ├── documentation/                # Документация
 │   ├── FILE_STRUCTURE.md         # Точное дерево всех файлов проекта
 │   ├── GeneralPlan.md            # Постоянный план хотелок пользователя (не удаляется)
@@ -426,7 +425,7 @@ git checkout -b features/add-user-tests
 **Workflow:**
 - План → одобение → изменения → отчёт
 - Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
-- Параллелизм тестов: Api/E2E — **1 поток** (`.runsettings` `<NUnit><NumberOfTestWorkers>`, авто-применяется через `RunSettingsFilePath` в `Directory.Build.props`; это supported-режим Rules/test-practices.md — 8 даёт гонки на shared guarantee data, точечно: `dotnet test` с `NUnit.NumberOfTestWorkers=N` в adapter-секции после двойного тире); Ui — **последовательно** (`[assembly: Parallelizable(None)]` в `Ui/AssemblyInfo.cs` — фикстуры делят один storageState)
+- Параллелизм тестов: Api/E2E — **1 поток** (`.runsettings` `<NUnit><NumberOfTestWorkers>`, авто-применяется через `RunSettingsFilePath` в `Directory.Build.props`; это supported-режим Rules/test-practices.md — 8 даёт гонки на shared guarantee data, точечно: `dotnet test` с `NUnit.NumberOfTestWorkers=N` в adapter-секции после двойного тире); Ui — **последовательно** (`[assembly: Parallelizable(None)]` в `Ui/AssemblyInfo.cs` — фикстуры делят один storageState). **Two-pass:** `/test` и nightly гоняют `Scripts/test-parallel-rerun.ps1` — pass 1 в 8 воркеров, упавшие тесты перегоняются в 1 потоке; вердикт по pass 2 (flaky лечится, дрейф остаётся красным)
 - Перед коммитом: `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` должны пройти (полный прогон — `/test`)
 - SDK пин: `global.json` → `10.0.401`, `rollForward: latestFeature` — сборка на другой машине берёт ближайший совместимый SDK, а не случайный
 - Коммиты только по запросу

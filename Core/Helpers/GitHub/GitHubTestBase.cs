@@ -20,8 +20,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected static readonly Regex TopicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
 
     private const string ScratchFileName = "audit-scratch.txt";
-    private const string FileMode644 = "100644";
-    private const string BlobType = "blob";
+    protected const string FileMode644 = "100644";
+    protected const string BlobType = "blob";
     private const string ScratchBranchPrefix = "audit-";
 
     protected static List<RequestDictionaryModel> TestRepoParam()
@@ -56,13 +56,24 @@ public abstract class GitHubTestBase : GitHubRequestHelper
 
     protected Task CleanupInvitationAsync(long? invitationId) => _cleanup.CleanupInvitationAsync(invitationId);
 
+    protected async Task NormalizePendingCollaboratorInvitationsAsync()
+    {
+        var pending = await Get<List<InvitationModelResponse>>(GitHubEndpoints.RepoInvitations, TestRepoParam());
+        pending.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        foreach (var stale in pending.Data!
+                     .Where(item => item.Invitee.Login == TestConfig.GitHubCollaboratorUser))
+        {
+            await CleanupInvitationAsync(stale.Id);
+        }
+    }
+
     protected Task CleanupReleaseAsync(long? releaseId) => _cleanup.CleanupReleaseAsync(releaseId);
 
     protected Task CleanupGitRefAsync(string refPath) => _cleanup.CleanupGitRefAsync(refPath);
 
-    // Scratch PR pipeline: changed blob → tree → commit → branch → PR. A same-tree commit gives
-    // "No commits between" (OB §21) and an empty files list for the dynamic-max PR fixtures —
-    // the new file guarantees both divergence and ≥1 changed file.
+    // A same-tree commit gives "No commits between" (OB §21) and an empty files list for the
+    // dynamic-max PR fixtures — the scratch file guarantees both divergence and ≥1 changed file.
     protected async Task<(int Number, string HeadBranch, string BaseBranch)> CreateScratchPullRequestAsync(string title)
     {
         var headBranch = $"{ScratchBranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";

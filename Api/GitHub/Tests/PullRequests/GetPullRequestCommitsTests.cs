@@ -23,7 +23,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
         pulls.ShouldHaveStatusCode(HttpStatusCode.OK);
-        pulls.Data.Should().NotBeEmpty("repo must keep at least one PR — Entry Criteria, documentation/GitHubTestingStructure.md");
+        pulls.Data.Should().NotBeEmpty(TestDataConstants.EntryCriteriaPullRequestMessage);
 
         _existingPullNumber = pulls.Data!.Max(pullRequest => pullRequest.Number);
         _nonExistentPullNumber = _existingPullNumber + GitHubEndpoints.NonExistentIdOffset;

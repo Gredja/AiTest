@@ -20,14 +20,12 @@ internal sealed class IssueDetailPage(IPage page)
     internal async Task<bool> HasTitleAsync(string title) =>
         await _issueHeadings.Filter(new() { HasTextString = title }).CountAsync() > 0;
 
-    // Status badge near the top: "Open" (img Issue + text) / "Closed" — verified 2026-10-13
     internal async Task<bool> HasClosedStatusAsync() =>
         await _closedStatusText.CountAsync() > 0;
 
     internal async Task<bool> HasOpenStatusAsync() =>
         await _openStatusText.CountAsync() > 0;
 
-    // Buttons verified via DOM on issue #1 — 2026-10-13
     // State flips after a network round-trip; the swap to the opposite button is the
     // unambiguous post-condition (the status text may already be on the page)
     internal async Task CloseAsync()

@@ -7,6 +7,7 @@ using FluentAssertions;
 using RestSharp;
 using AllureAdapter;
 using static Core.Helpers.ParamHelper;
+using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Posts;
@@ -20,7 +21,6 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     private const int TestUserId = 1;
     private const string IgnorePutNoValidationBug = "JsonPlaceholder mock: PUT accepts body missing required fields — no validation — Bug: documentation/Bugs/JsonPlaceholder/JP-005-put-post-accepts-missing-required-fields.md";
     private const string IgnorePatchAnyIdBug = "JsonPlaceholder mock: PATCH returns 200 for any ID, including invalid and non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-006-patch-post-returns-200-for-any-id.md";
-    private const string MalformedJson = "{\"title\":";
     private static readonly PostModelRequest _putBody = new()
     {
         UserId = TestUserId,
@@ -182,7 +182,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.13 PUT without title returns 400")]
     public async Task UpdatePost_Put_MissingTitle_ReturnsBadRequest()
     {
-        var body = new Dictionary<string, object> { [JsonFields.Body] = "Body", [JsonFields.UserId] = TestUserId };
+        var body = new Dictionary<string, object> { [JsonFields.Body] = SampleBody, [JsonFields.UserId] = TestUserId };
         var response = await Put<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, body,
             IdParam(TestPostId));
 
@@ -195,7 +195,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.14 PUT without body returns 400")]
     public async Task UpdatePost_Put_MissingBody_ReturnsBadRequest()
     {
-        var body = new Dictionary<string, object> { [JsonFields.Title] = "Title", [JsonFields.UserId] = TestUserId };
+        var body = new Dictionary<string, object> { [JsonFields.Title] = SampleTitle, [JsonFields.UserId] = TestUserId };
         var response = await Put<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, body,
             IdParam(TestPostId));
 
@@ -208,7 +208,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.15 PUT without userId returns 400")]
     public async Task UpdatePost_Put_MissingUserId_ReturnsBadRequest()
     {
-        var body = new Dictionary<string, object> { [JsonFields.Title] = "Title", [JsonFields.Body] = "Body" };
+        var body = new Dictionary<string, object> { [JsonFields.Title] = SampleTitle, [JsonFields.Body] = SampleBody };
         var response = await Put<Dictionary<string, object>, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, body,
             IdParam(TestPostId));
 

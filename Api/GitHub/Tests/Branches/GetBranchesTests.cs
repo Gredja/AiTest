@@ -133,7 +133,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
     [Test]
@@ -144,7 +144,7 @@ public class GetBranchesTests : GitHubTestBase
         var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.NonExistentBranchName)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.BranchNotFound);
     }
 
     [Test]

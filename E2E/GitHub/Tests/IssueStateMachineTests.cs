@@ -30,7 +30,7 @@ public class IssueStateMachineTests : GitHubE2ETestBase
             _createdIssueNumbers);
         var issueNumber = created.Number;
 
-        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateOpen, present: true);
+        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateOpen, isPresent: true);
 
         var closedList = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateClosed)]);
@@ -40,13 +40,13 @@ public class IssueStateMachineTests : GitHubE2ETestBase
 
         await PatchIssueStateAsync(issueNumber, GitHubEndpoints.StateClosed);
         await AssertIssueStateAsync(issueNumber, GitHubEndpoints.StateClosed, "PATCH state=closed must persist");
-        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateOpen, present: false);
-        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateClosed, present: true);
+        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateOpen, isPresent: false);
+        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateClosed, isPresent: true);
 
         await PatchIssueStateAsync(issueNumber, GitHubEndpoints.StateOpen);
         await AssertIssueStateAsync(issueNumber, GitHubEndpoints.StateOpen, "reopen must persist — OB §19");
-        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateOpen, present: true);
-        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateClosed, present: false);
+        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateOpen, isPresent: true);
+        await WaitUntilIssueInStateListAsync(issueNumber, GitHubEndpoints.StateClosed, isPresent: false);
     }
 
     [OneTimeTearDown]

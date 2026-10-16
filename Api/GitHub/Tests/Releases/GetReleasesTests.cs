@@ -53,7 +53,7 @@ public class GetReleasesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().OnlyContain(
-            release => release.TagName.Length > 0 && release.Id > 0,
+            release => !string.IsNullOrEmpty(release.TagName) && release.Id > 0,
             "every release needs a non-empty tag_name and positive id");
     }
 

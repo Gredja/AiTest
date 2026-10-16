@@ -8,7 +8,6 @@
 Gredja/
 ├── README.md                     # project overview (rendered by GitHub as the homepage)
 ├── AGENTS.md
-├── metrics.md                      # AI usage tracking (Gap 1)
 ├── Gredja.slnx
 ├── Directory.Build.props          # File.TestLogger config (VSTestLogger, temp workspace dir)
 ├── .runsettings                  # VS Test Explorer: parallel sources → one report per run (CLI ignores it)
@@ -58,7 +57,8 @@ Gredja/
 │   ├── allure-report.ps1
 │   ├── install-playwright.ps1    # playwright install chromium (+ deps)
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
-│   └── test-coverage.ps1
+│   ├── test-coverage.ps1
+│   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
 └── backups/
     ├── SETUP.md
     └── mimocode-project.jsonc
@@ -87,7 +87,7 @@ Core/
 │   ├── GitHub/
 │   │   ├── GitHubCleanupHelper.cs # shared cleanup core (Api/E2E delegation + Ui composition)
 │   │   ├── GitHubParamHelper.cs
-│   │   ├── GitHubTestBase.cs
+│   │   ├── GitHubTestBase.cs          # база API/E2E-тестов — исключение R3-а: остаётся в Helpers
 │   │   └── UiSandboxCleanupHelper.cs # UI sandbox (gredjapl/ui-sandbox) via GITHUB_UI_PAT
 │   ├── Http/
 │   │   ├── GitHubRequestHelper.cs
@@ -328,22 +328,19 @@ Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
-├── Helper/                         # инфраструктура (без page-objects)
-│   ├── GitHubUiTestBase.cs       # browser fixture + UiSandboxCleanupHelper (GITHUB_UI_PAT)
-│   ├── BrowserHelpers/
-│   │   └── BrowserPlaywright.cs   # page-object wrapper: pages exposed as properties
-│   └── TabCountParser.cs          # tab counter text → int ("Open (0)" / "Open 0")
 ├── Pages/                          # pages + forms — единственный дом локаторов
 │   ├── Common/                     # cross-area pages (header, nav): LoginPage, HeaderPage
 │   └── GitHubStream/
 │       ├── Issues/                 # IssueCreatePage, IssueDetailPage, CommentForm
 │       └── Repository/             # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
 ├── Data/                         # static test files (upload payloads)
-└── Test/GitHubStream/
-    ├── Issues/                   # IssuesUiTests, IssueUiTests
-    ├── Login/                    # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
-    ├── Pulls/                    # PullsUiTests
-    └── Repository/               # RepositoryUiTests
+└── Tests/
+    ├── Support/                    # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser
+    └── GitHubStream/
+        ├── Issues/                 # IssuesUiTests, IssueUiTests
+        ├── Login/                  # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
+        ├── Pulls/                  # PullsUiTests
+        └── Repository/             # RepositoryUiTests
 ```
 
 ## Rules/
@@ -393,6 +390,7 @@ documentation/
 │   ├── 02-data-method.md
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md
+│   ├── metrics.md                    # AI usage tracking (Gap 1)
 │   └── maturity-gap-analysis.md
 ├── README.md
 └── token-budget.md

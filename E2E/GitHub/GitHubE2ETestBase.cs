@@ -40,17 +40,17 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
         return created.Data!;
     }
 
-    protected async Task WaitUntilIssueInStateListAsync(int issueNumber, string state, bool present)
+    protected async Task WaitUntilIssueInStateListAsync(int issueNumber, string state, bool isPresent)
     {
         var result = await WaitHelper.WaitUntilAsync(
             () => Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
                 [.. TestRepoParam(), .. StateParam(state)]),
             response => response.StatusCode == HttpStatusCode.OK
-                && (present
+                && (isPresent
                     ? response.Data!.Any(issue => issue.Number == issueNumber)
                     : response.Data!.All(issue => issue.Number != issueNumber)));
 
-        var verb = present ? "appear in" : "leave";
+        var verb = isPresent ? "appear in" : "leave";
         result.IsSuccess.Should().BeTrue(
             $"issue #{issueNumber} must {verb} ?state={state}; elapsed {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }
@@ -74,16 +74,16 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
         issue.Data!.State.Should().Be(expectedState, because);
     }
 
-    protected async Task WaitUntilBranchVisibleAsync(string branchName, bool present)
+    protected async Task WaitUntilBranchVisibleAsync(string branchName, bool isPresent)
     {
         var result = await WaitHelper.WaitUntilAsync(
             () => Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches, TestRepoParam()),
             response => response.StatusCode == HttpStatusCode.OK
-                && (present
+                && (isPresent
                     ? response.Data!.Any(item => item.Name == branchName)
                     : response.Data!.All(item => item.Name != branchName)));
 
-        var verb = present ? "appear in" : "leave";
+        var verb = isPresent ? "appear in" : "leave";
         result.IsSuccess.Should().BeTrue(
             $"branch {branchName} must {verb} the branches list; elapsed {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
     }

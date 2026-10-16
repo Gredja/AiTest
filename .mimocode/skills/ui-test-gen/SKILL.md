@@ -60,13 +60,13 @@ If any is missing — ask before generating.
 | What | Path pattern |
 |---|---|
 | UI Observable Behaviour | `documentation/{{service_name}}UiObservableBehaviour.md` |
-| Base fixture (browser/context/page) | `Ui/Helper/{{service_name}}UiTestBase.cs` |
-| Browser wrapper (pages as properties) | `Ui/Helper/BrowserHelpers/BrowserPlaywright.cs` |
+| Base fixture (browser/context/page) | `Ui/Tests/Support/{{service_name}}UiTestBase.cs` |
+| Browser wrapper (pages as properties) | `Ui/Tests/Support/BrowserPlaywright.cs` |
 | Page-objects | `Ui/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs` |
 | Shared pages (header, nav) | `Ui/Pages/Common/` |
-| Tests | `Ui/Test/GitHubStream/{{area_name}}/{{area_name}}{{flow_name}}Tests.cs` |
+| Tests | `Ui/Tests/GitHubStream/{{area_name}}/{{area_name}}{{flow_name}}Tests.cs` |
 | Test data files | `Ui/Data/` |
-| Namespace (tests) | `Ui.Test.GitHubStream.{{area_name}}` |
+| Namespace (tests) | `Ui.Tests.GitHubStream.{{area_name}}` |
 | Namespace (page-objects) | `Ui.Pages.GitHubStream.{{area_name}}` |
 | Service category (class) | `[Category("GitHubUi")]` |
 | Description reference | UI-OB section number, e.g. `"UI-1 Ordinary login…"` |
@@ -118,7 +118,7 @@ internal class {{area_name}}Page
 ### Step 4: Create the test class
 
 ```csharp
-namespace Ui.Test.GitHubStream.{{area_name}};
+namespace Ui.Tests.GitHubStream.{{area_name}};
 
 [TestFixture]
 [AllureNUnit]
