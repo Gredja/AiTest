@@ -8,7 +8,6 @@
 Gredja/
 ├── README.md                     # project overview (rendered by GitHub as the homepage)
 ├── AGENTS.md
-├── metrics.md                      # AI usage tracking (Gap 1)
 ├── Gredja.slnx
 ├── Directory.Build.props          # File.TestLogger config (VSTestLogger, temp workspace dir)
 ├── .runsettings                  # VS Test Explorer: parallel sources → one report per run (CLI ignores it)
@@ -88,7 +87,7 @@ Core/
 │   ├── GitHub/
 │   │   ├── GitHubCleanupHelper.cs # shared cleanup core (Api/E2E delegation + Ui composition)
 │   │   ├── GitHubParamHelper.cs
-│   │   ├── GitHubTestBase.cs
+│   │   ├── GitHubTestBase.cs          # база API/E2E-тестов — исключение R3-а: остаётся в Helpers
 │   │   └── UiSandboxCleanupHelper.cs # UI sandbox (gredjapl/ui-sandbox) via GITHUB_UI_PAT
 │   ├── Http/
 │   │   ├── GitHubRequestHelper.cs
@@ -391,6 +390,7 @@ documentation/
 │   ├── 02-data-method.md
 │   ├── model-selection-note.md
 │   ├── prompt-or-skill-template-api-test-gen.md
+│   ├── metrics.md                    # AI usage tracking (Gap 1)
 │   └── maturity-gap-analysis.md
 ├── README.md
 └── token-budget.md

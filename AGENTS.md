@@ -14,7 +14,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - `Core/Logging/` — логирование действий (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) и сырые результаты тестов (`test-results-*.log`). `TestResults/` содержит **только отчёты**, сырые артефакты прогона — во временной папке
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (вызывается из NUnit-teardown `TestReportSetup`), age-based очистка артефактов старше 7 дней
 - `Rules/` — полные правила (здесь — краткая сводка)
-- `documentation/` — документация проекта
+- `documentation/` — документация проекта; `documentation/Katas/` — обучение, не трогать
 - `documentation/*ObservableBehaviour.md` — наблюдаемое поведение API (актуальные состояния, типы полей, негативные кейсы). **Читать при генерации и review тестов.**
 - `.mimocode/skills/` — скиллы для AI-агентов
 - `.github/workflows/` — CI: `pr-checks.yml` (required PR-gate: format всегда, HealthCheck для same-repo веток) и `nightly-tests.yml` (ночной informational-прогон); секреты — только в настройках репо, live-сьют никогда не required-check (`Rules/git.md` → CI)
@@ -22,10 +22,11 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 ## Rules
 
 ### Workflow
-Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию (включая удаления gitignored-файлов — в том же ходу, даже без коммита). Выполненные планы (`.mimocode/plans/`) — удалять сразу после реализации. Правило, выраженное как IDE0xxx → `.editorconfig` в том же изменении; новая формулировка правила сверяется с существующими `Rules/*.md` на противоречие.
+Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию И tracked `backups/` (включая удаления gitignored-файлов — в том же ходу, даже без коммита). Выполненные планы (`.mimocode/plans/`) — удалять сразу после реализации. Правило, выраженное как IDE0xxx → `.editorconfig` в том же изменении; новая формулировка правила сверяется с существующими `Rules/*.md` на противоречие.
 
 ### Code
 - Naming: PascalCase (classes, methods, properties, constants), camelCase (locals, params), `_camelCase` (private fields)
+- Перед созданием любого файла — решать его место по здравому смыслу и планам на будущее (`Rules/code.md` → File Layout)
 - Lambda parameters: readable singular noun (`product => product.Id`), не однобуквенные (`p =>`)
 - Без аббревиатур (`response`, не `resp`). Boolean: `Is`, `Has`, `Can`, `Should`
 - File-scoped namespaces, one class per file, use `var` wherever possible (explicit type only when `var` is not applicable, e.g. `null`, tuples)

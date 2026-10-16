@@ -23,3 +23,13 @@ A comment that explains WHAT the code does means the code needs refactoring, not
 - TODO/FIXME without context (allowed during development, must have context)
 - AAA blocks (Arrange/Act/Assert) — structure speaks for itself
 - Section dividers (`// ====`) — noise
+- Provenance notes next to locators (`verified 2026-…`) — the Observable Behaviour owns that
+
+## Decision procedure (before keeping a comment)
+
+1. Delete it — did the code become unclear or dangerous? No → delete.
+2. Fixable by code (reference a constant, better name)? Fix the code, delete the comment.
+3. Still an undeniable WHY (concrete bug workaround, hidden constraint, danger) that code
+   cannot express? Keep it, as short as possible.
+
+NEVER write excess comments — zero is the default for every line of new code.

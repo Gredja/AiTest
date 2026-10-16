@@ -18,6 +18,10 @@
 
 ## File Layout
 
+- **Before creating ANY file — decide its place first**: where it belongs by common sense AND
+  future plans for the codebase — never drop it into the "closest existing folder" by inertia;
+  name-vs-content must match, and the placement must still make sense as the project grows
+  (source, docs, scripts, configs alike)
 - `using` directives at the top, outside namespace
 - One blank line between `using` block and namespace
 - One blank line between members

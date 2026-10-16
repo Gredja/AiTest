@@ -65,6 +65,8 @@ PRs from `features/...` into `main` — only after review and approval.
 
 - The repo root holds ONLY project artifacts (configs, `AGENTS.md`, `README.md`, solution).
   Tool outputs, caches, logs, and foreign projects MUST NOT live in the root.
+- `documentation/Katas/` is training material — never modify, move, refactor or include it
+  in audits; read-only reference (2026-10-16)
 - Generated tool output goes to a gitignored folder or `%TEMP%` — never hand-placed in the tree.
 - When introducing a tool that writes files, add its ignore entries in the SAME commit.
 - After scripted/bulk edits run `git add -A` and verify ZERO line-ending warnings —

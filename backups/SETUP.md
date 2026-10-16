@@ -269,7 +269,6 @@ Gredja/
 ├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, normalize-eol)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
-├── metrics.md                    # Метрики AI-использования (tests/time/cost)
 ├── documentation/                # Документация
 │   ├── FILE_STRUCTURE.md         # Точное дерево всех файлов проекта
 │   ├── GeneralPlan.md            # Постоянный план хотелок пользователя (не удаляется)
