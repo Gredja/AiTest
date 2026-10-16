@@ -27,7 +27,7 @@ Test application for learning AI-Native SDLC. API, E2E and UI test automation pr
 
 - `Api/` — read-only API tests + single-endpoint write tests (NUnit + RestSharp)
 - `E2E/` — scenario chain tests: multi-step write flows only (NUnit + RestSharp)
-- `Ui/` — UI tests (Playwright .NET + Chromium): page-objects, storageState auth, write via UI → cleanup via API
+- `Ui/` — UI tests (Playwright .NET + Chromium): `Pages/` (pages+forms — the only home of locators), `Tests/` + `Tests/Support/` (infra), storageState auth, write via UI → cleanup via API
 - `Core/Models/` — response/request models
 - `Core/Config/` — endpoint constants
 - `Core/Helpers/` — Http/, Assertions/, Params/, Data/, GitHub/ (request infra, asserts, params, data generators)
@@ -44,6 +44,7 @@ dotnet test --filter LoginSignInTests    # refresh UI storageState after it expi
 dotnet test --filter Category=HealthCheck
 ./Scripts/install-playwright.ps1  # one-time: install Chromium for UI tests
 ./Scripts/test-coverage.ps1  # run tests + coverage report
+./Scripts/test-parallel-rerun.ps1  # two-pass: 8 workers, failures rerun sequentially in 1
 ```
 
 ## Documentation

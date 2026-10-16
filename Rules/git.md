@@ -16,6 +16,9 @@
 
 ## Commits
 
+- **Always commit through the `/commit` skill** — hand-rolled `git add`/`git commit` is
+  forbidden (hard rule, 2026-10-16): the skill enforces the format + HealthCheck gates,
+  the all-rules review, the backups/FILE_STRUCTURE sync and `Scripts/normalize-eol.ps1`
 - Only on user request
 - English language
 - Format: **action + object** (e.g. "Add git rules", "Fix product tests")

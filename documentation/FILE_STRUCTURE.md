@@ -76,6 +76,7 @@ Core/
 ├── Config/
 │   ├── GitHubEndpoints.cs
 │   ├── GitHubErrors.cs            # documented error message constants (verified vs live API)
+│   ├── GitHubHeaders.cs            # X-RateLimit-* header names (shared Api/E2E)
 │   ├── JsonPlaceholderEndpoints.cs
 │   └── TestConfig.cs
 ├── Helpers/
@@ -149,8 +150,10 @@ Core/
 │   │   │   ├── CreateGitTreeModelRequest.cs
 │   │   │   ├── CreateIssueModelRequest.cs
 │   │   │   ├── CreatePullRequestModelRequest.cs
+│   │   │   ├── CreateReleaseModelRequest.cs
 │   │   │   ├── UpdateIssueModelRequest.cs
-│   │   │   └── UpdatePullRequestModelRequest.cs
+│   │   │   ├── UpdatePullRequestModelRequest.cs
+│   │   │   └── UpdateStateTitleModelRequest.cs   # общий базовый PATCH State+Title
 │   │   ├── Responses/
 │   │   │   ├── BranchModelResponse.cs
 │   │   │   ├── CollaboratorModelResponse.cs
@@ -170,6 +173,7 @@ Core/
 │   │   │   ├── RateLimitModelResponse.cs
 │   │   │   ├── ReleaseModelResponse.cs
 │   │   │   ├── RepositoryModelResponse.cs
+│   │   │   ├── SearchModelResponse.cs
 │   │   │   ├── TagModelResponse.cs
 │   │   │   ├── TopicsModelResponse.cs
 │   │   │   └── UserModelResponse.cs
@@ -180,6 +184,7 @@ Core/
 │   │   ├── GitCommitTree.cs
 │   │   ├── GitRefObject.cs
 │   │   ├── GitTreeEntry.cs
+│   │   ├── IssuePullRequest.cs
 │   │   ├── JsonFields.cs
 │   │   ├── Label.cs
 │   │   ├── PullRequestBranch.cs

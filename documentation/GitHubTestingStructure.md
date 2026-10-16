@@ -1,7 +1,7 @@
 # GitHub Testing Structure
 
 **Project:** Gredja (.NET 10.0)
-**Date:** 2026-10-14
+**Date:** 2026-10-16
 
 ---
 
@@ -20,8 +20,13 @@
 | 9 | **Commits & Releases** | GET /commits, /releases — status, contract, fields, negatives | Done (D8–D9) |
 | 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
 | 11 | **GitHub UI (Playwright)** | Web UI: ordinary login / sign-out, auth state, repo landing, code view, 404, issues & PRs lists, issue create/close/reopen/edit + comments — page-objects, storageState auth, write via UI → cleanup via API | Done (14 tests, `Ui/`) |
+| 12 | **Collaborators & invitations** | GET/PUT /collaborators, /collaborators/{username}/permission, GET/DELETE /invitations (OB §28–28d) | Done (14 tests) |
+| 13 | **Authenticated user** | GET /user (OB §5a) — status, contract, login match, 401s | Done (5 tests) |
+| 14 | **Release detail** | GET /releases/latest, /releases/tags/{tag} (OB §15c–15d) + fixture infra §15e | Done (4 tests) |
+| 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (5 tests) |
+| 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (18 tests) |
 
-**Total:** ~210 read-only tests across 20 endpoint groups (**Phase 1 complete**: 23 GET-роута покрыты + GET /repos = no such route, N/A) + 68 single-write tests (Phase 2: §17–20 issues/comments, §21–23 PR create/patch/merge, §24 DELETE-not-supported, §25–26 git refs); scratch-PR pipeline = blob→tree→commit→branch→PR (infra OB §27); E2E scenarios E2E-1–E2E-9 complete (§6); UI suite 14 tests (6 read-only + 6 issue write + login/logout) — remaining work: CI/CD research — tracked in the permanent backlog [GeneralPlan.md](GeneralPlan.md) → "Research: is CI/CD needed for this project?".
+**Total:** 376 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups; плюс 9 E2E-цепочек и 14 UI). CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Остаток плана — расширение UI (+30): `.mimocode/plans/github-test-expansion.md`.
 
 ## 2. Out of Scope
 
