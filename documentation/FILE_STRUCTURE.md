@@ -328,16 +328,16 @@ Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
-├── Helper/
+├── Helper/                         # инфраструктура (без page-objects)
 │   ├── GitHubUiTestBase.cs       # browser fixture + UiSandboxCleanupHelper (GITHUB_UI_PAT)
 │   ├── BrowserHelpers/
 │   │   └── BrowserPlaywright.cs   # page-object wrapper: pages exposed as properties
-│   ├── TabCountParser.cs          # tab counter text → int ("Open (0)" / "Open 0")
-│   └── UiHelper/
-│       ├── CommonPages/          # cross-area pages (header, nav): LoginPage, HeaderPage
-│       └── GitHubStream/
-│           ├── Issues/           # IssueCreatePage, IssueDetailPage, CommentForm
-│           └── Repository/       # RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
+│   └── TabCountParser.cs          # tab counter text → int ("Open (0)" / "Open 0")
+├── Pages/                          # pages + forms — единственный дом локаторов
+│   ├── Common/                     # cross-area pages (header, nav): LoginPage, HeaderPage
+│   └── GitHubStream/
+│       ├── Issues/                 # IssueCreatePage, IssueDetailPage, CommentForm
+│       └── Repository/             # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
 ├── Data/                         # static test files (upload payloads)
 └── Test/GitHubStream/
     ├── Issues/                   # IssuesUiTests, IssueUiTests

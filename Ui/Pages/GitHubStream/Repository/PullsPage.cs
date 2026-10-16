@@ -1,18 +1,17 @@
 using Core.Config;
 using Microsoft.Playwright;
+using Ui.Helper;
 
-namespace Ui.Helper.UiHelper.GitHubStream.Repository;
+namespace Ui.Pages.GitHubStream.Repository;
 
-internal sealed class PullsPage
+internal sealed class PullsPage(IPage page)
 {
-    private readonly IPage _page;
-
-    internal PullsPage(IPage page) => _page = page;
+    private readonly IPage _page = page;
 
     internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pulls");
 
     internal async Task<bool> HasEmptyStateAsync() =>
-        await _page.GetByRole(AriaRole.Heading, new() { Name = "No pull requests matched your search" }).CountAsync() > 0;
+        await _emptyStateHeading.CountAsync() > 0;
 
     internal async Task<int> GetOpenCountAsync() => await GetTabCountAsync("Open");
 
@@ -20,10 +19,11 @@ internal sealed class PullsPage
 
     private async Task<int> GetTabCountAsync(string tabName)
     {
-        var text = await _page.GetByRole(AriaRole.Link)
-            .Filter(new() { HasTextString = tabName })
-            .First.TextContentAsync();
+        var text = await _tabLinks.Filter(new() { HasTextString = tabName }).First.TextContentAsync();
 
         return TabCountParser.Parse(text);
     }
+
+    private readonly ILocator _emptyStateHeading = page.GetByRole(AriaRole.Heading, new() { Name = "No pull requests matched your search" });
+    private readonly ILocator _tabLinks = page.GetByRole(AriaRole.Link);
 }

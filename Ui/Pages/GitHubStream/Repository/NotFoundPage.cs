@@ -2,16 +2,14 @@ using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
 
-namespace Ui.Helper.UiHelper.GitHubStream.Repository;
+namespace Ui.Pages.GitHubStream.Repository;
 
-internal sealed class NotFoundPage
+internal sealed class NotFoundPage(IPage page)
 {
     // matches the fixture's action timeout (GitHubUiTestBase.UiTimeoutMs)
     private static readonly TimeSpan _messageTimeout = TimeSpan.FromSeconds(15);
 
-    private readonly IPage _page;
-
-    internal NotFoundPage(IPage page) => _page = page;
+    private readonly IPage _page = page;
 
     internal async Task OpenAsync() =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/gredjapl/ui-sandbox-nonexistent-xyz404");
@@ -22,11 +20,13 @@ internal sealed class NotFoundPage
         await WaitHelper.WaitUntilAsync(
             async () =>
             {
-                var count = await _page.GetByRole(AriaRole.Img,
-                    new() { Name = "404 “This is not the web page you are looking for”" }).CountAsync();
+                var count = await _notFoundImage.CountAsync();
 
                 return count > 0;
             },
             hasMessage => hasMessage,
             _messageTimeout);
+
+    private readonly ILocator _notFoundImage = page.GetByRole(AriaRole.Img,
+        new() { Name = "404 “This is not the web page you are looking for”" });
 }
