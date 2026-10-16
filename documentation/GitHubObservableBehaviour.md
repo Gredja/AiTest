@@ -603,13 +603,39 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 ---
 
+## 26a. GET /repos/{owner}/{repo}/git/ref/{ref}
+
+- Response status is 200 OK for an existing ref; body is the §25/§26 ref shape: `ref` (string),
+  `object.sha` (40 hex), `object.type` (string: "commit") (probed 2026-10-16)
+- The `ref` path segment uses the short form without the `refs/` prefix (`heads/main`) (probed 2026-10-16)
+
+**Negative (probed 2026-10-16):**
+- Non-existent ref → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Non-existent repo → 404, body has `message` (string: "Not Found")
+
+---
+
+## 26b. POST /repos/{owner}/{repo}/git/trees
+
+- Infrastructure endpoint (the scratch pipeline builds trees from it): body `base_tree`
+  (40-hex sha) + `tree` (array of `{path, mode, type, sha}`) → 201 Created, body has `sha`
+  (40 hex) (probed 2026-10-16)
+
+**Negative (probed 2026-10-16):**
+- Non-existent `base_tree` sha → 422
+- Entry `sha` that does not exist → 422
+- Empty `tree` array → 422
+
+---
+
 ## 27. POST /repos/{owner}/{repo}/git/commits + GET /repos/{owner}/{repo}/git/commits/{commit_sha}
 
-**Infrastructure endpoints** (used by §21–23 test fixtures to build a diverged head branch — a branch pointing at the base sha gets "No commits between" from §21). No dedicated tests — outside the plan's endpoint list.
+**Infrastructure endpoints** (used by §21–23 test fixtures to build a diverged head branch — a branch pointing at the base sha gets "No commits between" from §21; covered by dedicated negative tests since 2026-10-16).
 
 - POST body: `message` (string), `tree` (tree sha), `parents` (array of commit shas) → 201 Created, body has `sha` (40 hex)
 - GET returns the commit with `tree.sha` (needed as POST's `tree` argument)
 - Invalid parent sha → 422
+- Non-existent commit sha → 404, body has `message` (string: "Not Found"), `documentation_url` (url) (probed 2026-10-16)
 
 ---
 
@@ -637,7 +663,9 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Content-Type is application/json
 
 **Negative:**
-- Non-existent user → 404, body has `message` (string: "Not Found") (verified 2026-10-09)
+- Non-existent user → 404, body has `message` (string: `"{username} is not a user"` —
+  endpoint-specific, NOT "Not Found"; re-verified 2026-10-16 — earlier OB claim of
+  "Not Found" did not reproduce), `documentation_url` (url)
 - Non-existent repo → 404
 
 ---

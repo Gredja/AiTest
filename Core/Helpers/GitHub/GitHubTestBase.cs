@@ -88,13 +88,23 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         }
     }
 
-    private async Task<string> ResolveDefaultBranchShaAsync()
+    protected async Task<string> ResolveDefaultBranchShaAsync()
     {
         var mainBranch = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. GitHubParamHelper.BranchNameParam(GitHubEndpoints.DefaultBranch)]);
         mainBranch.ShouldHaveStatusCode(HttpStatusCode.OK);
 
         return mainBranch.Data!.Commit.Sha;
+    }
+
+    protected async Task<string> ResolveDefaultTreeShaAsync()
+    {
+        var commitSha = await ResolveDefaultBranchShaAsync();
+        var commit = await Get<GitCommitModelResponse>(GitHubEndpoints.RepoGitCommitsById,
+            [.. TestRepoParam(), .. GitHubParamHelper.GitCommitParam(commitSha)]);
+        commit.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        return commit.Data!.Tree.Sha;
     }
 
     private async Task<string> CreateScratchCommitAsync(string headBranch, string mainSha)
