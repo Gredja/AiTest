@@ -60,8 +60,8 @@ If any is missing — ask before generating.
 | What | Path pattern |
 |---|---|
 | UI Observable Behaviour | `documentation/{{service_name}}UiObservableBehaviour.md` |
-| Base fixture (browser/context/page) | `Ui/Helper/{{service_name}}UiTestBase.cs` |
-| Browser wrapper (pages as properties) | `Ui/Helper/BrowserHelpers/BrowserPlaywright.cs` |
+| Base fixture (browser/context/page) | `Ui/Tests/Support/{{service_name}}UiTestBase.cs` |
+| Browser wrapper (pages as properties) | `Ui/Tests/Support/BrowserPlaywright.cs` |
 | Page-objects | `Ui/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs` |
 | Shared pages (header, nav) | `Ui/Pages/Common/` |
 | Tests | `Ui/Tests/GitHubStream/{{area_name}}/{{area_name}}{{flow_name}}Tests.cs` |

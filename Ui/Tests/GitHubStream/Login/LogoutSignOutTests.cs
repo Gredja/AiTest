@@ -1,7 +1,7 @@
 using AllureAdapter;
 using Core.Config;
 using FluentAssertions;
-using Ui.Helper;
+using Ui.Tests.Support;
 
 namespace Ui.Tests.GitHubStream.Login;
 

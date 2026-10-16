@@ -1,7 +1,7 @@
 using Core.Helpers;
 using FluentAssertions;
 using AllureAdapter;
-using Ui.Helper;
+using Ui.Tests.Support;
 using static Core.Helpers.TestDataConstants;
 
 namespace Ui.Tests.GitHubStream.Issues;

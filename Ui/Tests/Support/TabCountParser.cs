@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Ui.Helper;
+namespace Ui.Tests.Support;
 
 internal static class TabCountParser
 {

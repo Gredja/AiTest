@@ -1,6 +1,6 @@
 using FluentAssertions;
 using AllureAdapter;
-using Ui.Helper;
+using Ui.Tests.Support;
 
 namespace Ui.Tests.GitHubStream.Repository;
 

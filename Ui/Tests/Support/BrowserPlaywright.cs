@@ -3,7 +3,7 @@ using Ui.Pages.Common;
 using Ui.Pages.GitHubStream.Issues;
 using Ui.Pages.GitHubStream.Repository;
 
-namespace Ui.Helper.BrowserHelpers;
+namespace Ui.Tests.Support;
 
 internal sealed class BrowserPlaywright
 {

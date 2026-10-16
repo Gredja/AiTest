@@ -7,9 +7,8 @@ using FluentAssertions;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
 using System.Net;
-using Ui.Helper.BrowserHelpers;
 
-namespace Ui.Helper;
+namespace Ui.Tests.Support;
 
 public abstract class GitHubUiTestBase
 {
