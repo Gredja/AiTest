@@ -20,7 +20,7 @@ public abstract class GitHubUiTestBase
     private const string BlobType = "blob";
     private const string ScratchBranchPrefix = "ui-scratch-";
     private const string ScratchBaseBranchPrefix = "ui-scratch-base-";
-    private const string ScratchFileName = "ui-scratch.txt";
+    internal const string ScratchFileName = "ui-scratch.txt";
 
     private IPlaywright? _playwright;
     private IBrowser? _browser;
@@ -184,35 +184,43 @@ public abstract class GitHubUiTestBase
         return created.Data!.Ref;
     }
 
-    protected async Task<(int Number, string HeadBranch, string BaseBranch)> CreateScratchPullRequestViaApiAsync(
-        string title,
-        List<(int Number, string HeadBranch, string BaseBranch)> createdPullRequests)
+    protected async Task<(string HeadBranch, string BaseBranch)> CreateDivergentBranchesViaApiAsync(List<string> createdBranches)
     {
         var headBranch = $"{ScratchBranchPrefix}{DataGenerator.RandomString(TestDataConstants.RandomNameLength)}";
         var baseBranch = $"{ScratchBaseBranchPrefix}{DataGenerator.RandomString(TestDataConstants.RandomNameLength)}";
         var mainSha = await ResolveUiSandboxMainShaAsync();
         var commitSha = await CreateScratchCommitViaApiAsync(mainSha);
+        await CreateBranchRefViaApiAsync(headBranch, commitSha);
+        await CreateBranchRefViaApiAsync(baseBranch, mainSha);
+        createdBranches.Add(headBranch);
+        createdBranches.Add(baseBranch);
 
-        PullRequestModelResponse? createdPull = null;
-        try
-        {
-            await CreateBranchRefViaApiAsync(headBranch, commitSha);
-            await CreateBranchRefViaApiAsync(baseBranch, mainSha);
-            var pullRequest = await Cleanup.Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
-                GitHubEndpoints.RepoPullRequests,
-                new CreatePullRequestModelRequest { Title = title, Head = headBranch, Base = baseBranch },
-                UiSandboxRepoParams());
-            pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
-            createdPull = pullRequest.Data;
-            createdPullRequests.Add((createdPull!.Number, headBranch, baseBranch));
+        return (headBranch, baseBranch);
+    }
 
-            return (createdPull.Number, headBranch, baseBranch);
-        }
-        catch (Exception)
-        {
-            await Cleanup.CleanupPullRequestAsync(createdPull?.Number, headBranch, baseBranch);
-            throw;
-        }
+    protected async Task<(int Number, string HeadBranch, string BaseBranch)> CreateScratchPullRequestViaApiAsync(
+        string title,
+        List<(int Number, string HeadBranch, string BaseBranch)> createdPullRequests,
+        List<string> createdBranches)
+    {
+        var (headBranch, baseBranch) = await CreateDivergentBranchesViaApiAsync(createdBranches);
+        var pullRequest = await Cleanup.Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequests,
+            new CreatePullRequestModelRequest { Title = title, Head = headBranch, Base = baseBranch },
+            UiSandboxRepoParams());
+        pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
+        createdPullRequests.Add((pullRequest.Data!.Number, headBranch, baseBranch));
+
+        return (pullRequest.Data.Number, headBranch, baseBranch);
+    }
+
+    protected async Task ClosePullRequestViaApiAsync(int pullNumber)
+    {
+        var closed = await Cleanup.Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
+            GitHubEndpoints.RepoPullRequestById,
+            new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+            [.. UiSandboxRepoParams(), .. GitHubParamHelper.PullRequestNumberParam(pullNumber)]);
+        closed.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
 
     private async Task<string> ResolveUiSandboxMainShaAsync()

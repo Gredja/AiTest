@@ -60,6 +60,7 @@ Gredja/
 ├── Scripts/
 │   ├── allure-report.ps1
 │   ├── install-playwright.ps1    # playwright install chromium (+ deps)
+│   ├── locator-dump.mjs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── test-coverage.ps1
 │   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
@@ -340,17 +341,18 @@ Ui/
 ├── Data/                         # static test files (upload payloads)
 └── github/                       # все UI-тесты GitHub (site-scoped; будущие сайты — соседние папки)
     ├── Pages/                      # pages + forms — единственный дом локаторов
-    │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage
+    │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
     │   └── GitHubStream/
     │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
-    │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
+    │       ├── Pulls/                # PullDetailPage, PullCreatePage
+    │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
     └── Tests/
         ├── Support/                  # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser
         └── GitHubStream/
             ├── Issues/               # IssuesUiTests, IssueUiTests
             ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
-            ├── Pulls/                # PullsUiTests
-            └── Repository/           # RepositoryUiTests
+            ├── Pulls/                # PullsUiTests, PullFlowUiTests
+            └── Repository/           # RepositoryUiTests, BranchesUiTests
 ```
 
 ## Rules/

@@ -40,6 +40,20 @@ internal sealed class HeaderPage(IPage page)
     internal async Task<bool> IsSignedOutAsync() =>
         await _signInLink.CountAsync() > 0;
 
+    internal async Task OpenProfileAsync()
+    {
+        await OpenUserMenuAsync(_userNavigationDialog);
+        await _profileLink.ClickAsync();
+        await _page.WaitForURLAsync(url => !url.Contains(TestConfig.UiTestRepo));
+    }
+
+    internal async Task OpenSettingsAsync()
+    {
+        await OpenUserMenuAsync(_userNavigationDialog);
+        await _settingsLink.ClickAsync();
+        await _page.WaitForURLAsync(url => !url.Contains(TestConfig.UiTestRepo));
+    }
+
     // The click can be swallowed while the header is still wiring up — flaky right after the login
     // redirect (2026-10-14: menu never opened, dialog absent after 15s). The open dialog is the
     // post-condition, so click again until it is up; the state check runs BEFORE every click, so a
@@ -65,6 +79,8 @@ internal sealed class HeaderPage(IPage page)
 
     private readonly ILocator _userNavigationDialog = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" });
     private readonly ILocator _userNavigationHeading = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" }).GetByRole(AriaRole.Heading);
+    private readonly ILocator _profileLink = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" }).GetByRole(AriaRole.Link, new() { Name = "Profile" });
+    private readonly ILocator _settingsLink = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" }).GetByRole(AriaRole.Link, new() { Name = "Settings", Exact = true });
     private readonly ILocator _signOutLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true });
     private readonly ILocator _accountSignOutButton = page.GetByRole(AriaRole.Button, new() { Name = $"Sign out of {TestConfig.UiUsername}", Exact = true });
     private readonly ILocator _signInLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true });

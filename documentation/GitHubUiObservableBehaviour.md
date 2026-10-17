@@ -84,7 +84,8 @@ When generating or reviewing GitHub UI tests, the AI agent:
 
 - URL: `.../pulls` — verified 2026-10-13
 - Empty state: `heading "No pull requests matched your search"` — verified 2026-10-13
-- Tab counters: same `Open 0` / `Closed 0` format as Issues when authenticated — verified 2026-10-13
+- Tab counters authenticated: `Open (0)` / `Closed (36)` — re-verified 2026-10-17 (parens present; 2026-10-13 claim of `Open 0` did not reproduce)
+- `heading "All pull requests" level=1` · `link "New pull request"` — verified 2026-10-17
 
 ## Page: Code view (UI-8, ui-sandbox)
 
@@ -94,6 +95,54 @@ When generating or reviewing GitHub UI tests, the AI agent:
 ## Page: 404 (UI-9)
 
 - Non-existent repo → `img` alt: `404 "This is not the web page you are looking for"` — verified 2026-10-13
+
+## Page: Pull request detail (UI-10, ui-sandbox)
+
+- URL: `.../pull/{number}` — verified 2026-10-17
+- Title: `heading "{title} - #{number}" level=1` — verified 2026-10-17
+- Base/head branches: `link "{base branch}"` and `link "{head branch}"` in the header — verified 2026-10-17
+- Tabs: `link "Conversation"` · `link "Commits (N)"` · `link "Files changed"` — verified 2026-10-17
+- `button "Edit title"` — verified 2026-10-17
+- Open state: `button "Close pull request"` and `button "Convert to draft"` (also a sidebar trigger with the same name — use `.First`) — verified 2026-10-17
+- Closed state: `button "Reopen pull request"` replaces the Close button (state swap after the round-trip, same pattern as UI-6) — verified 2026-10-17
+- `button "Show options"` (comment/description overflow menu; the `menuitem "Edit comment"` inside appears only after the click — draft, not re-verified via locator-dump) — button verified 2026-10-17
+- Comment form: `textbox "Comment"` · `button "Comment"` (exact name, disabled until the body has text) — verified 2026-10-17
+
+## Page: Pull request create / compare form (UI-11, ui-sandbox)
+
+- URL: `.../compare/{base}...{head}` → `heading "Comparing changes" level=1` · `button "Create pull request"` — verified 2026-10-17
+- Expanded form (`?expand=1` or after the create click): `heading "Open a pull request" level=1` · `textbox "Add a title *"` (asterisk is part of the accessible name) · `textbox "Comment"` (description textarea) — verified 2026-10-17
+- Submit redirects to `.../pull/{number}` — the page-object waits for the URL to contain `/pull/`, then for the title heading
+
+## Page: Pull request files changed (UI-12, ui-sandbox)
+
+- URL: `.../pull/{number}/files` — verified 2026-10-17
+- `heading "File tree" level=2`; changed file appears as `treeitem "{file name}" level=1` — verified 2026-10-17
+
+## Page: Branches (UI-13, ui-sandbox)
+
+- URL: `.../branches` — verified 2026-10-17
+- `heading "Branches" level=1` · `button "New branch"` · `textbox "Search"` — verified 2026-10-17
+- Section tabs: `link "Overview" | "Yours" | "Active" | "Stale" | "All"` — verified 2026-10-17
+- Row: branch `link "{branch name}"` · `button "Delete branch"` — verified 2026-10-17
+- Gotcha: a branch can be listed in two sections (Your + Active), each row with its own Delete button — pick `.First` or scope to the row (verified 2026-10-17)
+- The create dialog fields (`textbox "New branch name"`, `button "Create new branch"`) appear only after `New branch` is clicked — draft, not re-verified via locator-dump
+- Delete needs list reload-polling (async index) — the row may linger showing "Deleted" (see Gotchas)
+
+## Page: Compare view commits (UI-14, ui-sandbox)
+
+- URL: `.../compare/{base}...{head}` — verified 2026-10-17
+- Commits section: `heading "Commits on {date}" level=3` (filter text `Commits on`) — verified 2026-10-17
+
+## Page: Profile (UI-15)
+
+- URL: `https://github.com/{username}` (user menu → `link "Profile"`) — verified 2026-10-17
+- `heading "{username}" level=1` — verified 2026-10-17
+
+## Page: Account settings (UI-16)
+
+- URL: `https://github.com/settings/profile` (user menu → `link "Settings"` exact) — verified 2026-10-17
+- `heading "{username} ({username}) settings" level=1` — match the `({username}) settings` part, the display name before it can differ — verified 2026-10-17
 
 ## Gotchas (verified as they are discovered)
 

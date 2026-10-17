@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Helpers;
 using Microsoft.Playwright;
 using Ui.Github.Tests.Support;
 
@@ -16,6 +17,21 @@ internal sealed class PullsPage(IPage page)
     internal async Task<int> GetOpenCountAsync() => await GetTabCountAsync("Open");
 
     internal async Task<int> GetClosedCountAsync() => await GetTabCountAsync("Closed");
+
+    internal async Task<bool> ContainsPullWithTitleAsync(string title) =>
+        await _tabLinks.Filter(new() { HasTextString = title }).CountAsync() > 0;
+
+    // the list is indexed asynchronously after a write: a page loaded right after a create
+    // can still miss the new pull request — poll with a reload instead of a single count
+    internal async Task<WaitResult<bool>> WaitForPullWithTitleAsync(string title) =>
+        await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                await _page.ReloadAsync();
+
+                return await ContainsPullWithTitleAsync(title);
+            },
+            found => found);
 
     private async Task<int> GetTabCountAsync(string tabName)
     {
