@@ -81,7 +81,7 @@ Before generating — verify the target directories exist; create missing page-o
 
 0. **Read existing code FIRST** — Glob `Ui/**` for the area's page-object and tests; extend what exists, never duplicate files.
 1. **Read UI Observable Behaviour** — `documentation/{{service_name}}UiObservableBehaviour.md`. It is the source of truth: per section — verified locators (with `verified {date}` markers), element states, URL patterns, gotchas. If missing — create it while working: one section per page, locators only after live verification.
-2. **Take a live snapshot of the page** — use the `playwright` skill (browser snapshot) against the real page (`Ui.BaseUrl` from `testsettings.json`). Extract roles/texts/labels for every locator you are about to write. Do NOT invent selectors from memory of the HTML.
+2. **Take a live snapshot of the page** — HARD RULE: only via `node Scripts/locator-dump.mjs <url> [--waitfor "text"]` (one-shot CDP dump of role+accessible name; the `playwright` skill / playwright-cli is forbidden for locator extraction). Aim it at the real page (`Ui.BaseUrl` from `testsettings.json`). Extract roles/texts/labels for every locator you are about to write. Do NOT invent selectors from memory of the HTML.
 3. Note URL patterns, navigation path, and what eventual-consistency the page exhibits (list refresh after write?).
 
 ### Step 2: Design the test

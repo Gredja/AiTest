@@ -26,7 +26,7 @@ Ui/
 - **Role/text/label only**: `GetByRole`, `GetByText`, `GetByLabel`, `GetByPlaceholder`
 - NEVER CSS-classes or XPath on the tested site (generated class names change between releases)
 - **Reuse before extract** — on similar pages, apply locators/patterns already verified on other pages (shared header, tab counts `Open (N)`/`Closed (N)`, level-N headings) instead of snapshotting everything again; snapshot only the page-unique elements, or re-snapshot when an existing locator fails
-- New locators are verified against a **live snapshot** before they are written (agent: use the `playwright` skill — one session, multiple navigations for speed); undated claims in the UI Observable Behaviour are drafts
+- New locators are verified against a **live snapshot** before they are written (agent HARD RULE: only via `node Scripts/locator-dump.mjs <url> [--waitfor "text"]` — one-shot CDP dump of role+accessible name; the `playwright` skill / playwright-cli is FORBIDDEN for locator extraction, 2026-10-17); undated claims in the UI Observable Behaviour are drafts
 - A role+name locator that never resolves although the control is clearly visible → re-check its **accessible name** in the live snapshot: GitHub injects sr-only text into it (shortcut hint renders as `Save ( enter )`); match the visible label instead — `GetByText("Save", Exact = true)` (2026-10-14)
 - One locator per element; locator lives in the page-object, not in tests
 - Locators are separate named entities (constants/fields) collected **at the bottom of the

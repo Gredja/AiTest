@@ -99,9 +99,10 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 
 1. Прочитай `AGENTS.md` целиком и `Rules/test-practices.md` — там базовые правила и seed-методология
 2. `/api-test-gen <service> <endpoint>` — сгенерировать тесты для нового эндпоинта (скилл сам прочитает Observable Behaviour и правила)
-3. `/test` — запустить весь тест-сьют (пишет `TestResults/TestRunReport-*.md`), `/test-report` — запуск + Allure-отчёт
-4. `/review-commit` — проверить незакоммиченные изменения по правилам проекта
-5. `/commit` — форматирование + HealthCheck + коммит + пуш
+3. `node Scripts/locator-dump.mjs <url> [--waitfor "текст"]` — одноразовый дамп role + accessible name со страницы для UI-локаторов (CDP, без зависимостей; печатьки из `.auth/github-ui-state.json` по умолчанию, `--anonymous` — без входа)
+4. `/test` — запустить весь тест-сьют (пишет `TestResults/TestRunReport-*.md`), `/test-report` — запуск + Allure-отчёт
+5. `/review-commit` — проверить незакоммиченные изменения по правилам проекта
+6. `/commit` — форматирование + HealthCheck + коммит + пуш
 
 Полный список скиллов: `.mimocode/skills/`. Все изменения следуют циклу: план → одобрение → изменения → отчёт (`Rules/workflow.md`).
 
