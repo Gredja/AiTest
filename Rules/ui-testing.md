@@ -7,15 +7,14 @@ Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
 ├── AssemblyInfo.cs               # Parallelizable(Fixtures), LevelOfParallelism(1)
 ├── TestReportSetup.cs            # [SetUpFixture] — duplicated per test assembly (P2.3)
-├── Helper/
-│   ├── GitHubUiTestBase.cs       # browser fixture: Chromium → context(storageState) → Page; artifacts on failure; page brought to front every test (browser window stays active)
-│   ├── BrowserHelpers/BrowserPlaywright.cs  # page-object wrapper: pages exposed as properties
-│   ├── TabCountParser.cs          # tab counter text → int
-│   └── UiHelper/
-│       ├── CommonPages/          # cross-area pages (header, nav)
-│       └── GitHubStream/         # page-objects: {Area}/{Area}Page.cs
-├── Data/                         # static test files (upload payloads)
-└── Test/GitHubStream/            # tests: {Area}/{Area}{Flow}Tests.cs
+├── github/                       # site-scoped: все UI-тесты GitHub (будущие сайты — соседние папки)
+│   ├── Pages/                      # единственный дом локаторов
+│   │   ├── Common/                   # cross-area pages (header, nav)
+│   │   └── GitHubStream/             # page-objects: {Area}/{Area}Page.cs
+│   └── Tests/
+│       ├── Support/                  # GitHubUiTestBase, BrowserPlaywright, TabCountParser
+│       └── GitHubStream/             # tests: {Area}/{Area}{Flow}Tests.cs
+└── Data/                         # static test files (upload payloads)
 ```
 
 - Page-object method = business action (`CreateIssue(title, body)`), never a raw click

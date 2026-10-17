@@ -337,19 +337,20 @@ Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
-├── Pages/                          # pages + forms — единственный дом локаторов
-│   ├── Common/                     # cross-area pages (header, nav): LoginPage, HeaderPage
-│   └── GitHubStream/
-│       ├── Issues/                 # IssueCreatePage, IssueDetailPage, CommentForm
-│       └── Repository/             # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
 ├── Data/                         # static test files (upload payloads)
-└── Tests/
-    ├── Support/                    # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser
-    └── GitHubStream/
-        ├── Issues/                 # IssuesUiTests, IssueUiTests
-        ├── Login/                  # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
-        ├── Pulls/                  # PullsUiTests
-        └── Repository/             # RepositoryUiTests
+└── github/                       # все UI-тесты GitHub (site-scoped; будущие сайты — соседние папки)
+    ├── Pages/                      # pages + forms — единственный дом локаторов
+    │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage
+    │   └── GitHubStream/
+    │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
+    │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
+    └── Tests/
+        ├── Support/                  # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser
+        └── GitHubStream/
+            ├── Issues/               # IssuesUiTests, IssueUiTests
+            ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
+            ├── Pulls/                # PullsUiTests
+            └── Repository/           # RepositoryUiTests
 ```
 
 ## Rules/

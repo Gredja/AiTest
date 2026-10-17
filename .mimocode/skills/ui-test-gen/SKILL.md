@@ -60,14 +60,14 @@ If any is missing — ask before generating.
 | What | Path pattern |
 |---|---|
 | UI Observable Behaviour | `documentation/{{service_name}}UiObservableBehaviour.md` |
-| Base fixture (browser/context/page) | `Ui/Tests/Support/{{service_name}}UiTestBase.cs` |
-| Browser wrapper (pages as properties) | `Ui/Tests/Support/BrowserPlaywright.cs` |
-| Page-objects | `Ui/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs` |
-| Shared pages (header, nav) | `Ui/Pages/Common/` |
-| Tests | `Ui/Tests/GitHubStream/{{area_name}}/{{area_name}}{{flow_name}}Tests.cs` |
+| Base fixture (browser/context/page) | `Ui/github/Tests/Support/{{service_name}}UiTestBase.cs` |
+| Browser wrapper (pages as properties) | `Ui/github/Tests/Support/BrowserPlaywright.cs` |
+| Page-objects | `Ui/github/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs` |
+| Shared pages (header, nav) | `Ui/github/Pages/Common/` |
+| Tests | `Ui/github/Tests/GitHubStream/{{area_name}}/{{area_name}}{{flow_name}}Tests.cs` |
 | Test data files | `Ui/Data/` |
-| Namespace (tests) | `Ui.Tests.GitHubStream.{{area_name}}` |
-| Namespace (page-objects) | `Ui.Pages.GitHubStream.{{area_name}}` |
+| Namespace (tests) | `Ui.Github.Tests.GitHubStream.{{area_name}}` |
+| Namespace (page-objects) | `Ui.Github.Pages.GitHubStream.{{area_name}}` |
 | Service category (class) | `[Category("GitHubUi")]` |
 | Description reference | UI-OB section number, e.g. `"UI-1 Ordinary login…"` |
 
@@ -93,7 +93,7 @@ Before generating — verify the target directories exist; create missing page-o
 
 ### Step 3: Create/extend the page-object
 
-In `Ui/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs`:
+In `Ui/github/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs`:
 
 ```csharp
 internal class {{area_name}}Page
@@ -112,13 +112,13 @@ internal class {{area_name}}Page
 
 - Methods = business actions (`OpenIssuesTab`, `CreateIssue`, `CloseIssue`), never raw clicks exposed to tests.
 - Locators inline per action (page under test = GitHub → role/text only); keep one locator per element, named by role+name.
-- If a base page-class pattern already exists under `Ui/Pages/` — inherit it, do not reinvent.
+- If a base page-class pattern already exists under `Ui/github/Pages/` — inherit it, do not reinvent.
 - Register new page in `BrowserPlaywright` wrapper if the wrapper exposes pages as properties (follow the existing pattern).
 
 ### Step 4: Create the test class
 
 ```csharp
-namespace Ui.Tests.GitHubStream.{{area_name}};
+namespace Ui.Github.Tests.GitHubStream.{{area_name}};
 
 [TestFixture]
 [AllureNUnit]

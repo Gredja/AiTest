@@ -91,7 +91,7 @@ Report per phase: what changed, gates numbers, commits/PR, findings intentionall
 ## Troubleshooting
 
 - Build broke after a move → missing `using` for the old parent namespace (C# resolves
-  upward: `Ui.Pages.X` no longer sees `Ui.Helper` members) — add the using, rebuild.
+  upward: `Ui.Github.Pages.X` no longer sees `Ui.Github.Tests.Support` members) — add the using, rebuild.
 - Tests fail after comment purge → you touched a string literal or an assertion `because`
   message — restore it verbatim.
 - `git add` warnings after your own file writes → you wrote LF/CRLF against `.gitattributes`;
