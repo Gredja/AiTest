@@ -16,6 +16,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - `Rules/` — полные правила (здесь — краткая сводка)
 - `documentation/` — документация проекта; `documentation/Katas/` — обучение, не трогать
 - `documentation/*ObservableBehaviour.md` — наблюдаемое поведение API (актуальные состояния, типы полей, негативные кейсы). **Читать при генерации и review тестов.**
+- `education/TESTING_PLAYBOOK.md` — переносимая project-agnostic методология тестирования (EN, скармливается другим агентам/проектам); обновлять при каждом коммите (скилл `/commit`, Step 6)
 - `.mimocode/skills/` — скиллы для AI-агентов
 - `.github/workflows/` — CI: `pr-checks.yml` (required PR-gate: format всегда, HealthCheck для same-repo веток) и `nightly-tests.yml` (ночной informational-прогон); секреты — только в настройках репо, live-сьют никогда не required-check (`Rules/git.md` → CI)
 

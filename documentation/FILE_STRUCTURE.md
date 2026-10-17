@@ -64,6 +64,8 @@ Gredja/
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── test-coverage.ps1
 │   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
+├── education/
+│   └── TESTING_PLAYBOOK.md       # portable project-agnostic testing playbook (EN) — methodology deltas folded at every commit
 └── backups/
     ├── SETUP.md
     └── mimocode-project.jsonc

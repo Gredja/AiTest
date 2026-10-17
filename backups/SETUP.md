@@ -281,6 +281,8 @@ Gredja/
 │   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
 │   └── README.md                 # Заглушка → ссылка на корневой README.md
+├── education/
+│   └── TESTING_PLAYBOOK.md       # Переносимая методология тестирования (EN) — обновлять при каждом коммите (/commit, Step 6)
 └── .mimocode/
     ├── skills/                  # Скиллы для MiMoCode
     └── plans/                   # Активные планы работ (удаляются после реализации)
