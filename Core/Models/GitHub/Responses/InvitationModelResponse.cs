@@ -1,13 +1,11 @@
+﻿using Core.Attributes;
+using Core.Models.Generic;
 using System.Text.Json.Serialization;
-using Core.Attributes;
 
 namespace Core.Models.GitHub;
 
-public class InvitationModelResponse
+public class InvitationModelResponse : IdModel<long>
 {
-    [PositiveId]
-    public long Id { get; set; }
-
     [RequiredField]
     public UserModelResponse Invitee { get; set; }
 

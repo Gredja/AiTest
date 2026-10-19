@@ -122,6 +122,7 @@ Core/
 │   └── TestSourceCategoryReader.cs # fixture/category from test sources
 ├── Reporting/
 │   ├── TestRunReportGenerator.cs  # writes TestResults/TestRunReport-*.md (teardown)
+│   ├── ArtifactRetention.cs       # age-based cleanup of allure-results/TestResults artifacts
 │   └── TestRunRow.cs
 ├── Models/
 │   ├── Generic/

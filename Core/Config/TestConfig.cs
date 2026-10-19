@@ -29,7 +29,7 @@ public static class TestConfig
                 return token;
             }
 
-            return ReadEnvironmentValue("GITHUB_PAT") ?? string.Empty;
+            return GetRequiredEnvironmentValue("GITHUB_PAT");
         }
     }
 

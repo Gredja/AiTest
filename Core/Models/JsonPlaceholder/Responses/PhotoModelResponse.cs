@@ -1,12 +1,10 @@
-using Core.Attributes;
+﻿using Core.Attributes;
+using Core.Models.Generic;
 
 namespace Core.Models.JsonPlaceholder;
 
-public class PhotoModelResponse
+public class PhotoModelResponse : IdModel<int>
 {
-    [PositiveId]
-    public int Id { get; set; }
-
     public int AlbumId { get; set; }
 
     [RequiredField]

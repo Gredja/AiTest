@@ -3,6 +3,8 @@ namespace Core.Logging;
 internal static class TestRunWorkspace
 {
     internal const string MarkerFileName = ".run-start";
+    internal const string ActionLogPrefix = "actions-";
+    internal const string TestResultLogPrefix = "test-results-";
 
     // The marker is held open by the testhost that starts the run. A sibling testhost
     // (the second assembly of the same run) cannot open it for write and therefore
@@ -58,7 +60,7 @@ internal static class TestRunWorkspace
 
     private static void CleanupPreviousRunLogs(string workspace, DateTime runStart)
     {
-        foreach (var pattern in new[] { "actions-*.log", "test-results-*.log" })
+        foreach (var pattern in new[] { $"{ActionLogPrefix}*.log", $"{TestResultLogPrefix}*.log" })
         {
             foreach (var file in Directory.EnumerateFiles(workspace, pattern))
             {

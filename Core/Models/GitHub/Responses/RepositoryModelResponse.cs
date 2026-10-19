@@ -1,13 +1,11 @@
+﻿using Core.Attributes;
+using Core.Models.Generic;
 using System.Text.Json.Serialization;
-using Core.Attributes;
 
 namespace Core.Models.GitHub;
 
-public class RepositoryModelResponse
+public class RepositoryModelResponse : IdModel<long>
 {
-    [PositiveId]
-    public long Id { get; set; }
-
     [RequiredField]
     public string Name { get; set; }
 

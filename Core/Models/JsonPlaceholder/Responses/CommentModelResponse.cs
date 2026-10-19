@@ -1,12 +1,10 @@
-using Core.Attributes;
+﻿using Core.Attributes;
+using Core.Models.Generic;
 
 namespace Core.Models.JsonPlaceholder;
 
-public class CommentModelResponse
+public class CommentModelResponse : IdModel<int>
 {
-    [PositiveId]
-    public int Id { get; set; }
-
     public int PostId { get; set; }
 
     [RequiredField]
