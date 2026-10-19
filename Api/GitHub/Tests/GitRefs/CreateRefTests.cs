@@ -1,4 +1,4 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -17,7 +17,6 @@ namespace Api.GitHub.GitRefs;
 public class CreateRefTests : GitHubTestBase
 {
     private const string BranchPrefix = $"{GitHubEndpoints.RefsHeadsPrefix}audit-";
-    private const string MissingSha = "0000000000000000000000000000000000000000";
 
     private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;
@@ -129,7 +128,7 @@ public class CreateRefTests : GitHubTestBase
     {
         var response = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}", Sha = MissingSha },
+            new CreateGitRefModelRequest { Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}", Sha = GitHubEndpoints.NonExistentSha },
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);

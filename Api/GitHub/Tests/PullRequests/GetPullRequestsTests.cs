@@ -1,4 +1,4 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -155,6 +155,6 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.RepoPullRequests, InvalidAuthorization, TestRepoParam());
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 }

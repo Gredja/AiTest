@@ -16,7 +16,7 @@ namespace Api.GitHub.GitRefs;
 public class DeleteRefTests : GitHubTestBase
 {
     private const string RefPathPrefix = $"{GitHubEndpoints.HeadsPrefix}audit-";
-    private const string NonExistentRefPath = $"{GitHubEndpoints.HeadsPrefix}nonexistent-branch-audit-12345";
+    private const string NonExistentRefPath = $"{GitHubEndpoints.HeadsPrefix}{GitHubEndpoints.NonExistentBranchName}";
 
     private readonly List<string> _createdRefs = [];
     private string _baseSha = string.Empty;

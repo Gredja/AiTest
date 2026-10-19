@@ -1,4 +1,4 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -13,7 +13,6 @@ namespace Api.GitHub.GitCommits;
 [Category("GitHub")]
 public class GetGitCommitTests : GitHubTestBase
 {
-    private const string NonExistentCommitSha = "0000000000000000000000000000000000000000";
 
     private string _mainCommitSha = string.Empty;
 
@@ -37,7 +36,7 @@ public class GetGitCommitTests : GitHubTestBase
     public async Task GetGitCommit_NonExistentSha_ReturnsNotFound()
     {
         var response = await Get<GitCommitModelResponse>(GitHubEndpoints.RepoGitCommitsById,
-            [.. TestRepoParam(), .. GitCommitParam(NonExistentCommitSha)]);
+            [.. TestRepoParam(), .. GitCommitParam(GitHubEndpoints.NonExistentSha)]);
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }

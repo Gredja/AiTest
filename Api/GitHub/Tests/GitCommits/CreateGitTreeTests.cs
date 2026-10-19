@@ -1,4 +1,4 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -12,7 +12,6 @@ namespace Api.GitHub.GitCommits;
 [Category("GitHub")]
 public class CreateGitTreeTests : GitHubTestBase
 {
-    private const string NonExistentSha = "0000000000000000000000000000000000000000";
     private const string ProbePath = "phase1-invalid-sha-probe.txt";
 
     private string _baseTreeSha = string.Empty;
@@ -37,7 +36,7 @@ public class CreateGitTreeTests : GitHubTestBase
                         Path = ProbePath,
                         Mode = FileMode644,
                         Type = BlobType,
-                        Sha = NonExistentSha
+                        Sha = GitHubEndpoints.NonExistentSha
                     }
                 ]
             },

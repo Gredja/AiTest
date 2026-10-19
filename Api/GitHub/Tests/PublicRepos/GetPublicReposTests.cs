@@ -1,4 +1,4 @@
-using Core.Models.Generic;
+﻿using Core.Models.Generic;
 using Core.Models.GitHub;
 using JsonFields = Core.Models.GitHub.JsonFields;
 using Core.Config;
@@ -84,7 +84,7 @@ public class GetPublicReposTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.Repositories, InvalidAuthorization);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 
     [Test]
