@@ -54,7 +54,6 @@ Gredja/
 │       ├── ui-test-gen/SKILL.md
 │       ├── merge/SKILL.md
 │       ├── nightly-check/SKILL.md
-│       ├── structure-audit/SKILL.md
 │       └── update-docs/SKILL.md
 ├── Scripts/
 │   ├── allure-report.ps1

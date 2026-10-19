@@ -1,6 +1,6 @@
----
+﻿---
 name: audit
-description: Use when the user says "audit", "/audit", "аудит", "рефакторинг"/"refactor" for whole-codebase work, or wants code improved against Rules/*.md. One skill, two stages: (1) audit the entire codebase against Rules/*.md and produce a detailed fix plan — a human-readable table with explanations and statuses, saving it to .mimocode/plans/audit-fixes-<date>.md — fixes are NOT applied immediately, they happen later on the user's signal; (2) apply the approved plan in gated batches (build/format/HealthCheck/touched suites after each batch, one /commit per batch, structural moves with docs sync) and update plan statuses. NOT for uncommitted-changes review (/review-commit) or PR reviews (/review-pr).
+description: Use when the user says "audit", "/audit", "аудит", "проверь структуру", "/structure-audit", "нейминг структуры", "рефакторинг"/"refactor" for whole-codebase work, or wants code improved against Rules/*.md. One skill, two stages: (1) audit the entire codebase against Rules/*.md (categories A–F + structure) and produce a detailed fix plan — a human-readable table with explanations and statuses, saving it to .mimocode/plans/audit-fixes-<date>.md — fixes are NOT applied immediately, they happen later on the user's signal; (2) apply the approved plan in gated batches (build/format/HealthCheck/touched suites after each batch, one /commit per batch, structural moves with docs sync) and update plan statuses. NOT for uncommitted-changes review (/review-commit) or PR reviews (/review-pr).
 ---
 
 # Skill: Full Code Audit & Refactor
@@ -65,6 +65,31 @@ post-condition; `ShouldHaveError` where OB documents the message.
 `Rules/comments.md`: zero-default decision procedure; regex comments mandatory; no
 WHAT-comments/AAA/dividers; no TODO/FIXME in committed code; provenance notes belong to OB
 (measured-dated WHY comments are sanctioned — do not flag them).
+
+#### Category R: Structure & placement (explore subagent — read-only, absorbed `/structure-audit`)
+Placement only — naming of CODE symbols is Category A's job. Inventory first:
+```powershell
+foreach ($proj in @('Api','Core','E2E','Ui','AllureAdapter')) {
+  Get-ChildItem $proj -Recurse -File -Include *.cs,*.csproj |
+    Where-Object { $_.FullName -notmatch '\\(bin|obj)\\' } |
+    ForEach-Object { $_.FullName.Replace("$PWD\$proj\", '') }
+}
+Get-ChildItem -Directory | Where-Object { $_.Name -notmatch '^\.' }
+Get-ChildItem -File | ForEach-Object Name
+# plus .mimocode/skills/, Scripts/, documentation/, Rules/; tracked root (git ls-files) vs ignored (git check-ignore)
+```
+Then check for EVERY folder/file:
+- **Does the name equal the content?** (`Helpers/` must hold helpers only; plural consistency
+  `Tests/` vs `Test/`; `Pages/` = page classes only; duplicated path segments like `Ui/Helper/UiHelper/`)
+- Namespace ↔ folder and file name ↔ type name (one class per file)
+- Layer violations (models with logic, tests inside Core, infra mixed with fixtures)
+- Root hygiene: tracked junk/caches/logs/docs-in-disguise (git ls-files vs check-ignore)
+- Dead/empty folders (`.gitkeep`-only); files with no consumers (grep usage before claiming)
+- Future-proof placement per `Rules/code.md` → File Layout
+
+Structure findings go into the same fix plan with move/rename proposals (verdicts:
+`RENAME` / `MOVE` / `SPLIT` / `DELETE` / `UNTRACK`); the actual moves are executed in Stage 2
+as their own batch — one move per flow + docs sync + gates (Step 5).
 
 Each subagent returns a table:
 ```
