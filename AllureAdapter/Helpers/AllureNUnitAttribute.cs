@@ -75,12 +75,14 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
         lock (info.Children)
         {
-            if (!info.Children.Contains(uuid))
+            if (info.Children.Contains(uuid))
             {
-                info.Children.Add(uuid);
-                var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, info.Children.ToList());
-                AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
+                return;
             }
+
+            info.Children.Add(uuid);
+            var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, info.Children.ToList());
+            AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
         }
     }
 
@@ -89,15 +91,17 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         var className = test.ClassName ?? "Unknown";
         var containerUuid = GetDeterministicUuid(className);
 
-        if (!_containers.ContainsKey(containerUuid))
+        if (_containers.ContainsKey(containerUuid))
         {
-            _containers[containerUuid] = new ContainerInfo
-            {
-                Uuid = containerUuid,
-                Name = className,
-                Children = []
-            };
+            return containerUuid;
         }
+
+        _containers[containerUuid] = new ContainerInfo
+        {
+            Uuid = containerUuid,
+            Name = className,
+            Children = []
+        };
 
         return containerUuid;
     }

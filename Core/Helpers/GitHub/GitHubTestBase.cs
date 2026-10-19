@@ -20,8 +20,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected static readonly Regex TopicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
 
     private const string ScratchFileName = "audit-scratch.txt";
-    protected const string FileMode644 = "100644";
-    protected const string BlobType = "blob";
+    protected const string FileMode644 = GitHubEndpoints.FileMode644;
+    protected const string BlobType = GitHubEndpoints.ObjectTypeBlob;
     private const string ScratchBranchPrefix = "audit-";
 
     protected static List<RequestDictionaryModel> TestRepoParam()
@@ -94,6 +94,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
 
             return (createdPull.Number, headBranch, baseBranch);
         }
+        // broad on purpose: cleanup must also run when an assert inside the try fails —
+        // a specific-exception catch would leak the partially created refs/PR
         catch (Exception)
         {
             await CleanupPullRequestAsync(createdPull?.Number, headBranch, baseBranch);

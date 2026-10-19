@@ -1,4 +1,4 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -12,7 +12,6 @@ namespace Api.GitHub.GitCommits;
 [Category("GitHub")]
 public class CreateGitCommitTests : GitHubTestBase
 {
-    private const string NonExistentCommitSha = "0000000000000000000000000000000000000000";
     private const string ProbeMessage = "phase1 invalid parent probe";
 
     private string _baseTreeSha = string.Empty;
@@ -31,7 +30,7 @@ public class CreateGitCommitTests : GitHubTestBase
             {
                 Message = ProbeMessage,
                 Tree = _baseTreeSha,
-                Parents = [NonExistentCommitSha]
+                Parents = [GitHubEndpoints.NonExistentSha]
             },
             TestRepoParam());
 

@@ -60,14 +60,14 @@ If any is missing — ask before generating.
 | What | Path pattern |
 |---|---|
 | UI Observable Behaviour | `documentation/{{service_name}}UiObservableBehaviour.md` |
-| Base fixture (browser/context/page) | `Ui/Tests/Support/{{service_name}}UiTestBase.cs` |
-| Browser wrapper (pages as properties) | `Ui/Tests/Support/BrowserPlaywright.cs` |
-| Page-objects | `Ui/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs` |
-| Shared pages (header, nav) | `Ui/Pages/Common/` |
-| Tests | `Ui/Tests/GitHubStream/{{area_name}}/{{area_name}}{{flow_name}}Tests.cs` |
+| Base fixture (browser/context/page) | `Ui/github/Tests/Support/{{service_name}}UiTestBase.cs` |
+| Browser wrapper (pages as properties) | `Ui/github/Tests/Support/BrowserPlaywright.cs` |
+| Page-objects | `Ui/github/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs` |
+| Shared pages (header, nav) | `Ui/github/Pages/Common/` |
+| Tests | `Ui/github/Tests/GitHubStream/{{area_name}}/{{area_name}}{{flow_name}}Tests.cs` |
 | Test data files | `Ui/Data/` |
-| Namespace (tests) | `Ui.Tests.GitHubStream.{{area_name}}` |
-| Namespace (page-objects) | `Ui.Pages.GitHubStream.{{area_name}}` |
+| Namespace (tests) | `Ui.Github.Tests.GitHubStream.{{area_name}}` |
+| Namespace (page-objects) | `Ui.Github.Pages.GitHubStream.{{area_name}}` |
 | Service category (class) | `[Category("GitHubUi")]` |
 | Description reference | UI-OB section number, e.g. `"UI-1 Ordinary login…"` |
 
@@ -81,7 +81,7 @@ Before generating — verify the target directories exist; create missing page-o
 
 0. **Read existing code FIRST** — Glob `Ui/**` for the area's page-object and tests; extend what exists, never duplicate files.
 1. **Read UI Observable Behaviour** — `documentation/{{service_name}}UiObservableBehaviour.md`. It is the source of truth: per section — verified locators (with `verified {date}` markers), element states, URL patterns, gotchas. If missing — create it while working: one section per page, locators only after live verification.
-2. **Take a live snapshot of the page** — use the `playwright` skill (browser snapshot) against the real page (`Ui.BaseUrl` from `testsettings.json`). Extract roles/texts/labels for every locator you are about to write. Do NOT invent selectors from memory of the HTML.
+2. **Take a live snapshot of the page** — HARD RULE: only via `node Scripts/locator-dump.mjs <url> [--waitfor "text"]` (one-shot CDP dump of role+accessible name; the `playwright` skill / playwright-cli is forbidden for locator extraction). Aim it at the real page (`Ui.BaseUrl` from `testsettings.json`). Extract roles/texts/labels for every locator you are about to write. Do NOT invent selectors from memory of the HTML.
 3. Note URL patterns, navigation path, and what eventual-consistency the page exhibits (list refresh after write?).
 
 ### Step 2: Design the test
@@ -93,7 +93,7 @@ Before generating — verify the target directories exist; create missing page-o
 
 ### Step 3: Create/extend the page-object
 
-In `Ui/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs`:
+In `Ui/github/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs`:
 
 ```csharp
 internal class {{area_name}}Page
@@ -112,13 +112,13 @@ internal class {{area_name}}Page
 
 - Methods = business actions (`OpenIssuesTab`, `CreateIssue`, `CloseIssue`), never raw clicks exposed to tests.
 - Locators inline per action (page under test = GitHub → role/text only); keep one locator per element, named by role+name.
-- If a base page-class pattern already exists under `Ui/Pages/` — inherit it, do not reinvent.
+- If a base page-class pattern already exists under `Ui/github/Pages/` — inherit it, do not reinvent.
 - Register new page in `BrowserPlaywright` wrapper if the wrapper exposes pages as properties (follow the existing pattern).
 
 ### Step 4: Create the test class
 
 ```csharp
-namespace Ui.Tests.GitHubStream.{{area_name}};
+namespace Ui.Github.Tests.GitHubStream.{{area_name}};
 
 [TestFixture]
 [AllureNUnit]

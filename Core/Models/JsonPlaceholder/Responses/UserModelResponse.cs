@@ -1,12 +1,10 @@
-using Core.Attributes;
+﻿using Core.Attributes;
+using Core.Models.Generic;
 
 namespace Core.Models.JsonPlaceholder;
 
-public class UserModelResponse
+public class UserModelResponse : IdModel<int>
 {
-    [PositiveId]
-    public int Id { get; set; }
-
     [RequiredField]
     public string Name { get; set; }
 

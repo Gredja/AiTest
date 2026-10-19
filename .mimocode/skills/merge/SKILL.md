@@ -81,36 +81,16 @@ reason (conflicts / required checks) and STOP — no force options.
 
 Never delete `main`. Verify with `git ls-remote --heads origin <branch>` (empty = gone).
 
-### Step 7: Switch to local main and sync
-
-Move the worktree onto `main` and fast-forward it to the state you just merged:
-
-```powershell
-git switch main
-git pull --ff-only origin main   # локальный main = merge-sha из шага 5
-```
-
-- Verify: `git log --oneline -1` equals the merge sha from Step 5 (or at least
-  `git status` shows `main...origin/main` up to date).
-- If `git switch` / `git pull` is blocked by the safety hook (shared ref store) → hand the
-  user both commands to run manually and note in the report that Step 7 was handed over.
-- Never run this on a dirty tree — the commit flow (Step 1–2) must have cleaned it first.
-
-### Step 8: Remind about the local branch
-
-The local ref deletion is blocked for the agent (shared ref store) — hand the user the
-exact command (run it while on `main`, now synced):
-
-```
-git branch -d <branch>
-```
-
-(If the tooling allows only the orchestrator — state that it must be run by the user.)
-
-### Step 9: Report
+### Step 7: Report
 
 In execution order: commit (message/hash) or "skipped — tree clean" · PR number/url/title ·
-gates result (names + verdict) · merge sha · remote branch deleted · local cleanup command.
+gates result (names + verdict) · merge sha · remote branch deleted.
+
+End every report with this warning — it is a manual action the agent cannot perform
+(shared ref store):
+
+**⚠ Local cleanup:** the merged branch still exists **locally** — run
+`git branch -d <branch>` (if needed, first `git switch main && git pull --ff-only`).
 
 ## Important
 
@@ -118,6 +98,8 @@ gates result (names + verdict) · merge sha · remote branch deleted · local cl
 - All commits inside this flow go through the `/commit` skill — this skill never invents its
   own `git commit`.
 - Gates include the PR `gate` check (format + HealthCheck) — local green does not replace it.
+- The skill NEVER switches to `main` and NEVER deletes local branches — only the report
+  warning above (local `git branch -d` is always the user's command).
 
 ## Troubleshooting
 

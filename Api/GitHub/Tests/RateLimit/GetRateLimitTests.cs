@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
@@ -104,7 +104,7 @@ public class GetRateLimitTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.RateLimit, InvalidAuthorization);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 
     [Test]

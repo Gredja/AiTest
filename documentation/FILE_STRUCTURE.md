@@ -54,15 +54,16 @@ Gredja/
 │       ├── ui-test-gen/SKILL.md
 │       ├── merge/SKILL.md
 │       ├── nightly-check/SKILL.md
-│       ├── refactor/SKILL.md
-│       ├── structure-audit/SKILL.md
 │       └── update-docs/SKILL.md
 ├── Scripts/
 │   ├── allure-report.ps1
 │   ├── install-playwright.ps1    # playwright install chromium (+ deps)
+│   ├── locator-dump.mjs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── test-coverage.ps1
 │   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
+├── education/
+│   └── TESTING_PLAYBOOK.md       # portable project-agnostic testing playbook (EN) — methodology deltas folded at every commit
 └── backups/
     ├── SETUP.md
     └── mimocode-project.jsonc
@@ -119,6 +120,7 @@ Core/
 │   └── TestSourceCategoryReader.cs # fixture/category from test sources
 ├── Reporting/
 │   ├── TestRunReportGenerator.cs  # writes TestResults/TestRunReport-*.md (teardown)
+│   ├── ArtifactRetention.cs       # age-based cleanup of allure-results/TestResults artifacts
 │   └── TestRunRow.cs
 ├── Models/
 │   ├── Generic/
@@ -337,19 +339,21 @@ Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
-├── Pages/                          # pages + forms — единственный дом локаторов
-│   ├── Common/                     # cross-area pages (header, nav): LoginPage, HeaderPage
-│   └── GitHubStream/
-│       ├── Issues/                 # IssueCreatePage, IssueDetailPage, CommentForm
-│       └── Repository/             # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, CodePage, NotFoundPage
 ├── Data/                         # static test files (upload payloads)
-└── Tests/
-    ├── Support/                    # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser
-    └── GitHubStream/
-        ├── Issues/                 # IssuesUiTests, IssueUiTests
-        ├── Login/                  # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
-        ├── Pulls/                  # PullsUiTests
-        └── Repository/             # RepositoryUiTests
+└── github/                       # все UI-тесты GitHub (site-scoped; будущие сайты — соседние папки)
+    ├── Pages/                      # pages + forms — единственный дом локаторов
+    │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
+    │   └── GitHubStream/
+    │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
+    │       ├── Pulls/                # PullDetailPage, PullCreatePage
+    │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
+    └── Tests/
+        ├── Support/                  # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
+        └── GitHubStream/
+            ├── Issues/               # IssuesUiTests, IssueUiTests
+            ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
+            ├── Pulls/                # PullsUiTests, PullFlowUiTests
+            └── Repository/           # RepositoryUiTests, BranchesUiTests
 ```
 
 ## Rules/

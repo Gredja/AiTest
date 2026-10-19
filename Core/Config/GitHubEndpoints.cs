@@ -9,6 +9,8 @@ public static class GitHubEndpoints
     public const string NonExistentRepoName = "nonexistent";
     public const string NonExistentBranchName = "nonexistent-branch-12345";
     public const string NonExistentTagName = "nonexistent-release-tag-12345";
+    public const string NonExistentSha = "0000000000000000000000000000000000000000";
+    public const string NonExistentUiRepoPath = "gredjapl/ui-sandbox-nonexistent-xyz404";
     public const string BranchWithSpacesName = "branch with spaces";
     public const string DefaultBranch = "main";
     public const string MercyPreviewAccept = "application/vnd.github.mercy-preview+json";
@@ -23,6 +25,8 @@ public static class GitHubEndpoints
     public const string PermissionPull = "pull";
     public const string PermissionPush = "push";
     public const string ObjectTypeCommit = "commit";
+    public const string ObjectTypeBlob = "blob";
+    public const string FileMode644 = "100644";
 
     public const string RefsHeadsPrefix = "refs/heads/";
     public const string HeadsPrefix = "heads/";

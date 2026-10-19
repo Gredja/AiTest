@@ -44,8 +44,8 @@ Working dir: {working_dir}
    - E2E/GitHub/Tests/**/*.cs
    - E2E/TestReportSetup.cs
    - AllureAdapter/**/*.cs
-   - Ui/Helper/**/*.cs
-   - Ui/Test/**/*.cs
+   - Ui/github/Pages/**/*.cs
+   - Ui/github/Tests/**/*.cs
    - Ui/TestReportSetup.cs
 
 3. Review EACH file against ALL project rules:

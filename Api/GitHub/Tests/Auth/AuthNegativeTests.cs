@@ -21,7 +21,7 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.AuthenticatedUserRepos, InvalidAuthorization);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 
     [Test]
@@ -32,7 +32,7 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.AuthenticatedUserRepos, authorization: null);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.RequiresAuthentication);
     }
 
     [Test]
@@ -43,7 +43,7 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.AuthenticatedUserRepos, MalformedAuthorization);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 
     [Test]
@@ -54,7 +54,7 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.ReposById, InvalidAuthorization, TestRepoParam());
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 
     [Test]
@@ -65,6 +65,6 @@ public class AuthNegativeTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.RateLimit, InvalidAuthorization);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 }

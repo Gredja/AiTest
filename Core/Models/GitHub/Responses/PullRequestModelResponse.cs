@@ -1,13 +1,11 @@
+﻿using Core.Attributes;
+using Core.Models.Generic;
 using System.Text.Json.Serialization;
-using Core.Attributes;
 
 namespace Core.Models.GitHub;
 
-public class PullRequestModelResponse
+public class PullRequestModelResponse : IdModel<long>
 {
-    [PositiveId]
-    public long Id { get; set; }
-
     [PositiveId]
     public int Number { get; set; }
 

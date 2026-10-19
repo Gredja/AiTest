@@ -1,4 +1,4 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -83,7 +83,7 @@ public class GetUserReposTests : GitHubTestBase
         var response = await ExecuteWithAuthorization(
             GitHubEndpoints.UsersRepos, InvalidAuthorization, UsernameParam(_testUsername));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.Unauthorized);
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 
     [Test]

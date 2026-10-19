@@ -6,7 +6,7 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 ## Project Structure
 
 - `Api/` — NUnit API-тесты (JsonPlaceholder, GitHub), включая одиночные write-тесты
-- `Ui/` — NUnit UI-тесты (Playwright .NET + Chromium): pages/forms — отдельная папка `Ui/Pages/` (общий хром — `Ui/Pages/Common/`, семейственные базовые классы — `RepositoryPageBase`), инфраструктура — `Ui/Tests/Support/`, тесты — `Ui/Tests/`, авторизация через storageState (`.auth/github-ui-state.json`): state обновляет автотест `LoginSignInTests` (логин по `GITHUB_UI_EMAIL`/`GITHUB_UI_PASSWORD`), остальные тесты state только читают; write через UI → cleanup через API; локаторы ТОЛЬКО на Page/Form (внизу файла), хелперы получают `ILocator` параметрами; правила — `Rules/ui-testing.md`
+- `Ui/` — NUnit UI-тесты (Playwright .NET + Chromium): сайт-скоуп — папка `Ui/github/` (будущие сайты — соседние папки, напр. `Ui/moodledemo/`); pages/forms — `Ui/github/Pages/` (общий хром — `Ui/github/Pages/Common/`, семейственные базовые классы — `RepositoryPageBase`), инфраструктура — `Ui/github/Tests/Support/`, тесты — `Ui/github/Tests/`; авторизация через storageState (`.auth/github-ui-state.json`): state обновляет автотест `LoginSignInTests` (логин по `GITHUB_UI_EMAIL`/`GITHUB_UI_PASSWORD`), остальные тесты state только читают; write через UI → cleanup через API; локаторы ТОЛЬКО на Page/Form (внизу файла), хелперы получают `ILocator` параметрами; правила — `Rules/ui-testing.md`
 - `E2E/` — NUnit E2E тесты: ТОЛЬКО сценарные цепочки (create → verify → mutate → cleanup)
 - `Core/Models/` — модели ответов/запросов
 - `Core/Helpers/` — общие хелперы по подпапкам: `Http/` (request-инфраструктура: `RequestHelper`, `JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — вариативные write-данные), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`); нужны E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); только для API-тестов → `Api/<Service>/Helpers/`
@@ -16,12 +16,14 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 - `Rules/` — полные правила (здесь — краткая сводка)
 - `documentation/` — документация проекта; `documentation/Katas/` — обучение, не трогать
 - `documentation/*ObservableBehaviour.md` — наблюдаемое поведение API (актуальные состояния, типы полей, негативные кейсы). **Читать при генерации и review тестов.**
+- `education/TESTING_PLAYBOOK.md` — переносимая project-agnostic методология тестирования (EN, скармливается другим агентам/проектам); обновлять при каждом коммите (скилл `/commit`, Step 6)
 - `.mimocode/skills/` — скиллы для AI-агентов
 - `.github/workflows/` — CI: `pr-checks.yml` (required PR-gate: format всегда, HealthCheck для same-repo веток) и `nightly-tests.yml` (ночной informational-прогон); секреты — только в настройках репо, live-сьют никогда не required-check (`Rules/git.md` → CI)
 
 ## Rules
 
 ### Workflow
+- **Старт сессии:** сразу после приветствия, до любой другой работы — скилл `/nightly-check` (однострочный вердикт о nightly-прогоне `Gredja/AiTest`). Не пропускать даже ради «простого вопроса» пользователя — сначала вердикт, потом работа (дубль правила project MEMORY → Session start; это — канонический текст, он в контексте каждой сессии).
 Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию И tracked `backups/` (включая удаления gitignored-файлов — в том же ходу, даже без коммита). Выполненные планы (`.mimocode/plans/`) — удалять сразу после реализации. Правило, выраженное как IDE0xxx → `.editorconfig` в том же изменении; новая формулировка правила сверяется с существующими `Rules/*.md` на противоречие.
 
 ### Code
@@ -99,9 +101,10 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 
 1. Прочитай `AGENTS.md` целиком и `Rules/test-practices.md` — там базовые правила и seed-методология
 2. `/api-test-gen <service> <endpoint>` — сгенерировать тесты для нового эндпоинта (скилл сам прочитает Observable Behaviour и правила)
-3. `/test` — запустить весь тест-сьют (пишет `TestResults/TestRunReport-*.md`), `/test-report` — запуск + Allure-отчёт
-4. `/review-commit` — проверить незакоммиченные изменения по правилам проекта
-5. `/commit` — форматирование + HealthCheck + коммит + пуш
+3. `node Scripts/locator-dump.mjs <url> [--waitfor "текст"]` — одноразовый дамп role + accessible name со страницы для UI-локаторов (CDP, без зависимостей; печатьки из `.auth/github-ui-state.json` по умолчанию, `--anonymous` — без входа)
+4. `/test` — запустить весь тест-сьют (пишет `TestResults/TestRunReport-*.md`), `/test-report` — запуск + Allure-отчёт
+5. `/review-commit` — проверить незакоммиченные изменения по правилам проекта
+6. `/commit` — форматирование + HealthCheck + коммит + пуш
 
 Полный список скиллов: `.mimocode/skills/`. Все изменения следуют циклу: план → одобрение → изменения → отчёт (`Rules/workflow.md`).
 

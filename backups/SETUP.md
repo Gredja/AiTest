@@ -266,7 +266,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, normalize-eol)
+├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, normalize-eol)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
@@ -281,6 +281,8 @@ Gredja/
 │   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
 │   └── README.md                 # Заглушка → ссылка на корневой README.md
+├── education/
+│   └── TESTING_PLAYBOOK.md       # Переносимая методология тестирования (EN) — обновлять при каждом коммите (/commit, Step 6)
 └── .mimocode/
     ├── skills/                  # Скиллы для MiMoCode
     └── plans/                   # Активные планы работ (удаляются после реализации)
@@ -322,15 +324,13 @@ MiMoCode:
 | `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
-| `/audit` | Аудит кодовой базы по Rules + фиксы одобренных находок |
+| `/audit` | Аудит + рефакторинг + структура в одном скилле, ДВЕ стадии: (1) аудит по Rules — категории A–F (стиль/типы/принципы/модели/тесты/комменты) + R (структура) + новые: S (безопасность/логи), Y (асинхронность/конкурренция), Z (детерминизм/перезапуск), W (синк код↔доки), U (мёртвый код), плюс рекомендация по статик-анализаторам — результат ТОЛЬКО **план-таблица** с пояснениями, статусами и исполнителями (`.mimocode/plans/audit-fixes-<date>.md`), **никаких фиксов в этом же запуске**; (2) отдельный поздний вызов по сигналу — фиксы батчами: гейты (build/format/HealthCheck/задетые сьюты) + коммит через `/commit`, move — с синком доков, статусы в плане обновляются; SKIP — с причиной |
 | `/api-test-gen` | Генерирует тесты для нового API endpoint (читает Observable Behaviour) |
 | `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations |
 | `/ui-test-gen` | Генерирует UI-тесты Playwright (page-objects, live-снапшоты локаторов) |
 | `/coverage` | Запускает тесты + считает code coverage (coverlet) + file coverage (endpoint→test) |
 | `/update-docs` | Обновляет .md файлы проекта после структурных изменений |
 | `/nightly-check` | Проверяет последний ночной прогон (API GitHub) и выдаёт однострочный вердикт; при падении — шаги jobs |
-| `/refactor` | Пошаговый полный рефакторинг по Rules: структура → зачистка комментариев → свипы по проектам, каждый фаза с гейтами |
-| `/structure-audit` | Read-only аудит структуры: имя папки = содержимое (нейминг → здравый смысл) → таблица с предложениями |
 | `/merge` | Финал ветки целиком: `/commit` → PR в main → ожидание всех GitHub-гейтов → мерж → удаление remote-ветки → переход на main → напоминание про локальную ветку |
 | `/gredja-rules` | Показывает правила проекта |
 
@@ -344,6 +344,7 @@ MiMoCode:
 4. **Файлы с `.env` секретами** — никогда не коммить файл `.env`.
 5. **Observable Behaviour — source of truth** — при генерации тестов MiMoCode читает `{Service}ObservableBehaviour.md` и генерирует тесты по описанным полям и типам.
 6. **Document sync** — при изменении эндпоинтов обновляй Observable Behaviour ↔ Test Plan ↔ Rules. Каждый Top-3 риск плана покрывается ≥1 тест-кейсом (risk-coverage check).
+7. **Старт сессии** — сразу после приветствия, до любой другой работы — скилл `/nightly-check` (однострочный вердикт о ночной прогоне). Не пропускать даже ради «простого вопроса».
 
 ---
 
@@ -393,7 +394,7 @@ git checkout -b features/add-user-tests
 - Конкретные исключения вместо `Exception`, без `null!`
 - LINQ: `Any()` вместо `Count() > 0` (правило про метод `Count()`; `Count`-свойство List/Queue O(1) и допустимо для проверки пустоты), без лишних `.ToList()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)`, `foreach` — только для async/ленивых источников (Rules/code-style.md → Loops)
 - Regex: только когда предикат читается хуже; паттерн — именованный `static readonly` + словесный комментарий над ним; дубли в 2+ файлах → base/хелпер (Rules/code-style.md → Regex)
-- UI: role/label-based локаторы только после живого снапшота; write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert; presence-check на странице вне load-verified-листа — через `WaitFor*Async` → `WaitResult` в page-object, не мгновенный `CountAsync` (Rules/ui-testing.md → Waits)
+- UI: role/label-based локаторы — извлечение/верификация ТОЛЬКО через `node Scripts/locator-dump.mjs <url> [--waitfor "текст"] [--waitfor-ax "текст"] [--click "имя"] [--static-text]` (HARD RULE; playwright-скилл/playwright-cli для локаторов запрещён; `--click` раскрывает пост-кликовые состояния, `--waitfor-ax` — контент вне innerText/с поздним рендером, `--static-text` — текст для GetByText), write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert; presence-check на странице вне load-verified-листа — через `WaitFor*Async` → `WaitResult` в page-object, не мгновенный `CountAsync` (Rules/ui-testing.md → Waits)
 - Строки: интерполяция `$""`, `StringBuilder` в циклах
 - SOLID: один класс — одна задача, зависимости через интерфейсы
 
