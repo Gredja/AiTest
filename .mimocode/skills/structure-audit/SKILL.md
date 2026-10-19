@@ -1,11 +1,11 @@
----
+﻿---
 name: structure-audit
 description: Read-only audit of the project file structure — checks that every folder name matches its contents (naming first, then common sense, then future plans), finds plural drift, duplicated segments, misplaced files and root junk, and outputs a findings table with move/rename proposals. Use when the user says "/structure-audit", "проверь структуру", "соответствуют ли папки содержимому", "проверь расположение файлов", "нейминг структуры".
 ---
 
 # Structure Audit
 
-Read-only review of where files live. Reports only — moves happen through `/refactor`
+Read-only review of where files live. Reports only — moves happen through `/audit` (Stage 2, gated batches)
 after the user approves the proposals.
 
 ## Instructions
@@ -60,12 +60,12 @@ Output ONLY this shape (no code changes!):
 Verdicts: `OK` (no row needed — summarize count instead) | `RENAME` | `MOVE` | `SPLIT` |
 `DELETE` (dead folder) | `UNTRACK` (root junk → gitignore/remove).
 
-End with: totals per verdict + suggested execution order (as R-phases for `/refactor`).
+End with: totals per verdict + suggested execution order (as fix batches for the `/audit` fix plan).
 
 ## Important
 
 - **READ-ONLY** — no `Move-Item`, no edits, no commits; the user routes approved
-  proposals into `/refactor`.
+  proposals into the `/audit` fix plan.
 - **Never include `documentation/Katas/`** — training material, out of scope entirely.
 - If unsure whether a file has consumers — grep before asserting; mark as "verify" instead of guessing.
 
