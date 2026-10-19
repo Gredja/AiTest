@@ -798,6 +798,14 @@ empty states).
   rules, generation skills, gate scripts, category semantics, wait/cleanup policy, or corrected
   a methodology belief, fold the delta into this file in the same commit (or the immediately
   following one if the change was large).
+- **Skill changes are a mandatory trigger (hard rule, 2026-10-19):** any edit to an agent
+  skill's procedure (new steps, new stage, changed gate order, new check category) MUST be
+  reflected here as the portable version of that procedure (see §14 for the current map) —
+  in the same flow as the skill edit. Adding/removing a skill → add/remove its portable
+  workflow row here too.
+- **Actualize at every commit (hard rule, 2026-10-19):** the commit gate includes a check
+  that this playbook still matches the live procedures — stale method is a commit blocker,
+  same standing as a stale setup backup.
 - **How:** edit the affected section; keep it project-agnostic — move concrete project facts to
   that project's own docs, keep only the method here. Keep `verified`-style honesty: don't
   record wishful process as if it were practice.
