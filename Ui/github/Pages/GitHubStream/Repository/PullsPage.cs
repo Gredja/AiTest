@@ -40,6 +40,14 @@ internal sealed class PullsPage(IPage page)
         return TabCountParser.Parse(text);
     }
 
+    internal async Task ClickNewPullRequestAsync()
+    {
+        await _newPullRequestLink.ClickAsync();
+        await _comparingHeading.WaitForAsync();
+    }
+
     private readonly ILocator _emptyStateHeading = page.GetByRole(AriaRole.Heading, new() { Name = "No pull requests matched your search" });
     private readonly ILocator _tabLinks = page.GetByRole(AriaRole.Link);
+    private readonly ILocator _newPullRequestLink = page.GetByRole(AriaRole.Link, new() { Name = "New pull request" });
+    private readonly ILocator _comparingHeading = page.GetByRole(AriaRole.Heading, new() { Name = "Compare changes" });
 }

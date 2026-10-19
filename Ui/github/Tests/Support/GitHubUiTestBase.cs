@@ -132,9 +132,9 @@ public abstract class GitHubUiTestBase
         return GitHubParamHelper.RepoParam(parts[0], parts[1]);
     }
 
-    protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool isClosed = false)
+    protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool isClosed = false, string? title = null)
     {
-        var title = $"API setup {DataGenerator.RandomString(TestDataConstants.TitleRandomLength)}";
+        title ??= $"API setup {DataGenerator.RandomString(TestDataConstants.TitleRandomLength)}";
         var created = await Cleanup.Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues,
             new CreateIssueModelRequest { Title = title },
@@ -171,6 +171,19 @@ public abstract class GitHubUiTestBase
         createdCommentIds.Add(found.LastValue!.Id);
     }
 
+    protected async Task<WaitResult<bool>> WaitForIssueLabelAsync(int issueNumber, string labelName, bool hasLabel) =>
+        await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                var response = await Cleanup.Get<IssueModelResponse>(
+                    GitHubEndpoints.RepoIssueById,
+                    [.. UiSandboxRepoParams(), .. GitHubParamHelper.IssueNumberParam(issueNumber)]);
+                var found = response.Data?.Labels?.Any(label => label.Name == labelName) ?? false;
+
+                return found == hasLabel;
+            },
+            matches => matches);
+
     protected async Task<string> CreateBranchViaApiAsync(string branchName, List<string> createdBranches)
     {
         var mainSha = await ResolveUiSandboxMainShaAsync();
@@ -182,6 +195,36 @@ public abstract class GitHubUiTestBase
         createdBranches.Add(branchName);
 
         return created.Data!.Ref;
+    }
+
+    protected async Task<string> CreateFolderBranchViaApiAsync(string branchName, string folderName, List<string> createdBranches)
+    {
+        var mainSha = await ResolveUiSandboxMainShaAsync();
+        var commitSha = await CreateScratchCommitViaApiAsync(mainSha, $"{folderName}/{ScratchFileName}");
+        await CreateBranchRefViaApiAsync(branchName, commitSha);
+        createdBranches.Add(branchName);
+
+        return branchName;
+    }
+
+    protected async Task<int> ResolveNonExistentIssueNumberAsync()
+    {
+        var response = await Cleanup.Get<List<IssueModelResponse>>(
+            GitHubEndpoints.RepoIssues,
+            [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateAll), .. GitHubParamHelper.PerPageParam(1)]);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        return response.Data![0].Number + GitHubEndpoints.NonExistentIdOffset;
+    }
+
+    protected async Task<int> ResolveNonExistentPullNumberAsync()
+    {
+        var response = await Cleanup.Get<List<PullRequestModelResponse>>(
+            GitHubEndpoints.RepoPullRequests,
+            [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateAll), .. GitHubParamHelper.PerPageParam(1)]);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        return response.Data![0].Number + GitHubEndpoints.NonExistentIdOffset;
     }
 
     protected async Task<(string HeadBranch, string BaseBranch)> CreateDivergentBranchesViaApiAsync(List<string> createdBranches)
@@ -233,7 +276,7 @@ public abstract class GitHubUiTestBase
         return mainBranch.Data!.Commit.Sha;
     }
 
-    private async Task<string> CreateScratchCommitViaApiAsync(string mainSha)
+    private async Task<string> CreateScratchCommitViaApiAsync(string mainSha, string treePath = ScratchFileName)
     {
         var mainCommit = await Cleanup.Get<GitCommitModelResponse>(
             GitHubEndpoints.RepoGitCommitsById,
@@ -255,7 +298,7 @@ public abstract class GitHubUiTestBase
                 [
                     new GitTreeEntry
                     {
-                        Path = ScratchFileName,
+                        Path = treePath,
                         Mode = FileMode644,
                         Type = BlobType,
                         Sha = blob.Data!.Sha

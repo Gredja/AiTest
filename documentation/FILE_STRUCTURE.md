@@ -349,10 +349,10 @@ Ui/
     │       ├── Pulls/                # PullDetailPage, PullCreatePage
     │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
     └── Tests/
-        ├── Support/                  # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser
+        ├── Support/                  # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
         └── GitHubStream/
             ├── Issues/               # IssuesUiTests, IssueUiTests
-            ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests
+            ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
             ├── Pulls/                # PullsUiTests, PullFlowUiTests
             └── Repository/           # RepositoryUiTests, BranchesUiTests
 ```

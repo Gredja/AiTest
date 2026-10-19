@@ -248,7 +248,11 @@ Design of such a tool (build it the same way in any project):
 3. Optional auth: inject cookies from the Playwright `storageState` file via
    `Network.setCookies`.
 4. Navigate; wait for the load event; optionally poll for expected text
-   (`--waitfor "heading you expect"`) to cover hydration.
+   (`--waitfor "heading you expect"`) to cover hydration. For state that exists only after
+   an action, replay the clicks in the same one-shot run (`--click "accessible name"`,
+   repeatable — the dump then shows the post-click accessibility tree); use `--waitfor-ax`
+   when the expected text never enters innerText (image alt text) or renders later than
+   the load event; add `--static-text` to print static text nodes for `GetByText` authoring.
 5. Call `Accessibility.getFullAXTree`, filter to interactive roles
    (button/link/textbox/checkbox/tab/menuitem/heading/…), print `- [role] "accessible name"`
    plus flags (`level`, `disabled`, `checked`).
@@ -286,7 +290,10 @@ guessing from memory.
 - Clicks that can be swallowed (menu/header still wiring up) → **bounded re-apply**: check the
   state *before* every retry so a late-rendering element isn't re-clicked shut. The retry
   interval must exceed the effect's render latency (a ~300 ms menu vs a 250 ms retry re-clicks
-  an open menu and burns the timeout).
+  an open menu and burns the timeout). The retry body must also swallow transient click
+  failures (an open menu overlay intercepting pointer events, a navigation destroying the
+  execution context) — one flaky attempt otherwise aborts the whole bounded wait with a raw
+  timeout that no later retry can recover from.
 - Never use bare fixed sleeps without a WHY comment documenting the measured latency.
 - Polling helpers return a result object; assertions embed `attempts`/`elapsed` in the message
   so a red test tells you which timing assumption broke.

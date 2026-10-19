@@ -12,12 +12,19 @@ const DEFAULT_TIMEOUT_MS = 15000
 const CHROMIUM_STARTUP_TIMEOUT_MS = 20000
 const COMMAND_TIMEOUT_MS = 30000
 const POLL_INTERVAL_MS = 100
+const POST_CLICK_SETTLE_MS = 400
 const VIEWPORT = '--window-size=1400,900'
 
 const INTERESTING_ROLES = new Set([
   'button', 'link', 'textbox', 'searchbox', 'combobox', 'checkbox', 'radio',
   'switch', 'tab', 'menuitem', 'menuitemcheckbox', 'menuitemradio', 'option',
-  'heading', 'slider', 'spinbutton', 'treeitem', 'summary'
+  'heading', 'slider', 'spinbutton', 'treeitem', 'summary', 'alert', 'status',
+  'image'
+])
+
+const CLICKABLE_ROLES = new Set([
+  'button', 'link', 'menuitem', 'menuitemcheckbox', 'menuitemradio',
+  'checkbox', 'tab', 'summary', 'combobox', 'option'
 ])
 
 const USAGE = `Usage:
@@ -30,13 +37,22 @@ Options:
                    (default: ${DEFAULT_STATE_PATH} when it exists)
   --anonymous      do not load any state
   --waitfor <text> wait until body innerText contains <text> (case-insensitive)
-  --timeout <ms>   navigation/text timeout (default: ${DEFAULT_TIMEOUT_MS})
+  --waitfor-ax <text>
+                   wait until the accessibility tree contains <text> (case-insensitive);
+                   catches content whose text is not innerText (img alt) or renders late
+  --click <text>   click the element whose accessible name matches <text> exactly
+                   (case-sensitive) or contains it (case-insensitive fallback), then
+                   wait for the accessibility tree to change; repeatable — clicks run
+                   in order after load/waitfor
+  --static-text    also print visible static text nodes (for GetByText authoring)
+  --timeout <ms>   navigation/text/click timeout (default: ${DEFAULT_TIMEOUT_MS})
   --headed         show the browser window instead of headless
   -h, --help       show this help
 
 Examples:
   node Scripts/locator-dump.mjs https://github.com/Gredja/AiTest/issues/new --waitfor "Create new issue"
-  node Scripts/locator-dump.mjs https://github.com/Gredja/AiTest --anonymous`
+  node Scripts/locator-dump.mjs https://github.com/Gredja/AiTest --anonymous
+  node Scripts/locator-dump.mjs https://github.com/o/r/issues/1 --click "Show options" --static-text`
 
 function fail(message) {
   throw new Error(message)
@@ -52,6 +68,9 @@ function parseArguments(argumentList) {
     state: null,
     anonymous: false,
     waitFor: null,
+    waitForAx: null,
+    clicks: [],
+    staticText: false,
     timeoutMs: DEFAULT_TIMEOUT_MS,
     headed: false,
     help: false
@@ -68,6 +87,15 @@ function parseArguments(argumentList) {
     } else if (argument === '--waitfor') {
       options.waitFor = argumentList[++index]
       if (!options.waitFor) fail('--waitfor requires a text')
+    } else if (argument === '--waitfor-ax') {
+      options.waitForAx = argumentList[++index]
+      if (!options.waitForAx) fail('--waitfor-ax requires a text')
+    } else if (argument === '--click') {
+      const clickText = argumentList[++index]
+      if (!clickText) fail('--click requires a text')
+      options.clicks.push(clickText)
+    } else if (argument === '--static-text') {
+      options.staticText = true
     } else if (argument === '--timeout') {
       options.timeoutMs = Number(argumentList[++index])
       if (!Number.isFinite(options.timeoutMs) || options.timeoutMs <= 0) {
@@ -297,16 +325,41 @@ function containsTextExpression(text) {
   return `document.body ? document.body.innerText.toLowerCase().includes(${JSON.stringify(text.toLowerCase())}) : false`
 }
 
+async function waitForAxText(client, sessionId, text, timeoutMs) {
+  const needle = text.toLowerCase()
+  const deadline = Date.now() + timeoutMs
+  let lastError = null
+  while (Date.now() < deadline) {
+    try {
+      const nodes = await getAxNodes(client, sessionId)
+      const match = nodes.find(node => (node.name?.value ?? '').toLowerCase().includes(needle))
+      if (match) {
+        console.error(`ax-text found in [${match.role?.value}] ${JSON.stringify(match.name?.value ?? '')}`)
+        return
+      }
+      lastError = null
+    } catch (error) {
+      lastError = error
+    }
+    await sleep(POLL_INTERVAL_MS)
+  }
+  const detail = lastError ? ` (last error: ${lastError.message})` : ''
+  fail(`timed out after ${timeoutMs}ms waiting for accessibility-tree text "${text}"${detail}`)
+}
+
 function axProperty(node, propertyName) {
   const property = node.properties?.find(entry => entry.name === propertyName)
   return property?.value?.value
 }
 
-function formatElement(node) {
+function formatElement(node, includeStaticText) {
   const role = node.role?.value
-  if (!role || !INTERESTING_ROLES.has(role)) return null
+  if (!role) return null
   if (node.ignored === true) return null
   if (axProperty(node, 'hidden') === true) return null
+  const isStaticText = role === 'text' || role === 'StaticText'
+  if (!isStaticText && !INTERESTING_ROLES.has(role)) return null
+  if (isStaticText && !includeStaticText) return null
   const name = (node.name?.value ?? '').replace(/\s+/g, ' ').trim()
   if (!name) return null
 
@@ -352,12 +405,130 @@ async function stopChromium(browser) {
   clearTimeout(forceKill)
 }
 
+function treeSignature(nodes) {
+  return nodes
+    .map(node => `${node.role?.value ?? ''} :: ${node.name?.value ?? ''}`)
+    .join('\n')
+}
+
+async function getAxNodes(client, sessionId) {
+  const { nodes } = await client.send('Accessibility.getFullAXTree', {}, sessionId)
+  return nodes
+}
+
+function isVisibleAxNode(node) {
+  if (node.ignored === true) return false
+  return axProperty(node, 'hidden') !== true
+}
+
+async function findClickableNode(client, sessionId, text) {
+  const nodes = await getAxNodes(client, sessionId)
+  const candidates = nodes.filter(node => {
+    if (!CLICKABLE_ROLES.has(node.role?.value)) return false
+    if (!isVisibleAxNode(node)) return false
+    const name = (node.name?.value ?? '').replace(/\s+/g, ' ').trim()
+    return name.length > 0
+  })
+  // case-sensitive exact match first: page sidebars often carry an "Edit labels"
+  // link next to the "Edit Labels" picker button, and a substring would hit the link
+  const exactMatch = candidates.find(node => node.name.value.replace(/\s+/g, ' ').trim() === text)
+  if (exactMatch) return exactMatch
+  const needle = text.toLowerCase()
+  return candidates.find(node =>
+    node.name.value.replace(/\s+/g, ' ').toLowerCase().includes(needle)
+  ) ?? null
+}
+
+async function clickViaDom(client, sessionId, backendNodeId) {
+  const resolved = await client.send('DOM.resolveNode', { backendNodeId }, sessionId)
+  const objectId = resolved.object.objectId
+  try {
+    await client.send('Runtime.callFunctionOn', {
+      objectId,
+      functionDeclaration: 'function() { this.scrollIntoView({ block: "center" }); this.click(); return true }',
+      returnByValue: true
+    }, sessionId)
+  } finally {
+    try {
+      await client.send('Runtime.releaseObject', { objectId }, sessionId)
+    } catch {
+      // releasing a stale object must not mask the click result
+    }
+  }
+}
+
+async function clickViaMouse(client, sessionId, node) {
+  const bounds = node.bounds
+  if (!bounds || bounds.width <= 0 || bounds.height <= 0) return false
+  const x = bounds.x + bounds.width / 2
+  const y = bounds.y + bounds.height / 2
+  await client.send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y }, sessionId)
+  await client.send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: 1 }, sessionId)
+  await client.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: 1 }, sessionId)
+  return true
+}
+
 function removeProfileDirectory(profileDirectory) {
   try {
     rmSync(profileDirectory, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 })
   } catch (error) {
     console.error(`profile cleanup failed (leftover temp dir is harmless): ${error.message}`)
   }
+}
+
+async function performClick(client, sessionId, clickText, timeoutMs) {
+  // the click target may render after the tree first changes (late menus, pickers),
+  // so keep looking for it until the deadline instead of failing on the first miss
+  const deadline = Date.now() + timeoutMs
+  let node = null
+  while (Date.now() < deadline) {
+    node = await findClickableNode(client, sessionId, clickText)
+    if (node) break
+    await sleep(POLL_INTERVAL_MS)
+  }
+  if (!node) {
+    fail(`--click "${clickText}": no visible clickable element whose accessible name contains it within ${timeoutMs}ms`)
+  }
+  console.error(`clicking: [${node.role?.value}] ${JSON.stringify(node.name?.value ?? '')}`)
+  const before = treeSignature(await getAxNodes(client, sessionId))
+
+  let clicked = false
+  if (node.backendDOMNodeId) {
+    try {
+      await clickViaDom(client, sessionId, node.backendDOMNodeId)
+      clicked = true
+    } catch {
+      // fall back to a mouse click at the node bounds
+    }
+  }
+  if (!clicked && !(await clickViaMouse(client, sessionId, node))) {
+    fail(`--click "${clickText}": cannot resolve a click position for the element`)
+  }
+
+  let lastError = null
+  let changedAt = null
+  let lastChangedSignature = null
+  while (Date.now() < deadline) {
+    await sleep(POLL_INTERVAL_MS)
+    try {
+      const after = treeSignature(await getAxNodes(client, sessionId))
+      if (after !== before && changedAt === null) changedAt = Date.now()
+      // wait until the tree stops changing after the click: menus render their items
+      // in a second frame, and a dump right after the first change would miss them
+      if (changedAt !== null && after === lastChangedSignature && Date.now() - changedAt >= POST_CLICK_SETTLE_MS) {
+        return
+      }
+      lastChangedSignature = after
+      lastError = null
+    } catch (error) {
+      lastError = error
+    }
+  }
+  const detail = lastError ? ` (last error: ${lastError.message})` : ''
+  if (changedAt === null) {
+    fail(`--click "${clickText}": accessibility tree did not change within ${timeoutMs}ms after the click${detail}`)
+  }
+  fail(`--click "${clickText}": accessibility tree kept changing for ${timeoutMs}ms after the click${detail}`)
 }
 
 async function main() {
@@ -410,9 +581,15 @@ async function main() {
         `text "${options.waitFor}"`,
         options.timeoutMs)
     }
+    if (options.waitForAx) {
+      await waitForAxText(client, sessionId, options.waitForAx, options.timeoutMs)
+    }
+    for (const clickText of options.clicks) {
+      await performClick(client, sessionId, clickText, options.timeoutMs)
+    }
 
     const { nodes } = await client.send('Accessibility.getFullAXTree', {}, sessionId)
-    const lines = nodes.map(formatElement).filter(line => line !== null)
+    const lines = nodes.map(node => formatElement(node, options.staticText)).filter(line => line !== null)
     process.stdout.write(`${lines.join('\n')}\n`)
     console.error(`dumped ${lines.length} elements`)
   } finally {

@@ -37,9 +37,30 @@ internal sealed class IssueCreatePage(IPage page)
         await _issueHeadings.Filter(new() { HasTextString = title }).First.WaitForAsync();
     }
 
+    internal async Task<WaitResult<bool>> SubmitEmptyTitleAsync()
+    {
+        await _createIssueButton.ClickAsync();
+
+        return await WaitHelper.WaitUntilAsync(
+            async () => await _validationErrorText.CountAsync() > 0,
+            hasError => hasError);
+    }
+
+    internal async Task<WaitResult<bool>> CancelAsync()
+    {
+        await _cancelButton.ClickAsync();
+
+        return await WaitHelper.WaitUntilAsync(
+            async () => await _issuesListHeadings.CountAsync() > 0,
+            isOnList => isOnList);
+    }
+
     private readonly ILocator _createIssueHeading = page.GetByRole(AriaRole.Heading, new() { Name = "Create new issue" });
     private readonly ILocator _titleTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Add a title" });
     private readonly ILocator _descriptionTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Markdown value" });
     private readonly ILocator _createIssueButton = page.GetByRole(AriaRole.Button, new() { Name = "Create ( control enter )" });
     private readonly ILocator _issueHeadings = page.GetByRole(AriaRole.Heading);
+    private readonly ILocator _validationErrorText = page.GetByText("Title can not be empty");
+    private readonly ILocator _cancelButton = page.GetByRole(AriaRole.Button, new() { Name = "Cancel", Exact = true });
+    private readonly ILocator _issuesListHeadings = page.GetByRole(AriaRole.Heading, new() { Name = "Issues", Exact = true });
 }

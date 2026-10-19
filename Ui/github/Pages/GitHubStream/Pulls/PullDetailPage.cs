@@ -51,61 +51,56 @@ internal sealed class PullDetailPage(IPage page)
         await _closedStatusText.CountAsync() > 0;
 
     // the action click can be swallowed while the page hydrates (observed 2026-10-17:
-    // close never reached the server) — re-apply until the outcome button appears.
-    // A disabled button means the previous click is still in flight (form submit with
-    // navigation) — clicking it would hang on actionability, so it is skipped, not clicked.
+    // close never reached the server) — re-apply until the outcome button appears
     internal async Task CloseAsync()
     {
-        await WaitHelper.WaitUntilAsync(
-            async () =>
-            {
-                if (await _reopenPullButton.CountAsync() > 0)
-                {
-                    return true;
-                }
-
-                if (await _closePullButton.CountAsync() > 0 && await _closePullButton.IsEnabledAsync())
-                {
-                    await _closePullButton.ClickAsync();
-                }
-
-                return false;
-            },
-            isClosed => isClosed,
-            timeout: _actionTimeout,
-            interval: _actionRetryInterval);
+        await RetryHelper.UntilAsync(
+            async () => await _reopenPullButton.CountAsync() > 0,
+            () => ClickOrReloadAsync(_closePullButton),
+            _actionTimeout,
+            _actionRetryInterval);
 
         await _closedStatusText.WaitForAsync();
     }
 
     internal async Task ReopenAsync()
     {
-        await WaitHelper.WaitUntilAsync(
-            async () =>
-            {
-                if (await _closePullButton.CountAsync() > 0)
-                {
-                    return true;
-                }
-
-                if (await _reopenPullButton.CountAsync() > 0 && await _reopenPullButton.IsEnabledAsync())
-                {
-                    await _reopenPullButton.ClickAsync();
-                }
-
-                return false;
-            },
-            isOpen => isOpen,
-            timeout: _actionTimeout,
-            interval: _actionRetryInterval);
+        await RetryHelper.UntilAsync(
+            async () => await _closePullButton.CountAsync() > 0,
+            () => ClickOrReloadAsync(_reopenPullButton),
+            _actionTimeout,
+            _actionRetryInterval);
 
         // the status badge re-renders after the button swap lands — wait for it too,
         // the test asserts on the badge, not the button
         await _openStatusText.WaitForAsync();
     }
 
+    // no action button at all = the page is mid-rerender or served stale against the
+    // API write → reload-poll; a disabled button means the previous click is still in
+    // flight — clicking it would hang on actionability, so it is skipped
+    private async Task ClickOrReloadAsync(ILocator actionButton)
+    {
+        if (await actionButton.CountAsync() == 0)
+        {
+            await _page.ReloadAsync();
+            return;
+        }
+
+        if (await actionButton.IsEnabledAsync())
+        {
+            await actionButton.ClickAsync();
+        }
+    }
+
+    // the edit-title click can be swallowed while the page hydrates (observed 2026-10-19:
+    // the editor never opened) — re-apply until the editor textbox shows up
     internal async Task BeginEditTitleAsync() =>
-        await _editTitleButton.ClickAsync();
+        await RetryHelper.UntilAsync(
+            async () => await _editTitleTextbox.CountAsync() > 0,
+            () => _editTitleButton.ClickAsync(),
+            _actionTimeout,
+            _actionRetryInterval);
 
     internal async Task SaveTitleAsync(string newTitle)
     {
@@ -116,8 +111,24 @@ internal sealed class PullDetailPage(IPage page)
 
     internal async Task EditBodyAsync(string newBody)
     {
-        await _descriptionOptionsButton.ClickAsync();
-        await _editCommentMenuItem.ClickAsync();
+        // the options menu lazy-loads its items over HTTP — click the trigger only while the
+        // menu is closed, click the item once it attached
+        await RetryHelper.UntilAsync(
+            async () => await _commentBodyTextbox.CountAsync() > 0,
+            async () =>
+            {
+                if (await _editCommentMenuItem.CountAsync() > 0)
+                {
+                    await _editCommentMenuItem.ClickAsync();
+                }
+                else
+                {
+                    await _descriptionOptionsButton.ClickAsync();
+                }
+            },
+            _actionTimeout,
+            _actionRetryInterval);
+
         await _commentBodyTextbox.FillAsync(newBody);
         await _updateCommentButton.ClickAsync();
         await _page.GetByText(newBody).First.WaitForAsync();
@@ -133,35 +144,21 @@ internal sealed class PullDetailPage(IPage page)
         await _draftConfirmButton.ClickAsync();
         await convertResponse;
 
-        return await WaitHelper.WaitUntilAsync(
-            async () =>
-            {
-                await _page.ReloadAsync();
-                return await _draftStatusText.CountAsync() > 0;
-            },
-            isDraft => isDraft,
+        return await RetryHelper.UntilAsync(
+            async () => await _draftStatusText.CountAsync() > 0,
+            () => _page.ReloadAsync(),
             _actionTimeout);
     }
 
     // the editor hydrates after navigation — a fill before that lands the text visually
-    // but leaves the submit disabled (observed 2026-10-17); re-fill until the button
-    // enables, state check BEFORE every refill
+    // but leaves the submit disabled (observed 2026-10-17); re-fill until the button enables
     internal async Task AddCommentAsync(string body)
     {
-        await WaitHelper.WaitUntilAsync(
-            async () =>
-            {
-                if (await _commentButton.IsEnabledAsync())
-                {
-                    return true;
-                }
-
-                await _commentTextbox.FillAsync(body);
-                return false;
-            },
-            isEnabled => isEnabled,
-            timeout: _actionTimeout,
-            interval: _actionRetryInterval);
+        await RetryHelper.UntilAsync(
+            async () => await _commentButton.IsEnabledAsync(),
+            () => _commentTextbox.FillAsync(body),
+            _actionTimeout,
+            _actionRetryInterval);
 
         await _commentButton.ClickAsync();
         await _page.GetByText(body).First.WaitForAsync();
