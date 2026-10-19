@@ -151,6 +151,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 - UI fixtures share one storageState file → assembly is `ParallelScope.None`; parallel login raced with state readers (failed 20s timeouts)
 - Issue actions are async: submit / close / reopen / save / comment respond before the UI reflects them — an instant `CountAsync()` right after the click observed a POST still in flight (failed 2026-10-13); the page-object waits for its post-condition, see `Rules/ui-testing.md` → Waits
 - The issues list is indexed asynchronously: a list opened right after a create can still miss the new issue (verified 2026-10-14) — poll with a reload (`WaitHelper.WaitUntilAsync`), not a single count
+- The branches list delete click right after a reload is swallowed silently — no request at all until the app hydrates, up to ~5s (verified 2026-10-19) — re-apply the click bounded until the row shows `Deleted`, then reload-poll until the branch leaves the list
 - `IssuesList_EmptyState_Verify` needs **0 open** issues in ui-sandbox: cleanup closes issues (no delete API), so a leftover probe or an issue created by a test that failed before registration keeps it red (verified 2026-10-14)
 
 ---
