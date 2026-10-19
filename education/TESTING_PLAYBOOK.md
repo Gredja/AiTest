@@ -803,3 +803,123 @@ empty states).
   record wishful process as if it were practice.
 - **Why:** this file is what gets carried to the next project and the next agent — stale method
   is worse than no method.
+
+---
+
+## 14. Skill workflows (portable procedures)
+
+Agent skills are just named, reusable versions of these procedures. Names are project-local;
+the step ORDER below is portable. Every "gate" = whatever the project defines as its fast
+truth-check (typically formatter verify + a fast test subset) — never skip one, never
+substitute a red gate with a re-run-hope.
+
+### 14.1 Commit gate (safe commit of a change set)
+1. Status + diff — know exactly what is about to ship.
+2. Message: action + object, English; user approves unless pre-authorized.
+3. Gate: formatter verify → fix or stop.
+4. Review the diff against the project's rules (naming, comments, magic values, config homes).
+5. Gate: fast deterministic test subset (smoke/health) — any red → stop, no bypass flags.
+6. Sync duty: backups/education/structure docs that mirror what changed — same flow, same commit.
+7. EOL-normalize the worktree, stage everything, confirm zero line-ending warnings, no secrets staged.
+8. Commit → push (never to the default branch without explicit confirmation).
+
+### 14.2 Branch finalize (PR → merge)
+1. Preconditions: not on the default branch; tree clean (else 14.1 first).
+2. Push; open a PR (title ≤70 chars action+object; body = commit summary + verification numbers).
+3. Wait for CI gates via a BACKGROUND watcher (poll check-runs; never a blocking main-thread loop).
+4. Any check red → stop with names/conclusions; all green → merge via API (no force options).
+5. Delete the merged remote branch; verify it is gone; remind the human to delete the local one.
+6. The agent never switches to the default branch and never deletes local branches itself.
+
+### 14.3 CI/nightly verdict (read-only check-in)
+1. Fetch the latest scheduled run of the project's informational suite (token from env, never printed).
+2. Not completed → bounded poll, then report "in progress"; completed → one-line verdict with run number, outcome, URL.
+3. Failure → dig per-job/per-step; distinguish persistent failures from flaky races (rerun-in-script semantics).
+4. Never re-dispatch, cancel, or delete runs from this flow.
+
+### 14.4 Full audit → fix plan (diagnosis stage — NO code edits)
+1. Load the project's rule files in full (they are the audit's authority).
+2. Fan out READ-ONLY subagents in parallel, one per category (naming/types, style, principles,
+   models/config, tests/assertions, comments, structure, security/log-hygiene, async/concurrency,
+   determinism/reruns, doc-sync, dead code — enable the set the project cares about).
+3. Each agent returns a table: severity, exact file:line, current, suggested.
+4. Main agent produces a FIX PLAN FILE with per-item rows: what is wrong in plain words,
+   what the fix (or the SKIP reason) is, batch grouping, OWNER (who executes), STATUS
+   (pending). Group batches from independent/safe to broad (comments → core → api → tests →
+   ui → adapters → structure moves).
+5. Present the plan table to the human; ask desired scope. STOP — zero fixes in this stage.
+6. The plan file is the cross-session state; statuses are updated only by the fix stage.
+
+### 14.5 Fix-the-plan (treatment stage — separate invocation)
+1. Re-confirm scope with the human; read the plan file.
+2. Process batches in the plan's order: apply only approved pending items.
+3. Gate after EVERY batch: build + formatter + fast subset + the suites the batch touched.
+   Red gate → fix or revert the batch's last change; never proceed on red; never fix-forward blindly.
+4. One commit per batch, via the commit gate (14.1). Structural moves: one move per flow,
+   with docs/structure sync in the same flow.
+5. Update plan statuses after each batch; SKIP items keep their reason visible.
+6. Close: delete the plan when every item is done/skipped; final report = per-batch table,
+   gate numbers, commit list. Optional verify: a quick re-audit of changed files only.
+
+### 14.6 Read-only codebase review (no changes)
+1. Full-file scan against the same rule set as 14.4, but findings only — no plan file needed
+   unless the human asks for one.
+2. Report by severity with exact locations; suggest fixes; never apply anything.
+
+### 14.7 Uncommitted-changes review
+1. Scope = working tree + staged diff (modified, added, deleted).
+2. Review those hunks against the rules and the surrounding code's patterns.
+3. Findings only; blocking issues stated as blockers.
+
+### 14.8 Pull-request review
+1. Scope = the PR diff vs its base; read the PR description for intent.
+2. Check rules compliance, test coverage of the change, and gate results.
+3. Findings only; do not push to the PR branch.
+
+### 14.9 API test generation (new endpoint/surface)
+1. Read the surface's Observable Behavior doc first; re-verify claims that look stale.
+2. Design seeds (happy path + contract + fields) → expand → enforce a minimum set of active
+   negatives (documented error messages, invalid ids, auth walls).
+3. Generate tests in the project's existing style (categories, naming, shared helpers — extend,
+   never duplicate files); writes use fictional, varied data; dynamic non-existent ids derived
+   from the live max, not invented constants.
+4. Gate (14.1 gates); cross-verify writes via API read-back; cleanup via register-then-assert.
+5. Sync the OB doc / plan / rules if behavior or structure changed (same flow).
+
+### 14.10 E2E scenario generation (multi-step write chains)
+1. Chain shape: create → verify → mutate → cleanup; the chain lives in the E2E project, not the
+   read-only suite.
+2. Setup via API, assertions against the real oracle, teardown that runs on any failure path
+   (partial-failure safe: register before assert).
+3. Gate; sandbox must be left as found.
+
+### 14.11 UI test generation (browser)
+1. Author locators ONLY from a live one-shot accessibility dump of the page (never from memory,
+   never CSS/XPath on the product); post-action states need post-click dumps or deterministic URLs.
+2. Page-objects own all locators (named fields, bottom of file); tests orchestrate and assert only.
+3. Auth via a pre-made storage state; exactly one bootstrap sign-in test saves it; exactly one
+   sign-out test may run stateless; feature tests never touch credentials.
+4. Waits: the action's OUTCOME is awaited before any assert (post-condition element, URL, or
+   bounded re-apply with state-check-before-retry; transient click failures are retried, not fatal).
+5. UI writes → API cleanup; register-then-assert; teardown last.
+6. Gate + the UI suite; new pages get OB sections with dated, verified locators.
+
+### 14.12 Coverage run
+1. Run the suite with instrumentation; collect per-file line coverage.
+2. Map endpoints/surfaces to their tests; report gaps by risk, not by percentage-chasing.
+3. Findings only — expansion goes through 14.9/14.10/14.11.
+
+### 14.13 Full test run (+ optional rich report)
+1. Run every category; collect per-suite pass/fail numbers.
+2. Write the machine-readable run report artifact (age-based cleanup applies).
+3. Optional: generate the HTML report; never treat the long live suite as a required merge gate.
+
+### 14.14 Documentation sync after structural change
+1. Trigger: files added/moved/renamed/deleted; skills/rules/config/env docs touched; OB changed.
+2. Update: structure map, setup backup, entry docs, this playbook (portable delta only),
+   skill path tables — in the same flow as the change, even without a separate commit.
+3. Fact-verify every edited claim against the code (env names, commands, paths).
+
+### 14.15 Rules showcase (onboarding a human/agent to a codebase)
+1. Point at the entry doc and the rule files; do not paraphrase rules from memory.
+2. Pair each rule group with the command that enforces it (gates, linters, suites).
