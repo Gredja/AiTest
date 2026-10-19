@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Use when the user says "audit", "/audit", "аудит", or wants to audit and fix code against project rules. Audits the entire codebase against Rules/*.md, presents findings by category, then fixes approved items. NOT for uncommitted changes review (use /review-commit) or PR reviews (use /review-pr). Unlike /review (read-only), /audit also applies fixes.
+description: Use when the user says "audit", "/audit", "аудит", or wants to audit and fix code against project rules. Audits the entire codebase against Rules/*.md, presents findings by category, then applies approved fixes in gated batches (build/format/tests after each batch, one /commit per batch) — the audit includes the refactoring. NOT for uncommitted changes review (use /review-commit) or PR reviews (use /review-pr). Unlike /review (read-only), /audit also applies fixes.
 ---
 
 # Skill: Full Code Audit
@@ -104,47 +104,61 @@ Combine all subagent results into a unified report:
 
 Ask the user: "Какие пункты исправлять?" (all / major only / specific numbers)
 
-## Step 5: Apply fixes (main agent)
+If the user wants a trackable order (or grants autonomy up front), write the findings first to
+`.mimocode/plans/audit-fixes-<YYYY-MM-DD>.md`: numbered items grouped into fix batches, my chosen
+fix order, and a SKIP section with reasons for items deliberately not fixed — that file is the
+worklist for Step 5 and is deleted when all batches close.
 
-For each approved finding:
-1. Read the file
-2. Apply the fix
-3. Track what was changed
+## Step 5: Apply fixes with refactor discipline (main agent)
 
-Group fixes by file to minimize reads/edits.
+Fixing IS refactoring — apply the same hard discipline as the `/refactor` skill:
 
-After ALL fixes in a category are applied:
-```bash
-dotnet build --no-restore -v q 2>&1 | Select-String "Error|Build succeeded"
-```
+1. **Batch the fixes** by area/phase (comments → Core → Api → E2E → Ui → adapters), not one
+   category at a time: a batch is one commit-worth of coherent change. Order batches from
+   independent/safe to broad (moves first if a fix requires structural relocation).
+2. Per batch: read the target files, apply the adjudicated fixes, track each id from the plan file.
+3. **Gates after EVERY batch** (never skip):
+   ```bash
+   dotnet build --verbosity quiet
+   dotnet format --verify-no-changes
+   dotnet test --verbosity minimal --filter Category=HealthCheck
+   # plus the suites the batch touched, e.g.:
+   #   Api/GitHub code   → --filter "Category=GitHub&Category!=GitHubUi&Category!=GitHubE2E"
+   #   Ui code           → --filter Category=GitHubUi
+   #   E2E code          → --filter Category=GitHubE2E
+   ```
+   If build/format fails — fix or revert the batch's last change and re-gate.
+   If a touched suite goes red — investigate, fix or revert; never commit a red batch.
+4. **Commit per batch ONLY through the `/commit` skill** (message approval, all-rules review,
+   backups/education sync, `normalize-eol`, push). Never `git commit` directly.
+5. Structural moves found during fixes (file/folder renames, namespace changes) follow the
+   `/refactor` Phase-R rule: one move per flow + docs sync (`FILE_STRUCTURE.md`, `AGENTS.md`,
+   `Rules/*`, `backups/SETUP.md`) + gates, still committed via `/commit`.
+6. Items that should NOT be fixed go to the plan's SKIP section with a concrete reason
+   (accepted debt, rule scope nuance, churn worse than the smell) — surfaced to the user in
+   the final report, never silently dropped.
 
-If build fails — revert the last fix and report the issue.
-
-After build succeeds:
-```bash
-dotnet test --no-build --verbosity q
-```
-
-If tests fail — investigate, fix or revert, re-run tests.
+If tests fail — investigate, fix or revert, re-run the batch gates.
 
 ## Step 6: Report results (main agent)
 
-After all fixes are applied and tests pass:
+After all batches are applied, gated and committed:
 
 ```
 # Audit Complete
 
-| Category | Fixed |
-|----------|-------|
-| Naming & Types | N |
-| Code Style | N |
-| ... | ... |
+| Category | Fixed | Skipped (reason) |
+|----------|-------|------------------|
+| Naming & Types | N | ... |
+| ... | | |
 
-**Tests:** X passed, Y failed
-**Build:** Clean (0 errors)
+**Gates:** build clean · format pass · HealthCheck X/X · touched suites: <numbers>
+**Commits:** <batch hashes>
+**Plan file:** deleted (all batches closed) / open items: ...
 ```
 
-Update the plan file if one exists, or note findings for future sessions.
+Optional verify pass: re-run one quick audit category over the changed files only, to confirm
+the fixes did not introduce new violations.
 
 ---
 
@@ -152,11 +166,13 @@ Update the plan file if one exists, or note findings for future sessions.
 
 - Audit ALL .cs files, not a sample
 - Line references must be exact (`file:line`)
-- Never fix without user approval — present first, fix after
-- Run `dotnet build` after each category of fixes
-- Run `dotnet test` after all fixes are complete
+- Never fix without user approval — present first, fix after (an upfront autonomy grant or an
+  approved plan file counts as that approval for its listed items)
+- Gates after EVERY fix batch: `build` + `format --verify-no-changes` + `HealthCheck` + touched suites
+- Commit per batch ONLY through the `/commit` skill — never `git commit` directly
 - If a fix breaks the build — revert immediately and report
 - Group related fixes (e.g. all null safety together) for efficient application
+- SKIP items need an explicit reason in the plan file / final report — no silent drops
 - Skip auto-generated code (obj/, bin/)
 - Exclude `AllureTestResultBuilder` dictionary keys from magic strings audit (Allure JSON spec)
 - Category attributes (`[Category("HealthCheck")]`) are enum-like names, not magic strings

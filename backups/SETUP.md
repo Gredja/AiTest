@@ -324,7 +324,7 @@ MiMoCode:
 | `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
-| `/audit` | Аудит кодовой базы по Rules + фиксы одобренных находок |
+| `/audit` | Аудит кодовой базы по Rules + фиксы одобренных находок батчами: гейты (build/format/HealthCheck/задетые сьюты) после каждого батча, коммит — только через `/commit`; SKIP-пункты — с причиной |
 | `/api-test-gen` | Генерирует тесты для нового API endpoint (читает Observable Behaviour) |
 | `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations |
 | `/ui-test-gen` | Генерирует UI-тесты Playwright (page-objects, live-снапшоты локаторов) |
