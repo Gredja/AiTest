@@ -108,6 +108,7 @@ public class RepositoryUiTests : GitHubUiTestBase
             GitHubEndpoints.RepoCommits,
             [.. UiSandboxRepoParams(), .. GitHubParamHelper.PerPageParam(1)]);
         commits.ShouldHaveStatusCode(HttpStatusCode.OK);
+        commits.Data.Should().NotBeEmpty("repo must have at least one commit — Entry Criteria");
         var latestMessage = commits.Data![0].Commit.Message.Split('\n')[0].Trim();
 
         await Browser.CodePage.OpenCommitsAsync();

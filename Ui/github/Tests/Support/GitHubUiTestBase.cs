@@ -139,9 +139,13 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoIssues,
             new CreateIssueModelRequest { Title = title },
             UiSandboxRepoParams());
+        if (created.Data is not null)
+        {
+            createdIssueNumbers.Add(created.Data.Number);
+        }
+
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         var issueNumber = created.Data!.Number;
-        createdIssueNumbers.Add(issueNumber);
 
         if (isClosed)
         {
@@ -191,8 +195,8 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", Sha = mainSha },
             UiSandboxRepoParams());
-        created.ShouldHaveStatusCode(HttpStatusCode.Created);
         createdBranches.Add(branchName);
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         return created.Data!.Ref;
     }
@@ -213,6 +217,7 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoIssues,
             [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateAll), .. GitHubParamHelper.PerPageParam(1)]);
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty("sandbox must have at least one issue to derive the dynamic id");
 
         return response.Data![0].Number + GitHubEndpoints.NonExistentIdOffset;
     }
@@ -223,6 +228,7 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoPullRequests,
             [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateAll), .. GitHubParamHelper.PerPageParam(1)]);
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty("sandbox must have at least one pull request to derive the dynamic id");
 
         return response.Data![0].Number + GitHubEndpoints.NonExistentIdOffset;
     }
@@ -234,8 +240,8 @@ public abstract class GitHubUiTestBase
         var mainSha = await ResolveUiSandboxMainShaAsync();
         var commitSha = await CreateScratchCommitViaApiAsync(mainSha);
         await CreateBranchRefViaApiAsync(headBranch, commitSha);
-        await CreateBranchRefViaApiAsync(baseBranch, mainSha);
         createdBranches.Add(headBranch);
+        await CreateBranchRefViaApiAsync(baseBranch, mainSha);
         createdBranches.Add(baseBranch);
 
         return (headBranch, baseBranch);
@@ -251,8 +257,12 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoPullRequests,
             new CreatePullRequestModelRequest { Title = title, Head = headBranch, Base = baseBranch },
             UiSandboxRepoParams());
+        if (pullRequest.Data is not null)
+        {
+            createdPullRequests.Add((pullRequest.Data.Number, headBranch, baseBranch));
+        }
+
         pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
-        createdPullRequests.Add((pullRequest.Data!.Number, headBranch, baseBranch));
 
         return (pullRequest.Data.Number, headBranch, baseBranch);
     }

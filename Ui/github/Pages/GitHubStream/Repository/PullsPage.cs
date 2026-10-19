@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
 using Ui.Github.Tests.Support;
@@ -18,7 +18,7 @@ internal sealed class PullsPage(IPage page)
 
     internal async Task<int> GetClosedCountAsync() => await GetTabCountAsync("Closed");
 
-    internal async Task<bool> ContainsPullWithTitleAsync(string title) =>
+    internal async Task<bool> HasPullWithTitleAsync(string title) =>
         await _tabLinks.Filter(new() { HasTextString = title }).CountAsync() > 0;
 
     // the list is indexed asynchronously after a write: a page loaded right after a create
@@ -29,7 +29,7 @@ internal sealed class PullsPage(IPage page)
             {
                 await _page.ReloadAsync();
 
-                return await ContainsPullWithTitleAsync(title);
+                return await HasPullWithTitleAsync(title);
             },
             found => found);
 

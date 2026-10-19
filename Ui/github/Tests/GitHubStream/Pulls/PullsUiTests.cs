@@ -10,7 +10,7 @@ namespace Ui.Github.Tests.GitHubStream.Pulls;
 public class PullsUiTests : GitHubUiTestBase
 {
     [Test]
-    [Category("Regression")]
+    [Category("Negative")]
     [Description("UI-7 Pull requests list: empty state on fresh sandbox")]
     public async Task PullsList_EmptyState_Verify()
     {

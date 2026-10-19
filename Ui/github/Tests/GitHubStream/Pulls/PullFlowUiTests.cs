@@ -1,4 +1,4 @@
-using AllureAdapter;
+﻿using AllureAdapter;
 using Core.Helpers;
 using FluentAssertions;
 using Ui.Github.Tests.Support;
@@ -80,7 +80,7 @@ public class PullFlowUiTests : GitHubUiTestBase
         await Browser.PullDetailPage.OpenAsync(pullNumber);
         await Browser.PullDetailPage.EditBodyAsync(newBody);
 
-        (await Browser.PullDetailPage.ContainsTextAsync(newBody)).Should().BeTrue("edited body must persist on the page");
+        (await Browser.PullDetailPage.HasTextAsync(newBody)).Should().BeTrue("edited body must persist on the page");
     }
 
     [Test]
@@ -96,7 +96,7 @@ public class PullFlowUiTests : GitHubUiTestBase
         await Browser.PullDetailPage.AddCommentAsync(body);
         await RegisterCommentIdAsync(pullNumber, body, _createdCommentIds);
 
-        (await Browser.PullDetailPage.ContainsTextAsync(body)).Should().BeTrue("comment must appear in the thread");
+        (await Browser.PullDetailPage.HasTextAsync(body)).Should().BeTrue("comment must appear in the thread");
     }
 
     [Test]

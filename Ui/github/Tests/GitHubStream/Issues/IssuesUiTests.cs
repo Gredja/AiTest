@@ -14,7 +14,7 @@ public class IssuesUiTests : GitHubUiTestBase
     private readonly List<int> _createdIssueNumbers = [];
 
     [Test]
-    [Category("Regression")]
+    [Category("Negative")]
     [Description("UI-4 Issues list: empty state on fresh sandbox, New issue available")]
     public async Task IssuesList_EmptyState_Verify()
     {
@@ -47,7 +47,7 @@ public class IssuesUiTests : GitHubUiTestBase
         found.IsSuccess.Should().BeTrue(
             $"matching issue must appear in the results (attempts={found.Attempts}, elapsed={found.Elapsed})");
 
-        (await Browser.IssuesPage.ContainsIssueWithTitleAsync(otherTitle)).Should().BeFalse(
+        (await Browser.IssuesPage.HasIssueWithTitleAsync(otherTitle)).Should().BeFalse(
             "non-matching issue must not be in the filtered results");
     }
 

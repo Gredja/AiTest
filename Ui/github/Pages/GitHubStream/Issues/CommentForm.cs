@@ -1,4 +1,4 @@
-using Core.Helpers;
+﻿using Core.Helpers;
 using Microsoft.Playwright;
 using Ui.Github.Tests.Support;
 
@@ -17,7 +17,7 @@ internal sealed class CommentForm(IPage page)
         await _page.GetByText(body).First.WaitForAsync();
     }
 
-    internal async Task<bool> ContainsCommentAsync(string body) =>
+    internal async Task<bool> HasCommentAsync(string body) =>
         await _page.GetByText(body).CountAsync() > 0;
 
     internal async Task EditFirstCommentAsync(string newBody)

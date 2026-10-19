@@ -10,6 +10,7 @@ public static class GitHubEndpoints
     public const string NonExistentBranchName = "nonexistent-branch-12345";
     public const string NonExistentTagName = "nonexistent-release-tag-12345";
     public const string NonExistentSha = "0000000000000000000000000000000000000000";
+    public const string NonExistentUiRepoPath = "gredjapl/ui-sandbox-nonexistent-xyz404";
     public const string BranchWithSpacesName = "branch with spaces";
     public const string DefaultBranch = "main";
     public const string MercyPreviewAccept = "application/vnd.github.mercy-preview+json";

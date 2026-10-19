@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
@@ -69,7 +69,7 @@ public class IssueUiTests : GitHubUiTestBase
         await Browser.CommentForm.AddCommentAsync(body);
         await RegisterCommentIdAsync(issueNumber, body, _createdCommentIds);
 
-        (await Browser.CommentForm.ContainsCommentAsync(body)).Should().BeTrue("comment must appear in the thread");
+        (await Browser.CommentForm.HasCommentAsync(body)).Should().BeTrue("comment must appear in the thread");
     }
 
     [Test]
@@ -112,7 +112,7 @@ public class IssueUiTests : GitHubUiTestBase
         await Browser.CommentForm.AddCommentAsync(body);
         await RegisterCommentIdAsync(issueNumber, body, _createdCommentIds);
 
-        (await Browser.CommentForm.ContainsCommentAsync(body)).Should().BeTrue("added comment must be visible");
+        (await Browser.CommentForm.HasCommentAsync(body)).Should().BeTrue("added comment must be visible");
     }
 
     [Test]
@@ -197,9 +197,9 @@ public class IssueUiTests : GitHubUiTestBase
 
         await Browser.CommentForm.EditFirstCommentAsync(editedBody);
 
-        (await Browser.CommentForm.ContainsCommentAsync(editedBody)).Should().BeTrue(
+        (await Browser.CommentForm.HasCommentAsync(editedBody)).Should().BeTrue(
             "edited body must render in the thread");
-        (await Browser.CommentForm.ContainsCommentAsync(originalBody)).Should().BeFalse(
+        (await Browser.CommentForm.HasCommentAsync(originalBody)).Should().BeFalse(
             "old body must be gone after the update");
     }
 

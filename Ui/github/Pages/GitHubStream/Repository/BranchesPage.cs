@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
 
@@ -18,7 +18,7 @@ internal sealed class BranchesPage(IPage page)
     internal async Task OpenAsync() =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/branches");
 
-    internal async Task<bool> ContainsBranchAsync(string branchName) =>
+    internal async Task<bool> HasBranchAsync(string branchName) =>
         await _branchLinks.Filter(new() { HasTextString = branchName }).CountAsync() > 0;
 
     internal async Task<WaitResult<bool>> WaitForBranchAsync(string branchName) =>
@@ -27,7 +27,7 @@ internal sealed class BranchesPage(IPage page)
             {
                 await _page.ReloadAsync();
 
-                return await ContainsBranchAsync(branchName);
+                return await HasBranchAsync(branchName);
             },
             found => found);
 
@@ -92,7 +92,7 @@ internal sealed class BranchesPage(IPage page)
             {
                 await _page.ReloadAsync();
 
-                return await ContainsBranchAsync(branchName);
+                return await HasBranchAsync(branchName);
             },
             isPresent => !isPresent);
 

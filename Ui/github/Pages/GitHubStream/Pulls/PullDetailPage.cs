@@ -32,7 +32,7 @@ internal sealed class PullDetailPage(IPage page)
     internal async Task<bool> HasBranchLinkAsync(string branchName) =>
         await _branchLinks.Filter(new() { HasTextString = branchName }).CountAsync() > 0;
 
-    internal async Task<bool> ContainsTextAsync(string text) =>
+    internal async Task<bool> HasTextAsync(string text) =>
         await _page.GetByText(text).CountAsync() > 0;
 
     internal async Task OpenFilesChangedAsync(int pullNumber) =>
@@ -84,6 +84,7 @@ internal sealed class PullDetailPage(IPage page)
         if (await actionButton.CountAsync() == 0)
         {
             await _page.ReloadAsync();
+
             return;
         }
 

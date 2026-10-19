@@ -13,7 +13,7 @@ internal sealed class NotFoundPage(IPage page)
     private readonly IPage _page = page;
 
     internal async Task OpenAsync() =>
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/gredjapl/ui-sandbox-nonexistent-xyz404");
+        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{GitHubEndpoints.NonExistentUiRepoPath}");
 
     internal async Task<WaitResult<bool>> WaitFor404MessageAsync() =>
         await WaitHelper.WaitUntilAsync(

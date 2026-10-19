@@ -1,4 +1,4 @@
-using AllureAdapter;
+﻿using AllureAdapter;
 using Core.Helpers;
 using FluentAssertions;
 using Ui.Github.Tests.Support;
@@ -55,7 +55,7 @@ public class BranchesUiTests : GitHubUiTestBase
         await Browser.BranchesPage.OpenAsync();
         await Browser.BranchesPage.DeleteBranchAsync(branchName);
 
-        (await Browser.BranchesPage.ContainsBranchAsync(branchName)).Should().BeFalse("deleted branch must be gone");
+        (await Browser.BranchesPage.HasBranchAsync(branchName)).Should().BeFalse("deleted branch must be gone");
     }
 
     [Test]

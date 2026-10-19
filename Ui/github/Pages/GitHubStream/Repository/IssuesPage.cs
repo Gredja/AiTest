@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
 using Ui.Github.Tests.Support;
@@ -24,7 +24,7 @@ internal sealed class IssuesPage(IPage page)
         return TabCountParser.Parse(text);
     }
 
-    internal async Task<bool> ContainsIssueWithTitleAsync(string title) =>
+    internal async Task<bool> HasIssueWithTitleAsync(string title) =>
         await _issueLinks.Filter(new() { HasTextString = title }).CountAsync() > 0;
 
     // The list is indexed asynchronously after a write: a page loaded right after a create
@@ -35,7 +35,7 @@ internal sealed class IssuesPage(IPage page)
             {
                 await _page.ReloadAsync();
 
-                return await ContainsIssueWithTitleAsync(title);
+                return await HasIssueWithTitleAsync(title);
             },
             found => found);
 
