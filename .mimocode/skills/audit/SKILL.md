@@ -1,4 +1,4 @@
-﻿---
+---
 name: audit
 description: Use when the user says "audit", "/audit", "аудит", "проверь структуру", "/structure-audit", "нейминг структуры", "рефакторинг"/"refactor" for whole-codebase work, or wants code improved against Rules/*.md. One skill, two stages: (1) audit the entire codebase against Rules/*.md (categories A–F + structure) and produce a detailed fix plan — a human-readable table with explanations and statuses, saving it to .mimocode/plans/audit-fixes-<date>.md — fixes are NOT applied immediately, they happen later on the user's signal; (2) apply the approved plan in gated batches (build/format/HealthCheck/touched suites after each batch, one /commit per batch, structural moves with docs sync) and update plan statuses. NOT for uncommitted-changes review (/review-commit) or PR reviews (/review-pr).
 ---
@@ -7,11 +7,11 @@ description: Use when the user says "audit", "/audit", "аудит", "прове
 
 Two stages, explicitly separated in time:
 
-1. **Диагностика (this invocation):** audit the whole codebase against `Rules/*.md` → detailed
-   fix plan with explanations and statuses → present the table → STOP. **Аудит НИКОГДА не чинит
-   в этом же запуске** — только план на реализацию; фиксы возможны лишь отдельным поздним
-   вызовом (Stage 2) по явному сигналу пользователя.
-2. **Лечение (later, on the user's signal — same or another session):** read the plan file,
+1. **Diagnosis (this invocation):** audit the whole codebase against `Rules/*.md` → detailed
+   fix plan with explanations and statuses → present the table → STOP. **The audit NEVER fixes
+   anything in the same run** — plan only; fixes happen in a separate, later invocation
+   (Stage 2) on an explicit user signal.
+2. **Treatment (later, on the user's signal — same or another session):** read the plan file,
    apply pending items in gated batches through `/commit`, update statuses, close the plan.
 
 The plan file is the cross-session state: it must contain everything a future session needs.
@@ -127,17 +127,18 @@ unused test helpers and page-object methods; orphaned endpoints/models no test t
 stale `#if`/conditional branches. **Before reporting anything as dead: grep `Rules/*.md` —
 a rule-documented utility is API, not dead code** (`RandomIntExclusive` lesson).
 
-### Execution map — who does what (обязательно заполнить в отчёте)
+### Execution map — who does what (fill this in the report)
 
-| Проверка | Исполнитель (owner) |
+| Check | Owner |
+|----------|-------|
 |----------|---------------------|
-| A–F, S, Y, Z, W, U, R | по одному `explore`-сабагенту на категорию (параллельно) |
-| Сведение плана, статусы, таблица | main agent (Step 4) |
-| Рекомендация по статик-анализаторам (Roslynator / Meziantou + `dotnet format --analyze`) | main agent — как отдельный пункт инфраструктуры В ПЛАНЕ (Stage 2, после согласия пользователя) |
-| Фиксы (Stage 2) | main agent, батчи → гейты → `/commit` |
+| A–F, S, Y, Z, W, U, R | one `explore` subagent per category (parallel) |
+| Plan roll-up, statuses, tables | main agent (Step 4) |
+| Static-analyzer recommendation (Roslynator / Meziantou + `dotnet format --analyze`) | main agent — as a separate infrastructure item IN THE PLAN (Stage 2, after user approval) |
+| Fixes (Stage 2) | main agent, batches → gates → `/commit` |
 
-Каждый сабагент возвращает таблицу с категорией в имени строки — main agent группирует их
-в батчи плана по владельцу-области (Core/Api/Ui/адаптеры/инфраструктура).
+Each subagent tags its rows with the category — the main agent rolls them into plan batches
+by owning area (Core/Api/Ui/adapters/infrastructure).
 
 Each subagent returns a table:
 ```
@@ -151,7 +152,7 @@ inline; test data literals inside tests are expected.
 
 ### Step 4: Detailed fix plan — the deliverable of Stage 1 (main agent)
 
-**Никаких фиксов в этой стадии — вообще.** Аудит создаёт ТОЛЬКО план.
+**No fixes in this stage — none at all.** The audit produces ONLY a plan.
 Create `.mimocode/plans/audit-fixes-<YYYY-MM-DD>.md`:
 
 1. Header: date, scope (files reviewed), totals (X major / Y minor / Z style), source branch.
@@ -160,7 +161,7 @@ Create `.mimocode/plans/audit-fixes-<YYYY-MM-DD>.md`:
    structure-moves (if any). Each batch = one commit-worth of coherent change.
 3. **Per-item table** (this is what the user reads — explanations in human language):
    ```
-   | # | Sev | File:Line | Что не так (простыми словами) | Что сделаю / Почему SKIP | Батч | Статус |
+   | # | Sev | File:Line | What is wrong (plain words) | What I will do / Why SKIP | Batch | Status |
    ```
    Status vocabulary: `pending` → `in progress` → `done` / `skipped (reason)`.
 4. **SKIP section:** findings deliberately not fixed, each with a concrete reason

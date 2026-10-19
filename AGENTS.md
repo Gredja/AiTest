@@ -23,7 +23,8 @@ E2E тесты (NUnit + RestSharp): GitHub сценарные цепочки (mu
 ## Rules
 
 ### Workflow
-- **Старт сессии:** сразу после приветствия, до любой другой работы — скилл `/nightly-check` (однострочный вердикт о nightly-прогоне `Gredja/AiTest`). Не пропускать даже ради «простого вопроса» пользователя — сначала вердикт, потом работа (дубль правила project MEMORY → Session start; это — канонический текст, он в контексте каждой сессии).
+- **Session start:** right after the greeting, before any other work — run the `/nightly-check` skill (one-line verdict on the `Gredja/AiTest` nightly run). Never skip it, even for a "quick question" — verdict first, then the user's work (duplicate of project MEMORY → Session start; this is the canonical text present in every session context).
+- **Documentation language (hard rule, 2026-10-19):** repository-facing documents — **English only** (`Rules/*`, `education/TESTING_PLAYBOOK.md`, `documentation/*` including OB and templates, `.mimocode/skills/*/SKILL.md`, `README.md`, `AGENTS.md` itself). User-facing chat replies — **Russian**. Russian text inside English files is allowed only as quoted user trigger phrases or rule citations (e.g. skill description triggers), never as the main body. Mixed language without a quoted-source reason = a review violation.
 Все изменения: план → одобрение → отчёт. После коммита — review `Rules/`. После структурных изменений — обновить документацию И tracked `backups/` (включая удаления gitignored-файлов — в том же ходу, даже без коммита). Выполненные планы (`.mimocode/plans/`) — удалять сразу после реализации. Правило, выраженное как IDE0xxx → `.editorconfig` в том же изменении; новая формулировка правила сверяется с существующими `Rules/*.md` на противоречие.
 
 ### Code
