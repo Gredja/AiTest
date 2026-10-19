@@ -57,10 +57,6 @@ internal sealed class BranchesPage(IPage page)
         }
     }
 
-    // The click can be swallowed while the branches app is still wiring up (2026-10-19: the first
-    // click right after a reload sent no request at all, the next one deleted). The row keeps its
-    // branch link after a successful delete — only a "Deleted" badge appears in it — so that badge
-    // is the click post-condition; the state check runs BEFORE every click (UI-13).
     private async Task ClickDeleteUntilBadgeAsync(ILocator row)
     {
         var deletedBadge = row.GetByText("Deleted");

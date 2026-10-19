@@ -14,7 +14,6 @@ public class InvitationModelResponse
     [RequiredField]
     public UserModelResponse Inviter { get; set; }
 
-    // строка ("write"), в отличие от одноимённого объекта permissions у коллаборатора
     public string Permissions { get; set; }
 
     public bool Expired { get; set; }
