@@ -19,14 +19,14 @@
 | 8 | **Repo metadata** | GET /contributors, /languages, /topics, /tags — status, contract, fields, negatives | Done (D4–D7) |
 | 9 | **Commits & Releases** | GET /commits, /releases — status, contract, fields, negatives | Done (D8–D9) |
 | 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
-| 11 | **GitHub UI (Playwright)** | Web UI: ordinary login / sign-out, auth state, repo landing, code view, 404, issues & PRs lists, issue create/close/reopen/edit + comments — page-objects, storageState auth, write via UI → cleanup via API | Done (14 tests, `Ui/`) |
+| 11 | **GitHub UI (Playwright)** | Web UI: login/logout/auth state, repo landing, code view, 404s, issues & PRs flows, branches, labels, comments actions, anonymous gates — page-objects, storageState auth, write via UI → cleanup via API | Done (44 tests, `Ui/`) |
 | 12 | **Collaborators & invitations** | GET/PUT /collaborators, /collaborators/{username}/permission, GET/DELETE /invitations (OB §28–28d) | Done (14 tests) |
 | 13 | **Authenticated user** | GET /user (OB §5a) — status, contract, login match, 401s | Done (5 tests) |
 | 14 | **Release detail** | GET /releases/latest, /releases/tags/{tag} (OB §15c–15d) + fixture infra §15e | Done (4 tests) |
 | 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (5 tests) |
 | 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (18 tests) |
 
-**Total:** 376 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups; плюс 9 E2E-цепочек и 14 UI). CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Остаток плана — расширение UI (+30): `.mimocode/plans/github-test-expansion.md`.
+**Total:** 376 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups), 9 E2E-цепочек и 44 UI-теста. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Расширение UI до 44 закрыто 2026-10-19 (`.mimocode/plans/github-test-expansion.md` выполнен и удалён).
 
 ## 2. Out of Scope
 
