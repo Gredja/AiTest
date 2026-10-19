@@ -6,6 +6,10 @@ public static class TestConfig
 {
     private const string BaseUrlKey = "BaseUrl";
 
+    public const string SolutionFileName = "Gredja.slnx";
+    public const string AllureResultsDirName = "allure-results";
+    public const string ResultsDirName = "TestResults";
+
     private static readonly JsonDocument _root = JsonDocument.Parse(
         File.ReadAllText(Path.Combine(AppContext.BaseDirectory, "testsettings.json")));
 
@@ -55,7 +59,7 @@ public static class TestConfig
     {
         if (!_root.RootElement.TryGetProperty(key, out var value))
         {
-            throw new InvalidOperationException($"testsettings.json: missing required key '{key}'");
+            throw MissingRequiredKey(key);
         }
 
         if (value.ValueKind is not JsonValueKind.Number)
@@ -70,7 +74,7 @@ public static class TestConfig
     {
         if (!section.TryGetProperty(key, out var value))
         {
-            throw new InvalidOperationException($"testsettings.json: missing required key '{key}'");
+            throw MissingRequiredKey(key);
         }
 
         return value.GetString()
@@ -81,7 +85,7 @@ public static class TestConfig
     {
         if (!section.TryGetProperty(key, out var value))
         {
-            throw new InvalidOperationException($"testsettings.json: missing required key '{key}'");
+            throw MissingRequiredKey(key);
         }
 
         if (value.ValueKind is not JsonValueKind.True and not JsonValueKind.False)
@@ -91,6 +95,9 @@ public static class TestConfig
 
         return value.GetBoolean();
     }
+
+    private static InvalidOperationException MissingRequiredKey(string key) =>
+        new($"testsettings.json: missing required key '{key}'");
 
     private static string GetRequiredEnvironmentValue(string key) =>
         ReadEnvironmentValue(key)

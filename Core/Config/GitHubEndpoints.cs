@@ -25,6 +25,8 @@ public static class GitHubEndpoints
     public const string PermissionPull = "pull";
     public const string PermissionPush = "push";
     public const string ObjectTypeCommit = "commit";
+    public const string ObjectTypeBlob = "blob";
+    public const string FileMode644 = "100644";
 
     public const string RefsHeadsPrefix = "refs/heads/";
     public const string HeadsPrefix = "heads/";

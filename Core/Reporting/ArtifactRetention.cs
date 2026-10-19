@@ -1,12 +1,10 @@
+using Core.Config;
 using Core.Logging;
 
 namespace Core.Reporting;
 
 internal static class ArtifactRetention
 {
-    internal const string ResultsDirName = "TestResults";
-    internal const string AllureResultsDirName = "allure-results";
-
     private const int RetentionDays = 7;
 
     internal static void CleanupAccumulated(string? root)
@@ -16,8 +14,8 @@ internal static class ArtifactRetention
             return;
         }
 
-        DeleteOlderThan(Path.Combine(root, AllureResultsDirName));
-        DeleteOlderThan(Path.Combine(root, ResultsDirName));
+        DeleteOlderThan(Path.Combine(root, TestConfig.AllureResultsDirName));
+        DeleteOlderThan(Path.Combine(root, TestConfig.ResultsDirName));
     }
 
     private static void DeleteOlderThan(string directory)

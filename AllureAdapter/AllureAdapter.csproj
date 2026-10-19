@@ -9,6 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <!-- NUnit's build props add TestContainer; without this VS tries (and fails) discovery here. -->
     <ProjectCapability Remove="TestContainer" />
   </ItemGroup>

@@ -8,8 +8,9 @@ description: Use when the user says "audit", "/audit", "аудит", "прове
 Two stages, explicitly separated in time:
 
 1. **Диагностика (this invocation):** audit the whole codebase against `Rules/*.md` → detailed
-   fix plan with explanations and statuses → present the table → STOP (no fixes unless the
-   user explicitly says "чини сейчас").
+   fix plan with explanations and statuses → present the table → STOP. **Аудит НИКОГДА не чинит
+   в этом же запуске** — только план на реализацию; фиксы возможны лишь отдельным поздним
+   вызовом (Stage 2) по явному сигналу пользователя.
 2. **Лечение (later, on the user's signal — same or another session):** read the plan file,
    apply pending items in gated batches through `/commit`, update statuses, close the plan.
 
@@ -91,6 +92,53 @@ Structure findings go into the same fix plan with move/rename proposals (verdict
 `RENAME` / `MOVE` / `SPLIT` / `DELETE` / `UNTRACK`); the actual moves are executed in Stage 2
 as their own batch — one move per flow + docs sync + gates (Step 5).
 
+#### Category S: Security & log hygiene (explore subagent)
+Secrets must never be born or printed: hardcoded tokens/passwords/keys in code or tracked
+configs; `Authorization`/`Token`/cookie values leaking into log lines (request/response body
+logging, exception messages, `Console`/Serilog output); `.env`-like files tracked by git;
+secrets interpolated into `[Description]`/test data; test logs under `%TEMP%`/`TestResults`
+that would contain credentials if a test fails. Evidence: `grep` the token prefixes
+(`ghp_`, `github_pat_`, `Bearer `) and known env names (`GITHUB_PAT`, `GITHUB_UI_*`, passwords)
+outside sanctioned config readers.
+
+#### Category Y: Async & concurrency (explore subagent)
+Blocking over async (`.Result`, `.Wait()`, `.WaitAndRetry`-style sync waits on Tasks);
+`async void` methods (except event handlers the framework requires); discarded/`_`-elided
+Tasks with side effects (fire-and-forget); shared mutable static state without synchronization
+(dictionary/list mutated from parallel tests, non-thread-safe `StringBuilder`/file writes across
+tests); `lock` bodies doing I/O for the whole operation.
+
+#### Category Z: Determinism & rerunnability (explore subagent)
+Culture/timezone dependence (`DateTime.Now` vs injectable clock in asserts, `ToString()`
+without invariant culture in comparisons, calendar/date asserts without fixed input);
+test-order dependence (shared static counters, mutate-then-read global fixtures); re-run
+state (what survives a failed cleanup, what the next run assumes fresh); fixed sleeps without
+measured WHY; reliance on external services beyond the sanctioned sandbox.
+
+#### Category W: Document sync — code ↔ docs (explore subagent)
+The document-sync rule made executable: config endpoints ↔ `*ObservableBehaviour.md`;
+`[Description]` ↔ existing OB sections (UI-N/E2E-N); behavior that Rules/* prescribe ↔ what
+the code actually does (stale rule wording vs live behavior — e.g. counter formats that
+changed); OB claims with `verified {date}` older than the code that contradicts them.
+
+#### Category U: Dead code & unused members (explore subagent)
+Private fields/methods/constants with zero callers (grep each candidate — no guessing);
+unused test helpers and page-object methods; orphaned endpoints/models no test touches;
+stale `#if`/conditional branches. **Before reporting anything as dead: grep `Rules/*.md` —
+a rule-documented utility is API, not dead code** (`RandomIntExclusive` lesson).
+
+### Execution map — who does what (обязательно заполнить в отчёте)
+
+| Проверка | Исполнитель (owner) |
+|----------|---------------------|
+| A–F, S, Y, Z, W, U, R | по одному `explore`-сабагенту на категорию (параллельно) |
+| Сведение плана, статусы, таблица | main agent (Step 4) |
+| Рекомендация по статик-анализаторам (Roslynator / Meziantou + `dotnet format --analyze`) | main agent — как отдельный пункт инфраструктуры В ПЛАНЕ (Stage 2, после согласия пользователя) |
+| Фиксы (Stage 2) | main agent, батчи → гейты → `/commit` |
+
+Каждый сабагент возвращает таблицу с категорией в имени строки — main agent группирует их
+в батчи плана по владельцу-области (Core/Api/Ui/адаптеры/инфраструктура).
+
 Each subagent returns a table:
 ```
 | Severity | File:Line | Rule | Current | Suggested |
@@ -103,8 +151,8 @@ inline; test data literals inside tests are expected.
 
 ### Step 4: Detailed fix plan — the deliverable of Stage 1 (main agent)
 
-**Never start fixing in this stage** (unless the user explicitly says "чини сейчас" — then go
-straight to Stage 2 after presenting the plan). Create `.mimocode/plans/audit-fixes-<YYYY-MM-DD>.md`:
+**Никаких фиксов в этой стадии — вообще.** Аудит создаёт ТОЛЬКО план.
+Create `.mimocode/plans/audit-fixes-<YYYY-MM-DD>.md`:
 
 1. Header: date, scope (files reviewed), totals (X major / Y minor / Z style), source branch.
 2. **Batches (my chosen fix order):** group items into fix batches ordered from
@@ -124,8 +172,8 @@ straight to Stage 2 after presenting the plan). Create `.mimocode/plans/audit-fi
    BEFORE they are treated as binding (workflow rule).
 
 **Present the plan as a table in chat** (batch summary + counts + top findings in plain words),
-link the file, and ask two things: scope (all / major only / specific numbers) and **when to
-fix** (сейчас / позже — время фикса всегда решает пользователь). Then STOP.
+link the file, ask the desired scope (all / major only / specific numbers) and remind that
+fixing happens in a later, separate invocation (Stage 2). Then STOP — zero code edits.
 
 ---
 
@@ -184,7 +232,8 @@ their done-criteria are met.
 ## Rules (HARD)
 
 - Audit ALL .cs files, not a sample; line references must be exact (`file:line`)
-- Stage 1 never fixes (unless the user says so) — the deliverable is the plan-table
+- Stage 1 NEVER fixes — not even on a casual "давай сразу" — the deliverable is the plan-table
+  only; fixing is always a separate Stage-2 invocation on an explicit user signal
 - No fixes without the user's approved scope — an approved plan file counts as that approval
   for its listed items; later sessions re-confirm scope before mass-fixing
 - Gates after every batch: `build` + `format --verify-no-changes` + `HealthCheck` + touched suites

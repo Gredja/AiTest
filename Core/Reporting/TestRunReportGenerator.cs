@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
+using Core.Config;
 using Core.Logging;
 
 namespace Core.Reporting;
@@ -13,7 +14,6 @@ public static class TestRunReportGenerator
     private const double MillisecondsPerSecond = 1000.0;
     private const string ReportPrefix = "TestRunReport-";
     private const string CodeFence = "```";
-    private const string SolutionFileName = "Gredja.slnx";
 
     private static readonly Encoding _reportEncoding = new UTF8Encoding(false);
 
@@ -48,7 +48,7 @@ public static class TestRunReportGenerator
 
         var lines = AssembleReportLines(root, workspace, runStart, outcomeLogs, outcomes);
 
-        var resultsDirectory = Path.Combine(root, ArtifactRetention.ResultsDirName);
+        var resultsDirectory = Path.Combine(root, TestConfig.ResultsDirName);
         Directory.CreateDirectory(resultsDirectory);
         var reportFile = Path.Combine(resultsDirectory, $"{ReportPrefix}{runStart:yyyyMMdd-HHmmss}.md");
         WriteWithRetry(reportFile, lines);
@@ -84,7 +84,7 @@ public static class TestRunReportGenerator
     {
         var directory = new DirectoryInfo(AppContext.BaseDirectory);
 
-        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, SolutionFileName)))
+        while (directory is not null && !File.Exists(Path.Combine(directory.FullName, TestConfig.SolutionFileName)))
         {
             directory = directory.Parent;
         }

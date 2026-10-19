@@ -1,19 +1,17 @@
-using System.Reflection;
+﻿using System.Reflection;
+using Core.Config;
 using NUnit.Framework;
 
 namespace AllureAdapter.Helpers;
 
 public static class AllureHelper
 {
-    private const string SolutionFileName = "Gredja.slnx";
-    private const string AllureResultsDirName = "allure-results";
-
     private static string FindProjectRoot()
     {
         var dir = AppContext.BaseDirectory;
         while (dir is not null)
         {
-            if (File.Exists(Path.Combine(dir, SolutionFileName)) || Directory.GetFiles(dir, "*.sln").Length > 0)
+            if (File.Exists(Path.Combine(dir, TestConfig.SolutionFileName)) || Directory.GetFiles(dir, "*.sln").Length > 0)
             {
                 return dir;
             }
@@ -26,7 +24,7 @@ public static class AllureHelper
     public static string GetResultsDir()
     {
         var projectDir = FindProjectRoot();
-        var resultsDir = Path.Combine(projectDir, AllureResultsDirName);
+        var resultsDir = Path.Combine(projectDir, TestConfig.AllureResultsDirName);
         Directory.CreateDirectory(resultsDir);
 
         return resultsDir;

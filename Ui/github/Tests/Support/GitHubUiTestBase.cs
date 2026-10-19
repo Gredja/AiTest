@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
@@ -16,8 +16,6 @@ public abstract class GitHubUiTestBase
     private const int ViewportHeight = 900;
     internal const int UiTimeoutMs = 15_000;
 
-    private const string FileMode644 = "100644";
-    private const string BlobType = "blob";
     private const string ScratchBranchPrefix = "ui-scratch-";
     private const string ScratchBaseBranchPrefix = "ui-scratch-base-";
     internal const string ScratchFileName = "ui-scratch.txt";
@@ -309,8 +307,8 @@ public abstract class GitHubUiTestBase
                     new GitTreeEntry
                     {
                         Path = treePath,
-                        Mode = FileMode644,
-                        Type = BlobType,
+                        Mode = GitHubEndpoints.FileMode644,
+                        Type = GitHubEndpoints.ObjectTypeBlob,
                         Sha = blob.Data!.Sha
                     }
                 ]
@@ -363,7 +361,7 @@ public abstract class GitHubUiTestBase
     private static string ResolveRepositoryRoot()
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
-        while (dir is not null && !System.IO.File.Exists(Path.Combine(dir.FullName, "Gredja.slnx")))
+        while (dir is not null && !System.IO.File.Exists(Path.Combine(dir.FullName, TestConfig.SolutionFileName)))
         {
             dir = dir.Parent;
         }
@@ -371,7 +369,7 @@ public abstract class GitHubUiTestBase
         if (dir is null)
         {
             throw new InvalidOperationException(
-                $"repository root (Gredja.slnx) not found from {AppContext.BaseDirectory}");
+                $"repository root ({TestConfig.SolutionFileName}) not found from {AppContext.BaseDirectory}");
         }
 
         return dir.FullName;
