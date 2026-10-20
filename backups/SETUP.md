@@ -396,7 +396,7 @@ git checkout -b features/add-user-tests
 - Regex: только когда предикат читается хуже; паттерн — именованный `static readonly` + словесный комментарий над ним; дубли в 2+ файлах → base/хелпер (Rules/code-style.md → Regex)
 - UI: role/label-based локаторы — извлечение/верификация ТОЛЬКО через `node Scripts/locator-dump.mjs <url> [--waitfor "текст"] [--waitfor-ax "текст"] [--click "имя"] [--static-text]` (HARD RULE; playwright-скилл/playwright-cli для локаторов запрещён; `--click` раскрывает пост-кликовые состояния, `--waitfor-ax` — контент вне innerText/с поздним рендером, `--static-text` — текст для GetByText), write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert; presence-check на странице вне load-verified-листа — через `WaitFor*Async` → `WaitResult` в page-object, не мгновенный `CountAsync` (Rules/ui-testing.md → Waits)
 - Строки: интерполяция `$""`, `StringBuilder` в циклах
-- SOLID: один класс — одна задача, зависимости через интерфейсы
+- SOLID: один класс — одна задача, зависимости через интерфейсы; **accepted-debt (аудит F09, 2026-10-19): тест-проект сознательно без своих интерфейсов/DI** — находку «ноль интерфейсов» не фиксить, DI не заводить без конкретного тестируемого шва (`Rules/code-principles.md` → DIP)
 
 **Модели:**
 - Response модели: суффикс `ModelResponse` (включает `Id`)

@@ -27,3 +27,9 @@
 - **L**iskov Substitution — subclasses must be usable wherever the parent is expected.
 - **I**nterface Segregation — many small interfaces over one fat interface.
 - **D**ependency Inversion — depend on abstractions (interfaces), not concrete classes. Inject via constructor.
+  **Accepted debt (audit F09, user decision 2026-10-19):** this test project intentionally has
+  ZERO hand-rolled interfaces/DI — `RequestHelper`, endpoints and config are concrete statics.
+  Do NOT file "no interfaces" as a violation and do NOT introduce DI for its own sake: seams
+  pay for themselves only under unit tests of the core itself, which this suite does not have
+  (everything runs against live/mock HTTP). Introduce an interface only when a concrete
+  testable seam appears (e.g. clock, transport fakes) — never as a checklist refactor.
