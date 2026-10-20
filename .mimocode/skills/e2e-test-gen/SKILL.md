@@ -200,7 +200,7 @@ Complex cleanup chains (delete comments → then issue) belong in `{Service}E2ET
 
 | Version | Date | Change | Author |
 |---|---|---|---|
-| 1.0 | 2026-02-21 | Initial commit | Алексей |
+| 1.0 | 2026-02-21 | Initial commit | Alexey |
 | 1.1 | 2026-09-30 | Fixed stale `Get<T>` signature in Setup example — removed `Method.Get` argument | MiMo |
 | 1.2 | 2026-09-30 | Added test data rule reference (fictional values, vary dimensions) from kata 6.W.3 | MiMo |
 | 1.3 | 2026-10-02 | Seed methodology: active negatives only + one negative per required request field | MiMo |

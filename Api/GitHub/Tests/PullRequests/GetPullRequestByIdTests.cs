@@ -103,7 +103,7 @@ public class GetPullRequestByIdTests : GitHubTestBase
             PullParams(_existingPullNumber));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

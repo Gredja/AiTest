@@ -26,7 +26,7 @@
 | 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (5 tests) |
 | 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (18 tests) |
 
-**Total:** 376 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups), 9 E2E-цепочек и 44 UI-теста. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Расширение UI до 44 закрыто 2026-10-19 (`.mimocode/plans/github-test-expansion.md` выполнен и удалён).
+**Total:** 376 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups), 9 E2E scenario chains and 44 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted).
 
 ## 2. Out of Scope
 

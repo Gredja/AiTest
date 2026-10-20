@@ -13,6 +13,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected const int FirstPage = 1;
     protected const int DefaultPageSize = 5;
     protected const int SmallPageSize = 2;
+    // Deliberately invalid PAT for auth-negative tests — never a real secret,
+    // but the ghp_ prefix may trip entropy-based secret scanners
     protected const string InvalidToken = "ghp_invalidtoken123";
     protected const string InvalidAuthorization = $"Bearer {InvalidToken}";
 

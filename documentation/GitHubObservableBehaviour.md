@@ -666,11 +666,21 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Infrastructure endpoint (the scratch pipeline builds trees from it): body `base_tree`
   (40-hex sha) + `tree` (array of `{path, mode, type, sha}`) → 201 Created, body has `sha`
   (40 hex) (probed 2026-10-16)
+- Entry field values used by the pipeline: `mode` = "100644" (regular file), `type` = "blob"
+  (file content entry), `sha` = the blob sha from §26c; `path` = file path in the repo tree
 
 **Negative (probed 2026-10-16):**
 - Non-existent `base_tree` sha → 422
 - Entry `sha` that does not exist → 422
 - Empty `tree` array → 422
+
+---
+
+## 26c. POST /repos/{owner}/{repo}/git/blobs
+
+- Infrastructure endpoint (first step of the scratch pipeline: blob → tree §26b → commit §27):
+  body `content` (string) → 201 Created, body has `sha` (40 hex) (as consumed by the
+  `CreateScratchBlobAsync` fixtures; dedicated negative probes not yet run)
 
 ---
 
@@ -797,7 +807,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 | Write operations | POST /issues, /comments, /pulls, /git/refs | < 2s | Creates resource, returns new object |
 | Write operations | PATCH /issues/{n}, /pulls/{n} | < 1s | Updates single resource |
 | Write operations | PUT /pulls/{n}/merge | < 5s | Merge may trigger CI, depends on conflicts |
-| Write operations | DELETE /issues/{n}, /comments/{id}, /git/refs/{ref} | < 1s | Removes resource, returns 204 |
+| Write operations | DELETE /comments/{id}, /git/refs/{ref} | < 1s | Removes resource, returns 204 (DELETE /issues/{n} is absent — 404, §24) |
 
 **Test thresholds:** Performance tests use < 5s as a generous safety net. CI flakiness threshold is < 3s. Actual p95 is typically < 1s for all endpoints.
 
@@ -819,10 +829,10 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 | Parameter | Valid | Invalid | API behavior |
 |---|---|---|---|
-| `state` | `"open"`, `"closed"`, `"all"` (where supported) | Any other string → silently ignored, returns default | No 400 for invalid values |
+| `state` | `"open"`, `"closed"`, `"all"` (where supported) | Any other string → 422 UnprocessableEntity (verified on the issues/pulls lists, §6/§8) | Invalid values are rejected, not ignored |
 | `per_page` | Integer 1–100 | 0 → treated as default (30), >100 → capped at 100, negative → treated as default | GitHub silently normalizes |
 | `page` | Positive integer (1, 2, 3...) | 0 → treated as page 1, negative → treated as page 1 | No 400 for invalid values |
-| `since` | Positive integer (repo ID) | Very large → empty array `[]` | Filters repos created after given ID |
+| `since` | Positive integer (repo ID) | Non-numeric (e.g. `abc`) → 422; very large → empty array `[]` | Filters repos created after given ID |
 | `sort` | `"created"`, `"updated"`, `"pushed"`, `"full_name"` (where supported) | Invalid → default sort | Not tested in current scope |
 
 ### Headers
@@ -839,15 +849,15 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 |---|---|---|---|
 | POST /issues | `title` (string) | `body` (string), `labels` (array of strings) | Missing `title` → 422 |
 | POST /issues/{n}/comments | `body` (string) | — | Missing `body` → 422 |
-| PATCH /issues/{n} | — | `title`, `body`, `state` ("open"\|"closed"), `labels` | Invalid `state` → 422 |
+| PATCH /issues/{n} | — | `title`, `body`, `state` ("open"\|"closed"), `labels` | Invalid `state` → 200, silently ignored (§19) |
 | POST /pulls | `title` (string), `head` (string), `base` (string) | `body` (string), `issue` (integer) | Missing required → 422; `head`=`base` → 422 |
-| PATCH /pulls/{n} | — | `title`, `body`, `state` ("open"\|"closed") | Invalid `state` → 422 |
+| PATCH /pulls/{n} | — | `title`, `body`, `state` ("open"\|"closed") | Invalid `state` → 200, accepted/ignored (§22) |
 | PUT /pulls/{n}/merge | — | `commit_title`, `commit_message`, `merge_method` ("merge"\|"squash"\|"rebase") | Immediate re-merge → 405 (settles to 200); conflicts → 405 |
 | PUT /collaborators/{username} | `permission` (string: "pull"\|"push"\|"admin"\|"maintain"\|"triage") | — | `pull` on public repo → 422; non-existent user → 404 |
-| DELETE /issues/{n} | — | — | — |
+| DELETE /issues/{n} | — | — | Endpoint absent → 404 (§24) |
 | DELETE /issues/{n}/comments/{id} | — | — | — |
 | POST /git/refs | `ref` (string, e.g. "refs/heads/feature"), `sha` (string, 40 hex) | — | Missing required → 422; sha invalid → 422; ref exists → 422 |
-| DELETE /git/refs/{ref} | — | — | Default branch → 403 |
+| DELETE /git/refs/{ref} | — | — | Default branch → 422 (§26) |
 
 ### Response Field Constraints
 
@@ -946,7 +956,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - **Rate limit on writes** — write operations count toward the same 5000/hr quota. E2E tests create + read + delete = 3x request count per scenario.
 - **Branch protection rules** — if `main` has protection rules (required reviews, status checks), PUT /pulls/{n}/merge will fail with 405.
 - **Race conditions** — parallel E2E runs creating issues/PRs in the same repo may interfere with each other's state assertions.
-- **Ref deletion safety** — DELETE /git/refs/{ref} cannot delete the default branch. Attempt returns 403.
+- **Ref deletion safety** — DELETE /git/refs/{ref} cannot delete the default branch. Attempt returns 422 (§26, probe 2026-10-08; earlier doc said 403).
 
 ---
 

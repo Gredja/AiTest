@@ -32,6 +32,14 @@
   - Used only by API tests (e.g. `JsonPlaceholderParamHelper`) → `Api/<Service>/Helpers/`
   - Shared param-building primitives (`ParamHelper`: `IdParam`, `UrlSegment`, `Query`) → `Core/Helpers/Params/ParamHelper.cs`
   - Never place E2E-needed code in `Api/` — the E2E project has no reference to `Api`
+- **Folder naming convention** — code-facing folders are PascalCase (`Core/`, `AllureAdapter/`,
+  `Scripts/`); content/material folders at the repo root are lowercase (`documentation/`,
+  `education/`, `research/`, `backups/`, `output/`); inside one layer keep a stable grammatical
+  form — plural for collections (`Attributes/`, `Helpers/`, `Models/`), activity nouns
+  (`Config/`, `Logging/`, `Reporting/`) are accepted as-is: never rename folders purely for
+  grammatical symmetry; `Ui/github/` (lowercase service name) is a documented site-scoped
+  exception — every other service folder is PascalCase (`Api/GitHub/`, `E2E/GitHub/`,
+  `Core/Models/GitHub/`)
 
 ## Cleanup
 

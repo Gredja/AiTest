@@ -13,7 +13,6 @@ namespace Api.JsonPlaceholder.Albums;
 [Category("JsonPlaceholder")]
 public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
 {
-    private const int ExpectedAlbumCount = 100;
 
     [Test]
     [Category("HealthCheck")]
@@ -77,7 +76,7 @@ public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(ExpectedAlbumCount);
+        response.Data.Should().HaveCount(TestConfig.ExpectedAlbumCount);
     }
 
     [Test]
@@ -112,6 +111,6 @@ public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 }

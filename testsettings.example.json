@@ -1,6 +1,6 @@
 {
   "MaxResponseTimeMs": 5000,
-  "SkipSslValidation": true,
+  "SkipSslValidation": false,
   "JsonPlaceholder": {
     "BaseUrl": "https://jsonplaceholder.typicode.com",
     "ExpectedPostCount": 100,

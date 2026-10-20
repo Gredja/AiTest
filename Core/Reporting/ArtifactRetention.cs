@@ -26,7 +26,7 @@ internal static class ArtifactRetention
         }
 
         var cutoff = DateTime.Now.AddDays(-RetentionDays);
-        foreach (var file in Directory.EnumerateFiles(directory))
+        foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
         {
             if (File.GetLastWriteTime(file) < cutoff)
             {

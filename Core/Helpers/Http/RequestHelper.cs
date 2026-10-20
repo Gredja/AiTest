@@ -1,3 +1,4 @@
+using System.Globalization;
 using Core.Config;
 using Core.Logging;
 using Core.Models.Generic;
@@ -127,16 +128,18 @@ public class RequestHelper
     {
         foreach (var param in additionalParams)
         {
+            // Invariant culture: a URL segment formatted with the machine locale
+            // (e.g. decimal comma) would produce an invalid request line
             switch (param.Type)
             {
                 case ParamType.Header:
-                    request.AddHeader(param.Key, param.Value?.ToString() ?? string.Empty);
+                    request.AddHeader(param.Key, Convert.ToString(param.Value, CultureInfo.InvariantCulture) ?? string.Empty);
                     break;
                 case ParamType.Parameter:
-                    request.AddParameter(param.Key, param.Value?.ToString());
+                    request.AddParameter(param.Key, Convert.ToString(param.Value, CultureInfo.InvariantCulture));
                     break;
                 case ParamType.UrlSegment:
-                    request.AddUrlSegment(param.Key, param.Value?.ToString());
+                    request.AddUrlSegment(param.Key, Convert.ToString(param.Value, CultureInfo.InvariantCulture) ?? string.Empty);
                     break;
             }
         }

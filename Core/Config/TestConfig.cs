@@ -18,9 +18,20 @@ public static class TestConfig
     private static JsonElement Ui => GetRequiredSection("Ui");
 
     public static int MaxResponseTimeMs => GetRequiredInt("MaxResponseTimeMs");
-    public static bool IsSslValidationSkipped => GetRequiredBool(_root.RootElement, "SkipSslValidation");
+
+    // Off by default: TLS validation may only be weakened by an explicit per-run opt-in
+    public static bool IsSslValidationSkipped =>
+        _root.RootElement.TryGetProperty("SkipSslValidation", out var value)
+        && value.ValueKind is JsonValueKind.True;
 
     public static string JsonPlaceholderBaseUrl => GetRequiredString(JsonPlaceholder, BaseUrlKey);
+
+    public static int ExpectedPostCount => GetRequiredInt(JsonPlaceholder, "ExpectedPostCount");
+    public static int ExpectedTodoCount => GetRequiredInt(JsonPlaceholder, "ExpectedTodoCount");
+    public static int ExpectedAlbumCount => GetRequiredInt(JsonPlaceholder, "ExpectedAlbumCount");
+    public static int ExpectedCommentCount => GetRequiredInt(JsonPlaceholder, "ExpectedCommentCount");
+    public static int ExpectedPhotoCount => GetRequiredInt(JsonPlaceholder, "ExpectedPhotoCount");
+    public static int ExpectedUserCount => GetRequiredInt(JsonPlaceholder, "ExpectedUserCount");
 
     public static string GitHubBaseUrl => GetRequiredString(GitHub, BaseUrlKey);
     public static string GitHubToken
@@ -55,9 +66,11 @@ public static class TestConfig
             ? section
             : throw new InvalidOperationException($"testsettings.json: missing required section '{name}'");
 
-    private static int GetRequiredInt(string key)
+    private static int GetRequiredInt(string key) => GetRequiredInt(_root.RootElement, key);
+
+    private static int GetRequiredInt(JsonElement section, string key)
     {
-        if (!_root.RootElement.TryGetProperty(key, out var value))
+        if (!section.TryGetProperty(key, out var value))
         {
             throw MissingRequiredKey(key);
         }

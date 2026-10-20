@@ -44,7 +44,10 @@ public class GetReleaseDetailTests : GitHubTestBase
         var response = await Get<ReleaseModelResponse>(GitHubEndpoints.RepoReleasesLatest, TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.TagName.Should().Be(_tagName);
+
+        // /releases/latest may legitimately return a release published outside the suite that is
+        // newer than this fixture — the fixture itself is verified via GET /releases/tags/{tag} (15d.1)
+        response.Data!.TagName.Should().NotBeNullOrWhiteSpace("latest release must carry a tag");
     }
 
     [Test]

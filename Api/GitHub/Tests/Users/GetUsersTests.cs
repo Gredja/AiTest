@@ -90,7 +90,7 @@ public class GetUsersTests : GitHubTestBase
         var response = await Get<List<UserModelResponse>>(GitHubEndpoints.Users);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

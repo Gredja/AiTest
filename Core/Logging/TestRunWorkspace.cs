@@ -64,9 +64,22 @@ internal static class TestRunWorkspace
         {
             foreach (var file in Directory.EnumerateFiles(workspace, pattern))
             {
-                if (File.GetLastWriteTime(file) < runStart)
+                if (File.GetLastWriteTime(file) >= runStart)
+                {
+                    continue;
+                }
+
+                try
                 {
                     File.Delete(file);
+                }
+                catch (IOException exception)
+                {
+                    ActionLogger.Logger.Warning(exception, "Failed to delete previous-run log {File}", file);
+                }
+                catch (UnauthorizedAccessException exception)
+                {
+                    ActionLogger.Logger.Warning(exception, "Failed to delete previous-run log {File}", file);
                 }
             }
         }

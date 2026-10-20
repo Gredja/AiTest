@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
 using Core.Config;
 using Core.Logging;
 
@@ -16,6 +17,12 @@ public static class TestRunReportGenerator
     private const string CodeFence = "```";
 
     private static readonly Encoding _reportEncoding = new UTF8Encoding(false);
+
+    // The report is a committed artifact promoted as the nightly test-run artifact —
+    // response bodies embedded from action/failure logs must not carry real e-mail addresses
+    private static readonly Regex _emailPattern = new(
+        @"[\w.+-]+@[\w-]+\.[\w.-]+",
+        RegexOptions.Compiled);
 
     public static void PrepareRun()
     {
@@ -255,12 +262,12 @@ public static class TestRunReportGenerator
         {
             foreach (var line in SplitLines(failure.Message))
             {
-                yield return line;
+                yield return RedactPii(line);
             }
 
             foreach (var line in SplitLines(failure.Trace))
             {
-                yield return line;
+                yield return RedactPii(line);
             }
         }
 
@@ -282,13 +289,16 @@ public static class TestRunReportGenerator
         {
             foreach (var action in actions)
             {
-                yield return action;
+                yield return RedactPii(action);
             }
         }
 
         yield return CodeFence;
         yield return string.Empty;
     }
+
+    private static string RedactPii(string line) =>
+        _emailPattern.Replace(line, "[redacted-email]");
 
     private static IEnumerable<string> SplitLines(string text) =>
         text.Split(["\r\n", "\n"], StringSplitOptions.None);
@@ -298,11 +308,16 @@ public static class TestRunReportGenerator
 
     private static void WriteWithRetry(string reportFile, List<string> lines)
     {
+        // Two testhosts of one run may generate concurrently — write a per-process temp
+        // file and swap it in atomically so the report is never torn or half-overwritten
+        var tempFile = $"{reportFile}.{Environment.ProcessId}.tmp";
+
         for (var attempt = 1; ; attempt++)
         {
             try
             {
-                File.WriteAllLines(reportFile, lines, _reportEncoding);
+                File.WriteAllLines(tempFile, lines, _reportEncoding);
+                File.Move(tempFile, reportFile, overwrite: true);
 
                 return;
             }

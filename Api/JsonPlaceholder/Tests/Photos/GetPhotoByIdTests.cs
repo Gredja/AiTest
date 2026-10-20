@@ -172,7 +172,7 @@ public class GetPhotoByIdTests : JsonPlaceholderRequestHelper
             IdParam(TestPhotoId));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

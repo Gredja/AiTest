@@ -22,7 +22,17 @@ The plan file is the cross-session state: it must contain everything a future se
 
 ### Step 1: Load rules (main agent)
 
-Read all files in `Rules/` directory. These are the authoritative rules for the audit.
+Read ALL files in `Rules/` **in full** — these are the user's authoritative rules and the
+primary audit source. Two check layers always run, never one without the other:
+
+1. **User's rules layer** — every `Rules/*.md` is read before scanning; every finding that
+   comes from a rule cites the exact file (and section when the rule has headings).
+2. **Agent's own checks layer** — correctness bugs, race conditions, error-handling smells,
+   data-loss risks, API-misuse and anything else the written rules do not cover — reported
+   with `agent-check (<one-line why>)` in place of the rule reference.
+
+A finding may come from either layer; an audit that only re-lists rule violations or only
+uses the agent's judgment is incomplete.
 
 ### Step 2: Collect files (main agent)
 
@@ -35,8 +45,10 @@ read-only), `bin/`, `obj/`, `.mimocode/node_modules/`, generated files.
 
 ### Step 3: Audit by category (main agent + parallel `explore` subagents)
 
-Group findings by category; each subagent reads its own `Rules/*.md` files IN FULL first,
-then scans ALL `.cs` (grep-driven whole-repo coverage is fine, sampling is not).
+Group findings by category; each subagent reads its own `Rules/*.md` files IN FULL first
+(user's rules layer), then scans ALL `.cs` (grep-driven whole-repo coverage is fine, sampling
+is not), additionally applying its own correctness/concurrency/security judgment
+(agent's checks layer — report those with `agent-check (why)` in the Rule column).
 
 #### Category A: Naming & Types (explore subagent)
 `Rules/code.md`: PascalCase/camelCase/_camelCase; no abbreviations; Boolean prefix
@@ -144,6 +156,8 @@ Each subagent returns a table:
 ```
 | Severity | File:Line | Rule | Current | Suggested |
 ```
+`Rule` = `Rules/<file>.md` (+ section) for user-rule findings, or `agent-check (<why>)` for
+the agent's own findings — both layers are always checked (Step 1).
 Severity: `major` (rule violation, bug risk) | `minor` (style, suboptimal) | `style` (cosmetic).
 
 **Standard exclusions for subagents:** `AllureTestResultBuilder` dictionary keys (Allure JSON
@@ -233,6 +247,9 @@ their done-criteria are met.
 ## Rules (HARD)
 
 - Audit ALL .cs files, not a sample; line references must be exact (`file:line`)
+- **Both check layers always run**: the user's `Rules/*.md` (read in full, findings cite the
+  rule) PLUS the agent's own checks (correctness/concurrency/security judgment beyond the
+  written rules, findings cite `agent-check (why)`) — never one layer without the other
 - Stage 1 NEVER fixes — not even on a casual "давай сразу" — the deliverable is the plan-table
   only; fixing is always a separate Stage-2 invocation on an explicit user signal
 - No fixes without the user's approved scope — an approved plan file counts as that approval

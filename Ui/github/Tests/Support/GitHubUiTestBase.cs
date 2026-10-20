@@ -51,16 +51,31 @@ public abstract class GitHubUiTestBase
     public async Task OpenContextAsync()
     {
         var storageState = IsStorageStateEnabled ? ResolveStorageStatePath() : null;
+
+        // Missing state must fail here with the real reason — otherwise the test silently
+        // continues anonymous and fails much later on the wrong screen
+        if (storageState is not null && !System.IO.File.Exists(storageState))
+        {
+            throw new InvalidOperationException(
+                $"storageState file not found: {storageState} — run LoginSignInTests once to create it");
+        }
+
         _context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
             StorageStatePath = storageState is not null && System.IO.File.Exists(storageState) ? storageState : null,
             ViewportSize = new ViewportSize { Width = ViewportWidth, Height = ViewportHeight }
         });
-        await _context.Tracing.StartAsync(new TracingStartOptions
+
+        // Credential-entry tests (IsStorageStateEnabled = false) must not record traces:
+        // DOM snapshots and network captures would persist the typed password in ui-artifacts/*.zip
+        if (IsStorageStateEnabled)
         {
-            Screenshots = true,
-            Snapshots = true
-        });
+            await _context.Tracing.StartAsync(new TracingStartOptions
+            {
+                Screenshots = true,
+                Snapshots = true
+            });
+        }
 
         _page = await _context.NewPageAsync();
         await _page.BringToFrontAsync();
@@ -77,21 +92,27 @@ public abstract class GitHubUiTestBase
             return;
         }
 
-        if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+        var isFailed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed;
+
+        if (isFailed)
         {
             var artifacts = ResolveArtifactsDirectory();
-            var name = SanitizeFileName(TestContext.CurrentContext.Test.Name);
+            var failedName = SanitizeFileName(TestContext.CurrentContext.Test.Name);
             await _page!.ScreenshotAsync(new PageScreenshotOptions
             {
-                Path = Path.Combine(artifacts, $"{name}.png"),
+                Path = Path.Combine(artifacts, $"{failedName}.png"),
                 FullPage = true
             });
-            await _context.Tracing.StopAsync(new TracingStopOptions
+
+            if (IsStorageStateEnabled)
             {
-                Path = Path.Combine(artifacts, $"{name}.zip")
-            });
+                await _context.Tracing.StopAsync(new TracingStopOptions
+                {
+                    Path = Path.Combine(artifacts, $"{failedName}.zip")
+                });
+            }
         }
-        else
+        else if (IsStorageStateEnabled)
         {
             await _context.Tracing.StopAsync();
         }
@@ -215,9 +236,14 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoIssues,
             [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateAll), .. GitHubParamHelper.PerPageParam(1)]);
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().NotBeEmpty("sandbox must have at least one issue to derive the dynamic id");
 
-        return response.Data![0].Number + GitHubEndpoints.NonExistentIdOffset;
+        // A pristine sandbox has no issues to derive the id from — 0 is always invalid
+        if (response.Data is null || response.Data.Count == 0)
+        {
+            return GitHubEndpoints.NonExistentStaticId;
+        }
+
+        return response.Data[0].Number + GitHubEndpoints.NonExistentIdOffset;
     }
 
     protected async Task<int> ResolveNonExistentPullNumberAsync()
@@ -226,9 +252,14 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoPullRequests,
             [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateAll), .. GitHubParamHelper.PerPageParam(1)]);
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().NotBeEmpty("sandbox must have at least one pull request to derive the dynamic id");
 
-        return response.Data![0].Number + GitHubEndpoints.NonExistentIdOffset;
+        // A pristine sandbox has no pull requests to derive the id from — 0 is always invalid
+        if (response.Data is null || response.Data.Count == 0)
+        {
+            return GitHubEndpoints.NonExistentStaticId;
+        }
+
+        return response.Data[0].Number + GitHubEndpoints.NonExistentIdOffset;
     }
 
     protected async Task<(string HeadBranch, string BaseBranch)> CreateDivergentBranchesViaApiAsync(List<string> createdBranches)

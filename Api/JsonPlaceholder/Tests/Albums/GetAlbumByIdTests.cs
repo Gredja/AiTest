@@ -171,7 +171,7 @@ public class GetAlbumByIdTests : JsonPlaceholderRequestHelper
             IdParam(TestAlbumId));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

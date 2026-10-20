@@ -12,8 +12,9 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static readonly string _resultsDir;
     private static readonly ConcurrentDictionary<string, ContainerInfo> _containers = new();
 
-    private long _startTicks;
-    private string _testUuid = string.Empty;
+    // One attribute instance serves every test — parallel tests must not share state
+    private static readonly AsyncLocal<long> _startTicks = new();
+    private static readonly AsyncLocal<string> _testUuid = new();
 
     static AllureNUnitAttribute()
     {
@@ -22,12 +23,12 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
     public void BeforeTest(ITest test)
     {
-        _startTicks = Environment.TickCount64;
-        _testUuid = Guid.NewGuid().ToString();
+        _startTicks.Value = Environment.TickCount64;
+        _testUuid.Value = Guid.NewGuid().ToString();
     }
 
     public void AfterTest(ITest test) =>
-        WriteTestResult(test, _testUuid, _startTicks);
+        WriteTestResult(test, _testUuid.Value ?? string.Empty, _startTicks.Value);
 
     public ActionTargets Targets => ActionTargets.Test;
 
@@ -73,6 +74,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             return;
         }
 
+        List<string> snapshot;
         lock (info.Children)
         {
             if (info.Children.Contains(uuid))
@@ -81,9 +83,11 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             }
 
             info.Children.Add(uuid);
-            var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, info.Children.ToList());
-            AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
+            snapshot = info.Children.ToList();
         }
+
+        var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, snapshot);
+        AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
     }
 
     private static string EnsureContainer(ITest test)
@@ -91,17 +95,12 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         var className = test.ClassName ?? "Unknown";
         var containerUuid = GetDeterministicUuid(className);
 
-        if (_containers.ContainsKey(containerUuid))
+        _containers.GetOrAdd(containerUuid, uuid => new ContainerInfo
         {
-            return containerUuid;
-        }
-
-        _containers[containerUuid] = new ContainerInfo
-        {
-            Uuid = containerUuid,
+            Uuid = uuid,
             Name = className,
             Children = []
-        };
+        });
 
         return containerUuid;
     }

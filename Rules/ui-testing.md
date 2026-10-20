@@ -5,10 +5,10 @@
 ```
 Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
-├── AssemblyInfo.cs               # Parallelizable(Fixtures), LevelOfParallelism(1)
+├── AssemblyInfo.cs               # Parallelizable(None) — sequential: fixtures share one storageState
 ├── TestReportSetup.cs            # [SetUpFixture] — duplicated per test assembly (P2.3)
-├── github/                       # site-scoped: все UI-тесты GitHub (будущие сайты — соседние папки)
-│   ├── Pages/                      # единственный дом локаторов
+├── github/                       # site-scoped: all GitHub UI tests (future sites — sibling folders)
+│   ├── Pages/                      # single home of locators
 │   │   ├── Common/                   # cross-area pages (header, nav)
 │   │   └── GitHubStream/             # page-objects: {Area}/{Area}Page.cs
 │   └── Tests/

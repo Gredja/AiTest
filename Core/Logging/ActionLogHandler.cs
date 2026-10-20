@@ -1,11 +1,17 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Core.Logging;
 
 internal sealed class ActionLogHandler : DelegatingHandler
 {
     private const int MaxLoggedBodyBytes = 4096;
+
+    // Query-string credential names that must never reach the log file as-is
+    private static readonly Regex _sensitiveQueryPattern = new(
+        @"([?&](?:access_token|private_token|token|client_secret|password|secret)=)[^&#]*",
+        RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
     public ActionLogHandler(HttpMessageHandler innerHandler) : base(innerHandler)
     {
@@ -19,10 +25,12 @@ internal sealed class ActionLogHandler : DelegatingHandler
         var responseBody = await BufferResponseAsync(response, cancellationToken);
         stopwatch.Stop();
 
+        // Invariant: never log headers — the Authorization Bearer (PAT) lives there;
+        // query-string credentials are masked by RedactCredentials instead
         ActionLogger.Logger.Information(
             "{Method} {Url} -> {StatusCode} in {DurationMs} ms | {RequestBody} | {ResponseBody}",
             request.Method.Method,
-            request.RequestUri?.ToString() ?? string.Empty,
+            RedactCredentials(request.RequestUri?.ToString() ?? string.Empty),
             (int)response.StatusCode,
             (int)stopwatch.Elapsed.TotalMilliseconds,
             Escape(requestBody),
@@ -85,4 +93,7 @@ internal sealed class ActionLogHandler : DelegatingHandler
 
     private static string Escape(string value) =>
         value.Replace("\r\n", "\\n").Replace("\r", "\\n").Replace("\n", "\\n");
+
+    private static string RedactCredentials(string url) =>
+        _sensitiveQueryPattern.Replace(url, "$1***");
 }
