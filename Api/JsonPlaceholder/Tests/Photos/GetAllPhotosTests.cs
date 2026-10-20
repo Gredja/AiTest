@@ -13,7 +13,6 @@ namespace Api.JsonPlaceholder.Photos;
 [Category("JsonPlaceholder")]
 public class GetAllPhotosTests : JsonPlaceholderRequestHelper
 {
-    private const int ExpectedPhotoCount = 5000;
 
     [Test]
     [Category("HealthCheck")]
@@ -77,7 +76,7 @@ public class GetAllPhotosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.Photos);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(ExpectedPhotoCount);
+        response.Data.Should().HaveCount(TestConfig.ExpectedPhotoCount);
     }
 
     [Test]
@@ -112,6 +111,6 @@ public class GetAllPhotosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.Photos);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 }

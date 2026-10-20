@@ -84,7 +84,7 @@ public class GetBranchesTests : GitHubTestBase
             TestRepoParam());
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

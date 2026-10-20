@@ -172,7 +172,7 @@ public class GetUserByIdTests : JsonPlaceholderRequestHelper
             IdParam(TestUserId));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

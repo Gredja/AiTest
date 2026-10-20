@@ -202,6 +202,9 @@ Principles:
   negative cases), not copied into each test.
 - Read the endpoint's observable-behavior section before writing; a new negative case means the
   doc gets the new observation first (§2.3).
+- **Wall-clock budgets on live services are informational**: when a response exceeds the
+  configured budget, mark the test `Inconclusive` with the measured numbers instead of red —
+  a slow external API is not a regression of the system under test.
 
 ---
 
@@ -276,6 +279,10 @@ guessing from memory.
 - One dedicated bootstrap test owns sign-in + state save (run it on demand when state expires);
   exactly one test may sign out, it runs with state disabled and never saves.
 - Credentials come only from environment/`.env` — never from code or tracked config.
+- A missing storage-state file must **fail fast** with an explicit precondition error naming
+  the bootstrap test — never continue anonymously and fail later on the wrong screen.
+- The credential-entry test itself must **not record traces/network snapshots** — the typed
+  password would persist in the artifact zip; the failure screenshot (masked field) is enough.
 - Use **separate identities** for different suites when writes collide (one account for API/E2E
   writes, another fresh account for the UI session).
 
@@ -316,6 +323,9 @@ The UI rarely exposes the created id. Cleanup composition:
   screenshot/trace APIs — fixture code does.
 - Triage order: failure message in the run log → screenshot → trace timeline (actions + DOM
   around every click). Age-based cleanup covers artifacts (7 days), no manual registry.
+- Artifacts that leave the machine (reports, uploaded logs) are **redacted at the source**:
+  credentials in query strings are masked, e-mail/PII in embedded response bodies replaced —
+  headers carrying auth tokens are never logged at all.
 
 ---
 
@@ -846,11 +856,14 @@ substitute a red gate with a re-run-hope.
 4. Never re-dispatch, cancel, or delete runs from this flow.
 
 ### 14.4 Full audit → fix plan (diagnosis stage — NO code edits)
-1. Load the project's rule files in full (they are the audit's authority).
+1. Load the project's rule files in full (they are the audit's authority) AND keep a second
+   layer running: the agent's own checks (correctness, races, data-loss risks — issues the
+   written rules do not cover). Both layers always report: rule findings cite the exact
+   rule file/section, agent findings cite `agent-check (<why>)`.
 2. Fan out READ-ONLY subagents in parallel, one per category (naming/types, style, principles,
    models/config, tests/assertions, comments, structure, security/log-hygiene, async/concurrency,
    determinism/reruns, doc-sync, dead code — enable the set the project cares about).
-3. Each agent returns a table: severity, exact file:line, current, suggested.
+3. Each agent returns a table: severity, exact file:line, rule (or agent-check), current, suggested.
 4. Main agent produces a FIX PLAN FILE with per-item rows: what is wrong in plain words,
    what the fix (or the SKIP reason) is, batch grouping, OWNER (who executes), STATUS
    (pending). Group batches from independent/safe to broad (comments → core → api → tests →

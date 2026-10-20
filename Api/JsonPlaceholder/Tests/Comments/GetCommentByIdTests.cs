@@ -172,7 +172,7 @@ public class GetCommentByIdTests : JsonPlaceholderRequestHelper
             IdParam(TestCommentId));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

@@ -154,7 +154,7 @@ public class GetIssuesTests : GitHubTestBase
             TestRepoParam());
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

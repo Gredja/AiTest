@@ -27,6 +27,18 @@ public class CollaboratorPermissionTests : GitHubE2ETestBase
         {
             await CleanupInvitationAsync(stale.Id);
         }
+
+        // A leftover accepted membership (invites can be accepted outside the suite) would make
+        // the pending-not-collaborator asserts below fail forever — remove it before the run
+        var collaborators = await Get<List<CollaboratorModelResponse>>(
+            GitHubEndpoints.RepoCollaborators, TestRepoParam());
+        collaborators.ShouldHaveStatusCode(HttpStatusCode.OK);
+        if (collaborators.Data!.Any(user => user.Login == TestConfig.GitHubCollaboratorUser))
+        {
+            var removed = await Delete<object>(GitHubEndpoints.RepoCollaboratorByUsername,
+                [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
+            removed.ShouldHaveStatusCode(HttpStatusCode.NoContent);
+        }
     }
 
     [Test]

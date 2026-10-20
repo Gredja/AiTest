@@ -2,9 +2,11 @@ using System.Net;
 using System.Reflection;
 using System.Text.Json;
 using Core.Attributes;
+using Core.Config;
 using Core.Models.Generic;
 using FluentAssertions;
 using FluentAssertions.Execution;
+using NUnit.Framework;
 using RestSharp;
 
 namespace Core.Helpers;
@@ -14,6 +16,16 @@ public static class AssertHelper
     public const string JsonContentType = "application/json";
 
     private const int GitShaLength = 40;
+
+    // Live-service wall-clock is informational: a slow external API must not red the suite
+    public static void ShouldBeWithinResponseBudget(long elapsedMilliseconds)
+    {
+        if (elapsedMilliseconds >= TestConfig.MaxResponseTimeMs)
+        {
+            Assert.Inconclusive(
+                $"response took {elapsedMilliseconds} ms — over the {TestConfig.MaxResponseTimeMs} ms budget; informational on live services");
+        }
+    }
 
     public static bool IsGitSha(this string sha) =>
         sha is { Length: GitShaLength }

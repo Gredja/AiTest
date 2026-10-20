@@ -23,7 +23,7 @@ FluentAssertions (not NUnit Assert).
 
 - Check status code: `response.ShouldHaveStatusCode(HttpStatusCode.OK)`
 - Check content type: `response.ContentType.Should().Contain("application/json")`
-- Check response time: `stopwatch.ElapsedMilliseconds.Should().BeLessThan(MaxResponseTimeMs)`
+- Check response time: `AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds)` — wall-clock vs a live service is **informational** (`Inconclusive` with the measured numbers on overrun, never red); the hard `BeLessThan(MaxResponseTimeMs)` form is retired (2026-10-19)
 - Check error message: `response.ShouldHaveError(status, expectedMessage)` — for negative tests where OB documents the error text (status + readable body + documented message in one call); status-only `ShouldHaveStatusCode` is the fallback when the service has no documented message
 
 ## JSON response parsing

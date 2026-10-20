@@ -11,7 +11,7 @@
 - GitHub token precedence (`TestConfig.GitHubToken`): `GitHub.Token` in testsettings.json → environment variable `GITHUB_PAT` (CI) → `GITHUB_PAT=` line in `.env` (dev)
 - Never put real tokens in `testsettings.example.json` or any tracked file
 - Required string keys throw a clear `InvalidOperationException` naming the missing key at first access (`TestConfig.GetRequiredString`) — never a bare `NullReferenceException` from `GetString()!`
-- `SkipSslValidation` disables TLS certificate validation for the GitHub client (external audit Minor 13) — kept deliberately for proxied dev runners; do not enable in CI without a documented reason
+- `SkipSslValidation` disables TLS certificate validation for the GitHub client (external audit Minor 13) — defaults to `false` (missing key = validation on); enable only as an explicit per-run opt-in for proxied dev runners, never in CI without a documented reason
 
 ## GitHub identities
 

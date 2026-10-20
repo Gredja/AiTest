@@ -182,7 +182,7 @@ public class GetIssueByIdTests : GitHubTestBase
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [OneTimeTearDown]

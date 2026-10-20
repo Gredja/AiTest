@@ -25,7 +25,8 @@ Gredja/
 ├── .auth/                       # not tracked — Playwright storageState
 ├── .playwright-cli/             # not tracked — local CLI cache
 ├── allure-results/              # not tracked
-├── research/                    # not tracked — deep-research workspaces (gitignored)
+├── research/                    # not tracked — deep-research workspaces (gitignored); one-off, archived
+├── output/                      # not tracked — one-off generator/CLI dumps (safe to clean)
 ├── TestResults/                 # not tracked — ONLY TestRunReport-*.md (raw logs in %TEMP%\GredjaTestRun)
 ├── .mimocode/
 │   ├── .gitignore
@@ -93,7 +94,7 @@ Core/
 │   ├── GitHub/
 │   │   ├── GitHubCleanupHelper.cs # shared cleanup core (Api/E2E delegation + Ui composition)
 │   │   ├── GitHubParamHelper.cs
-│   │   ├── GitHubTestBase.cs          # база API/E2E-тестов — исключение R3-а: остаётся в Helpers
+│   │   ├── GitHubTestBase.cs          # API/E2E test base — R3 exception: stays in Helpers
 │   │   └── UiSandboxCleanupHelper.cs # UI sandbox (gredjapl/ui-sandbox) via GITHUB_UI_PAT
 │   ├── Http/
 │   │   ├── GitHubRequestHelper.cs
@@ -159,7 +160,7 @@ Core/
 │   │   │   ├── CreateReleaseModelRequest.cs
 │   │   │   ├── UpdateIssueModelRequest.cs
 │   │   │   ├── UpdatePullRequestModelRequest.cs
-│   │   │   └── UpdateStateTitleModelRequest.cs   # общий базовый PATCH State+Title
+│   │   │   └── UpdateStateTitleModelRequest.cs   # shared base PATCH State+Title
 │   │   ├── Responses/
 │   │   │   ├── BranchModelResponse.cs
 │   │   │   ├── CollaboratorModelResponse.cs
@@ -240,16 +241,31 @@ Api/
 ├── GitHub/
 │   └── Tests/
 │       ├── Auth/
-│       │   └── AuthNegativeTests.cs
+│       │   ├── AuthNegativeTests.cs
+│       │   └── GetAuthenticatedUserTests.cs
 │       ├── AuthRepos/
 │       │   └── GetAuthenticatedUserReposTests.cs
 │       ├── Branches/
 │       │   ├── GetBranchByNameTests.cs
 │       │   └── GetBranchesTests.cs
+│       ├── Collaborators/
+│       │   ├── CreateInvitationTests.cs
+│       │   ├── DeleteInvitationTests.cs
+│       │   ├── GetCollaboratorPermissionTests.cs
+│       │   ├── GetCollaboratorsTests.cs
+│       │   └── GetInvitationsTests.cs
 │       ├── Commits/
 │       │   └── GetCommitsTests.cs
 │       ├── Contributors/
 │       │   └── GetContributorsTests.cs
+│       ├── GitCommits/
+│       │   ├── CreateGitCommitTests.cs
+│       │   ├── CreateGitTreeTests.cs
+│       │   └── GetGitCommitTests.cs
+│       ├── GitRefs/
+│       │   ├── CreateRefTests.cs
+│       │   ├── DeleteRefTests.cs
+│       │   └── GetGitRefByNameTests.cs
 │       ├── IssueComments/
 │       │   ├── CreateCommentTests.cs
 │       │   ├── DeleteCommentTests.cs
@@ -260,9 +276,6 @@ Api/
 │       │   ├── GetIssueByIdTests.cs
 │       │   ├── GetIssuesTests.cs
 │       │   └── UpdateIssueTests.cs
-│       ├── GitRefs/
-│       │   ├── CreateRefTests.cs
-│       │   └── DeleteRefTests.cs
 │       ├── Languages/
 │       │   └── GetLanguagesTests.cs
 │       ├── PublicRepos/
@@ -278,10 +291,15 @@ Api/
 │       ├── RateLimit/
 │       │   └── GetRateLimitTests.cs
 │       ├── Releases/
+│       │   ├── GetReleaseDetailTests.cs
 │       │   └── GetReleasesTests.cs
 │       ├── Repos/
 │       │   ├── GetRepositoryTests.cs
 │       │   └── GetReposTests.cs
+│       ├── Search/
+│       │   ├── SearchIssuesTests.cs
+│       │   ├── SearchRepositoriesTests.cs
+│       │   └── SearchUsersTests.cs
 │       ├── Tags/
 │       │   └── GetTagsTests.cs
 │       ├── Topics/
@@ -299,7 +317,7 @@ Api/
 ```
 AllureAdapter/
 ├── AllureAdapter.csproj
-└── Helpers/
+└── Helpers/                      # flat infra layout by design (constants/attribute/models in one folder)
     ├── AllureConstants.cs
     ├── AllureHelper.cs
     ├── AllureJsonWriter.cs
@@ -339,16 +357,16 @@ Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
-├── Data/                         # static test files (upload payloads)
-└── github/                       # все UI-тесты GitHub (site-scoped; будущие сайты — соседние папки)
-    ├── Pages/                      # pages + forms — единственный дом локаторов
+├── Data/                         # static test files (upload payloads) — reserved, currently empty
+└── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
+    ├── Pages/                      # pages + forms — single home of locators
     │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
     │   └── GitHubStream/
     │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
     │       ├── Pulls/                # PullDetailPage, PullCreatePage
     │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
     └── Tests/
-        ├── Support/                  # тестовая инфраструктура: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
+        ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
         └── GitHubStream/
             ├── Issues/               # IssuesUiTests, IssueUiTests
             ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
@@ -378,7 +396,7 @@ Rules/
 
 ```
 documentation/
-├── AuditReport.md                # Отчёт полного аудита 2026-10-09 (находки, фиксы не применялись)
+├── AuditReport.md                # Full audit report 2026-10-09 (findings, fixes not applied)
 ├── BugReportTemplate.md
 ├── Bugs/
 │   └── JsonPlaceholder/

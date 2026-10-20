@@ -16,8 +16,6 @@ internal sealed class PullsPage(IPage page)
 
     internal async Task<int> GetOpenCountAsync() => await GetTabCountAsync("Open");
 
-    internal async Task<int> GetClosedCountAsync() => await GetTabCountAsync("Closed");
-
     internal async Task<bool> HasPullWithTitleAsync(string title) =>
         await _tabLinks.Filter(new() { HasTextString = title }).CountAsync() > 0;
 

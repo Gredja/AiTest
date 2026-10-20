@@ -13,7 +13,6 @@ namespace Api.JsonPlaceholder.Comments;
 [Category("JsonPlaceholder")]
 public class GetAllCommentsTests : JsonPlaceholderRequestHelper
 {
-    private const int ExpectedCommentCount = 500;
 
     [Test]
     [Category("HealthCheck")]
@@ -77,7 +76,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(ExpectedCommentCount);
+        response.Data.Should().HaveCount(TestConfig.ExpectedCommentCount);
     }
 
     [Test]
@@ -112,6 +111,6 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 }

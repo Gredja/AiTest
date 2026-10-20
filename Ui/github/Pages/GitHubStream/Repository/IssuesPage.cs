@@ -17,13 +17,6 @@ internal sealed class IssuesPage(IPage page)
     internal async Task<bool> HasNewIssueButtonAsync() =>
         await _newIssueLink.CountAsync() > 0;
 
-    internal async Task<int> GetOpenCountAsync()
-    {
-        var text = await _openTabLink.TextContentAsync();
-
-        return TabCountParser.Parse(text);
-    }
-
     internal async Task<bool> HasIssueWithTitleAsync(string title) =>
         await _issueLinks.Filter(new() { HasTextString = title }).CountAsync() > 0;
 
@@ -58,7 +51,6 @@ internal sealed class IssuesPage(IPage page)
     private readonly ILocator _emptyStateHeading = page.GetByRole(AriaRole.Heading, new() { Name = "No results matched your search" });
     private readonly ILocator _newIssueLink = page.GetByRole(AriaRole.Link, new() { Name = "New issue" });
     private readonly ILocator _issueLinks = page.GetByRole(AriaRole.Link);
-    private readonly ILocator _openTabLink = page.GetByRole(AriaRole.Link).Filter(new() { HasTextString = "Open" }).First;
     private readonly ILocator _closedTabLink = page.GetByRole(AriaRole.Link, new() { Name = "Closed", Exact = true });
     private readonly ILocator _searchCombobox = page.GetByRole(AriaRole.Combobox, new() { Name = "Search issues" });
     private readonly ILocator _searchButton = page.GetByRole(AriaRole.Button, new() { Name = "Search", Exact = true });

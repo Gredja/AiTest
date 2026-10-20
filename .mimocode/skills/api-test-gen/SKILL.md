@@ -212,7 +212,7 @@ public class GetAll{Endpoint}Tests : {BaseClass}
         var stopwatch = Stopwatch.StartNew();
         var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
         stopwatch.Stop();
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]
@@ -339,11 +339,11 @@ Show:
 
 | Version | Date | Change | Author |
 |---|---|---|---|
-| 1.0 | 2026-06-25 | Initial commit | Алексей |
-| 1.1 | 2026-06-25 | Added Purpose, Variable Placeholders table, Output Format Instruction, Peer Review | Алексей |
-| 1.2 | 2026-06-25 | Made service-agnostic: removed hardcoded FakeStore/JsonPlaceholder, added File Convention table, dynamic base class discovery | Алексей |
-| 1.3 | 2026-02-21 | Added Observable Behaviour document check in Step 1 — read `documentation/{Service}ObservableBehaviour.md` as primary source for test design | Алексей |
-| 1.4 | 2026-02-21 | Added Observable Behaviour template reference, auto-create from template if missing, document sync rule in test-practices.md | Алексей |
+| 1.0 | 2026-06-25 | Initial commit | Alexey |
+| 1.1 | 2026-06-25 | Added Purpose, Variable Placeholders table, Output Format Instruction, Peer Review | Alexey |
+| 1.2 | 2026-06-25 | Made service-agnostic: removed hardcoded FakeStore/JsonPlaceholder, added File Convention table, dynamic base class discovery | Alexey |
+| 1.3 | 2026-02-21 | Added Observable Behaviour document check in Step 1 — read `documentation/{Service}ObservableBehaviour.md` as primary source for test design | Alexey |
+| 1.4 | 2026-02-21 | Added Observable Behaviour template reference, auto-create from template if missing, document sync rule in test-practices.md | Alexey |
 | 1.5 | 2026-09-30 | Added Read-after-write visibility reference in Step 4 (GET+POST pattern) | MiMo |
 | 1.6 | 2026-09-30 | Fixed stale `Get<T>` signature in Step 4 template — removed `Method.Get` argument | MiMo |
 | 1.7 | 2026-09-30 | Step 1: added "read existing code first — never duplicate files" (from model-selection-note katka) | MiMo |

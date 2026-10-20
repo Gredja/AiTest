@@ -169,7 +169,7 @@ public class GetIssueCommentsTests : GitHubTestBase
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]

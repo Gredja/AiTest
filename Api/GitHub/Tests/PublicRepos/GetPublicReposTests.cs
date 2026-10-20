@@ -96,6 +96,6 @@ public class GetPublicReposTests : GitHubTestBase
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 }

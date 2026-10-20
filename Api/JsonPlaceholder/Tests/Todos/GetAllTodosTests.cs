@@ -15,7 +15,6 @@ namespace Api.JsonPlaceholder.Todos;
 [Category("JsonPlaceholder")]
 public class GetAllTodosTests : JsonPlaceholderRequestHelper
 {
-    private const int ExpectedTodoCount = 200;
     private int? _createdTodoId;
 
     [OneTimeSetUp]
@@ -95,7 +94,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]
@@ -106,7 +105,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(ExpectedTodoCount);
+        response.Data.Should().HaveCount(TestConfig.ExpectedTodoCount);
     }
 
     [Test]

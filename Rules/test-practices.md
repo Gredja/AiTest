@@ -10,7 +10,7 @@
 - **Setup requests assert their status** — every GET/POST inside `[OneTimeSetUp]` gets `ShouldHaveStatusCode(...)` immediately after the call. A failed setup must fail with a clear status assertion, not a `NullReferenceException` mid-fixture (kills CI diagnostics)
 - **Teardown/cleanup requests do NOT assert status** — `[OneTimeTearDown]` cleanup runs under the shared `RunCleanupAsync` (try/catch + warning, see "E2E cleanup"): a status assertion there would fail the run for a resource that can be cleaned manually and would mask the original test failure. Log the status code in the warning instead; never dereference the cleanup response body
 - **Status check before every `.Data` dereference** — not only in setups: when a test body reads `.Data!` or aggregates off a response, assert the status first; a 500 must fail as "expected 200, got 500", not as an NRE
-- **Aggregates need data first** — `Max`/`First` anywhere (setup OR test body): status-assert first, then `NotBeEmpty(...)` whose message points at Entry Criteria (`documentation/GitHubTestingStructure.md`); a bare `InvalidOperationException: Sequence contains no elements` explains nothing
+- **Aggregates need data first** — `Max`/`First` anywhere (setup OR test body): status-assert first, then `NotBeEmpty(...)` whose message points at Entry Criteria (`documentation/GitHubTestingStructure.md`); a bare `InvalidOperationException: Sequence contains no elements` explains nothing. **Exception — dynamic id resolvers with a pristine-sandbox fallback** (`ResolveNonExistentIssueNumberAsync`/`ResolveNonExistentPullNumberAsync`): they must NOT require data (a clean single-test run has none) — status-assert, then fall back to `GitHubEndpoints.NonExistentStaticId` (0, always invalid)
 
 ## API testing patterns
 
@@ -202,7 +202,7 @@ public async Task OneTimeTearDown()
 - `*_CreatedRecordMatchesRequest` (`Regression`) — `record.ShouldMatchRequest(TestData)` for ALL fields, not only Id (POST may return a valid Id while persisting fields wrong)
 
 **Mandatory for every POST flow — record-add speed check:**
-- `*_RecordVisibleWithinTimeLimit` (`Performance`) — time from POST completion until the record is visible to GET. Poll with `WaitHelper.WaitUntilAsync(action, condition, timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs))` (`Core/Helpers/Waiting/` — first attempt is immediate, so instant APIs finish on attempt 1 without polling overhead). Assert `result.IsSuccess`; include `result.Elapsed` / `result.Attempts` / `result.LastValue` in the failure message — that IS the speed metric and the diagnostics
+- `*_RecordVisibleWithinTimeLimit` (`Performance`) — time from POST completion until the record is visible to GET. Poll with `WaitHelper.WaitUntilAsync(action, condition, timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs))` (`Core/Helpers/Waiting/` — first attempt is immediate, so instant APIs finish on attempt 1 without polling overhead). On success the test passes; on **timeout mark `Inconclusive`** (informational wall-clock on a live service, 2026-10-19) and include `result.Elapsed` / `result.Attempts` / `result.LastValue` in the message — that IS the speed metric and the diagnostics. Lower-bound checks (`Elapsed >= minDelay`) stay hard asserts
 - APIs that never persist the record (fake APIs, e.g. JSONPlaceholder) — keep the test but `[Ignore]` it with documented behavior (fake-API exception below)
 
 **Rules:**
@@ -219,8 +219,8 @@ public async Task OneTimeTearDown()
 
 For APIs where visibility/state change is not immediate (eventual consistency, background processing) — poll instead of a single immediate GET: `WaitHelper.WaitUntilAsync(action, condition, timeout?, interval?)` in `Core/Helpers/Waiting/` returns `WaitResult<T>` (`IsSuccess`, `Elapsed`, `Attempts`, `LastValue`).
 
-- **Use it when:** the record must appear / state must change within a time limit — assert `result.IsSuccess` plus a bound on `result.Elapsed` (e.g. `Elapsed < sla` for "within 3s", `Elapsed >= minDelay` for "no earlier than 15s"); name such tests `*_AppearsWithinTimeLimit`, category `Performance`
-- **Do not use it when:** the API answers instantly (fake APIs like JSONPlaceholder) — polling only slows the suite; and for latency of a SINGLE request keep the existing pattern: `Stopwatch` + `TestConfig.MaxResponseTimeMs` (`*_ResponseTimeIsAcceptable`)
+- **Use it when:** the record must appear / state must change within a time limit — success is a pass; a timeout is `Inconclusive` (informational wall-clock on live services) with `Elapsed`/`Attempts`/`LastValue` in the message; lower-bound checks (e.g. `Elapsed >= minDelay` for "no earlier than 15s") stay hard asserts; name such tests `*_AppearsWithinTimeLimit`, category `Performance`
+- **Do not use it when:** the API answers instantly (fake APIs like JSONPlaceholder) — polling only slows the suite; and for latency of a SINGLE request keep the existing pattern: `AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds)` (`*_ResponseTimeIsAcceptable` — informational on overrun)
 - On failure include `Elapsed`/`Attempts`/`LastValue` in the assertion message — they are the diagnostics for flaky timing tests
 - Timing boundary "exactly at N seconds" is unverifiable with polling granularity — leave a margin (check "not earlier" one interval before the boundary) and clarify the requirement if strictness matters
 

@@ -15,7 +15,6 @@ namespace Api.JsonPlaceholder.Posts;
 [Category("JsonPlaceholder")]
 public class GetAllPostsTests : JsonPlaceholderRequestHelper
 {
-    private const int ExpectedPostCount = 100;
     private int? _createdPostId;
 
     [OneTimeSetUp]
@@ -95,7 +94,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 
     [Test]
@@ -106,7 +105,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(ExpectedPostCount);
+        response.Data.Should().HaveCount(TestConfig.ExpectedPostCount);
     }
 
     [Test]

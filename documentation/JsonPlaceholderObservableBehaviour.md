@@ -44,10 +44,10 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 | Priority | Endpoints | Rationale |
 |---|---|---|
-| **P0 — Core** | GET /posts, GET /posts/{id}, POST /posts, PUT/PATCH /posts/{id}, DELETE /posts/{id} | Основной CRUD-ресурс — единственная write-поверхность API |
-| **P1 — Important** | GET /comments, GET /comments/{id}, GET /users, GET /users/{id}, GET /users/{id}/posts | Комментарии и пользователи — связующие сущности |
-| **P2 — Useful** | GET /albums (+{id}, ?userId), GET /todos (?userId), GET /users/{id}/albums, GET /users/{id}/todos | Производные коллекции |
-| **P3 — Reference** | GET /photos (+{id}, ?albumId) | Медиа-справочник (5000 элементов) |
+| **P0 — Core** | GET /posts, GET /posts/{id}, POST /posts, PUT/PATCH /posts/{id}, DELETE /posts/{id} | Primary CRUD resource — the API's only write surface |
+| **P1 — Important** | GET /comments, GET /comments/{id}, GET /users, GET /users/{id}, GET /users/{id}/posts | Comments and users — the linking entities |
+| **P2 — Useful** | GET /albums (+{id}, ?userId), GET /todos (?userId), GET /users/{id}/albums, GET /users/{id}/todos | Derived collections |
+| **P3 — Reference** | GET /photos (+{id}, ?albumId) | Media reference (5000 items) |
 
 ---
 

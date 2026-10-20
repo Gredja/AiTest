@@ -13,7 +13,6 @@ namespace Api.JsonPlaceholder.Users;
 [Category("JsonPlaceholder")]
 public class GetAllUsersTests : JsonPlaceholderRequestHelper
 {
-    private const int ExpectedUserCount = 10;
 
     [Test]
     [Category("HealthCheck")]
@@ -77,7 +76,7 @@ public class GetAllUsersTests : JsonPlaceholderRequestHelper
         var response = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(ExpectedUserCount);
+        response.Data.Should().HaveCount(TestConfig.ExpectedUserCount);
     }
 
     [Test]
@@ -112,6 +111,6 @@ public class GetAllUsersTests : JsonPlaceholderRequestHelper
         var response = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 }

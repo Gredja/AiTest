@@ -17,6 +17,9 @@ public static class GitHubEndpoints
 
     // max + 1 is racy: a concurrent E2E write in the same run can create that exact number
     public const int NonExistentIdOffset = 100;
+
+    // 0 is never a valid issue/PR number — fallback when a pristine sandbox has no records
+    public const int NonExistentStaticId = 0;
     public const string StateOpen = "open";
     public const string StateClosed = "closed";
     public const string StateAll = "all";

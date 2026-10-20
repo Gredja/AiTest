@@ -96,6 +96,6 @@ public class GetUserReposTests : GitHubTestBase
             UsernameParam(_testUsername));
         stopwatch.Stop();
 
-        stopwatch.ElapsedMilliseconds.Should().BeLessThan(TestConfig.MaxResponseTimeMs);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
 }

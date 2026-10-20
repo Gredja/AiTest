@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Ui.Github.Tests.Support;
@@ -11,6 +12,8 @@ internal static class TabCountParser
     {
         var match = _trailingCountPattern.Match(tabText ?? string.Empty);
 
-        return match.Success ? int.Parse(match.Groups[1].Value) : -1;
+        return match.Success
+            ? int.Parse(match.Groups[1].Value, CultureInfo.InvariantCulture)
+            : -1;
     }
 }
