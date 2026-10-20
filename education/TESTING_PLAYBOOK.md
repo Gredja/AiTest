@@ -327,6 +327,19 @@ The UI rarely exposes the created id. Cleanup composition:
   credentials in query strings are masked, e-mail/PII in embedded response bodies replaced —
   headers carrying auth tokens are never logged at all.
 
+### 5.8 Localization testing (language-agnostic UI)
+
+- The locale lives on `<html lang/dir>`; RTL is read from `dir`, never inferred from the
+  language code.
+- Localized strings (titles, labels) come from a per-language fixture file — page objects
+  and tests never hardcode foreign text; one new language = one fixture row.
+- HTTP-first: smoke-check status + locale attributes + title over plain HTTP; use the
+  browser only for interaction checks (form visibility, switching, persistence).
+- A shared HTTP client must run **without a cookie jar** when the app stores the language
+  choice in a session — otherwise locale state leaks between tests (order dependence:
+  an unknown-language request silently inherits the previous test's session language).
+- Data-driven only: one test method per check, `[TestCaseSource]` over the fixture list.
+
 ---
 
 ## 6. Code quality bar (what a review must enforce)

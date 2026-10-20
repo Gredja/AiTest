@@ -84,6 +84,7 @@ Core/
 │   ├── GitHubErrors.cs            # documented error message constants (verified vs live API)
 │   ├── GitHubHeaders.cs            # X-RateLimit-* header names (shared Api/E2E)
 │   ├── JsonPlaceholderEndpoints.cs
+│   ├── MoodledemoEndpoints.cs
 │   └── TestConfig.cs
 ├── Helpers/
 │   ├── Assertions/
@@ -358,20 +359,28 @@ Ui/
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ├── Data/                         # static test files (upload payloads) — reserved, currently empty
-└── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
-    ├── Pages/                      # pages + forms — single home of locators
-    │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
-    │   └── GitHubStream/
-    │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
-    │       ├── Pulls/                # PullDetailPage, PullCreatePage
-    │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
+├── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
+│   ├── Pages/                      # pages + forms — single home of locators
+│   │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
+│   │   └── GitHubStream/
+│   │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
+│   │       ├── Pulls/                # PullDetailPage, PullCreatePage
+│   │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
+│   └── Tests/
+│       ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
+│       └── GitHubStream/
+│           ├── Issues/               # IssuesUiTests, IssueUiTests
+│           ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
+│           ├── Pulls/                # PullsUiTests, PullFlowUiTests
+│           └── Repository/           # RepositoryUiTests, BranchesUiTests
+└── moodledemo/                   # Moodle demo multilingual site (site-scoped sibling of github/)
+    ├── Pages/                      # LoginPage (language-agnostic locators, L-LOC-1)
+    ├── Fixtures/
+    │   └── expected-langs.json      # code → { lang, dir, title } — the only source of localized strings
     └── Tests/
-        ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
-        └── GitHubStream/
-            ├── Issues/               # IssuesUiTests, IssueUiTests
-            ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
-            ├── Pulls/                # PullsUiTests, PullFlowUiTests
-            └── Repository/           # RepositoryUiTests, BranchesUiTests
+        ├── Support/                # MoodledemoTestBase, MoodledemoBrowser, MoodledemoHttp, HtmlLocaleReader, MoodledemoFixtures, LocaleExpectation
+        ├── L1SmokeTests.cs          # HTTP-first locale contract (data-driven, no browser)
+        └── LoginFormUiTests.cs      # Playwright: login form via stable selectors
 ```
 
 ## Rules/
@@ -386,6 +395,7 @@ Rules/
 ├── comments.md
 ├── config.md
 ├── git.md
+├── localization-testing.md
 ├── models.md
 ├── test-practices.md
 ├── ui-testing.md
@@ -413,6 +423,7 @@ documentation/
 ├── GitHubUiObservableBehaviour.md
 ├── JsonPlaceholderObservableBehaviour.md
 ├── JsonPlaceholderTestPlan.md
+├── MoodleObservableBehaviour.md
 ├── ObservableBehaviourTemplate.md
 ├── Katas/
 │   ├── 00-test-plan.md

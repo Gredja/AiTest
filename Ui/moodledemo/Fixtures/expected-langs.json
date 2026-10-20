@@ -1,0 +1,11 @@
+{
+  "home": [
+    { "code": "en", "lang": "en", "dir": "ltr", "title": "Home | Mount Orange" },
+    { "code": "ru", "lang": "ru", "dir": "ltr", "title": "В начало | Mount Orange" },
+    { "code": "ar", "lang": "ar", "dir": "rtl", "title": "الصفحة الرئيسية | Mount Orange" },
+    { "code": "he", "lang": "he", "dir": "rtl", "title": "ראשי | Mount Orange" }
+  ],
+  "loginPage": [
+    { "code": "he", "lang": "he", "dir": "rtl", "title": "התחברות למערכת | Mount Orange" }
+  ]
+}
