@@ -45,7 +45,7 @@ All changes: plan → approval → report. After a commit — review `Rules/`. A
 - LINQ: `Any()` instead of `Count() > 0`, no redundant `.ToList()`, `FirstOrDefault()` instead of `Where().FirstOrDefault()`; synchronous side-effect loops on `List<T>` → `.ForEach(item => ...)` (async/lazy sources → `foreach`, `Rules/code-style.md` → Loops)
 - Strings: interpolation `$""`, `StringBuilder` in loops, `IsNullOrEmpty()` instead of `.Length == 0`
 - Null safety: `?.` for safe navigation, `??` for fallback, `is not null` instead of `!= null`
-- SOLID: one class — one responsibility, dependencies via interfaces, extensibility via inheritance
+- SOLID: one class — one responsibility, dependencies via interfaces, extensibility via inheritance; **accepted debt: the test project deliberately has zero hand-rolled interfaces/DI** (`Rules/code-principles.md` → DIP note, audit F09) — no "no interfaces" findings, no checklist DI refactors
 - Test classes (`*Tests.cs`): `[Test]` + lifecycle + test data only; shared parameter builders live in base/helpers, not in the test class; cleanup only in `[OneTimeTearDown]` (**the last member of the class**) via the fixture registry (register-then-assert), not in `finally`; **created → deleted, no keeping test records** (no delete API → nearest cleanup: close issue/PR) (`Rules/test-practices.md`)
 
 ### Models
