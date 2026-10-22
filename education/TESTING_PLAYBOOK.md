@@ -339,6 +339,14 @@ The UI rarely exposes the created id. Cleanup composition:
   choice in a session — otherwise locale state leaks between tests (order dependence:
   an unknown-language request silently inherits the previous test's session language).
 - Data-driven only: one test method per check, `[TestCaseSource]` over the fixture list.
+- Expected locale values (`lang`, exact title) come **only from the fixture** — never
+  derived from the requested language code (apps normalize variants: `pt_br` → `pt`,
+  `es_mx` → `es-mx`). Assert the exact fixture title; do not require
+  "translated ≠ English" — low-coverage languages legitimately fall back per string.
+- An external demo under rapid load answers with transient noise (timeouts, connection
+  drops, foreign HTTP 200 pages); the HTTP helper retries a bounded number of attempts
+  keyed on a site-content marker + network exceptions, and surfaces the last failure to
+  the assertion — only a persistent failure is a finding.
 
 ---
 

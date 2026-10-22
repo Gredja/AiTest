@@ -60,6 +60,7 @@ Gredja/
 │   ├── allure-report.ps1
 │   ├── install-playwright.ps1    # playwright install chromium (+ deps)
 │   ├── locator-dump.mjs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
+│   ├── moodledemo-discover-langs.ps1  # regenerate moodledemo expected-langs.json from the live language switcher
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── test-coverage.ps1
 │   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)

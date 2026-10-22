@@ -266,7 +266,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, normalize-eol)
+├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
@@ -278,7 +278,7 @@ Gredja/
 │   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
 │   ├── GitHubUiObservableBehaviour.md # Наблюдаемое поведение GitHub UI (Web)
 │   ├── JsonPlaceholderObservableBehaviour.md # Наблюдаемое поведение JP API
-│   ├── MoodleObservableBehaviour.md # Наблюдаемое поведение Moodle demo (локали, verified 2026-10-19)
+│   ├── MoodleObservableBehaviour.md # Наблюдаемое поведение Moodle demo (локали, verified 2026-10-19 + языковой свип 2026-10-21)
 │   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
 │   └── README.md                 # Заглушка → ссылка на корневой README.md
