@@ -7,7 +7,6 @@ internal static class MoodledemoHttp
 {
     private const int HttpTimeoutSeconds = 20;
     private const int MaxAttempts = 3;
-    private const string SiteTitleMarker = "| Mount Orange";
     private static readonly TimeSpan _retryDelay = TimeSpan.FromSeconds(1);
 
     // No cookie jar: Moodle persists the language choice in a session cookie, which would
@@ -18,14 +17,17 @@ internal static class MoodledemoHttp
         Timeout = TimeSpan.FromSeconds(HttpTimeoutSeconds)
     };
 
-    // The external demo occasionally answers with a connection drop or an HTTP 200 foreign
-    // page (observed ~5% under load); retry until a real site page arrives so the suite
-    // reports persistence, not transient noise. A still-bad last attempt is returned
-    // unchanged for the test assertion to fail on.
-    internal static async Task<(HttpStatusCode Status, string Body)> GetAsync(string pathAndQuery)
+    // The external demo occasionally answers with a connection drop, an HTTP 200 foreign
+    // page (observed ~5% under load), or its default-locale page for a ?lang request;
+    // retry until the requested locale arrives so the suite reports persistence, not
+    // transient noise. A still-bad last attempt is returned unchanged for the assertion.
+    internal static async Task<(HttpStatusCode Status, string Body)> GetAsync(
+        string pathAndQuery,
+        string expectedLang)
     {
         var status = default(HttpStatusCode);
         var body = string.Empty;
+        var expectedLangAttribute = $" lang=\"{expectedLang}\"";
 
         for (var attempt = 1; attempt <= MaxAttempts; attempt++)
         {
@@ -35,16 +37,21 @@ internal static class MoodledemoHttp
                 status = response.StatusCode;
                 body = await response.Content.ReadAsStringAsync();
 
-                if (status == HttpStatusCode.OK && body.Contains(SiteTitleMarker, StringComparison.Ordinal))
+                if (status == HttpStatusCode.OK
+                    && body.Contains(MoodledemoEndpoints.SiteTitleMarker, StringComparison.Ordinal)
+                    && body.Contains(expectedLangAttribute, StringComparison.Ordinal))
                 {
                     return (status, body);
                 }
             }
             catch (HttpRequestException) when (attempt < MaxAttempts)
             {
+                // transient connection failure — swallowed to reach the retry delay below;
+                // without the filter the last attempt would rethrow instead
             }
             catch (TaskCanceledException) when (attempt < MaxAttempts)
             {
+                // transient timeout — same retry path as above
             }
 
             if (attempt < MaxAttempts)

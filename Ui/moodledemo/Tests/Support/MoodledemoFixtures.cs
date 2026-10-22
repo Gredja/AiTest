@@ -5,6 +5,7 @@ namespace Ui.Moodledemo.Tests.Support;
 internal static class MoodledemoFixtures
 {
     private const string EnglishCode = "en";
+    private static readonly IReadOnlyList<string> _defaultTitleScripts = new[] { "Latin" };
 
     private static readonly string _fixturePath = Path.Combine(
         AppContext.BaseDirectory, "moodledemo", "Fixtures", "expected-langs.json");
@@ -18,10 +19,21 @@ internal static class MoodledemoFixtures
 
     internal static IReadOnlyList<LocaleExpectation> LoginPage => _root.LoginPage;
 
+    internal static IReadOnlyList<LoginLabelExpectation> LoginLabels =>
+        _root.LoginLabels
+        ?? throw new InvalidOperationException("fixture section 'loginLabels' is missing");
+
     internal static LocaleExpectation English =>
         Home.Single(expectation => expectation.Code == EnglishCode);
 
+    internal static IReadOnlyList<string> TitleScriptsFor(string code) =>
+        _root.TitleScripts is not null && _root.TitleScripts.TryGetValue(code, out var scripts)
+            ? scripts
+            : _defaultTitleScripts;
+
     private sealed record FixtureRoot(
         List<LocaleExpectation> Home,
-        List<LocaleExpectation> LoginPage);
+        List<LocaleExpectation> LoginPage,
+        List<LoginLabelExpectation>? LoginLabels,
+        Dictionary<string, List<string>>? TitleScripts);
 }

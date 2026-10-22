@@ -1778,5 +1778,220 @@
       "dir": "ltr",
       "title": "Log in to the site | Mount Orange"
     }
-  ]
+  ],
+  "loginLabels": [
+    {
+      "code": "en",
+      "username": "Username or email",
+      "password": "Password",
+      "loginButton": "Log in"
+    },
+    {
+      "code": "en_us",
+      "username": "Username or email",
+      "password": "Password",
+      "loginButton": "Log in"
+    },
+    {
+      "code": "ru",
+      "username": "Логин или адрес электронной почты",
+      "password": "Пароль",
+      "loginButton": "Вход"
+    },
+    {
+      "code": "de",
+      "username": "Anmeldename oder E-Mail",
+      "password": "Kennwort",
+      "loginButton": "Anmelden"
+    },
+    {
+      "code": "fr",
+      "username": "Nom d’utilisateur ou courriel",
+      "password": "Mot de passe",
+      "loginButton": "Connexion"
+    },
+    {
+      "code": "ar",
+      "username": "اسم المُستخدم أو البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "loginButton": "تسجيل الدخول"
+    },
+    {
+      "code": "he",
+      "username": "שם משתמש או דוא''ל",
+      "password": "סיסמה",
+      "loginButton": "התחברות"
+    },
+    {
+      "code": "ja",
+      "username": "ユーザ名またはメールアドレス",
+      "password": "パスワード",
+      "loginButton": "ログイン"
+    },
+    {
+      "code": "zh_cn",
+      "username": "用户名或邮箱",
+      "password": "密码",
+      "loginButton": "登录"
+    },
+    {
+      "code": "es_mx",
+      "username": "Usuario o Email",
+      "password": "Contraseña",
+      "loginButton": "Iniciar sesión (ingresar)"
+    },
+    {
+      "code": "pt_br",
+      "username": "Identificação ou e-mail",
+      "password": "Senha",
+      "loginButton": "Acessar"
+    }
+  ],
+  "titleScripts": {
+    "ar": [
+      "Arabic"
+    ],
+    "ckb": [
+      "Arabic"
+    ],
+    "fa": [
+      "Arabic"
+    ],
+    "prs": [
+      "Arabic"
+    ],
+    "ps": [
+      "Arabic"
+    ],
+    "ur": [
+      "Arabic"
+    ],
+    "ug_ug": [
+      "Arabic"
+    ],
+    "kmr": [
+      "Arabic",
+      "Latin"
+    ],
+    "he": [
+      "Hebrew"
+    ],
+    "dv": [
+      "Thaana"
+    ],
+    "dz": [
+      "Tibetan"
+    ],
+    "el": [
+      "Greek"
+    ],
+    "be": [
+      "Cyrillic"
+    ],
+    "bg": [
+      "Cyrillic"
+    ],
+    "kk": [
+      "Cyrillic"
+    ],
+    "ky": [
+      "Cyrillic"
+    ],
+    "mk": [
+      "Cyrillic"
+    ],
+    "mn": [
+      "Cyrillic"
+    ],
+    "ru": [
+      "Cyrillic"
+    ],
+    "sr_cr": [
+      "Cyrillic"
+    ],
+    "tg": [
+      "Cyrillic"
+    ],
+    "uk": [
+      "Cyrillic"
+    ],
+    "mn_mong": [
+      "Mongolian",
+      "Cyrillic",
+      "Latin"
+    ],
+    "hi": [
+      "Devanagari"
+    ],
+    "mr": [
+      "Devanagari"
+    ],
+    "ne": [
+      "Devanagari"
+    ],
+    "bn": [
+      "Bengali"
+    ],
+    "gu": [
+      "Gujarati"
+    ],
+    "kn": [
+      "Kannada"
+    ],
+    "ml": [
+      "Malayalam"
+    ],
+    "si": [
+      "Sinhala"
+    ],
+    "ta": [
+      "Tamil"
+    ],
+    "ta_lk": [
+      "Tamil"
+    ],
+    "te": [
+      "Telugu"
+    ],
+    "th": [
+      "Thai"
+    ],
+    "lo": [
+      "Lao"
+    ],
+    "km": [
+      "Khmer"
+    ],
+    "hy": [
+      "Armenian"
+    ],
+    "ka": [
+      "Georgian"
+    ],
+    "am": [
+      "Ethiopic"
+    ],
+    "ti": [
+      "Ethiopic"
+    ],
+    "zh_cn": [
+      "Han"
+    ],
+    "zh_tw": [
+      "Han"
+    ],
+    "ja": [
+      "Han",
+      "Hiragana",
+      "Katakana",
+      "Latin"
+    ],
+    "ko": [
+      "Hangul"
+    ],
+    "pan": [
+      "Gurmukhi",
+      "Latin"
+    ]
+  }
 }

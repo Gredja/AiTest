@@ -272,6 +272,23 @@ a draft in the behavior doc until verified.
 **Hard rule:** locator extraction uses only this script — never interactive sessions, never
 guessing from memory.
 
+**Localization: the same locator must work in every language.** A locator's *input string*
+(the `Name` in `GetByRole`) must never be a hardcoded literal — English or otherwise. Pass it
+from a language fixture so one locator serves all locales:
+
+```
+// ❌ hardcodes English — breaks the moment the page is shown in German
+page.GetByRole(AriaRole.Heading, new() { Name = "Site administration" });
+
+// ✅ input comes from the fixture — works on every locale
+page.GetByRole(AriaRole.Heading, new() { Name = lang.FixtureTitle });
+```
+
+The expected-language forms (page title, `html lang`, `dir`, header strings) live in JSON
+fixtures, never in code or `[TestCase]` attributes — adding a language is a data change, not a
+code change. The only DOM-attribute locator allowed in a localization suite is the root element
+(`html[lang]`, `html[dir]`).
+
 ### 5.4 Auth in browser tests
 
 - Tests **read** a pre-made storage state; they never log in or out per test (a logout kills
@@ -333,6 +350,11 @@ The UI rarely exposes the created id. Cleanup composition:
   language code.
 - Localized strings (titles, labels) come from a per-language fixture file — page objects
   and tests never hardcode foreign text; one new language = one fixture row.
+- Each fixture entry carries two title fields: **`FixtureTitle`** (the selector — the string
+  passed into locators) and **`ExpectedTitle`** (the assertion — the string the page must
+  actually show). They differ per language because of hyphenation, quoting, or
+  transliteration (e.g. English `Moodle demo: Sitename` vs. Russian `Moodle-Demo: Sitename`);
+  the fixture records both, the code never derives one from the other.
 - HTTP-first: smoke-check status + locale attributes + title over plain HTTP; use the
   browser only for interaction checks (form visibility, switching, persistence).
 - A shared HTTP client must run **without a cookie jar** when the app stores the language

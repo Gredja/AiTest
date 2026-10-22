@@ -30,12 +30,16 @@ public abstract class MoodledemoTestBase
     }
 
     // The demo site has no per-user state to carry — every context is anonymous by design
+    // The site picks the default language from Accept-Language — pin the locale so every
+    // anonymous visit deterministically starts as en_us (Playwright's own default is en-US,
+    // but the explicit value documents the dependency)
     [SetUp]
     public async Task OpenContextAsync()
     {
         _context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
-            ViewportSize = new ViewportSize { Width = ViewportWidth, Height = ViewportHeight }
+            ViewportSize = new ViewportSize { Width = ViewportWidth, Height = ViewportHeight },
+            Locale = "en-US"
         });
         await _context.Tracing.StartAsync(new TracingStartOptions
         {

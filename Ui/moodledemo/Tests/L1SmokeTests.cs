@@ -27,13 +27,22 @@ public class L1SmokeTests
         }
     }
 
+    private static IEnumerable<TestCaseData> HomeScriptCases()
+    {
+        foreach (var expectation in MoodledemoFixtures.Home)
+        {
+            yield return new TestCaseData(expectation)
+                .SetName($"Home_TitlePart_MatchesExpectedScript({expectation.Code})");
+        }
+    }
+
     [Test]
     [Category("Smoke")]
     [Description("1.1 GET / default: 200, lang=en, dir=ltr, English title")]
     public async Task Home_Default_IsEnglishLtr()
     {
         var english = MoodledemoFixtures.English;
-        var (status, body) = await MoodledemoHttp.GetAsync(MoodledemoEndpoints.HomePath);
+        var (status, body) = await MoodledemoHttp.GetAsync(MoodledemoEndpoints.HomePath, english.Lang);
 
         status.Should().Be(HttpStatusCode.OK);
         var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
@@ -48,7 +57,9 @@ public class L1SmokeTests
     [TestCaseSource(nameof(HomeCases))]
     public async Task Home_Lang_MatchesFixture(LocaleExpectation expectation)
     {
-        var (status, body) = await MoodledemoHttp.GetAsync(MoodledemoHttp.HomeWithLang(expectation.Code));
+        var (status, body) = await MoodledemoHttp.GetAsync(
+            MoodledemoHttp.HomeWithLang(expectation.Code),
+            expectation.Lang);
 
         status.Should().Be(HttpStatusCode.OK);
         var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
@@ -63,7 +74,9 @@ public class L1SmokeTests
     [TestCaseSource(nameof(LoginPageCases))]
     public async Task LoginPage_Lang_PersistsLocale(LocaleExpectation expectation)
     {
-        var (status, body) = await MoodledemoHttp.GetAsync(MoodledemoHttp.LoginWithLang(expectation.Code));
+        var (status, body) = await MoodledemoHttp.GetAsync(
+            MoodledemoHttp.LoginWithLang(expectation.Code),
+            expectation.Lang);
 
         status.Should().Be(HttpStatusCode.OK);
         var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
@@ -79,13 +92,21 @@ public class L1SmokeTests
     [Description("3.1 Unknown ?lang value: 200 with an English fallback (no server error)")]
     public async Task Home_UnknownLang_FallsBackToEnglish()
     {
+        var english = MoodledemoFixtures.English;
         var (status, body) = await MoodledemoHttp.GetAsync(
-            MoodledemoHttp.HomeWithLang(MoodledemoEndpoints.UnknownLangCode));
+            MoodledemoHttp.HomeWithLang(MoodledemoEndpoints.UnknownLangCode),
+            english.Lang);
 
         status.Should().Be(HttpStatusCode.OK, "an unknown language code must never break the page");
         var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
-        var english = MoodledemoFixtures.English;
         lang.Should().Be(english.Lang);
         dir.Should().Be(english.Dir);
     }
+
+    [Test]
+    [Category("Regression")]
+    [Description("3.2 Home title translatable part is written in the expected script(s) for the code")]
+    [TestCaseSource(nameof(HomeScriptCases))]
+    public void Home_TitlePart_MatchesExpectedScript(LocaleExpectation expectation) =>
+        TitleScriptAssert.ShouldMatch(expectation.Title, expectation.Code);
 }

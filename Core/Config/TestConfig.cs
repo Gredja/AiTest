@@ -16,6 +16,7 @@ public static class TestConfig
     private static JsonElement JsonPlaceholder => GetRequiredSection("JsonPlaceholder");
     private static JsonElement GitHub => GetRequiredSection("GitHub");
     private static JsonElement Ui => GetRequiredSection("Ui");
+    private static JsonElement MoodleDemo => GetRequiredSection("MoodleDemo");
 
     public static int MaxResponseTimeMs => GetRequiredInt("MaxResponseTimeMs");
 
@@ -60,6 +61,10 @@ public static class TestConfig
     public static string UiLogin => GetRequiredEnvironmentValue("GITHUB_UI_EMAIL");
     public static string UiPassword => GetRequiredEnvironmentValue("GITHUB_UI_PASSWORD");
     public static string UiApiToken => GetRequiredEnvironmentValue("GITHUB_UI_PAT");
+
+    // Public demo accounts of school.moodledemo.net (published on the site, hourly reset)
+    public static string MoodleDemoStudentUsername => GetRequiredString(MoodleDemo, "StudentUsername");
+    public static string MoodleDemoPassword => GetRequiredString(MoodleDemo, "Password");
 
     private static JsonElement GetRequiredSection(string name) =>
         _root.RootElement.TryGetProperty(name, out var section)

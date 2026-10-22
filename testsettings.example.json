@@ -23,5 +23,9 @@
     "StatePath": ".auth/github-ui-state.json",
     "TestRepo": "gredjapl/ui-sandbox",
     "Username": "gredjapl"
+  },
+  "MoodleDemo": {
+    "StudentUsername": "student",
+    "Password": "moodle26"
   }
 }
