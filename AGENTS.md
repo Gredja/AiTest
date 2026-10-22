@@ -6,12 +6,12 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 ## Project Structure
 
 - `Api/` — NUnit API tests (JsonPlaceholder, GitHub), including single write tests
-- `Ui/` — NUnit UI tests (Playwright .NET + Chromium): site scope — the `Ui/github/` folder (future sites — sibling folders, e.g. `Ui/moodledemo/`); pages/forms — `Ui/github/Pages/` (shared common chrome — `Ui/github/Pages/Common/`, family base classes — `RepositoryPageBase`), infrastructure — `Ui/github/Tests/Support/`, tests — `Ui/github/Tests/`; authorization via storageState (`.auth/github-ui-state.json`): the state is refreshed by the automated test `LoginSignInTests` (login via `GITHUB_UI_EMAIL`/`GITHUB_UI_PASSWORD`), the other tests only read the state; write via UI → cleanup via API; locators ONLY on Page/Form (at the bottom of the file), helpers receive `ILocator` as parameters; rules — `Rules/ui-testing.md`
+- `Ui/` — NUnit UI tests (Playwright .NET + Chromium): site scope — the `Ui/github/` folder (future sites — sibling folders, e.g. `Ui/moodledemo/`); pages/forms — `Ui/github/Pages/` (shared common chrome — `Ui/github/Pages/Common/`, family base classes — `RepositoryPageBase`), infrastructure — `Ui/github/Tests/Support/`, tests — `Ui/github/Tests/`; authorization via storageState (`.auth/github-ui-state.json`): the state is refreshed by the automated test `LoginSignInTests` (login via `GITHUB_UI_EMAIL`/`GITHUB_UI_PASSWORD`), the other tests only read the state; write via UI → cleanup via API; locators ONLY on Page/Form (at the bottom of the file), helpers receive `ILocator` as parameters; rules — `Rules/ui-testing.md`. The `Ui/moodledemo/` sibling covers the Moodle demo multilingual site (`https://school.moodledemo.net`): HTTP-first L1 locale smoke + Playwright checks (language switcher, persistence, RTL layout, login localization), anonymous contexts only (no storageState), locale expectations from `Ui/moodledemo/Fixtures/expected-langs.json`, rules — `Rules/localization-testing.md`, category `MoodleDemo`
 - `E2E/` — NUnit E2E tests: scenario chains only (create → verify → mutate → cleanup)
 - `Core/Models/` — response/request models
 - `Core/Helpers/` — shared helpers by subfolder: `Http/` (request infrastructure: `RequestHelper`, `JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — varied write data), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`), `Waiting/` (`WaitHelper`, `WaitResult`); needed for E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); API tests only → `Api/<Service>/Helpers/`
 - `Core/Attributes/` — model-field validation attributes (`PositiveIdAttribute`, `RequiredFieldAttribute`, `ValueRangeAttribute`)
-- `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` — URLs and endpoint paths
+- `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`, `Core/Config/MoodledemoEndpoints.cs` — URLs and endpoint paths
 - `Core/Logging/` — action logging (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) and raw test results (`test-results-*.log`). `TestResults/` contains **reports only**, raw run artifacts live in the temp folder
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (invoked from the NUnit teardown `TestReportSetup`), age-based cleanup of artifacts older than 7 days
 - `AllureAdapter/` — solution project: Allure NUnit attribute + JSON writers/report helpers (`AllureAdapter/Helpers/`, flat layout by design)
@@ -99,6 +99,7 @@ All changes: plan → approval → report. After a commit — review `Rules/`. A
 - `Rules/workflow.md` — plan → approval → changes → report
 - `Rules/categories.md` — test categories
 - `Rules/ui-testing.md` — UI tests (Playwright): page-object structure, locators, auth/storageState, waits (waiting for the outcome of the action before assert), cleanup, categories
+- `Rules/localization-testing.md` — localization testing (Moodle demo): language-agnostic locators (L-LOC-1), locale contract (`html lang/dir`, fixture titles), HTTP-first L1, data-driven languages, demo-environment safety
 
 ## AI Onboarding (for beginners)
 

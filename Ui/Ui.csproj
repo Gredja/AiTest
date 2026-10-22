@@ -35,6 +35,7 @@
     <!-- Repo-root config must reach the test output — same copy as Core.csproj (TestConfig reads AppContext.BaseDirectory) -->
     <None Include="..\testsettings.json" Link="testsettings.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('..\testsettings.json')" />
     <None Include="..\testsettings.example.json" Link="testsettings.json" CopyToOutputDirectory="PreserveNewest" Condition="!Exists('..\testsettings.json')" />
+    <None Update="moodledemo\Fixtures\expected-langs.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

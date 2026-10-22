@@ -264,9 +264,9 @@ Gredja/
 │   │   └── Users/                # Тесты пользователей
 │   └── GitHub/Tests/             # Тесты GitHub API (Auth/, Issues/, Repos/ и др.)
 ├── E2E/                          # E2E тесты (цепочки связей)
-├── Ui/                           # UI-тесты (Playwright + Chromium, storageState)
+├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, normalize-eol)
+├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
@@ -278,6 +278,7 @@ Gredja/
 │   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
 │   ├── GitHubUiObservableBehaviour.md # Наблюдаемое поведение GitHub UI (Web)
 │   ├── JsonPlaceholderObservableBehaviour.md # Наблюдаемое поведение JP API
+│   ├── MoodleObservableBehaviour.md # Наблюдаемое поведение Moodle demo (локали, verified 2026-10-19, свип 2026-10-21, L2 2026-10-22, L2-deep+L3 2026-10-23)
 │   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
 │   └── README.md                 # Заглушка → ссылка на корневой README.md
@@ -417,13 +418,13 @@ git checkout -b features/add-user-tests
 - Сначала позитивные тесты, потом негативные
 - FluentAssertions (не NUnit Assert)
 - Helper-методы: `ShouldHaveStatusCode()`, `ShouldHaveError()` (статус + читаемый message + совпадение с документированным в OB), `ShouldHaveValidContract()`, `ShouldHaveValidFields()`, `ShouldMatchRequest()` — эти три собирают все нарушения в один failure (`AssertionScope`); прямые `x.Should()` в тестах — fail-fast
-- Категории: тип сервиса (JsonPlaceholder/GitHub/GitHubE2E/GitHubUi) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
+- Категории: тип сервиса (JsonPlaceholder/GitHub/GitHubE2E/GitHubUi/MoodleDemo) + тип проверки (HealthCheck/ContractCheck/Smoke/Regression/Negative/Performance)
 - Тесты независимы друг от друга, Given/When/Then структура
 - Проверяй HTTP status и body отдельно
 - После POST/PATCH сравнивай request ↔ response через `ShouldMatchRequest()` (внутри хелпера: скаляр/строка → `Be`, коллекции и вложенные объекты → структурное сравнение)
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown — cleanup = удаление, ЕСЛИ API позволяет; нет endpoint удаления → soft-close (GitHub issues: PATCH `state=closed`, DELETE → 404)
-- Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure); КАЖДЫЙ POST-flow включает проверку скорости добавления записи — `*_RecordVisibleWithinTimeLimit` (Performance): `WaitHelper.WaitUntilAsync` с timeout `MaxResponseTimeMs`, ассерт `IsSuccess` + диагностика через `Elapsed`/`Attempts`/`LastValue` (mock-API без persistence — тест с `[Ignore]`)
-- Ожидание условий (API с задержкой видимости): `WaitHelper.WaitUntilAsync(action, condition, timeout?, interval?)` → `WaitResult<T>` (`IsSuccess`/`Elapsed`/`Attempts`/`LastValue`) в `Core/Helpers/Waiting/`; дефолты 30s/2s; ассерт на `Elapsed` для time-limit тестов (`*_AppearsWithinTimeLimit`, категория Performance). Мгновенные API и latency одного запроса — не через хелпер (Stopwatch + `MaxResponseTimeMs`)
+- Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure); КАЖДЫЙ POST-flow включает проверку скорости добавления записи — `*_RecordVisibleWithinTimeLimit` (Performance): `WaitHelper.WaitUntilAsync` с timeout `MaxResponseTimeMs`; успех = pass, таймаут = `Inconclusive` (informational wall-clock на живом сервисе, 2026-10-19), диагностика через `Elapsed`/`Attempts`/`LastValue` (mock-API без persistence — тест с `[Ignore]`)
+- Ожидание условий (API с задержкой видимости): `WaitHelper.WaitUntilAsync(action, condition, timeout?, interval?)` → `WaitResult<T>` (`IsSuccess`/`Elapsed`/`Attempts`/`LastValue`) в `Core/Helpers/Waiting/`; дефолты 30s/2s; ассерт на `Elapsed` для time-limit тестов (`*_AppearsWithinTimeLimit`, категория Performance). Мгновенные API и latency одного запроса — не через хелпер: `AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds)` (Inconclusive при превышении)
 - Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности (вариативные поля — через `Core/Helpers/Data/DataGenerator`), обфускация заменой, метод-нота для сложных наборов
 - Чистка артефактов обязательна: temp-логи (`%TEMP%\GredjaTestRun`) чистит `TestRunWorkspace.PrepareRun()`; файлы старше 7 дней (`ArtifactRetentionDays`) в `allure-results/` и `TestResults/` — `TestRunReportGenerator.PrepareRun()` → `CleanupAccumulatedArtifacts()`; новые каталоги артефактов регистрировать там же в том же коммите; cleanup не фейлит прогон (warning вместо failure)
 

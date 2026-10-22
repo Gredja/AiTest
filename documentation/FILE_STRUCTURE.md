@@ -60,6 +60,7 @@ Gredja/
 │   ├── allure-report.ps1
 │   ├── install-playwright.ps1    # playwright install chromium (+ deps)
 │   ├── locator-dump.mjs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
+│   ├── moodledemo-discover-langs.ps1  # regenerate moodledemo expected-langs.json from the live language switcher
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── test-coverage.ps1
 │   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
@@ -84,6 +85,7 @@ Core/
 │   ├── GitHubErrors.cs            # documented error message constants (verified vs live API)
 │   ├── GitHubHeaders.cs            # X-RateLimit-* header names (shared Api/E2E)
 │   ├── JsonPlaceholderEndpoints.cs
+│   ├── MoodledemoEndpoints.cs
 │   └── TestConfig.cs
 ├── Helpers/
 │   ├── Assertions/
@@ -358,20 +360,37 @@ Ui/
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ├── Data/                         # static test files (upload payloads) — reserved, currently empty
-└── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
-    ├── Pages/                      # pages + forms — single home of locators
-    │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
-    │   └── GitHubStream/
-    │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
-    │       ├── Pulls/                # PullDetailPage, PullCreatePage
-    │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
+├── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
+│   ├── Pages/                      # pages + forms — single home of locators
+│   │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
+│   │   └── GitHubStream/
+│   │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
+│   │       ├── Pulls/                # PullDetailPage, PullCreatePage
+│   │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
+│   └── Tests/
+│       ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
+│       └── GitHubStream/
+│           ├── Issues/               # IssuesUiTests, IssueUiTests
+│           ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
+│           ├── Pulls/                # PullsUiTests, PullFlowUiTests
+│           └── Repository/           # RepositoryUiTests, BranchesUiTests
+└── moodledemo/                   # Moodle demo multilingual site (site-scoped sibling of github/)
+    ├── Pages/                      # HomePage, LoginPage (language-agnostic locators, L-LOC-1)
+    ├── Fixtures/
+    │   └── expected-langs.json      # code → { lang, dir, title } + loginLabels + navLabels + calendarPageCodes + titleScripts — the only source of localized strings
     └── Tests/
-        ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
-        └── GitHubStream/
-            ├── Issues/               # IssuesUiTests, IssueUiTests
-            ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
-            ├── Pulls/                # PullsUiTests, PullFlowUiTests
-            └── Repository/           # RepositoryUiTests, BranchesUiTests
+        ├── Support/                # MoodledemoTestBase, MoodledemoBrowser, MoodledemoHttp, HtmlLocaleReader, PageLocaleReader, SiteNavigation, TitleScriptAssert, MoodledemoFixtures, LocaleExpectation, LoginLabelExpectation, NavLabelExpectation
+        ├── L1SmokeTests.cs          # HTTP-first locale contract + title-script check (data-driven, no browser)
+        ├── LanguageSwitcherUiTests.cs   # language menu: list, switch, en vs en_us
+        ├── LanguagePersistenceUiTests.cs # session language survives navigation / resets after login
+        ├── LoginLocalizationUiTests.cs  # localized login labels from fixture
+        ├── RtlLayoutUiTests.cs      # RTL locales: html dir + computed body direction + title
+        ├── RtlStyleUiTests.cs       # RTL computed styles: body + nav direction mirror html dir
+        ├── NavFooterLocalizationUiTests.cs # top-nav labels from fixture + guest footer login link
+        ├── CalendarRegionUiTests.cs # calendar month page locale + no horizontal overflow
+        ├── FormRetentionUiTests.cs  # ?lang= reload resets form (expected) + form stays usable
+        ├── AccountUiTests.cs        # L3: 5 demo accounts login → dashboard → logout → guest
+        └── LoginFormUiTests.cs      # Playwright: login form via stable selectors
 ```
 
 ## Rules/
@@ -386,6 +405,7 @@ Rules/
 ├── comments.md
 ├── config.md
 ├── git.md
+├── localization-testing.md
 ├── models.md
 ├── test-practices.md
 ├── ui-testing.md
@@ -413,6 +433,7 @@ documentation/
 ├── GitHubUiObservableBehaviour.md
 ├── JsonPlaceholderObservableBehaviour.md
 ├── JsonPlaceholderTestPlan.md
+├── MoodleObservableBehaviour.md
 ├── ObservableBehaviourTemplate.md
 ├── Katas/
 │   ├── 00-test-plan.md
