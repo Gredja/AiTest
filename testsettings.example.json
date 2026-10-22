@@ -26,6 +26,10 @@
   },
   "MoodleDemo": {
     "StudentUsername": "student",
+    "TeacherUsername": "teacher",
+    "ManagerUsername": "manager",
+    "ParentUsername": "parent",
+    "PrivacyOfficerUsername": "privacyofficer",
     "Password": "moodle26"
   }
 }

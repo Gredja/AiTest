@@ -278,7 +278,7 @@ Gredja/
 │   ├── GitHubObservableBehaviour.md # Наблюдаемое поведение API
 │   ├── GitHubUiObservableBehaviour.md # Наблюдаемое поведение GitHub UI (Web)
 │   ├── JsonPlaceholderObservableBehaviour.md # Наблюдаемое поведение JP API
-│   ├── MoodleObservableBehaviour.md # Наблюдаемое поведение Moodle demo (локали, verified 2026-10-19 + языковой свип 2026-10-21)
+│   ├── MoodleObservableBehaviour.md # Наблюдаемое поведение Moodle demo (локали, verified 2026-10-19, свип 2026-10-21, L2 2026-10-22, L2-deep+L3 2026-10-23)
 │   ├── JsonPlaceholderTestPlan.md # План тестирования JP API
 │   ├── ObservableBehaviourTemplate.md # Шаблон для новых сервисов
 │   └── README.md                 # Заглушка → ссылка на корневой README.md

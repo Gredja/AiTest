@@ -369,6 +369,9 @@ The UI rarely exposes the created id. Cleanup composition:
   drops, foreign HTTP 200 pages); the HTTP helper retries a bounded number of attempts
   keyed on a site-content marker + network exceptions, and surfaces the last failure to
   the assertion — only a persistent failure is a finding.
+- When the app derives its default language from `Accept-Language`, pin the browser
+  context locale — otherwise "default visit" expectations silently depend on the machine
+  (an en-US browser gets `en_us` while a header-less HTTP client gets `en`).
 
 ---
 

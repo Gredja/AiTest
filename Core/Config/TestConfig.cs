@@ -64,6 +64,10 @@ public static class TestConfig
 
     // Public demo accounts of school.moodledemo.net (published on the site, hourly reset)
     public static string MoodleDemoStudentUsername => GetRequiredString(MoodleDemo, "StudentUsername");
+    public static string MoodleDemoTeacherUsername => GetRequiredString(MoodleDemo, "TeacherUsername");
+    public static string MoodleDemoManagerUsername => GetRequiredString(MoodleDemo, "ManagerUsername");
+    public static string MoodleDemoParentUsername => GetRequiredString(MoodleDemo, "ParentUsername");
+    public static string MoodleDemoPrivacyOfficerUsername => GetRequiredString(MoodleDemo, "PrivacyOfficerUsername");
     public static string MoodleDemoPassword => GetRequiredString(MoodleDemo, "Password");
 
     private static JsonElement GetRequiredSection(string name) =>

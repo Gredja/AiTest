@@ -23,6 +23,14 @@ internal static class MoodledemoFixtures
         _root.LoginLabels
         ?? throw new InvalidOperationException("fixture section 'loginLabels' is missing");
 
+    internal static IReadOnlyList<NavLabelExpectation> NavLabels =>
+        _root.NavLabels
+        ?? throw new InvalidOperationException("fixture section 'navLabels' is missing");
+
+    internal static IReadOnlyList<string> CalendarPageCodes =>
+        _root.CalendarPageCodes
+        ?? throw new InvalidOperationException("fixture section 'calendarPageCodes' is missing");
+
     internal static LocaleExpectation English =>
         Home.Single(expectation => expectation.Code == EnglishCode);
 
@@ -35,5 +43,7 @@ internal static class MoodledemoFixtures
         List<LocaleExpectation> Home,
         List<LocaleExpectation> LoginPage,
         List<LoginLabelExpectation>? LoginLabels,
+        List<NavLabelExpectation>? NavLabels,
+        List<string>? CalendarPageCodes,
         Dictionary<string, List<string>>? TitleScripts);
 }

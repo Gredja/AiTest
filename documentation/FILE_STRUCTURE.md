@@ -377,14 +377,19 @@ Ui/
 └── moodledemo/                   # Moodle demo multilingual site (site-scoped sibling of github/)
     ├── Pages/                      # HomePage, LoginPage (language-agnostic locators, L-LOC-1)
     ├── Fixtures/
-    │   └── expected-langs.json      # code → { lang, dir, title } + loginLabels + titleScripts — the only source of localized strings
+    │   └── expected-langs.json      # code → { lang, dir, title } + loginLabels + navLabels + calendarPageCodes + titleScripts — the only source of localized strings
     └── Tests/
-        ├── Support/                # MoodledemoTestBase, MoodledemoBrowser, MoodledemoHttp, HtmlLocaleReader, PageLocaleReader, SiteNavigation, TitleScriptAssert, MoodledemoFixtures, LocaleExpectation, LoginLabelExpectation
+        ├── Support/                # MoodledemoTestBase, MoodledemoBrowser, MoodledemoHttp, HtmlLocaleReader, PageLocaleReader, SiteNavigation, TitleScriptAssert, MoodledemoFixtures, LocaleExpectation, LoginLabelExpectation, NavLabelExpectation
         ├── L1SmokeTests.cs          # HTTP-first locale contract + title-script check (data-driven, no browser)
         ├── LanguageSwitcherUiTests.cs   # language menu: list, switch, en vs en_us
         ├── LanguagePersistenceUiTests.cs # session language survives navigation / resets after login
         ├── LoginLocalizationUiTests.cs  # localized login labels from fixture
-        ├── RtlLayoutUiTests.cs      # RTL locales: dir + computed body direction
+        ├── RtlLayoutUiTests.cs      # RTL locales: html dir + computed body direction + title
+        ├── RtlStyleUiTests.cs       # RTL computed styles: body + nav direction mirror html dir
+        ├── NavFooterLocalizationUiTests.cs # top-nav labels from fixture + guest footer login link
+        ├── CalendarRegionUiTests.cs # calendar month page locale + no horizontal overflow
+        ├── FormRetentionUiTests.cs  # ?lang= reload resets form (expected) + form stays usable
+        ├── AccountUiTests.cs        # L3: 5 demo accounts login → dashboard → logout → guest
         └── LoginFormUiTests.cs      # Playwright: login form via stable selectors
 ```
 

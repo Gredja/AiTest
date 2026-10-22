@@ -6,6 +6,7 @@ public static class MoodledemoEndpoints
     public const string BaseUrl = "https://school.moodledemo.net";
     public const string HomePath = "/";
     public const string LoginPath = "/login/index.php";
+    public const string LogoutPath = "/login/logout.php";
     public const string CalendarPath = "/calendar/view.php";
     public const string MyDashboardPath = "/my/";
     public const string LangQueryKey = "lang";
