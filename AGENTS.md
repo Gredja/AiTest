@@ -6,7 +6,7 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 ## Project Structure
 
 - `Api/` — NUnit API tests (JsonPlaceholder, GitHub), including single write tests
-- `Ui/` — NUnit UI tests (Playwright .NET + Chromium): site scope — the `Ui/github/` folder (future sites — sibling folders, e.g. `Ui/moodledemo/`); pages/forms — `Ui/github/Pages/` (shared common chrome — `Ui/github/Pages/Common/`, family base classes — `RepositoryPageBase`), infrastructure — `Ui/github/Tests/Support/`, tests — `Ui/github/Tests/`; authorization via storageState (`.auth/github-ui-state.json`): the state is refreshed by the automated test `LoginSignInTests` (login via `GITHUB_UI_EMAIL`/`GITHUB_UI_PASSWORD`), the other tests only read the state; write via UI → cleanup via API; locators ONLY on Page/Form (at the bottom of the file), helpers receive `ILocator` as parameters; rules — `Rules/ui-testing.md`. The `Ui/moodledemo/` sibling covers the Moodle demo multilingual site (`https://school.moodledemo.net`): HTTP-first L1 locale smoke + Playwright checks (language switcher, persistence, RTL layout, login localization), anonymous contexts only (no storageState), locale expectations from `Ui/moodledemo/Fixtures/expected-langs.json`, rules — `Rules/localization-testing.md`, category `MoodleDemo`
+- `Ui/` — NUnit UI tests (Playwright .NET + Chromium): site scope — the `Ui/github/` folder (future sites — sibling folders, e.g. `Ui/moodledemo/`); pages/forms — `Ui/github/Pages/` (shared common chrome — `Ui/github/Pages/Common/`, family base classes — `RepositoryPageBase`), infrastructure — `Ui/github/Tests/Support/`, tests — `Ui/github/Tests/`; authorization via storageState (`.auth/github-ui-state.json`): the state is refreshed by the automated test `LoginSignInTests` (login via `GITHUB_UI_EMAIL`/`GITHUB_UI_PASSWORD`), the other tests only read the state; write via UI → cleanup via API; locators ONLY on Page/Form (at the bottom of the file), helpers receive `ILocator` as parameters; rules — `Rules/ui-testing.md`. The `Ui/moodledemo/` sibling covers the Moodle demo multilingual site (`https://school.moodledemo.net`): HTTP-first L1 locale smoke + Playwright checks (language switcher, persistence, RTL layout, login localization), anonymous contexts for L1/L2 (no storageState; the L3 `AccountUiTests` signs in with the shared demo accounts), locale expectations from `Ui/moodledemo/Fixtures/expected-langs.json`, rules — `Rules/localization-testing.md`, category `MoodleDemo`
 - `E2E/` — NUnit E2E tests: scenario chains only (create → verify → mutate → cleanup)
 - `Core/Models/` — response/request models
 - `Core/Helpers/` — shared helpers by subfolder: `Http/` (request infrastructure: `RequestHelper`, `JsonPlaceholder/GitHubRequestHelper`), `Data/` (`DataGenerator` — varied write data), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`), `Waiting/` (`WaitHelper`, `WaitResult`); needed for E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); API tests only → `Api/<Service>/Helpers/`
@@ -15,11 +15,11 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 - `Core/Logging/` — action logging (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) and raw test results (`test-results-*.log`). `TestResults/` contains **reports only**, raw run artifacts live in the temp folder
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (invoked from the NUnit teardown `TestReportSetup`), age-based cleanup of artifacts older than 7 days
 - `AllureAdapter/` — solution project: Allure NUnit attribute + JSON writers/report helpers (`AllureAdapter/Helpers/`, flat layout by design)
-- `Scripts/` — one-off helper scripts: `locator-dump.mjs` (CDP locator dump), `normalize-eol.ps1`, allure/test runners
+- `Scripts/` — one-off helper scripts: `locator-dump.mjs` (CDP locator dump), `normalize-eol.ps1`, `read-github-pat.ps1` (the single token-read/redaction contract), allure/test runners
 - `Ui/Data/` — static test files (upload payloads; reserved, currently empty)
 - `Ui/Support/` — project-level UI helpers shared by the site trees (`ArtifactNaming`)
 - `Rules/` — full rules (this file is only a brief digest)
-- `documentation/` — project documentation; `documentation/Katas/` — learning materials, do not touch
+- `documentation/` — project documentation; `documentation/Katas/` — learning materials, do not touch; full tree (incl. `research/`, `backups/`, `TestResults/`) — `documentation/FILE_STRUCTURE.md`
 - `documentation/*ObservableBehaviour.md` — observable behavior of the API (current states, field types, negative cases). **Must be read when generating and reviewing tests.**
 - `education/TESTING_PLAYBOOK.md` — portable project-agnostic testing methodology (EN, fed to other agents/projects); update it with every commit (skill `/commit`, Step 6)
 - `.mimocode/skills/` — skills for AI agents
@@ -82,7 +82,7 @@ All changes: plan → approval → report. After a commit — review `Rules/`. A
 - 0 and -1 — safe static IDs (always invalid)
 - Dynamic non-existent ID = maxId + 1 (not a static 999); for concurrent writes in the same run (Api + E2E solution run) — maxId + Offset (`GitHubEndpoints.NonExistentIdOffset = 100`)
 - Seed methodology: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → see `Rules/test-practices.md`
-- Document sync: Observable Behaviour ↔ Test Plan ↔ Rules — always in sync
+- Document sync: Observable Behaviour ↔ Test Plan ↔ Rules — always in sync (GitHub's status doc is `GitHubTestingStructure.md`, no TestPlan file)
 - Guarantee Data: GET empty → POST in OneTimeSetUp → GET again → Assertion → DELETE in OneTimeTearDown
 - Test data for write: only fictional values (E2E writes to a public repo), vary ≥2 dimensions, obfuscation via replacement — see `Rules/test-practices.md` → "Test data for write operations"
 

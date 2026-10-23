@@ -11,13 +11,14 @@ Check the last run of the nightly suite in `Gredja/AiTest` and report the verdic
 
 ### Step 1: Token (never printed)
 
-Read `GITHUB_PAT` from `.env` in the repo root. The token must never appear in output,
-logs, or messages.
+Read `GITHUB_PAT` from `.env` in the repo root via `Scripts/read-github-pat.ps1` — the
+redaction contract (the token must never appear in output, logs, or messages) is
+documented there, in exactly one place.
 
 ### Step 2: Fetch the latest run
 
 ```powershell
-$token = ((Get-Content .env) -match '^GITHUB_PAT=') -replace '^GITHUB_PAT=',''
+$token = & Scripts/read-github-pat.ps1
 $headers = @{ Authorization = "Bearer $token"
                Accept = 'application/vnd.github+json'
                'X-GitHub-Api-Version' = '2022-11-28' }

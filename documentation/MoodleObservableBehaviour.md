@@ -147,6 +147,10 @@
   `| Mount Orange` marker in the title).
 - **Hung/slow resources** (e.g. hero image) can keep the home page off `networkidle`
   indefinitely — idle waits must be bounded.
+- **Login form renders with role-addressable fields** (5.4): username is the first
+  accessible textbox, password the second (no `password` role in the a11y tree), the
+  submit button's accessible name is the localized `loginLabels` string resolved from the
+  page's own `<html lang>` — labels are read from the live page, not from the selector.
 
 ---
 
@@ -180,6 +184,43 @@
   then wait for the link to become **Detached** — only then is the guest state back.
 - **Post-login language**: confirms §5 — pre-login `?lang=ru` resets to `en` on the
   dashboard for every account (account/site language wins).
+
+## 7. RTL layout contract (L2) — `RtlLayoutUiTests`
+
+- For every RTL fixture entry: `<html dir="rtl">`, `getComputedStyle(body).direction`
+  mirrors it, the `<title>` matches the fixture (script asserted via `titleScripts`).
+  Direction facts: §6; title contract: §1 + fixture.
+
+## 8. Localized login labels (L2) — `LoginLocalizationUiTests`
+
+- For the 11 `loginLabels` codes the rendered username label, password label and submit
+  button equal the fixture strings. `<html lang>` on the login page is the **base tag**
+  (`zh_cn → zh`, `pt_br → pt`, §4) — never derive the label code from it directly without
+  the LoginPage row mapping.
+
+## B. Top navigation & guest footer (L2) — `NavFooterLocalizationUiTests`
+
+- Top-nav labels localize per the `navLabels` fixture; `ja` home label is the documented
+  English fallback. The guest footer carries a locale-independent login link. Facts: §6.
+
+## C. RTL computed styles (L2) — `RtlStyleUiTests`
+
+- Body and nav `direction` computed styles mirror `<html dir>` (rtl locales). Facts: §6.
+
+## E. Calendar month page (L2) — `CalendarRegionUiTests`
+
+- Locale contract holds, month controls render with a four-digit year, no horizontal
+  overflow at 1440px for long-month languages. Facts: §6.
+
+## F. Form retention (L2) — `FormRetentionUiTests`
+
+- `?lang=` reload clears typed fields (expected multi-page behavior); the form stays
+  present and localized. Facts: §6.
+
+## L3. Demo-account login flows — `AccountUiTests`
+
+- The five demo accounts log in, reach the dashboard and log out back to guest.
+  Mechanics: §5 (post-login language) and §6 (login/logout details).
 
 ## Authoring Method
 

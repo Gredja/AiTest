@@ -80,7 +80,7 @@ Run artifacts accumulate without bound — every mechanism MUST be wired to the 
 
 When adding or changing endpoints, keep these documents in sync:
 - `documentation/{Service}ObservableBehaviour.md` — source of truth for test design (fields, types, negatives)
-- `documentation/{Service}TestPlan.md` — coverage tracking (which endpoints have tests, status)
+- `documentation/{Service}TestPlan.md` — coverage tracking (which endpoints have tests, status); GitHub has no TestPlan file — its durable status doc is `documentation/GitHubTestingStructure.md`
 - `Rules/*.md` — shared rules for all services (assertions, patterns, cleanup)
 - If Observable Behaviour changes → update Test Plan status; if Test Plan adds endpoints → update Observable Behaviour
 - **One canonical source per guidance topic**: test-generation instructions live ONLY in

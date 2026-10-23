@@ -12,7 +12,7 @@
 
 ## Coverage Summary
 
-- **Endpoints:** 20/20 covered (100%)
+- **Endpoints:** 22/22 covered (100%)
 - **Tests:** 214 total — 197 executable + 17 `[Ignore]`d (16 Negative + 1 Regression)
 - **Fixtures:** 21 (Posts split into GetAll / GetById / Create / Update / Delete)
 - **Negative floor:** see "Negative Floor Status" below (mock-API exception + ceiling rule apply)

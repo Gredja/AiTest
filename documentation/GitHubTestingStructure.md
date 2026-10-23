@@ -24,7 +24,7 @@
 | 13 | **Authenticated user** | GET /user (OB §5a) — status, contract, login match, 401s | Done (5 tests) |
 | 14 | **Release detail** | GET /releases/latest, /releases/tags/{tag} (OB §15c–15d) + fixture infra §15e | Done (4 tests) |
 | 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (5 tests) |
-| 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (18 tests) |
+| 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), POST git/blobs (§26c, infra-only — no dedicated fixture), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (18 tests) |
 
 **Total:** 376 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups), 9 E2E scenario chains and 44 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted).
 

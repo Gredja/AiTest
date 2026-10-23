@@ -6,7 +6,12 @@
 
 Describe JSON that the API **returns**. Used for deserialization of API responses.
 
-- Always includes `Id` field (server-generated)
+- Always includes `Id` field (server-generated) — **documented exceptions**: non-entity
+  envelopes (`RateLimitModelResponse`, `SearchModelResponse`, merge results,
+  `ErrorMessageModelResponse`), sha/path-keyed entities where the identity is the wire key
+  (`Commit`, `GitRef`, `GitCommit`, `Branch`, `Tag`, `GitSha`, PR files/commits,
+  `TopicsModelResponse`) and nested-identity payloads (`PermissionModelResponse` — identity
+  is `user.id`). Project precedent: GitHub responses of these kinds carry no `Id`
 - May include nested models (e.g. `Rating` inside `ProductModelResponse`)
 - Match the full JSON structure from the API response
 

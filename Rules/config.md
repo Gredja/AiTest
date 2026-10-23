@@ -2,7 +2,7 @@
 
 ## Endpoints
 
-- Base URL and all endpoint paths stored in `Core/Config/JsonPlaceholderEndpoints.cs` and `Core/Config/GitHubEndpoints.cs`
+- Base URL and all endpoint paths stored in `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` and `Core/Config/MoodledemoEndpoints.cs`
 - Never hardcode URLs or paths in tests — use constants from service-specific Endpoints classes
 
 ## Settings files
@@ -12,6 +12,12 @@
 - Never put real tokens in `testsettings.example.json` or any tracked file
 - Required string keys throw a clear `InvalidOperationException` naming the missing key at first access (`TestConfig.GetRequiredString`) — never a bare `NullReferenceException` from `GetString()!`
 - `SkipSslValidation` disables TLS certificate validation for the GitHub client (external audit Minor 13) — defaults to `false` (missing key = validation on); enable only as an explicit per-run opt-in for proxied dev runners, never in CI without a documented reason
+
+## Moodle demo credentials
+
+- `MoodleDemo.*` in `testsettings.json` / `testsettings.example.json` are the demo site's
+  **publicly published** accounts (documented in `documentation/MoodleObservableBehaviour.md`,
+  site resets hourly) — not real secrets; they may live in the tracked example on purpose
 
 ## GitHub identities
 
