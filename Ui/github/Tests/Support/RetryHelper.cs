@@ -3,9 +3,8 @@ using Microsoft.Playwright;
 
 namespace Ui.Github.Tests.Support;
 
-// Bounded retry of a UI step: the state check runs before every attempt, and transient
-// Playwright failures (hydration swallow, open-menu overlay, destroyed context) are
-// swallowed so a single flaky click cannot kill the wait
+// Transient Playwright failures (hydration swallow, open-menu overlay, destroyed context)
+// are swallowed so a single flaky click cannot kill the wait
 internal static class RetryHelper
 {
     internal static async Task<WaitResult<bool>> UntilAsync(

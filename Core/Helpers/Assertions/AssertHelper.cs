@@ -17,7 +17,7 @@ public static class AssertHelper
 
     private const int GitShaLength = 40;
 
-    // Live-service wall-clock is informational: a slow external API must not red the suite
+    // Live-service wall-clock is informational: a slow external API must not fail the suite
     public static void ShouldBeWithinResponseBudget(long elapsedMilliseconds)
     {
         if (elapsedMilliseconds >= TestConfig.MaxResponseTimeMs)
