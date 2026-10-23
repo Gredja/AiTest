@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.Repos;
@@ -65,6 +64,7 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

@@ -1,6 +1,8 @@
+using Core.Reporting;
+
 namespace Core.Logging;
 
-internal static class TestRunWorkspace
+public static class TestRunWorkspace
 {
     internal const string MarkerFileName = ".run-start";
     internal const string ActionLogPrefix = "actions-";
@@ -13,7 +15,7 @@ internal static class TestRunWorkspace
     // distinguishing `dotnet test` from Visual Studio launches.
     private static FileStream? _runLock;
 
-    internal static string Resolve()
+    public static string Resolve()
     {
         var workspace = Path.Combine(Path.GetTempPath(), "GredjaTestRun");
         Directory.CreateDirectory(workspace);
@@ -32,6 +34,39 @@ internal static class TestRunWorkspace
         }
 
         CleanupPreviousRunLogs(workspace, File.GetLastWriteTime(marker));
+        CleanupArtifactSubdirectories(workspace);
+    }
+
+    // Artifact subdirectories under the workspace (e.g. moodledemo-artifacts) are not run
+    // logs — without this sweep they grow unboundedly across runs (Rules/test-practices.md
+    // → Temp and artifact cleanup: age-based, never delete-all)
+    private static void CleanupArtifactSubdirectories(string workspace)
+    {
+        var cutoff = DateTime.UtcNow.AddDays(-ArtifactRetention.RetentionDays);
+
+        foreach (var directory in Directory.EnumerateDirectories(workspace))
+        {
+            foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                if (File.GetLastWriteTimeUtc(file) >= cutoff)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    File.Delete(file);
+                }
+                catch (IOException exception)
+                {
+                    ActionLogger.Logger.Warning(exception, "Failed to delete old workspace artifact {File}", file);
+                }
+                catch (UnauthorizedAccessException exception)
+                {
+                    ActionLogger.Logger.Warning(exception, "Failed to delete old workspace artifact {File}", file);
+                }
+            }
+        }
     }
 
     private static bool TryOwnRun(string marker)

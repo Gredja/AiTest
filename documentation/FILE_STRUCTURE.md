@@ -9,13 +9,13 @@ Gredja/
 ├── README.md                     # project overview (rendered by GitHub as the homepage)
 ├── AGENTS.md
 ├── Gredja.slnx
-├── Directory.Build.props          # File.TestLogger config (VSTestLogger, temp workspace dir)
+├── Directory.Build.props          # VSTestLogger/temp workspace + Roslynator.Analyzers (all projects)
 ├── .runsettings                  # VS Test Explorer: parallel sources → one report per run (CLI ignores it)
 ├── allureConfig.json
 ├── testsettings.json               # not tracked — local overrides (falls back to the example)
 ├── testsettings.example.json       # tracked template — build/tests work from a clean clone
 ├── global.json                     # pinned SDK (10.0.401, rollForward: latestFeature)
-├── .editorconfig                   # IDE0005/IDE0007/IDE0161 — dotnet format enforces Rules/code.md
+├── .editorconfig                   # IDE0005/0007/0161 + curated Roslynator (RCS*) set — dotnet format enforces Rules/code.md
 ├── .env                          # secrets (not tracked)
 ├── .gitattributes                # line ending normalization
 ├── .gitignore
@@ -62,6 +62,7 @@ Gredja/
 │   ├── locator-dump.mjs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
 │   ├── moodledemo-discover-langs.ps1  # regenerate moodledemo expected-langs.json from the live language switcher
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
+│   ├── read-github-pat.ps1       # the single token-read + never-print contract (used by skills)
 │   ├── test-coverage.ps1
 │   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
 ├── education/
@@ -87,11 +88,12 @@ Core/
 │   ├── JsonPlaceholderEndpoints.cs
 │   ├── MoodledemoEndpoints.cs
 │   └── TestConfig.cs
+├── Generators/
+│   └── DataGenerator.cs            # RandomString/RandomIntExclusive for varying write payloads
 ├── Helpers/
 │   ├── Assertions/
 │   │   └── AssertHelper.cs        # ShouldHaveValidContract, ShouldHaveValidFields, etc.
 │   ├── Data/
-│   │   ├── DataGenerator.cs       # RandomString/RandomIntExclusive for varying write payloads
 │   │   └── TestDataConstants.cs    # shared test-data lengths/values — one meaning, one declaration
 │   ├── GitHub/
 │   │   ├── GitHubCleanupHelper.cs # shared cleanup core (Api/E2E delegation + Ui composition)
@@ -105,12 +107,14 @@ Core/
 │   ├── Params/
 │   │   └── ParamHelper.cs         # shared IdParam + UrlSegment/Query primitives for param helpers
 │   └── Waiting/
+│       ├── WaitDiagnosticsHelper.cs # shared wait-failure message tail (elapsed/attempts/status)
 │       ├── WaitHelper.cs          # generic async WaitUntilAsync polling
 │       └── WaitResult.cs          # IsSuccess/Elapsed/Attempts/LastValue
 ├── Logging/
 │   ├── ActionLogHandler.cs        # DelegatingHandler: logs every HTTP request/response
 │   ├── ActionLogger.cs            # Serilog bootstrap → %TEMP%\GredjaTestRun\actions-*.log
 │   ├── ActionLogParser.cs         # picks failed-test actions for the report
+│   ├── OutcomeMarker.cs           # shared "-" unknown fixture/category sentinel
 │   ├── SharedFile.cs              # read-with-ShareWrite helpers
 │   ├── TestNameEnricher.cs        # adds NUnit test name to every log line
 │   ├── TestOutcome.cs             # own test result (name/status/duration/error)
@@ -210,8 +214,9 @@ Api/
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(Fixtures)] + LevelOfParallelism(1)
 ├── JsonPlaceholder/
 │   ├── Helpers/
-│   │   ├── JsonPlaceholderParamHelper.cs
-│   │   └── JsonPlaceholderTestData.cs
+│   │   ├── Data/
+│   │   │   └── JsonPlaceholderTestData.cs
+│   │   └── JsonPlaceholderParamHelper.cs
 │   └── Tests/
 │       ├── Albums/
 │       │   ├── GetAllAlbumsTests.cs
@@ -322,10 +327,10 @@ AllureAdapter/
 └── Helpers/                      # flat infra layout by design (constants/attribute/models in one folder)
     ├── AllureConstants.cs
     ├── AllureHelper.cs
-    ├── AllureJsonWriter.cs
+    ├── AllureJsonWriterHelper.cs
     ├── AllureNUnitAttribute.cs
-    ├── AllureSkippedTestWriter.cs
-    ├── AllureTestResultBuilder.cs
+    ├── AllureSkippedTestWriterHelper.cs
+    ├── AllureTestResultBuilderHelper.cs
     ├── ContainerInfo.cs
     └── TestResultParams.cs
 ```
@@ -357,18 +362,30 @@ E2E/
 ```
 Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
+├── AllureGlobalSetup.cs          # [SetUpFixture] → AllureSkippedTestWriterHelper (mirrors Api/E2E)
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
-├── Data/                         # static test files (upload payloads) — reserved, currently empty
+├── Helpers/                      # project-level helpers shared by both site trees (Helper suffix rule)
+│   ├── ArtifactNamingHelper.cs
+│   ├── HtmlLocaleReaderHelper.cs
+│   ├── MoodledemoHttpHelper.cs
+│   ├── PageLocaleReaderHelper.cs
+│   ├── PageUrlHelper.cs
+│   ├── RetryHelper.cs
+│   ├── SiteNavigationHelper.cs
+│   ├── TabCountParserHelper.cs
+│   ├── TextPatternsHelper.cs
+│   ├── TitleScriptAssertHelper.cs
+│   └── UiTimeout.cs               # shared timeout constant (constants holder — not a helper)
 ├── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
 │   ├── Pages/                      # pages + forms — single home of locators
-│   │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
+│   │   ├── Common/                   # cross-area: LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
 │   │   └── GitHubStream/
 │   │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
 │   │       ├── Pulls/                # PullDetailPage, PullCreatePage
 │   │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
 │   └── Tests/
-│       ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
+│       ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright
 │       └── GitHubStream/
 │           ├── Issues/               # IssuesUiTests, IssueUiTests
 │           ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
@@ -379,7 +396,7 @@ Ui/
     ├── Fixtures/
     │   └── expected-langs.json      # code → { lang, dir, title } + loginLabels + navLabels + calendarPageCodes + titleScripts — the only source of localized strings
     └── Tests/
-        ├── Support/                # MoodledemoTestBase, MoodledemoBrowser, MoodledemoHttp, HtmlLocaleReader, PageLocaleReader, SiteNavigation, TitleScriptAssert, MoodledemoFixtures, LocaleExpectation, LoginLabelExpectation, NavLabelExpectation
+        ├── Support/                # fixture infrastructure + test data: MoodledemoTestBase, MoodledemoBrowser, MoodledemoFixtures, ScenarioCodes, LocaleExpectation, LoginLabelExpectation, NavLabelExpectation
         ├── L1SmokeTests.cs          # HTTP-first locale contract + title-script check (data-driven, no browser)
         ├── LanguageSwitcherUiTests.cs   # language menu: list, switch, en vs en_us
         ├── LanguagePersistenceUiTests.cs # session language survives navigation / resets after login

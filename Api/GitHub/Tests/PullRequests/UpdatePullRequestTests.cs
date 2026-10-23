@@ -1,10 +1,10 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
@@ -87,6 +87,7 @@ public class UpdatePullRequestTests : GitHubTestBase
             new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
             PullParams(pullNumber));
 
+        patched.ShouldHaveStatusCode(HttpStatusCode.OK);
         patched.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

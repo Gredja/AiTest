@@ -1,14 +1,14 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Tests.Support;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.GitHubStream.Pulls;
 
 internal sealed class PullDetailPage(IPage page)
 {
     private static readonly TimeSpan _actionTimeout =
-        TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
+        TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
     // must exceed the ~300ms render latency of GitHub controls, or the retry
     // re-applies before the previous effect lands
@@ -19,12 +19,7 @@ internal sealed class PullDetailPage(IPage page)
     internal async Task OpenAsync(int pullNumber) =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pull/{pullNumber}");
 
-    internal int? TryGetPullNumberFromUrl()
-    {
-        var lastSegment = _page.Url.Split('?', '#')[0].TrimEnd('/').Split('/').Last();
-
-        return int.TryParse(lastSegment, out var pullNumber) ? pullNumber : null;
-    }
+    internal int? TryGetPullNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(_page.Url);
 
     internal async Task<bool> HasTitleAsync(string title) =>
         await _pullHeadings.Filter(new() { HasTextString = title }).CountAsync() > 0;

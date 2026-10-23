@@ -1,9 +1,9 @@
 using System.Net;
 using Core.Config;
 
-namespace Ui.Moodledemo.Tests.Support;
+namespace Ui.Helpers;
 
-internal static class MoodledemoHttp
+internal static class MoodledemoHttpHelper
 {
     private const int HttpTimeoutSeconds = 20;
     private const int MaxAttempts = 3;

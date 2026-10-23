@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Ui.Helpers;
 using Ui.Moodledemo.Tests.Support;
 
 namespace Ui.Moodledemo.Tests;
@@ -23,7 +24,7 @@ public class FormRetentionUiTests : MoodledemoTestBase
         password.Should().BeEmpty(
             "?lang= is a full page navigation — Moodle reloads and the form is not retained (expected for a multi-page app, not a bug)");
 
-        var lang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be("ru", "the login page must still honor the language switch");
     }
 

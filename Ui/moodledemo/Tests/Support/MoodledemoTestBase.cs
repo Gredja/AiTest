@@ -1,6 +1,8 @@
 using Core.Config;
+using Core.Logging;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
+using Ui.Helpers;
 
 namespace Ui.Moodledemo.Tests.Support;
 
@@ -8,6 +10,8 @@ public abstract class MoodledemoTestBase
 {
     private const int ViewportWidth = 1440;
     private const int ViewportHeight = 900;
+    private const string PinnedLocale = "en-US";
+    private const string MoodledemoArtifactsDirectory = "moodledemo-artifacts";
     internal const int UiTimeoutMs = 15_000;
 
     private IPlaywright? _playwright;
@@ -18,6 +22,10 @@ public abstract class MoodledemoTestBase
 
     internal MoodledemoBrowser Browser => _browserWrapper
         ?? throw new InvalidOperationException("Browser wrapper not initialized — OpenContextAsync has not run");
+
+    // Credential-entry fixtures must not record DOM snapshots — a failed run would persist
+    // the typed demo password in the trace zip (same guard as GitHubUiTestBase)
+    protected virtual bool IsCredentialEntryTest => false;
 
     [OneTimeSetUp]
     public async Task LaunchBrowserAsync()
@@ -39,13 +47,16 @@ public abstract class MoodledemoTestBase
         _context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
             ViewportSize = new ViewportSize { Width = ViewportWidth, Height = ViewportHeight },
-            Locale = "en-US"
+            Locale = PinnedLocale
         });
-        await _context.Tracing.StartAsync(new TracingStartOptions
+        if (!IsCredentialEntryTest)
         {
-            Screenshots = true,
-            Snapshots = true
-        });
+            await _context.Tracing.StartAsync(new TracingStartOptions
+            {
+                Screenshots = true,
+                Snapshots = true
+            });
+        }
 
         _page = await _context.NewPageAsync();
         await _page.BringToFrontAsync();
@@ -62,23 +73,33 @@ public abstract class MoodledemoTestBase
             return;
         }
 
-        if (TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed)
+        var isFailed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed;
+
+        if (isFailed)
         {
             var artifacts = ResolveArtifactsDirectory();
-            var failedName = SanitizeFileName(TestContext.CurrentContext.Test.Name);
+            var failedName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
             await _page!.ScreenshotAsync(new PageScreenshotOptions
             {
                 Path = Path.Combine(artifacts, $"{failedName}.png"),
                 FullPage = true
             });
-            await _context.Tracing.StopAsync(new TracingStopOptions
-            {
-                Path = Path.Combine(artifacts, $"{failedName}.zip")
-            });
         }
-        else
+
+        if (!IsCredentialEntryTest)
         {
-            await _context.Tracing.StopAsync();
+            if (isFailed)
+            {
+                var traceName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
+                await _context.Tracing.StopAsync(new TracingStopOptions
+                {
+                    Path = Path.Combine(ResolveArtifactsDirectory(), $"{traceName}.zip")
+                });
+            }
+            else
+            {
+                await _context.Tracing.StopAsync();
+            }
         }
 
         await _context.CloseAsync();
@@ -100,19 +121,9 @@ public abstract class MoodledemoTestBase
 
     private static string ResolveArtifactsDirectory()
     {
-        var directory = Path.Combine(Path.GetTempPath(), "GredjaTestRun", "moodledemo-artifacts");
+        var directory = Path.Combine(TestRunWorkspace.Resolve(), MoodledemoArtifactsDirectory);
         Directory.CreateDirectory(directory);
 
         return directory;
-    }
-
-    private static string SanitizeFileName(string name)
-    {
-        foreach (var invalid in Path.GetInvalidFileNameChars())
-        {
-            name = name.Replace(invalid, '_');
-        }
-
-        return name;
     }
 }

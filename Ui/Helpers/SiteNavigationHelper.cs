@@ -1,9 +1,9 @@
 using Core.Config;
 using Microsoft.Playwright;
 
-namespace Ui.Moodledemo.Tests.Support;
+namespace Ui.Helpers;
 
-internal static class SiteNavigation
+internal static class SiteNavigationHelper
 {
     private const int MaxAttempts = 3;
     private static readonly TimeSpan _retryDelay = TimeSpan.FromSeconds(1);

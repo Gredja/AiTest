@@ -1,10 +1,10 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
 
@@ -47,7 +47,7 @@ public class CreateIssueVisibilityTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}; informational on live services");
+                $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
         }
     }
 

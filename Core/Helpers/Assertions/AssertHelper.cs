@@ -17,7 +17,7 @@ public static class AssertHelper
 
     private const int GitShaLength = 40;
 
-    // Live-service wall-clock is informational: a slow external API must not red the suite
+    // Live-service wall-clock is informational: a slow external API must not fail the suite
     public static void ShouldBeWithinResponseBudget(long elapsedMilliseconds)
     {
         if (elapsedMilliseconds >= TestConfig.MaxResponseTimeMs)
@@ -36,6 +36,12 @@ public static class AssertHelper
 
     public static void ShouldHaveStatusCode(this RestResponse response, HttpStatusCode expected) =>
         response.StatusCode.Should().Be(expected);
+
+    public static void ShouldHaveStatusCode(this HttpStatusCode statusCode, HttpStatusCode expected) =>
+        statusCode.Should().Be(expected);
+
+    public static void ShouldHaveStatusCode(this HttpStatusCode statusCode, HttpStatusCode expected, string because) =>
+        statusCode.Should().Be(expected, because);
 
     public static ErrorMessageModelResponse ShouldHaveError(
         this RestResponse response, HttpStatusCode expected, string expectedMessage)

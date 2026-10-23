@@ -4,7 +4,6 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 
 namespace Api.JsonPlaceholder.Comments;
 
@@ -54,6 +53,7 @@ public class GetAllCommentsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<CommentModelResponse>>(JsonPlaceholderEndpoints.Comments);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

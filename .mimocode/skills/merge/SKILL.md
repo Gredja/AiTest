@@ -43,7 +43,7 @@ the commits + verification lines (format / HealthCheck / suites touched).
 Create via the API (no `gh` locally):
 
 ```powershell
-$token = ((Get-Content .env) -match '^GITHUB_PAT=') -replace '^GITHUB_PAT=',''
+$token = & Scripts/read-github-pat.ps1
 $headers = @{ Authorization = "Bearer $token"
                Accept = 'application/vnd.github+json'
                'X-GitHub-Api-Version' = '2022-11-28' }

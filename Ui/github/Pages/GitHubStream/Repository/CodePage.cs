@@ -1,14 +1,14 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Tests.Support;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.GitHubStream.Repository;
 
 internal sealed class CodePage(IPage page) : RepositoryPageBase(page)
 {
     private static readonly TimeSpan _presenceTimeout =
-        TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
+        TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
     internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/tree/main");
 

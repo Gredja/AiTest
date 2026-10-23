@@ -4,7 +4,6 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 using static Core.Helpers.ParamHelper;
 
@@ -71,6 +70,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

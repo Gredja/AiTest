@@ -1854,11 +1854,18 @@
     { "code": "fr", "home": "Accueil", "calendar": "Calendrier", "more": "Plus" },
     { "code": "ar", "home": "الصفحة الرئيسية", "calendar": "التقويم", "more": "المزيد" },
     { "code": "he", "home": "ראשי", "calendar": "לוח-שנה", "more": "אפשרויות נוספות" },
-    { "code": "ja", "home": "Home", "calendar": "カレンダー", "more": "さらに", "homeIsEnglishGap": true },
+    { "code": "ja", "home": "Home", "calendar": "カレンダー", "more": "さらに", "homeIsEnglishGap": true, "homeFallback": "Home" },
     { "code": "zh_cn", "home": "首页", "calendar": "日程管理", "more": "更多" },
     { "code": "es_mx", "home": "Inicio", "calendar": "Calendario", "more": "Más" },
     { "code": "pt_br", "home": "Página inicial", "calendar": "Calendário", "more": "Mais" }
   ],
+  "scenarioCodes": {
+    "sessionLanguage": "ru",
+    "longMonthCalendar": "de",
+    "switchTarget": "de",
+    "activeDefault": "en_us",
+    "plainEnglish": "en"
+  },
   "calendarPageCodes": ["en", "ru", "de", "ja", "zh_cn", "ar"],
   "titleScripts": {
     "ar": [

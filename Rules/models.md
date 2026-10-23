@@ -6,7 +6,12 @@
 
 Describe JSON that the API **returns**. Used for deserialization of API responses.
 
-- Always includes `Id` field (server-generated)
+- Always includes `Id` field (server-generated) — **documented exceptions**: non-entity
+  envelopes (`RateLimitModelResponse`, `SearchModelResponse`, merge results,
+  `ErrorMessageModelResponse`), sha/path-keyed entities where the identity is the wire key
+  (`Commit`, `GitRef`, `GitCommit`, `Branch`, `Tag`, `GitSha`, PR files/commits,
+  `TopicsModelResponse`) and nested-identity payloads (`PermissionModelResponse` — identity
+  is `user.id`). Project precedent: GitHub responses of these kinds carry no `Id`
 - May include nested models (e.g. `Rating` inside `ProductModelResponse`)
 - Match the full JSON structure from the API response
 
@@ -88,7 +93,7 @@ ContractCheck infrastructure lives on validation attributes (`[RequiredField]`, 
 
 ## Wire-boolean naming exception
 
-Boolean properties whose JSON wire names are GitHub permission flags (`admin`, `maintain`, `push`, `triage`, `pull`) and similar contract keys keep the wire name without `Is`/`Has` prefix (e.g. `CollaboratorPermissions.Admin`). Renaming would obscure the wire mapping; when such a property is new, document the exception in the model file or OB section.
+Boolean properties whose JSON wire names are the GitHub permission flags (`admin`, `maintain`, `push`, `triage`, `pull`) — **and only these** — keep the wire name without `Is`/`Has` prefix (e.g. `CollaboratorPermissions.Admin`). Every other wire boolean follows `Rules/code.md`: the C# name gets the `Is` prefix and the wire name stays in `[JsonPropertyName(JsonFields.…)]` (e.g. `IsMerged`, `IsExpired`). Renaming the permission flags would obscure the wire mapping; when such a property is new, document the exception in the model file or OB section.
 
 ## Attributes
 

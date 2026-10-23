@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+using Ui.Helpers;
 using FluentAssertions;
 using Ui.Moodledemo.Tests.Support;
 
@@ -9,6 +11,9 @@ public class CalendarRegionUiTests : MoodledemoTestBase
 {
     // subpixel rounding allowance when comparing scrollWidth vs clientWidth
     private const long OverflowTolerancePx = 5;
+
+    // the controls text must contain a four-digit year (e.g. "2026")
+    private static readonly Regex _fourDigitYearPattern = new(@"\d{4}", RegexOptions.Compiled);
 
     private static IEnumerable<TestCaseData> CalendarCases()
     {
@@ -29,7 +34,7 @@ public class CalendarRegionUiTests : MoodledemoTestBase
 
         await Browser.HomePage.GotoCalendarAsync(code);
 
-        var lang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be(expectation.Lang, "calendar html lang must match the fixture for {0}", code);
 
         var controlsText = await Browser.HomePage.ReadCalendarControlsTextAsync();
@@ -44,14 +49,15 @@ public class CalendarRegionUiTests : MoodledemoTestBase
 
     [Test]
     [Category("Regression")]
-    [Description("E.2 Calendar for a long-month language (de) renders the current month heading")]
-    public async Task Calendar_De_RendersMonthHeading()
+    [Description("E.2 Calendar for a long-month language renders the current month heading")]
+    public async Task Calendar_LongMonthLanguage_RendersMonthHeading()
     {
-        await Browser.HomePage.GotoCalendarAsync("de");
+        var longMonthCode = MoodledemoFixtures.Scenarios.LongMonthCalendar;
+        await Browser.HomePage.GotoCalendarAsync(longMonthCode);
 
         var controlsText = await Browser.HomePage.ReadCalendarControlsTextAsync();
         controlsText.Should().MatchRegex(
-            @"\d{4}",
-            "the German calendar controls must carry a four-digit year");
+            _fourDigitYearPattern,
+            "the long-month calendar controls must carry a four-digit year");
     }
 }

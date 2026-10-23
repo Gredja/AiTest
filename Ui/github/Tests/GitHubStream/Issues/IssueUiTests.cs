@@ -1,9 +1,9 @@
-﻿using Core.Config;
+using Core.Config;
+using Core.Generators;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
 using FluentAssertions;
-using AllureAdapter;
 using Ui.Github.Tests.Support;
 using static Core.Helpers.TestDataConstants;
 
@@ -33,8 +33,16 @@ public class IssueUiTests : GitHubUiTestBase
         await Browser.IssueCreatePage.CreateIssueAsync(title, "Created through the UI create form");
 
         var issueNumber = Browser.IssueDetailPage.TryGetIssueNumberFromUrl();
+        if (issueNumber is not null)
+        {
+            _createdIssueNumbers.Add(issueNumber.Value);
+        }
+        else
+        {
+            await RegisterIssueByTitleAsync(title, _createdIssueNumbers);
+        }
+
         issueNumber.Should().NotBeNull("submit must redirect to the issue page");
-        _createdIssueNumbers.Add(issueNumber!.Value);
 
         (await Browser.IssueDetailPage.HasTitleAsync(title)).Should().BeTrue("issue page must show the title");
 

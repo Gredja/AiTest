@@ -1,5 +1,5 @@
 using FluentAssertions;
-using AllureAdapter;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;

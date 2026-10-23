@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 
 namespace Api.GitHub.Auth;
 

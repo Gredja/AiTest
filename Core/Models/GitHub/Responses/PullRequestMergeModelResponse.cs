@@ -5,7 +5,7 @@ namespace Core.Models.GitHub;
 public class PullRequestMergeModelResponse
 {
     [JsonPropertyName(JsonFields.Merged)]
-    public bool Merged { get; set; }
+    public bool IsMerged { get; set; }
 
     [JsonPropertyName(JsonFields.Message)]
     public string Message { get; set; }

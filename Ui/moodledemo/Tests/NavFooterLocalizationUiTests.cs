@@ -30,10 +30,12 @@ public class NavFooterLocalizationUiTests : MoodledemoTestBase
         navLabels.Should().Contain(labels.Calendar, "calendar nav label must be localized for {0}", labels.Code);
         navLabels.Should().Contain(labels.More, "more nav label must be localized for {0}", labels.Code);
 
-        if (labels.HomeIsEnglishGap)
+        if (labels.IsHomeEnglishGap)
         {
+            labels.HomeFallback.Should().NotBeNullOrWhiteSpace(
+                "a flagged English-gap entry must carry its fallback label in the fixture");
             navLabels.Should().Contain(
-                "Home",
+                labels.HomeFallback!,
                 "ja home nav is a documented English fallback (known gap, not a bug)");
         }
     }
@@ -45,7 +47,7 @@ public class NavFooterLocalizationUiTests : MoodledemoTestBase
     {
         await Browser.HomePage.GotoAsync();
 
-        var loginLinks = Browser.Page.Locator($"footer a[href*='{Core.Config.MoodledemoEndpoints.LoginPath}']");
+        var loginLinks = Browser.HomePage.FooterLoginLinks;
 
         (await loginLinks.CountAsync()).Should().BeGreaterThan(
             0,

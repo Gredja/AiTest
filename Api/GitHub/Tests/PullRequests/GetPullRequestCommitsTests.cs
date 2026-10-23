@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.PullRequests;
@@ -88,6 +87,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

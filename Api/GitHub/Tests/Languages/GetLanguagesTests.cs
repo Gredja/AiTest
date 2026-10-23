@@ -4,7 +4,6 @@ using Core.Helpers.GitHub;
 using System.Net;
 using System.Text.Json;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
 
@@ -50,6 +49,7 @@ public class GetLanguagesTests : GitHubTestBase
         var response = await Get<Dictionary<string, long>>(GitHubEndpoints.RepoLanguages,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

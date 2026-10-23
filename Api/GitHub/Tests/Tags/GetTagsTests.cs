@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
 
@@ -65,6 +64,7 @@ public class GetTagsTests : GitHubTestBase
         var response = await Get<List<TagModelResponse>>(GitHubEndpoints.RepoTags,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

@@ -4,7 +4,6 @@ using Core.Helpers.GitHub;
 using Core.Models.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 
 namespace Api.GitHub.RateLimit;
 
@@ -120,6 +119,7 @@ public class GetRateLimitTests : GitHubTestBase
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

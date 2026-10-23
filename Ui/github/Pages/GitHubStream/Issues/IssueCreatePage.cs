@@ -1,14 +1,14 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Tests.Support;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.GitHubStream.Issues;
 
 internal sealed class IssueCreatePage(IPage page)
 {
     private static readonly TimeSpan _openTimeout =
-        TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
+        TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
     private readonly IPage _page = page;
 
@@ -16,12 +16,7 @@ internal sealed class IssueCreatePage(IPage page)
 
     internal async Task<WaitResult<bool>> WaitForOpenAsync() =>
         await WaitHelper.WaitUntilAsync(
-            async () =>
-            {
-                var count = await _createIssueHeading.CountAsync();
-
-                return count > 0;
-            },
+            async () => await _createIssueHeading.CountAsync() > 0,
             isOpen => isOpen,
             _openTimeout);
 

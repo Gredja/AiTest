@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Generators;
 using Core.Models.Generic;
 using Core.Models.GitHub;
 using RestSharp;
@@ -13,9 +14,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected const int FirstPage = 1;
     protected const int DefaultPageSize = 5;
     protected const int SmallPageSize = 2;
-    // Deliberately invalid PAT for auth-negative tests — never a real secret,
-    // but the ghp_ prefix may trip entropy-based secret scanners
-    protected const string InvalidToken = "ghp_invalidtoken123";
+    // Deliberately invalid credential for auth-negative tests — never a real secret
+    protected const string InvalidToken = "invalid-token-sentinel";
     protected const string InvalidAuthorization = $"Bearer {InvalidToken}";
 
     // GitHub topic naming: lowercase letters, digits and hyphens (OB §14), e.g. "api-v2"
@@ -89,19 +89,21 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         // branch, deleted together with the head. Orphan blob/tree/commit objects are
         // unreachable and harmless; branch and PR are cleaned on any partial failure.
         PullRequestModelResponse? createdPull = null;
+        var isCreated = false;
         try
         {
             await CreateScratchRefsAsync(headBranch, baseBranch, commitSha, mainSha);
             createdPull = await CreatePullRequestForScratchAsync(title, headBranch, baseBranch);
+            isCreated = true;
 
             return (createdPull.Number, headBranch, baseBranch);
         }
-        // broad on purpose: cleanup must also run when an assert inside the try fails —
-        // a specific-exception catch would leak the partially created refs/PR
-        catch (Exception)
+        finally
         {
-            await CleanupPullRequestAsync(createdPull?.Number, headBranch, baseBranch);
-            throw;
+            if (!isCreated)
+            {
+                await CleanupPullRequestAsync(createdPull?.Number, headBranch, baseBranch);
+            }
         }
     }
 
@@ -131,7 +133,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         mainCommit.ShouldHaveStatusCode(HttpStatusCode.OK);
 
         var blobSha = await CreateScratchBlobAsync(headBranch);
-        var treeSha = await CreateScratchTreeAsync(headBranch, mainCommit.Data!.Tree.Sha, blobSha);
+        var treeSha = await CreateScratchTreeAsync(mainCommit.Data!.Tree.Sha, blobSha);
 
         var commit = await Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
             GitHubEndpoints.RepoGitCommits,
@@ -158,7 +160,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         return blob.Data!.Sha;
     }
 
-    private async Task<string> CreateScratchTreeAsync(string headBranch, string baseTreeSha, string blobSha)
+    private async Task<string> CreateScratchTreeAsync(string baseTreeSha, string blobSha)
     {
         var tree = await Post<CreateGitTreeModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitTrees,
@@ -217,7 +219,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected Task CleanupPullRequestAsync(int? pullNumber, string headBranch, string baseBranch) =>
         _cleanup.CleanupPullRequestAsync(pullNumber, headBranch, baseBranch);
 
-    protected static (string Owner, string Repo) ParseRepo() => ParseRepo(TestConfig.GitHubTestRepo);
+    protected static (string Owner, string Repo) ParseRepo() =>
+        GitHubParamHelper.ParseRepo(TestConfig.GitHubTestRepo);
 
     protected async Task<RestResponse> ExecuteWithAuthorization(
         string endpoint, string? authorization, List<RequestDictionaryModel>? additionalParams = null)
@@ -235,12 +238,5 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         }
 
         return await Client.ExecuteAsync(request);
-    }
-
-    private static (string Owner, string Repo) ParseRepo(string fullName)
-    {
-        var parts = fullName.Split('/');
-
-        return (parts[0], parts[1]);
     }
 }

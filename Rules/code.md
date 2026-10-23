@@ -9,6 +9,11 @@
 - Boolean variables/methods: prefix with `Is`, `Has`, `Can`, `Should`
   - Exceptions: standard Try-pattern methods (`TryOwnRun`, `TryParse`, …); config getters named for the type they return (`GetRequiredBool`) when they are not boolean state
 - Lambda parameters: readable singular noun matching the element type (`product => product.Id`, `comment => comment.PostId`), never single-letter (`p =>`, `c =>`)
+- Helper classes: suffix `Helper` (`RetryHelper`, `WaitHelper`, `ArtifactNamingHelper`) — mandatory for
+  every behavioral (method-bearing) class placed in a `Helpers/` layer. Pure constant holders and
+  result records are not helpers and keep descriptive nouns (`UiTimeout`, `TestDataConstants`, `WaitResult`)
+- Generator classes: suffix `Generator` (`DataGenerator`) — see File Layout: generators live in their
+  own folder, never inside `Helpers/`
 
 ## Types
 
@@ -40,6 +45,11 @@
   grammatical symmetry; `Ui/github/` (lowercase service name) is a documented site-scoped
   exception — every other service folder is PascalCase (`Api/GitHub/`, `E2E/GitHub/`,
   `Core/Models/GitHub/`)
+- **Generators live in their own folder** — classes with the `Generator` suffix go into a
+  dedicated `Generators/` folder of their layer (e.g. `Core/Generators/`), never into
+  `Helpers/` — helpers and generators are different roles with different name suffixes.
+  Exception: a generator that is part of a domain module stays with that module
+  (`Core/Reporting/TestRunReportGenerator` — its row DTO and retention companion live there too)
 
 ## Cleanup
 

@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.ParamHelper;
 using static Core.Helpers.TestDataConstants;
@@ -218,6 +217,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
             CommentParams(_existingCommentId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

@@ -112,7 +112,7 @@ public class GitHubCleanupHelper : GitHubRequestHelper
 
     private List<RequestDictionaryModel> TestRepoParam()
     {
-        var (owner, repo) = ParseRepo(RepoFullName);
+        var (owner, repo) = GitHubParamHelper.ParseRepo(RepoFullName);
 
         return GitHubParamHelper.RepoParam(owner, repo);
     }
@@ -127,13 +127,6 @@ public class GitHubCleanupHelper : GitHubRequestHelper
 
     private static List<RequestDictionaryModel> IssueParams(int issueNumber, List<RequestDictionaryModel> testRepo) =>
         [.. testRepo, .. GitHubParamHelper.IssueNumberParam(issueNumber)];
-
-    private static (string Owner, string Repo) ParseRepo(string fullName)
-    {
-        var parts = fullName.Split('/');
-
-        return (parts[0], parts[1]);
-    }
 
     private async Task RunCleanupAsync<T>(Func<Task<T>> cleanup, string subject)
         where T : RestResponse

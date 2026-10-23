@@ -9,7 +9,7 @@ public class LoginFormUiTests : MoodledemoTestBase
 {
     [Test]
     [Category("Smoke")]
-    [Description("4.1 Browser: login form renders with stable selectors (username/password/#loginbtn)")]
+    [Description("5.4 Browser: login form renders with role-based locators")]
     public async Task LoginForm_RendersWithStableSelectors()
     {
         await Browser.LoginPage.GotoAsync();

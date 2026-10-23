@@ -1,9 +1,10 @@
 using System.Text.RegularExpressions;
+using Ui.Moodledemo.Tests.Support;
 using FluentAssertions;
 
-namespace Ui.Moodledemo.Tests.Support;
+namespace Ui.Helpers;
 
-internal static class TitleScriptAssert
+internal static class TitleScriptAssertHelper
 {
     // .NET regex has no \p{IsLatin}-style script properties — only Unicode blocks,
     // so scripts are expressed as unions of the blocks that hold their letters.
@@ -47,11 +48,12 @@ internal static class TitleScriptAssert
         var translatablePart = title.Split('|')[0];
         var expectedScripts = MoodledemoFixtures.TitleScriptsFor(code);
         var pattern = BuildPattern(expectedScripts, code);
+        var regex = new Regex(pattern, RegexOptions.Compiled);
 
         var offenders = translatablePart
             .Where(char.IsLetter)
             .Distinct()
-            .Where(letter => !Regex.IsMatch(letter.ToString(), pattern))
+            .Where(letter => !regex.IsMatch(letter.ToString()))
             .ToList();
 
         offenders.Should().BeEmpty(
@@ -69,6 +71,6 @@ internal static class TitleScriptAssert
             : throw new InvalidOperationException(
                 $"titleScripts: unknown script '{script}' for code '{code}'"));
 
-        return $"[{string.Join("", classes)}]";
+        return $"[{string.Join(string.Empty, classes)}]";
     }
 }

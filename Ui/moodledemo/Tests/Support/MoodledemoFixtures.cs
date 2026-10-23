@@ -31,6 +31,10 @@ internal static class MoodledemoFixtures
         _root.CalendarPageCodes
         ?? throw new InvalidOperationException("fixture section 'calendarPageCodes' is missing");
 
+    internal static ScenarioCodes Scenarios =>
+        _root.ScenarioCodes
+        ?? throw new InvalidOperationException("fixture section 'scenarioCodes' is missing");
+
     internal static LocaleExpectation English =>
         Home.Single(expectation => expectation.Code == EnglishCode);
 
@@ -45,5 +49,6 @@ internal static class MoodledemoFixtures
         List<LoginLabelExpectation>? LoginLabels,
         List<NavLabelExpectation>? NavLabels,
         List<string>? CalendarPageCodes,
+        ScenarioCodes? ScenarioCodes,
         Dictionary<string, List<string>>? TitleScripts);
 }

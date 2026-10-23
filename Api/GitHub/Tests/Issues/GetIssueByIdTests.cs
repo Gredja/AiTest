@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
 
@@ -169,6 +168,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

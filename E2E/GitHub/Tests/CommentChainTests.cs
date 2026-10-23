@@ -1,9 +1,9 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;

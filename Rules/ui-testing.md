@@ -7,14 +7,14 @@ Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
 ├── AssemblyInfo.cs               # Parallelizable(None) — sequential: fixtures share one storageState
 ├── TestReportSetup.cs            # [SetUpFixture] — duplicated per test assembly (P2.3)
-├── github/                       # site-scoped: all GitHub UI tests (future sites — sibling folders)
-│   ├── Pages/                      # single home of locators
-│   │   ├── Common/                   # cross-area pages (header, nav)
-│   │   └── GitHubStream/             # page-objects: {Area}/{Area}Page.cs
-│   └── Tests/
-│       ├── Support/                  # GitHubUiTestBase, BrowserPlaywright, TabCountParser
-│       └── GitHubStream/             # tests: {Area}/{Area}{Flow}Tests.cs
-└── Data/                         # static test files (upload payloads)
+├── Helpers/                      # project-level helpers (Helper suffix): RetryHelper, PageUrl, TabCountParser, UiTimeout + moodledemo utilities
+└── github/                       # site-scoped: all GitHub UI tests (future sites — sibling folders)
+    ├── Pages/                      # single home of locators
+    │   ├── Common/                   # cross-area pages (header, nav) only
+    │   └── GitHubStream/             # page-objects: {Area}/{Area}Page.cs
+    └── Tests/
+        ├── Support/                  # GitHubUiTestBase, BrowserPlaywright
+        └── GitHubStream/             # tests: {Area}/{Area}{Flow}Tests.cs
 ```
 
 - Page-object method = business action (`CreateIssue(title, body)`), never a raw click

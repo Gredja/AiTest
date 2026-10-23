@@ -1,6 +1,5 @@
 using Core.Config;
 using FluentAssertions;
-using AllureAdapter;
 using Ui.Github.Tests.Support;
 
 namespace Ui.Github.Tests.GitHubStream.Login;

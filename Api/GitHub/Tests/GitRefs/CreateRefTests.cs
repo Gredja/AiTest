@@ -1,10 +1,10 @@
-﻿using Core.Models.GitHub;
+using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
@@ -58,8 +58,8 @@ public class CreateRefTests : GitHubTestBase
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
-        created.Data!.Ref.Should().Be(refName, "response must echo the created ref");
-        created.Data.Object.Sha.Should().Be(_baseSha, "response must point at the requested sha");
+        created.Data!.ShouldMatchRequest(new CreateGitRefModelRequest { Ref = refName });
+        created.Data.Object.Sha.Should().Be(_baseSha, "request Sha maps to nested object.sha — documented ShouldMatchRequest exception");
     }
 
     [Test]
@@ -201,7 +201,7 @@ public class CreateRefTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created ref not visible within {TestConfig.MaxResponseTimeMs} ms — waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}; informational on live services");
+                $"created ref not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
         }
     }
 

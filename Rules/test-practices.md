@@ -80,7 +80,7 @@ Run artifacts accumulate without bound — every mechanism MUST be wired to the 
 
 When adding or changing endpoints, keep these documents in sync:
 - `documentation/{Service}ObservableBehaviour.md` — source of truth for test design (fields, types, negatives)
-- `documentation/{Service}TestPlan.md` — coverage tracking (which endpoints have tests, status)
+- `documentation/{Service}TestPlan.md` — coverage tracking (which endpoints have tests, status); GitHub has no TestPlan file — its durable status doc is `documentation/GitHubTestingStructure.md`
 - `Rules/*.md` — shared rules for all services (assertions, patterns, cleanup)
 - If Observable Behaviour changes → update Test Plan status; if Test Plan adds endpoints → update Observable Behaviour
 - **One canonical source per guidance topic**: test-generation instructions live ONLY in
@@ -231,5 +231,5 @@ Derived from kata 6.W.3 (PII-safe test data). Applies to E2E and any POST/PATCH 
 - **Fictional values only, never PII** — E2E writes into the public sandbox repo `Gredja/AiTest`; issue/PR bodies are publicly visible forever. Synthetic IDs, invented names, tokenized payments (see `documentation/Katas/02-test-data.json` for the pattern)
 - **Obfuscate by replacement, never by dropping** — keep the field shape, replace the value; dropping a field breaks e2e coverage
 - **Vary ≥2 dimensions across test payloads** — don't run every write test against one static body (country/language, order size, status, payment method). If one dataset is intentionally enough, document why in the test class
-- **Vary payload values via `Core/Helpers/Data/DataGenerator`** — generate per-run values (`RandomString`, `RandomIntExclusive`) for varying write fields instead of static literals; semantic negative-test data (invalid ids, boundary values, wrong-type markers) stays as named constants — its value IS the specification
+- **Vary payload values via `Core/Generators/DataGenerator`** — generate per-run values (`RandomString`, `RandomIntExclusive`) for varying write fields instead of static literals; semantic negative-test data (invalid ids, boundary values, wrong-type markers) stays as named constants — its value IS the specification
 - **Complex datasets get a method note** — which tool/prompts generated them, which fields are obfuscated, which dimensions are exercised, what is intentionally missing (pattern: `documentation/Katas/02-data-method.md`)

@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
 
@@ -73,6 +72,7 @@ public class GetTopicsTests : GitHubTestBase
         var response = await Get<TopicsModelResponse>(GitHubEndpoints.RepoTopics,
             MercyPreviewRepoParams());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

@@ -1,4 +1,3 @@
-using AllureAdapter.Helpers;
 
 namespace Api;
 
@@ -9,6 +8,6 @@ public class AllureGlobalSetup
     public void GlobalTeardown()
     {
         var resultsDir = AllureHelper.GetResultsDir();
-        AllureSkippedTestWriter.WriteSkippedTests(typeof(AllureGlobalSetup).Assembly, resultsDir);
+        AllureSkippedTestWriterHelper.WriteSkippedTests(typeof(AllureGlobalSetup).Assembly, resultsDir);
     }
 }

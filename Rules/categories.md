@@ -18,7 +18,7 @@ Add exactly one service category to the `[TestFixture]` class:
 [TestFixture]
 [AllureNUnit]
 [Category("JsonPlaceholder")]
-public class GetAllPostsTests : RequestHelper
+public class GetAllPostsTests : JsonPlaceholderRequestHelper
 ```
 
 ## Check-type category (on method)

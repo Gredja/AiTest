@@ -2,7 +2,7 @@ using static AllureAdapter.Helpers.AllureConstants;
 
 namespace AllureAdapter.Helpers;
 
-internal static class AllureTestResultBuilder
+internal static class AllureTestResultBuilderHelper
 {
     public static Dictionary<string, object> BuildTestResult(TestResultParams resultParams)
     {
@@ -63,7 +63,7 @@ internal static class AllureTestResultBuilder
         new Dictionary<string, string>
         {
             ["message"] = message,
-            ["trace"] = trace ?? ""
+            ["trace"] = trace ?? string.Empty
         };
 
     private static List<Dictionary<string, string>> BuildLabels(TestResultParams resultParams)

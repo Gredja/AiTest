@@ -1,10 +1,9 @@
-﻿using Core.Models.GitHub;
+using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.PullRequests;
@@ -14,6 +13,8 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class GetPullRequestsTests : GitHubTestBase
 {
+    private static readonly TimeSpan _stateConsistencyTimeout = TimeSpan.FromSeconds(10);
+
     [Test]
     [Category("HealthCheck")]
     [Description("5.1 GET /repos/{owner}/{repo}/pulls returns 200 OK")]
@@ -95,6 +96,7 @@ public class GetPullRequestsTests : GitHubTestBase
         var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
@@ -128,11 +130,19 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.10 Filter by state=open returns only open pull requests")]
     public async Task GetPullRequests_FilterByStateOpen()
     {
-        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateOpen)]);
+        // GitHub list may serve a torn read while E2E creates/merges PRs concurrently
+        // (solution run): a just-merged PR briefly appears in ?state=open — refresh until consistent
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
+                [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateOpen)]),
+            response => response.StatusCode == HttpStatusCode.OK
+                && response.Data is not null
+                && response.Data.All(pullRequest => pullRequest.State == GitHubEndpoints.StateOpen),
+            timeout: _stateConsistencyTimeout);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateOpen);
+        result.IsSuccess.Should().BeTrue(
+            $"state=open must return only open pull requests; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
+        result.LastValue!.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateOpen);
     }
 
     [Test]
@@ -140,11 +150,19 @@ public class GetPullRequestsTests : GitHubTestBase
     [Description("5.11 Filter by state=closed returns only closed pull requests")]
     public async Task GetPullRequests_FilterByStateClosed()
     {
-        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
-            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateClosed)]);
+        // Symmetric torn read: a just-reopened PR can briefly appear in ?state=closed —
+        // refresh until the read is consistent
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
+                [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateClosed)]),
+            response => response.StatusCode == HttpStatusCode.OK
+                && response.Data is not null
+                && response.Data.All(pullRequest => pullRequest.State == GitHubEndpoints.StateClosed),
+            timeout: _stateConsistencyTimeout);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateClosed);
+        result.IsSuccess.Should().BeTrue(
+            $"state=closed must return only closed pull requests; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
+        result.LastValue!.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateClosed);
     }
 
     [Test]

@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.Collaborators;
@@ -14,10 +13,10 @@ namespace Api.GitHub.Collaborators;
 [Category("GitHub")]
 public class CreateInvitationTests : GitHubTestBase
 {
-    private long? _createdInvitationId;
+    private readonly List<long> _createdInvitationIds = [];
 
-    [SetUp]
-    public async Task NormalizePendingInvitations() => await NormalizePendingCollaboratorInvitationsAsync();
+    [OneTimeSetUp]
+    public async Task OneTimeSetUp() => await NormalizePendingCollaboratorInvitationsAsync();
 
     [Test]
     [Category("HealthCheck")]
@@ -30,7 +29,7 @@ public class CreateInvitationTests : GitHubTestBase
             [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
         if (invite.Data is not null)
         {
-            _createdInvitationId = invite.Data.Id;
+            _createdInvitationIds.Add(invite.Data.Id);
         }
 
         invite.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -64,5 +63,11 @@ public class CreateInvitationTests : GitHubTestBase
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown() => await CleanupInvitationAsync(_createdInvitationId);
+    public async Task OneTimeTearDown()
+    {
+        foreach (var invitationId in _createdInvitationIds)
+        {
+            await CleanupInvitationAsync(invitationId);
+        }
+    }
 }

@@ -3,6 +3,7 @@
 **Project:** Gredja (.NET 10.0)
 **API Under Test:** GitHub REST API v3 (https://api.github.com)
 **Date:** 2026-02-21
+**Last verified:** 2026-10-16 (section probes carried through §29)
 **Scope:** GET (Phase 1) + POST/PATCH/DELETE (Phase 2 E2E)
 **Test Plan / scope:** [GitHubTestingStructure.md](GitHubTestingStructure.md) (phases, entry/exit criteria; plans in `.mimocode/plans/` are deleted after implementation)
 
@@ -681,6 +682,10 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Infrastructure endpoint (first step of the scratch pipeline: blob → tree §26b → commit §27):
   body `content` (string) → 201 Created, body has `sha` (40 hex) (as consumed by the
   `CreateScratchBlobAsync` fixtures; dedicated negative probes not yet run)
+- **Infrastructure-only by design** (audit 2026-10-22): no dedicated test fixture — the
+  endpoint is exercised on every scratch-pipeline run and its failure modes are covered
+  upstream/downstream (§26b/§27 negatives); renumber into the tested set only if a
+  blob-specific failure mode is found
 
 ---
 

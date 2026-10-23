@@ -1,10 +1,10 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
@@ -63,6 +63,7 @@ public class CreatePullRequestTests : GitHubTestBase
         var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(pullNumber));
 
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
         readBack.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
@@ -237,7 +238,7 @@ public class CreatePullRequestTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created PR not visible within {TestConfig.MaxResponseTimeMs} ms — waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}; informational on live services");
+                $"created PR not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
         }
     }
 

@@ -91,6 +91,6 @@ internal static class TestSourceCategoryReader
             .Where(name => !_serviceCategories.Contains(name))
             .ToArray();
 
-        return categoryNames.Length == 0 ? "-" : string.Join(", ", categoryNames);
+        return categoryNames.Length == 0 ? OutcomeMarker.Unknown : string.Join(", ", categoryNames);
     }
 }

@@ -18,7 +18,7 @@ Verify prerequisites:
 ## Step 2: Fetch PR data
 
 ```powershell
-$token = (Get-Content ".env" | Select-String "GITHUB_PAT=(.*)" ).Matches[0].Groups[1].Value
+$token = & Scripts/read-github-pat.ps1
 $headers = @{ "Authorization" = "token $token"; "Accept" = "application/vnd.github.v3+json" }
 $pr = Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/pulls/{pr_number}" -Headers $headers
 $files = Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/pulls/{pr_number}/files" -Headers $headers

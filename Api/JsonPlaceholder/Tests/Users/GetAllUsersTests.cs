@@ -4,7 +4,6 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 
 namespace Api.JsonPlaceholder.Users;
 
@@ -54,6 +53,7 @@ public class GetAllUsersTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

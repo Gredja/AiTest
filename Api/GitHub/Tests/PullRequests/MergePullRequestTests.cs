@@ -1,10 +1,10 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
@@ -40,7 +40,7 @@ public class MergePullRequestTests : GitHubTestBase
         merged.IsSuccess.Should().BeTrue(
             $"merge must return 200 once the PR is mergeable; elapsed {merged.Elapsed}, attempts {merged.Attempts}, last status {merged.LastValue?.StatusCode}");
         merged.LastValue!.Data.Should().NotBeNull(MergeResponseHasBodyMessage);
-        merged.LastValue!.Data!.Merged.Should().BeTrue(MergeReportsMergedTrueMessage);
+        merged.LastValue!.Data!.IsMerged.Should().BeTrue(MergeReportsMergedTrueMessage);
     }
 
     [Test]
@@ -89,6 +89,7 @@ public class MergePullRequestTests : GitHubTestBase
             new Dictionary<string, object>(),
             PullParams(pullNumber));
 
+        merged.ShouldHaveStatusCode(HttpStatusCode.OK);
         merged.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

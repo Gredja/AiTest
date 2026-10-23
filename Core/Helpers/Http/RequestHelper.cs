@@ -10,6 +10,11 @@ public class RequestHelper
 {
     protected const string AuthorizationHeader = "Authorization";
 
+    private const string ContentTypeHeader = "Content-Type";
+    private const string JsonMediaType = "application/json;charset=utf-8";
+    private const string LanguageHeader = "X-Lang";
+    private const string DefaultLanguage = "en_GB";
+
     private static readonly RestClient _jsonPlaceholderClient = CreateClient(JsonPlaceholderEndpoints.BaseUrl);
     private static readonly RestClient _gitHubClient = CreateClient(GitHubEndpoints.BaseUrl);
     private static readonly Lazy<string?> _githubToken = new(() => GitHubEndpoints.Token);
@@ -107,8 +112,8 @@ public class RequestHelper
 
     private static void AddDefaultHeaders(RestRequest request)
     {
-        request.AddHeader("Content-Type", "application/json;charset=utf-8");
-        request.AddHeader("X-Lang", "en_GB");
+        request.AddHeader(ContentTypeHeader, JsonMediaType);
+        request.AddHeader(LanguageHeader, DefaultLanguage);
     }
 
     private void AddGitHubAuth(RestRequest request)
@@ -126,20 +131,20 @@ public class RequestHelper
 
     protected static void AddParams(RestRequest request, List<RequestDictionaryModel> additionalParams)
     {
-        foreach (var param in additionalParams)
+        foreach (var parameter in additionalParams)
         {
             // Invariant culture: a URL segment formatted with the machine locale
             // (e.g. decimal comma) would produce an invalid request line
-            switch (param.Type)
+            switch (parameter.Type)
             {
                 case ParamType.Header:
-                    request.AddHeader(param.Key, Convert.ToString(param.Value, CultureInfo.InvariantCulture) ?? string.Empty);
+                    request.AddHeader(parameter.Key, Convert.ToString(parameter.Value, CultureInfo.InvariantCulture) ?? string.Empty);
                     break;
                 case ParamType.Parameter:
-                    request.AddParameter(param.Key, Convert.ToString(param.Value, CultureInfo.InvariantCulture));
+                    request.AddParameter(parameter.Key, Convert.ToString(parameter.Value, CultureInfo.InvariantCulture));
                     break;
                 case ParamType.UrlSegment:
-                    request.AddUrlSegment(param.Key, Convert.ToString(param.Value, CultureInfo.InvariantCulture) ?? string.Empty);
+                    request.AddUrlSegment(parameter.Key, Convert.ToString(parameter.Value, CultureInfo.InvariantCulture) ?? string.Empty);
                     break;
             }
         }

@@ -1,9 +1,9 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
 
@@ -29,13 +29,15 @@ public class PullRequestFlowTests : GitHubE2ETestBase
             PullParams(pullNumber));
         created.ShouldHaveStatusCode(HttpStatusCode.OK);
         created.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "freshly created PR must be open");
-        created.Data.Title.Should().Be(title, PullRequestEchoTitleMessage);
+
+        // request Head/Base map to nested response objects — asserted explicitly after merge below
+        created.Data.ShouldMatchRequest(new CreatePullRequestModelRequest { Title = title });
 
         var merged = await Put<Dictionary<string, object>, PullRequestMergeModelResponse>(
             GitHubEndpoints.RepoPullRequestMerge, new Dictionary<string, object>(), PullParams(pullNumber));
         merged.ShouldHaveStatusCode(HttpStatusCode.OK);
         merged.Data.Should().NotBeNull(MergeResponseHasBodyMessage);
-        merged.Data!.Merged.Should().BeTrue(MergeReportsMergedTrueMessage);
+        merged.Data!.IsMerged.Should().BeTrue(MergeReportsMergedTrueMessage);
 
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);

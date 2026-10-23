@@ -31,6 +31,9 @@
 ## Strings
 
 - Use interpolation `$"Hello {name}"` over concatenation `"Hello " + name`
+- Use `string.Empty` over an empty-string literal `""` wherever possible; `""` is allowed
+  only where a compile-time constant is required (`const` initializers, default parameter
+  values) — `string.Empty` is a `static readonly`, not a constant
 - Use `StringBuilder` when building strings in loops
 - Use `string.IsNullOrEmpty()` or `string.IsNullOrWhiteSpace()` over `.Length == 0`
 

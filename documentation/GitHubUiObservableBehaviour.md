@@ -3,6 +3,7 @@
 **Project:** Gredja (.NET 10.0)
 **Surface under test:** GitHub web UI (https://github.com) — sandbox repo `gredjapl/ui-sandbox` (`TestConfig.UiTestRepo`)
 **Date:** 2026-10-09
+**Last verified:** 2026-10-19 (locator/measurement probes through UI-23)
 **Scope:** UI pages and flows (Playwright, Chromium)
 **Test plan history:** retired (lifecycle — plans deleted after implementation); durable status lives in this document and `Rules/ui-testing.md`
 

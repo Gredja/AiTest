@@ -1,15 +1,12 @@
 using Microsoft.Playwright;
 
-namespace Ui.Moodledemo.Tests.Support;
+namespace Ui.Helpers;
 
-internal static class PageLocaleReader
+internal static class PageLocaleReaderHelper
 {
     internal static Task<string?> ReadLangAsync(IPage page) =>
         page.GetAttributeAsync("html", "lang");
 
     internal static Task<string?> ReadDirAsync(IPage page) =>
         page.GetAttributeAsync("html", "dir");
-
-    internal static Task<string> ReadBodyDirectionAsync(IPage page) =>
-        page.EvaluateAsync<string>("getComputedStyle(document.body).direction");
 }

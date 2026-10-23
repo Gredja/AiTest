@@ -1,14 +1,14 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Tests.Support;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.GitHubStream.Repository;
 
 internal sealed class NotFoundPage(IPage page)
 {
     private static readonly TimeSpan _messageTimeout =
-        TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
+        TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
     private readonly IPage _page = page;
 
@@ -17,12 +17,7 @@ internal sealed class NotFoundPage(IPage page)
 
     internal async Task<WaitResult<bool>> WaitFor404MessageAsync() =>
         await WaitHelper.WaitUntilAsync(
-            async () =>
-            {
-                var count = await _notFoundImage.CountAsync();
-
-                return count > 0;
-            },
+            async () => await _notFoundImage.CountAsync() > 0,
             hasMessage => hasMessage,
             _messageTimeout);
 

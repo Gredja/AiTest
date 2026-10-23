@@ -1,4 +1,4 @@
-﻿using Core.Attributes;
+using Core.Attributes;
 using Core.Models.Generic;
 using System.Text.Json.Serialization;
 
@@ -14,7 +14,8 @@ public class InvitationModelResponse : IdModel<long>
 
     public string Permissions { get; set; }
 
-    public bool Expired { get; set; }
+    [JsonPropertyName(JsonFields.Expired)]
+    public bool IsExpired { get; set; }
 
     [JsonPropertyName(JsonFields.CreatedAt)]
     public DateTime CreatedAt { get; set; }
