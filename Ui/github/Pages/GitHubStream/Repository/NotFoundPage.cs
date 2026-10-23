@@ -1,14 +1,14 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Tests.Support;
+using Ui.Github.Pages.Common;
 
 namespace Ui.Github.Pages.GitHubStream.Repository;
 
 internal sealed class NotFoundPage(IPage page)
 {
     private static readonly TimeSpan _messageTimeout =
-        TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
+        TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
     private readonly IPage _page = page;
 

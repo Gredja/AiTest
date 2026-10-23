@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
 using System.Net;
+using Ui.Github.Pages.Common;
 using Ui.Support;
 
 namespace Ui.Github.Tests.Support;
@@ -15,7 +16,6 @@ public abstract class GitHubUiTestBase
 {
     private const int ViewportWidth = 1440;
     private const int ViewportHeight = 900;
-    internal const int UiTimeoutMs = 15_000;
 
     private const string ScratchBranchPrefix = "ui-scratch-";
     private const string ScratchBaseBranchPrefix = "ui-scratch-base-";
@@ -78,8 +78,8 @@ public abstract class GitHubUiTestBase
 
         _page = await _context.NewPageAsync();
         await _page.BringToFrontAsync();
-        _page.SetDefaultTimeout(UiTimeoutMs);
-        _page.SetDefaultNavigationTimeout(UiTimeoutMs);
+        _page.SetDefaultTimeout(UiTimeout.UiTimeoutMs);
+        _page.SetDefaultNavigationTimeout(UiTimeout.UiTimeoutMs);
         _browserWrapper = new BrowserPlaywright(_page);
     }
 

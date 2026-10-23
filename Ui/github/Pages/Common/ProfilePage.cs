@@ -1,14 +1,13 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Tests.Support;
 
 namespace Ui.Github.Pages.Common;
 
 internal sealed class ProfilePage(IPage page)
 {
     private static readonly TimeSpan _headingTimeout =
-        TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
+        TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
     internal async Task<WaitResult<bool>> WaitForUsernameHeadingAsync() =>
         await WaitHelper.WaitUntilAsync(

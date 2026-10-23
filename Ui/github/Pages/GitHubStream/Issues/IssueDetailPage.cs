@@ -2,7 +2,6 @@ using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
 using Ui.Github.Pages.Common;
-using Ui.Github.Tests.Support;
 
 namespace Ui.Github.Pages.GitHubStream.Issues;
 

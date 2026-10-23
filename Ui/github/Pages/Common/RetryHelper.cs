@@ -1,7 +1,7 @@
 using Core.Helpers;
 using Microsoft.Playwright;
 
-namespace Ui.Github.Tests.Support;
+namespace Ui.Github.Pages.Common;
 
 // Transient Playwright failures (hydration swallow, open-menu overlay, destroyed context)
 // are swallowed so a single flaky click cannot kill the wait

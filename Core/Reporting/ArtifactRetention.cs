@@ -5,7 +5,7 @@ namespace Core.Reporting;
 
 internal static class ArtifactRetention
 {
-    private const int RetentionDays = 7;
+    internal const int RetentionDays = 7;
 
     internal static void CleanupAccumulated(string? root)
     {

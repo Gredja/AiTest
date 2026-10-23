@@ -213,8 +213,9 @@ Api/
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(Fixtures)] + LevelOfParallelism(1)
 ├── JsonPlaceholder/
 │   ├── Helpers/
-│   │   ├── JsonPlaceholderParamHelper.cs
-│   │   └── JsonPlaceholderTestData.cs
+│   │   ├── Data/
+│   │   │   └── JsonPlaceholderTestData.cs
+│   │   └── JsonPlaceholderParamHelper.cs
 │   └── Tests/
 │       ├── Albums/
 │       │   ├── GetAllAlbumsTests.cs
@@ -360,19 +361,20 @@ E2E/
 ```
 Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
+├── AllureGlobalSetup.cs          # [SetUpFixture] → AllureSkippedTestWriter (mirrors Api/E2E)
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ├── Data/                         # static test files (upload payloads) — reserved, currently empty
 ├── Support/                      # project-level UI helpers shared by all site trees: ArtifactNaming
 ├── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
 │   ├── Pages/                      # pages + forms — single home of locators
-│   │   ├── Common/                   # cross-area: LoginPage, HeaderPage, ProfilePage, AccountSettingsPage, PageUrl (shared URL parsing)
+│   │   ├── Common/                   # cross-area: LoginPage, HeaderPage, ProfilePage, AccountSettingsPage, PageUrl, RetryHelper, UiTimeout
 │   │   └── GitHubStream/
 │   │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
 │   │       ├── Pulls/                # PullDetailPage, PullCreatePage
 │   │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
 │   └── Tests/
-│       ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
+│       ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright, TabCountParser
 │       └── GitHubStream/
 │           ├── Issues/               # IssuesUiTests, IssueUiTests
 │           ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests

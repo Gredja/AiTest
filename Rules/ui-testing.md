@@ -10,10 +10,10 @@ Ui/
 ├── Support/                      # project-level UI helpers shared by site trees: ArtifactNaming
 ├── github/                       # site-scoped: all GitHub UI tests (future sites — sibling folders)
 │   ├── Pages/                      # single home of locators
-│   │   ├── Common/                   # cross-area pages (header, nav) + PageUrl (shared URL parsing)
+│   │   ├── Common/                   # cross-area pages (header, nav) + PageUrl, RetryHelper, UiTimeout
 │   │   └── GitHubStream/             # page-objects: {Area}/{Area}Page.cs
 │   └── Tests/
-│       ├── Support/                  # GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
+│       ├── Support/                  # GitHubUiTestBase, BrowserPlaywright, TabCountParser
 │       └── GitHubStream/             # tests: {Area}/{Area}{Flow}Tests.cs
 └── Data/                         # static test files (upload payloads)
 ```
