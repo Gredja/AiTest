@@ -367,7 +367,10 @@ public abstract class GitHubUiTestBase
 
         pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
 
-        return (pullRequest.Data.Number, headBranch, baseBranch);
+        var createdPull = pullRequest.Data
+            ?? throw new InvalidOperationException("PR create returned 201 without a body");
+
+        return (createdPull.Number, headBranch, baseBranch);
     }
 
     protected async Task ClosePullRequestViaApiAsync(int pullNumber)
