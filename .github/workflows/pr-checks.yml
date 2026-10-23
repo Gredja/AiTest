@@ -24,6 +24,9 @@ jobs:
       - name: Format
         run: dotnet format --verify-no-changes
 
+      - name: Analyzers
+        run: dotnet format analyzers --verify-no-changes
+
       - name: HealthCheck (live GitHub API)
         if: github.event.pull_request.head.repo.full_name == github.repository
         env:
@@ -32,4 +35,4 @@ jobs:
 
       - name: HealthCheck skipped for fork PRs
         if: github.event.pull_request.head.repo.full_name != github.repository
-        run: echo "Repository secrets are not available to fork PRs — live checks skipped, format gate still applies"
+        run: echo "Repository secrets are not available to fork PRs — live checks skipped, format and analyzer gates still apply"

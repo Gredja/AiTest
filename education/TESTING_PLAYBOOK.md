@@ -26,9 +26,10 @@
 
 - **Plan first.** For any non-trivial task: restate understanding, present a compact plan, get
   approval, then execute. For long tasks produce a written work plan and iterate it.
-- **Gates before every commit.** At minimum: formatter check (`--verify-no-changes` style) and a
-  fast, deterministic sanity subset of tests (call it `HealthCheck` — see §7). Any failure →
-  report and stop; never commit red.
+- **Gates before every commit.** At minimum: formatter check (`--verify-no-changes` style), the
+  static-analyzer verify (`format analyzers --verify-no-changes` when the project ships an
+  analyzer set) and a fast, deterministic sanity subset of tests (call it `HealthCheck` — see §7).
+  Any failure → report and stop; never commit red.
 - **Commits:** English, `action + object` ("Add X tests", "Fix Y parsing"). Secrets, tokens,
   `.env`, auth states and test artifacts are never committed. Prefer committing through the
   project's commit skill/ritual so gates cannot be skipped.
@@ -404,10 +405,12 @@ The UI rarely exposes the created id. Cleanup composition:
 
 ## 7. Git & CI design
 
-- **Pre-commit gates (local, mandatory):** formatter verify + the fast deterministic
-  `HealthCheck` subset. Either fails → fix, never bypass with `--no-verify`.
-- **PR gate (required checks):** format + HealthCheck only. **Never** put the live/long/nightly
-  suite in required checks — it is informational by nature and must not block merges.
+- **Pre-commit gates (local, mandatory):** formatter verify + analyzer verify (when the project
+  ships an analyzer set) + the fast deterministic `HealthCheck` subset. Any fails → fix, never
+  bypass with `--no-verify`.
+- **PR gate (required checks):** format + analyzer (when present) + HealthCheck. **Never** put
+  the live/long/nightly suite in required checks — it is informational by nature and must not
+  block merges.
 - **Nightly:** scheduled full run (or live subset) as a signal. Triage failures as
   *drift* (behavior changed → update docs/tests) vs *flake* (rerun green in seconds → quarantine
   or fix the timing assumption). Keep a known-flakes list; a single red among known flakes is
