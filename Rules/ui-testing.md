@@ -7,12 +7,13 @@ Ui/
 ├── Ui.csproj                     # Microsoft.Playwright + NUnit, refs Core + AllureAdapter
 ├── AssemblyInfo.cs               # Parallelizable(None) — sequential: fixtures share one storageState
 ├── TestReportSetup.cs            # [SetUpFixture] — duplicated per test assembly (P2.3)
+├── Support/                      # project-level UI helpers shared by site trees: ArtifactNaming
 ├── github/                       # site-scoped: all GitHub UI tests (future sites — sibling folders)
 │   ├── Pages/                      # single home of locators
-│   │   ├── Common/                   # cross-area pages (header, nav)
+│   │   ├── Common/                   # cross-area pages (header, nav) + PageUrl (shared URL parsing)
 │   │   └── GitHubStream/             # page-objects: {Area}/{Area}Page.cs
 │   └── Tests/
-│       ├── Support/                  # GitHubUiTestBase, BrowserPlaywright, TabCountParser
+│       ├── Support/                  # GitHubUiTestBase, BrowserPlaywright, TabCountParser, RetryHelper
 │       └── GitHubStream/             # tests: {Area}/{Area}{Flow}Tests.cs
 └── Data/                         # static test files (upload payloads)
 ```

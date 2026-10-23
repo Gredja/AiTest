@@ -17,12 +17,7 @@ internal sealed class NotFoundPage(IPage page)
 
     internal async Task<WaitResult<bool>> WaitFor404MessageAsync() =>
         await WaitHelper.WaitUntilAsync(
-            async () =>
-            {
-                var count = await _notFoundImage.CountAsync();
-
-                return count > 0;
-            },
+            async () => await _notFoundImage.CountAsync() > 0,
             hasMessage => hasMessage,
             _messageTimeout);
 

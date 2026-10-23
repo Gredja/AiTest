@@ -10,8 +10,6 @@ internal sealed class AccountSettingsPage(IPage page)
     private static readonly TimeSpan _headingTimeout =
         TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
 
-    private readonly IPage _page = page;
-
     internal async Task<WaitResult<bool>> WaitForAccountHeadingAsync() =>
         await WaitHelper.WaitUntilAsync(
             async () => await _accountHeading.CountAsync() > 0,

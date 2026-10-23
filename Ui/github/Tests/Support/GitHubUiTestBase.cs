@@ -7,6 +7,7 @@ using FluentAssertions;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
 using System.Net;
+using Ui.Support;
 
 namespace Ui.Github.Tests.Support;
 
@@ -30,8 +31,6 @@ public abstract class GitHubUiTestBase
 
     protected IBrowserContext Context => _context
         ?? throw new InvalidOperationException("Context not initialized — OpenContextAsync has not run");
-    protected IPage Page => _page
-        ?? throw new InvalidOperationException("Page not initialized — OpenContextAsync has not run");
     internal BrowserPlaywright Browser => _browserWrapper
         ?? throw new InvalidOperationException("Browser wrapper not initialized — OpenContextAsync has not run");
 
@@ -62,7 +61,7 @@ public abstract class GitHubUiTestBase
 
         _context = await _browser!.NewContextAsync(new BrowserNewContextOptions
         {
-            StorageStatePath = storageState is not null && System.IO.File.Exists(storageState) ? storageState : null,
+            StorageStatePath = storageState,
             ViewportSize = new ViewportSize { Width = ViewportWidth, Height = ViewportHeight }
         });
 
@@ -97,7 +96,7 @@ public abstract class GitHubUiTestBase
         if (isFailed)
         {
             var artifacts = ResolveArtifactsDirectory();
-            var failedName = SanitizeFileName(TestContext.CurrentContext.Test.Name);
+            var failedName = ArtifactNaming.SanitizeFileName(TestContext.CurrentContext.Test.Name);
             await _page!.ScreenshotAsync(new PageScreenshotOptions
             {
                 Path = Path.Combine(artifacts, $"{failedName}.png"),
@@ -194,6 +193,81 @@ public abstract class GitHubUiTestBase
         createdCommentIds.Add(found.LastValue!.Id);
     }
 
+    // A redirect can succeed while the URL parse still fails — read the issue back by its
+    // unique title and register it BEFORE the caller's assert so the resource never leaks
+    protected async Task RegisterIssueByTitleAsync(string title, List<int> createdIssueNumbers)
+    {
+        var found = await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                var response = await Cleanup.Get<List<IssueModelResponse>>(
+                    GitHubEndpoints.RepoIssues,
+                    [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateAll)]);
+
+                return response.Data?.FirstOrDefault(issue => issue.Title == title);
+            },
+            issue => issue is not null);
+
+        found.LastValue.Should().NotBeNull(
+            $"issue must be readable via API for cleanup (attempts={found.Attempts}, elapsed={found.Elapsed})");
+        createdIssueNumbers.Add(found.LastValue!.Number);
+    }
+
+    // Same register-then-assert fallback for UI-created PRs: the head/base branches are known
+    // from the setup, only the number must be read back from the API
+    protected async Task RegisterPullByTitleAsync(
+        string title,
+        string headBranch,
+        string baseBranch,
+        List<(int Number, string HeadBranch, string BaseBranch)> createdPullRequests)
+    {
+        var found = await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                var response = await Cleanup.Get<List<PullRequestModelResponse>>(
+                    GitHubEndpoints.RepoPullRequests,
+                    [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateAll)]);
+
+                return response.Data?.FirstOrDefault(pull => pull.Title == title);
+            },
+            pull => pull is not null);
+
+        found.LastValue.Should().NotBeNull(
+            $"pull request must be readable via API for cleanup (attempts={found.Attempts}, elapsed={found.Elapsed})");
+        createdPullRequests.Add((found.LastValue!.Number, headBranch, baseBranch));
+    }
+
+    // The empty-state tests assert data preconditions: a leftover open issue (leaked by an
+    // earlier failed register) turns them red — close leftovers before the UI assertion
+    protected async Task CloseAllOpenIssuesAsync()
+    {
+        var response = await Cleanup.Get<List<IssueModelResponse>>(
+            GitHubEndpoints.RepoIssues,
+            [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateOpen)]);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        foreach (var issue in response.Data ?? [])
+        {
+            await Cleanup.CleanupIssueAsync(issue.Number);
+        }
+    }
+
+    // Symmetric precondition restore for the PR empty state; CleanupPullRequestAsync also
+    // removes the head/base branches the leftover PR dragged along
+    protected async Task CloseAllOpenPullRequestsAsync()
+    {
+        var response = await Cleanup.Get<List<PullRequestModelResponse>>(
+            GitHubEndpoints.RepoPullRequests,
+            [.. UiSandboxRepoParams(), .. GitHubParamHelper.StateParam(GitHubEndpoints.StateOpen)]);
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+
+        foreach (var pullRequest in response.Data ?? [])
+        {
+            await Cleanup.CleanupPullRequestAsync(
+                pullRequest.Number, pullRequest.Head.Ref, pullRequest.Base.Ref);
+        }
+    }
+
     protected async Task<WaitResult<bool>> WaitForIssueLabelAsync(int issueNumber, string labelName, bool hasLabel) =>
         await WaitHelper.WaitUntilAsync(
             async () =>
@@ -224,8 +298,7 @@ public abstract class GitHubUiTestBase
     {
         var mainSha = await ResolveUiSandboxMainShaAsync();
         var commitSha = await CreateScratchCommitViaApiAsync(mainSha, $"{folderName}/{ScratchFileName}");
-        await CreateBranchRefViaApiAsync(branchName, commitSha);
-        createdBranches.Add(branchName);
+        await CreateBranchRefViaApiAsync(branchName, commitSha, createdBranches);
 
         return branchName;
     }
@@ -268,14 +341,15 @@ public abstract class GitHubUiTestBase
         var baseBranch = $"{ScratchBaseBranchPrefix}{DataGenerator.RandomString(TestDataConstants.RandomNameLength)}";
         var mainSha = await ResolveUiSandboxMainShaAsync();
         var commitSha = await CreateScratchCommitViaApiAsync(mainSha);
-        await CreateBranchRefViaApiAsync(headBranch, commitSha);
-        createdBranches.Add(headBranch);
-        await CreateBranchRefViaApiAsync(baseBranch, mainSha);
-        createdBranches.Add(baseBranch);
+        await CreateBranchRefViaApiAsync(headBranch, commitSha, createdBranches);
+        await CreateBranchRefViaApiAsync(baseBranch, mainSha, createdBranches);
 
         return (headBranch, baseBranch);
     }
 
+    // Deliberate parallel of GitHubTestBase.CreateScratchPullRequestAsync: this pipeline writes
+    // gredjapl/ui-sandbox with GITHUB_UI_PAT, Core's targets Gredja/AiTest with GITHUB_PAT —
+    // different repos and credentials, so the two cannot share one implementation
     protected async Task<(int Number, string HeadBranch, string BaseBranch)> CreateScratchPullRequestViaApiAsync(
         string title,
         List<(int Number, string HeadBranch, string BaseBranch)> createdPullRequests,
@@ -361,12 +435,13 @@ public abstract class GitHubUiTestBase
         return commit.Data!.Sha;
     }
 
-    private async Task CreateBranchRefViaApiAsync(string branchName, string sha)
+    private async Task CreateBranchRefViaApiAsync(string branchName, string sha, List<string> createdBranches)
     {
         var created = await Cleanup.Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", Sha = sha },
             UiSandboxRepoParams());
+        createdBranches.Add(branchName);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
     }
 
@@ -383,7 +458,7 @@ public abstract class GitHubUiTestBase
 
     private static string ResolveArtifactsDirectory()
     {
-        var directory = Path.Combine(ResolveRepositoryRoot(), "TestResults", "ui-artifacts");
+        var directory = Path.Combine(ResolveRepositoryRoot(), TestConfig.ResultsDirName, "ui-artifacts");
         Directory.CreateDirectory(directory);
 
         return directory;
@@ -405,7 +480,4 @@ public abstract class GitHubUiTestBase
 
         return dir.FullName;
     }
-
-    private static string SanitizeFileName(string name) =>
-        string.Concat(name.Where(character => !Path.GetInvalidFileNameChars().Contains(character)));
 }

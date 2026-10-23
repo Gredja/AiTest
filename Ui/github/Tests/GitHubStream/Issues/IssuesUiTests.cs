@@ -18,6 +18,7 @@ public class IssuesUiTests : GitHubUiTestBase
     [Description("UI-4 Issues list: empty state on fresh sandbox, New issue available")]
     public async Task IssuesList_EmptyState_Verify()
     {
+        await CloseAllOpenIssuesAsync();
         await Browser.IssuesPage.OpenAsync();
 
         var hasEmptyState = await Browser.IssuesPage.HasEmptyStateAsync();

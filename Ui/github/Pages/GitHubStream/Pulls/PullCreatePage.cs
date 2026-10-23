@@ -1,5 +1,6 @@
 using Core.Config;
 using Microsoft.Playwright;
+using Ui.Github.Pages.Common;
 
 namespace Ui.Github.Pages.GitHubStream.Pulls;
 
@@ -10,12 +11,7 @@ internal sealed class PullCreatePage(IPage page)
     internal async Task OpenCompareAsync(string baseBranch, string headBranch) =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/compare/{baseBranch}...{headBranch}");
 
-    internal int? TryGetPullNumberFromUrl()
-    {
-        var lastSegment = _page.Url.Split('?', '#')[0].TrimEnd('/').Split('/').Last();
-
-        return int.TryParse(lastSegment, out var pullNumber) ? pullNumber : null;
-    }
+    internal int? TryGetPullNumberFromUrl() => PageUrl.TryGetResourceNumber(_page.Url);
 
     internal async Task CreatePullRequestAsync(string title, string description)
     {

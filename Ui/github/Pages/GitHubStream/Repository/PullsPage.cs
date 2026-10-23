@@ -1,4 +1,4 @@
-﻿using Core.Config;
+using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
 using Ui.Github.Tests.Support;
@@ -14,7 +14,7 @@ internal sealed class PullsPage(IPage page)
     internal async Task<bool> HasEmptyStateAsync() =>
         await _emptyStateHeading.CountAsync() > 0;
 
-    internal async Task<int> GetOpenCountAsync() => await GetTabCountAsync("Open");
+    internal async Task<int?> GetOpenCountAsync() => await GetTabCountAsync("Open");
 
     internal async Task<bool> HasPullWithTitleAsync(string title) =>
         await _tabLinks.Filter(new() { HasTextString = title }).CountAsync() > 0;
@@ -31,7 +31,7 @@ internal sealed class PullsPage(IPage page)
             },
             found => found);
 
-    private async Task<int> GetTabCountAsync(string tabName)
+    private async Task<int?> GetTabCountAsync(string tabName)
     {
         var text = await _tabLinks.Filter(new() { HasTextString = tabName }).First.TextContentAsync();
 

@@ -1,4 +1,4 @@
-﻿using AllureAdapter;
+using AllureAdapter;
 using Core.Helpers;
 using FluentAssertions;
 using Ui.Github.Tests.Support;
@@ -27,8 +27,16 @@ public class PullFlowUiTests : GitHubUiTestBase
         await Browser.PullCreatePage.CreatePullRequestAsync(title, "Created through the UI compare form");
 
         var pullNumber = Browser.PullCreatePage.TryGetPullNumberFromUrl();
+        if (pullNumber is not null)
+        {
+            _createdPullRequests.Add((pullNumber.Value, headBranch, baseBranch));
+        }
+        else
+        {
+            await RegisterPullByTitleAsync(title, headBranch, baseBranch, _createdPullRequests);
+        }
+
         pullNumber.Should().NotBeNull("submit must redirect to the pull request page");
-        _createdPullRequests.Add((pullNumber!.Value, headBranch, baseBranch));
 
         await Browser.PullsPage.OpenAsync();
         var found = await Browser.PullsPage.WaitForPullWithTitleAsync(title);

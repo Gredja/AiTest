@@ -17,6 +17,7 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 - `AllureAdapter/` — solution project: Allure NUnit attribute + JSON writers/report helpers (`AllureAdapter/Helpers/`, flat layout by design)
 - `Scripts/` — one-off helper scripts: `locator-dump.mjs` (CDP locator dump), `normalize-eol.ps1`, allure/test runners
 - `Ui/Data/` — static test files (upload payloads; reserved, currently empty)
+- `Ui/Support/` — project-level UI helpers shared by the site trees (`ArtifactNaming`)
 - `Rules/` — full rules (this file is only a brief digest)
 - `documentation/` — project documentation; `documentation/Katas/` — learning materials, do not touch
 - `documentation/*ObservableBehaviour.md` — observable behavior of the API (current states, field types, negative cases). **Must be read when generating and reviewing tests.**

@@ -1,4 +1,4 @@
-﻿using Core.Config;
+using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
 
@@ -59,7 +59,7 @@ internal sealed class BranchesPage(IPage page)
 
     private async Task ClickDeleteUntilBadgeAsync(ILocator row)
     {
-        var deletedBadge = row.GetByText("Deleted");
+        var deletedBadge = row.GetByText(DeletedBadgeText);
 
         var deleted = await WaitHelper.WaitUntilAsync(
             async () =>
@@ -69,7 +69,7 @@ internal sealed class BranchesPage(IPage page)
                     return true;
                 }
 
-                await row.GetByRole(AriaRole.Button, new() { Name = "Delete branch" }).ClickAsync();
+                await row.GetByRole(AriaRole.Button, new() { Name = DeleteBranchButtonText }).ClickAsync();
 
                 return false;
             },
@@ -110,4 +110,7 @@ internal sealed class BranchesPage(IPage page)
     private readonly ILocator _branchNameTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "New branch name" });
     private readonly ILocator _createBranchButton = page.GetByRole(AriaRole.Button, new() { Name = "Create new branch" });
     private readonly ILocator _newBranchDialog = page.GetByRole(AriaRole.Dialog);
+
+    private const string DeletedBadgeText = "Deleted";
+    private const string DeleteBranchButtonText = "Delete branch";
 }

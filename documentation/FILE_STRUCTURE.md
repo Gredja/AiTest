@@ -362,9 +362,10 @@ Ui/
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(None)] — sequential (shared storageState)
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ├── Data/                         # static test files (upload payloads) — reserved, currently empty
+├── Support/                      # project-level UI helpers shared by all site trees: ArtifactNaming
 ├── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
 │   ├── Pages/                      # pages + forms — single home of locators
-│   │   ├── Common/                   # cross-area pages (header, nav): LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
+│   │   ├── Common/                   # cross-area: LoginPage, HeaderPage, ProfilePage, AccountSettingsPage, PageUrl (shared URL parsing)
 │   │   └── GitHubStream/
 │   │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
 │   │       ├── Pulls/                # PullDetailPage, PullCreatePage

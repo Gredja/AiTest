@@ -1,6 +1,7 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
+using Ui.Github.Pages.Common;
 using Ui.Github.Tests.Support;
 
 namespace Ui.Github.Pages.GitHubStream.Issues;
@@ -12,12 +13,7 @@ internal sealed class IssueDetailPage(IPage page)
     internal async Task OpenAsync(int issueNumber) =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/{issueNumber}");
 
-    internal int? TryGetIssueNumberFromUrl()
-    {
-        var lastSegment = _page.Url.Split('?', '#')[0].TrimEnd('/').Split('/').Last();
-
-        return int.TryParse(lastSegment, out var issueNumber) ? issueNumber : null;
-    }
+    internal int? TryGetIssueNumberFromUrl() => PageUrl.TryGetResourceNumber(_page.Url);
 
     internal async Task<bool> HasTitleAsync(string title) =>
         await _issueHeadings.Filter(new() { HasTextString = title }).CountAsync() > 0;
@@ -28,18 +24,20 @@ internal sealed class IssueDetailPage(IPage page)
     internal async Task<bool> HasOpenStatusAsync() =>
         await _openStatusText.CountAsync() > 0;
 
-    // State flips after a network round-trip; the swap to the opposite button is the
-    // unambiguous post-condition (the status text may already be on the page)
+    // State flips after a network round-trip; wait for the outcome button first (unambiguous),
+    // then for the status badge the test asserts on — it re-renders after the swap lands
     internal async Task CloseAsync()
     {
         await _closeIssueButton.ClickAsync();
         await _reopenIssueButton.WaitForAsync();
+        await _closedStatusText.WaitForAsync();
     }
 
     internal async Task ReopenAsync()
     {
         await _reopenIssueButton.ClickAsync();
         await _closeIssueButton.WaitForAsync();
+        await _openStatusText.WaitForAsync();
     }
 
     internal async Task BeginEditTitleAsync() =>

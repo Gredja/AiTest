@@ -1,6 +1,7 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
+using Ui.Github.Pages.Common;
 using Ui.Github.Tests.Support;
 
 namespace Ui.Github.Pages.GitHubStream.Pulls;
@@ -19,12 +20,7 @@ internal sealed class PullDetailPage(IPage page)
     internal async Task OpenAsync(int pullNumber) =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pull/{pullNumber}");
 
-    internal int? TryGetPullNumberFromUrl()
-    {
-        var lastSegment = _page.Url.Split('?', '#')[0].TrimEnd('/').Split('/').Last();
-
-        return int.TryParse(lastSegment, out var pullNumber) ? pullNumber : null;
-    }
+    internal int? TryGetPullNumberFromUrl() => PageUrl.TryGetResourceNumber(_page.Url);
 
     internal async Task<bool> HasTitleAsync(string title) =>
         await _pullHeadings.Filter(new() { HasTextString = title }).CountAsync() > 0;

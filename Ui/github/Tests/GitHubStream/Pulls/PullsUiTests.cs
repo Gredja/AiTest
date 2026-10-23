@@ -14,6 +14,7 @@ public class PullsUiTests : GitHubUiTestBase
     [Description("UI-7 Pull requests list: empty state on fresh sandbox")]
     public async Task PullsList_EmptyState_Verify()
     {
+        await CloseAllOpenPullRequestsAsync();
         await Browser.PullsPage.OpenAsync();
 
         var hasEmptyState = await Browser.PullsPage.HasEmptyStateAsync();

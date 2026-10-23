@@ -10,8 +10,6 @@ internal sealed class ProfilePage(IPage page)
     private static readonly TimeSpan _headingTimeout =
         TimeSpan.FromMilliseconds(GitHubUiTestBase.UiTimeoutMs);
 
-    private readonly IPage _page = page;
-
     internal async Task<WaitResult<bool>> WaitForUsernameHeadingAsync() =>
         await WaitHelper.WaitUntilAsync(
             async () => await _usernameHeading.CountAsync() > 0,

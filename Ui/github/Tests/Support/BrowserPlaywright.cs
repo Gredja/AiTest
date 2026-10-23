@@ -10,7 +10,6 @@ internal sealed class BrowserPlaywright
 {
     internal BrowserPlaywright(IPage page)
     {
-        Page = page;
         LoginPage = new LoginPage(page);
         HeaderPage = new HeaderPage(page);
         ProfilePage = new ProfilePage(page);
@@ -28,7 +27,6 @@ internal sealed class BrowserPlaywright
         CommentForm = new CommentForm(page);
     }
 
-    internal IPage Page { get; }
     internal LoginPage LoginPage { get; }
     internal HeaderPage HeaderPage { get; }
     internal ProfilePage ProfilePage { get; }

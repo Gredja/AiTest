@@ -16,12 +16,7 @@ internal sealed class IssueCreatePage(IPage page)
 
     internal async Task<WaitResult<bool>> WaitForOpenAsync() =>
         await WaitHelper.WaitUntilAsync(
-            async () =>
-            {
-                var count = await _createIssueHeading.CountAsync();
-
-                return count > 0;
-            },
+            async () => await _createIssueHeading.CountAsync() > 0,
             isOpen => isOpen,
             _openTimeout);
 
