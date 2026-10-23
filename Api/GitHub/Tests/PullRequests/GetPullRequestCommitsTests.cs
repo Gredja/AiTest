@@ -88,6 +88,7 @@ public class GetPullRequestCommitsTests : GitHubTestBase
         var response = await Get<List<PullRequestCommitModelResponse>>(GitHubEndpoints.RepoPullRequestCommits,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

@@ -89,6 +89,7 @@ public class MergePullRequestTests : GitHubTestBase
             new Dictionary<string, object>(),
             PullParams(pullNumber));
 
+        merged.ShouldHaveStatusCode(HttpStatusCode.OK);
         merged.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

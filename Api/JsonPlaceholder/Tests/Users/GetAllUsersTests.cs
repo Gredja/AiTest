@@ -54,6 +54,7 @@ public class GetAllUsersTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<UserModelResponse>>(JsonPlaceholderEndpoints.Users);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

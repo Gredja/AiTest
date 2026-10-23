@@ -65,6 +65,7 @@ public class GetTagsTests : GitHubTestBase
         var response = await Get<List<TagModelResponse>>(GitHubEndpoints.RepoTags,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

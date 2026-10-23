@@ -169,6 +169,7 @@ public class GetIssueByIdTests : GitHubTestBase
         var response = await Get<IssueModelResponse>(GitHubEndpoints.RepoIssueById,
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

@@ -47,7 +47,7 @@ public class CreateIssueVisibilityTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}; informational on live services");
+                $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
         }
     }
 

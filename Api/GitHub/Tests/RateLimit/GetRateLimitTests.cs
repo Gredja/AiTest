@@ -120,6 +120,7 @@ public class GetRateLimitTests : GitHubTestBase
     {
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

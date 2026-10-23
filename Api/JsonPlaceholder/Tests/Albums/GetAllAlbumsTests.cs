@@ -54,6 +54,7 @@ public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<AlbumModelResponse>>(JsonPlaceholderEndpoints.Albums);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

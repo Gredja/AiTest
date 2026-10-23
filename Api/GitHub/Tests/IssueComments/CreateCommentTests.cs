@@ -16,10 +16,11 @@ namespace Api.GitHub.IssueComments;
 [Category("GitHub")]
 public class CreateCommentTests : GitHubTestBase
 {
-    private static readonly CreateCommentModelRequest _testComment = new()
-    {
-        Body = $"Comment {DataGenerator.RandomString(BodyRandomLength)}"
-    };
+    private static CreateCommentModelRequest CreateTestComment() =>
+        new()
+        {
+            Body = $"Comment {DataGenerator.RandomString(BodyRandomLength)}"
+        };
 
     private readonly List<long> _createdCommentIds = [];
 
@@ -29,7 +30,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_ReturnsCreated()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, CreateTestComment(), IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -45,8 +46,9 @@ public class CreateCommentTests : GitHubTestBase
     [Description("18.2 Response matches request")]
     public async Task CreateComment_MatchesRequest()
     {
+        var testComment = CreateTestComment();
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -54,7 +56,7 @@ public class CreateCommentTests : GitHubTestBase
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
-        created.Data!.ShouldMatchRequest(_testComment);
+        created.Data!.ShouldMatchRequest(testComment);
     }
 
     [Test]
@@ -63,7 +65,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_VisibleInList()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, CreateTestComment(), IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -88,7 +90,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_RecordVisibleWithinTimeLimit()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, CreateTestComment(), IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -107,7 +109,7 @@ public class CreateCommentTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created comment not visible within {TestConfig.MaxResponseTimeMs} ms — waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}; informational on live services");
+                $"created comment not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
         }
     }
 
@@ -117,12 +119,13 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_ContentTypeIsJson()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, CreateTestComment(), IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
         }
 
+        created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
@@ -135,7 +138,7 @@ public class CreateCommentTests : GitHubTestBase
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(_testComment);
+        request.AddJsonBody(CreateTestComment());
         AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<CommentModelResponse>(request);
@@ -153,7 +156,7 @@ public class CreateCommentTests : GitHubTestBase
             RequestFormat = DataFormat.Json
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        request.AddJsonBody(_testComment);
+        request.AddJsonBody(CreateTestComment());
         AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<CommentModelResponse>(request);
@@ -184,7 +187,7 @@ public class CreateCommentTests : GitHubTestBase
         var nonExistentIssueNumber = issues.Data!.Max(issue => issue.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment,
+            GitHubEndpoints.RepoIssueComments, CreateTestComment(),
             [.. TestRepoParam(), .. IssueNumberParam(nonExistentIssueNumber)]);
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -196,7 +199,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, _testComment,
+            GitHubEndpoints.RepoIssueComments, CreateTestComment(),
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);

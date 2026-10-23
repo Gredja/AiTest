@@ -87,6 +87,7 @@ public class UpdatePullRequestTests : GitHubTestBase
             new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
             PullParams(pullNumber));
 
+        patched.ShouldHaveStatusCode(HttpStatusCode.OK);
         patched.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

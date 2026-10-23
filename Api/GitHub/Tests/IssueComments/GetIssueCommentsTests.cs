@@ -218,6 +218,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         var response = await Get<CommentModelResponse>(GitHubEndpoints.RepoIssueCommentById,
             CommentParams(_existingCommentId));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

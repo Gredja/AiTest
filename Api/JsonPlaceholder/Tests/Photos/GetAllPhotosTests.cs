@@ -54,6 +54,7 @@ public class GetAllPhotosTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PhotoModelResponse>>(JsonPlaceholderEndpoints.Photos);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

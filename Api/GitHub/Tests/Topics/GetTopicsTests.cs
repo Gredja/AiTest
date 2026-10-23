@@ -73,6 +73,7 @@ public class GetTopicsTests : GitHubTestBase
         var response = await Get<TopicsModelResponse>(GitHubEndpoints.RepoTopics,
             MercyPreviewRepoParams());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

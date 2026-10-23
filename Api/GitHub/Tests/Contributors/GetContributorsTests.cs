@@ -64,6 +64,7 @@ public class GetContributorsTests : GitHubTestBase
         var response = await Get<List<ContributorModelResponse>>(GitHubEndpoints.RepoContributors,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

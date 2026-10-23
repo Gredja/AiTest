@@ -71,6 +71,7 @@ public class GetAllPostsTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

@@ -23,19 +23,20 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     private const string NonObjectJson = "\"just-a-string\"";
     private const string NotANumberUserId = "not-a-number";
 
-    private static readonly PostModelRequest _testPost = new()
-    {
-        UserId = TestUserId,
-        Title = $"Post {DataGenerator.RandomString(TitleRandomLength)}",
-        Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}"
-    };
+    private static PostModelRequest CreateTestPost() =>
+        new()
+        {
+            UserId = TestUserId,
+            Title = $"Post {DataGenerator.RandomString(TitleRandomLength)}",
+            Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}"
+        };
 
     [Test]
     [Category("HealthCheck")]
     [Description("4.1 POST returns 201 Created")]
     public async Task CreatePost_ReturnsCreated()
     {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, CreateTestPost());
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
     }
@@ -45,7 +46,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.2 Response has valid fields")]
     public async Task CreatePost_HasValidFields()
     {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, CreateTestPost());
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.ShouldHaveValidFields();
@@ -56,12 +57,11 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.3 Response contains correct data")]
     public async Task CreatePost_ReturnsCorrectData()
     {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var testPost = CreateTestPost();
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, testPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
-        response.Data!.Title.Should().Be(_testPost.Title);
-        response.Data!.Body.Should().Be(_testPost.Body);
-        response.Data!.UserId.Should().Be(TestUserId);
+        response.Data!.ShouldMatchRequest(testPost);
     }
 
     [Test]
@@ -69,7 +69,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.4 Response has generated ID")]
     public async Task CreatePost_HasGeneratedId()
     {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, CreateTestPost());
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.Id.Should().BeGreaterThan(0);
@@ -77,24 +77,14 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Regression")]
-    [Description("4.5 Response userId matches request")]
-    public async Task CreatePost_UserIdMatchesRequest()
-    {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
-
-        response.ShouldHaveStatusCode(HttpStatusCode.Created);
-        response.Data!.UserId.Should().Be(TestUserId);
-    }
-
-    [Test]
-    [Category("Regression")]
     [Description("4.6 Response matches request via ShouldMatchRequest")]
     public async Task CreatePost_ShouldMatchRequest()
     {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var testPost = CreateTestPost();
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, testPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
-        response.Data!.ShouldMatchRequest(_testPost);
+        response.Data!.ShouldMatchRequest(testPost);
     }
 
     [Test]
@@ -201,7 +191,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.15 Created post becomes visible within max response time")]
     public async Task CreatePost_RecordVisibleWithinTimeLimit()
     {
-        var created = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, _testPost);
+        var created = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, CreateTestPost());
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         var result = await WaitHelper.WaitUntilAsync(
@@ -212,7 +202,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created post not visible within {TestConfig.MaxResponseTimeMs} ms — waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}; informational on live services");
+                $"created post not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
         }
     }
 }

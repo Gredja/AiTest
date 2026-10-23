@@ -60,6 +60,7 @@ public class GetAllTodosTests : JsonPlaceholderRequestHelper
     {
         var response = await Get<List<TodoModelResponse>>(JsonPlaceholderEndpoints.Todos);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

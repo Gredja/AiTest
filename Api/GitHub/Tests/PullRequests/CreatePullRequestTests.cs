@@ -63,6 +63,7 @@ public class CreatePullRequestTests : GitHubTestBase
         var readBack = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(pullNumber));
 
+        readBack.ShouldHaveStatusCode(HttpStatusCode.OK);
         readBack.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
@@ -237,7 +238,7 @@ public class CreatePullRequestTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created PR not visible within {TestConfig.MaxResponseTimeMs} ms — waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}; informational on live services");
+                $"created PR not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
         }
     }
 

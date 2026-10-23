@@ -50,6 +50,7 @@ public class GetLanguagesTests : GitHubTestBase
         var response = await Get<Dictionary<string, long>>(GitHubEndpoints.RepoLanguages,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

@@ -105,12 +105,14 @@ Core/
 │   ├── Params/
 │   │   └── ParamHelper.cs         # shared IdParam + UrlSegment/Query primitives for param helpers
 │   └── Waiting/
+│       ├── WaitDiagnostics.cs      # shared wait-failure message tail (elapsed/attempts/status)
 │       ├── WaitHelper.cs          # generic async WaitUntilAsync polling
 │       └── WaitResult.cs          # IsSuccess/Elapsed/Attempts/LastValue
 ├── Logging/
 │   ├── ActionLogHandler.cs        # DelegatingHandler: logs every HTTP request/response
 │   ├── ActionLogger.cs            # Serilog bootstrap → %TEMP%\GredjaTestRun\actions-*.log
 │   ├── ActionLogParser.cs         # picks failed-test actions for the report
+│   ├── OutcomeMarker.cs           # shared "-" unknown fixture/category sentinel
 │   ├── SharedFile.cs              # read-with-ShareWrite helpers
 │   ├── TestNameEnricher.cs        # adds NUnit test name to every log line
 │   ├── TestOutcome.cs             # own test result (name/status/duration/error)

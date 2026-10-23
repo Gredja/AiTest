@@ -143,6 +143,7 @@ public class UpdateIssueTests : GitHubTestBase
             new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
             IssueParams(created.Data!.Number));
 
+        patched.ShouldHaveStatusCode(HttpStatusCode.OK);
         patched.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

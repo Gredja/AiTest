@@ -7,6 +7,7 @@ public static class JsonFields
     public const string BaseTree = "base_tree";
     public const string BlobUrl = "blob_url";
     public const string Body = "body";
+    public const string Content = "content";
     public const string ContentsUrl = "contents_url";
     public const string CreatedAt = "created_at";
     public const string DefaultBranch = "default_branch";
@@ -20,8 +21,10 @@ public static class JsonFields
     public const string Merged = "merged";
     public const string MergedAt = "merged_at";
     public const string Message = "message";
+    public const string Mode = "mode";
     public const string OpenIssuesCount = "open_issues_count";
     public const string Page = "page";
+    public const string Path = "path";
     public const string PerPage = "per_page";
     public const string Private = "private";
     public const string Prerelease = "prerelease";
@@ -37,5 +40,7 @@ public static class JsonFields
     public const string TagName = "tag_name";
     public const string Title = "title";
     public const string TotalCount = "total_count";
+    public const string Tree = "tree";
+    public const string Type = "type";
     public const string UpdatedAt = "updated_at";
 }

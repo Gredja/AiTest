@@ -16,7 +16,7 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class GetIssuesTests : GitHubTestBase
 {
-    private static readonly TimeSpan _stateOpenConsistencyTimeout = TimeSpan.FromSeconds(10);
+    private static readonly TimeSpan _stateConsistencyTimeout = TimeSpan.FromSeconds(10);
     private int? _createdIssueNumber;
 
     [OneTimeSetUp]
@@ -129,6 +129,7 @@ public class GetIssuesTests : GitHubTestBase
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
@@ -170,7 +171,7 @@ public class GetIssuesTests : GitHubTestBase
             response => response.StatusCode == HttpStatusCode.OK
                 && response.Data is not null
                 && response.Data.All(issue => issue.State == GitHubEndpoints.StateOpen),
-            timeout: _stateOpenConsistencyTimeout);
+            timeout: _stateConsistencyTimeout);
 
         result.IsSuccess.Should().BeTrue(
             $"state=open must return only open issues; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
@@ -182,11 +183,19 @@ public class GetIssuesTests : GitHubTestBase
     [Description("3.12 Filter by state=closed returns only closed issues")]
     public async Task GetIssues_FilterByStateClosed()
     {
-        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
-            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateClosed)]);
+        // Symmetric to state=open: a just-reopened issue (E2E state machine runs concurrently
+        // in a solution run) can briefly appear in ?state=closed — refresh until consistent
+        var result = await WaitHelper.WaitUntilAsync(
+            () => Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+                [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateClosed)]),
+            response => response.StatusCode == HttpStatusCode.OK
+                && response.Data is not null
+                && response.Data.All(issue => issue.State == GitHubEndpoints.StateClosed),
+            timeout: _stateConsistencyTimeout);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateClosed);
+        result.IsSuccess.Should().BeTrue(
+            $"state=closed must return only closed issues; waited {result.Elapsed}, attempts {result.Attempts}, last status {result.LastValue?.StatusCode}");
+        result.LastValue!.Data.Should().OnlyContain(issue => issue.State == GitHubEndpoints.StateClosed);
     }
 
     [Test]

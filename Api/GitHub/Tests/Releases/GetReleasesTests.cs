@@ -65,6 +65,7 @@ public class GetReleasesTests : GitHubTestBase
         var response = await Get<List<ReleaseModelResponse>>(GitHubEndpoints.RepoReleases,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

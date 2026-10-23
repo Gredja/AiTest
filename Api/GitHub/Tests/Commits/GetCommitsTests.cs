@@ -76,6 +76,7 @@ public class GetCommitsTests : GitHubTestBase
         var response = await Get<List<CommitModelResponse>>(GitHubEndpoints.RepoCommits,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

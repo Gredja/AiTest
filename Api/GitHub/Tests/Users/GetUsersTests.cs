@@ -56,6 +56,7 @@ public class GetUsersTests : GitHubTestBase
     {
         var response = await Get<List<UserModelResponse>>(GitHubEndpoints.Users);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

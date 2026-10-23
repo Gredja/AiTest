@@ -88,6 +88,7 @@ public class GetBranchByNameTests : GitHubTestBase
         var response = await Get<BranchModelResponse>(GitHubEndpoints.RepoBranchByName,
             [.. TestRepoParam(), .. BranchNameParam(GitHubEndpoints.DefaultBranch)]);
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

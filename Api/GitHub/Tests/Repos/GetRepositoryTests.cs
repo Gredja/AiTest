@@ -65,6 +65,7 @@ public class GetRepositoryTests : GitHubTestBase
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
             TestRepoParam());
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

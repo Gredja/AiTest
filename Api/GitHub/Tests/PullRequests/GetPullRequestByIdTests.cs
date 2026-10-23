@@ -90,6 +90,7 @@ public class GetPullRequestByIdTests : GitHubTestBase
         var response = await Get<PullRequestModelResponse>(GitHubEndpoints.RepoPullRequestById,
             PullParams(_existingPullNumber));
 
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
