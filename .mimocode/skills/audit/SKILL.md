@@ -43,6 +43,23 @@ Get-ChildItem -Recurse -Include "*.cs" | Where-Object { $_.FullName -notmatch "\
 **Exclusions (never touched in later fixes either):** `documentation/Katas/` (training,
 read-only), `bin/`, `obj/`, `.mimocode/node_modules/`, generated files.
 
+### Step 2b: Roslyn analyzer pass (main agent) — always runs with Steps 1–2
+
+The repo ships an always-on Roslyn layer (`Roslynator.Analyzers` in `Directory.Build.props`,
+curated set in `.editorconfig`):
+
+```powershell
+dotnet build --verbosity normal --no-incremental   # collect every `warning RCS*/IDE*`
+dotnet format analyzers --verify-no-changes        # exit != 0 → analyzer violations exist
+```
+
+- Every diagnostic becomes a normal audit finding in the plan: exact `File:Line`, `Rule` column
+  = the diagnostic id (`RCS1213` etc.) plus which `Rules/*.md` clause it enforces; the
+  remediation column follows the id's code-fix.
+- Zero diagnostics → report a clean analyzer pass in the report (one line).
+- A curated-set gap (a rule class the set should cover but does not) is itself a finding
+  (suggestion to add `dotnet_diagnostic.<id>` to `.editorconfig` — Stage 2, with approval).
+
 ### Step 3: Audit by category (main agent + parallel `explore` subagents)
 
 Group findings by category; each subagent reads its own `Rules/*.md` files IN FULL first
@@ -145,8 +162,8 @@ a rule-documented utility is API, not dead code** (`RandomIntExclusive` lesson).
 |----------|-------|
 |----------|---------------------|
 | A–F, S, Y, Z, W, U, R | one `explore` subagent per category (parallel) |
+| Roslyn analyzer pass (Step 2b: build RCS/IDE inventory + `dotnet format analyzers`) | main agent — always-on tooling layer feeding plan rows |
 | Plan roll-up, statuses, tables | main agent (Step 4) |
-| Static-analyzer recommendation (Roslynator / Meziantou + `dotnet format --analyze`) | main agent — as a separate infrastructure item IN THE PLAN (Stage 2, after user approval) |
 | Fixes (Stage 2) | main agent, batches → gates → `/commit` |
 
 Each subagent tags its rows with the category — the main agent rolls them into plan batches
@@ -204,6 +221,7 @@ statuses are the persistent state.
    ```bash
    dotnet build --verbosity quiet
    dotnet format --verify-no-changes
+   dotnet format analyzers --verify-no-changes
    dotnet test --verbosity minimal --filter Category=HealthCheck
    # plus suites the batch touched:
    #   Api/GitHub → --filter "Category=GitHub&Category!=GitHubUi&Category!=GitHubE2E"
@@ -233,7 +251,7 @@ Optional final step (only if the user asks): push branch → PR → wait for CI 
 | Comments | N | ... |
 | ... | | |
 
-**Gates:** build clean · format pass · HealthCheck X/X · touched suites: <numbers>
+**Gates:** build clean · format pass · analyzers pass · HealthCheck X/X · touched suites: <numbers>
 **Commits:** <batch hashes>
 **Plan file:** deleted (all batches closed) / open items remain: <statuses>
 ```
@@ -254,7 +272,7 @@ their done-criteria are met.
   only; fixing is always a separate Stage-2 invocation on an explicit user signal
 - No fixes without the user's approved scope — an approved plan file counts as that approval
   for its listed items; later sessions re-confirm scope before mass-fixing
-- Gates after every batch: `build` + `format --verify-no-changes` + `HealthCheck` + touched suites
+- Gates after every batch: `build` + `format --verify-no-changes` + `analyzers --verify-no-changes` + `HealthCheck` + touched suites
 - Commit per batch ONLY through `/commit`; if a fix breaks the build — revert and report
 - SKIP items need an explicit reason in the plan — no silent drops
 - New rules → `Rules/*.md` + `AGENTS.md` mirror before committing them
