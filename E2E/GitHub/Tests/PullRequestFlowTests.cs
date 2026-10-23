@@ -29,7 +29,9 @@ public class PullRequestFlowTests : GitHubE2ETestBase
             PullParams(pullNumber));
         created.ShouldHaveStatusCode(HttpStatusCode.OK);
         created.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "freshly created PR must be open");
-        created.Data.Title.Should().Be(title, PullRequestEchoTitleMessage);
+
+        // request Head/Base map to nested response objects — asserted explicitly after merge below
+        created.Data.ShouldMatchRequest(new CreatePullRequestModelRequest { Title = title });
 
         var merged = await Put<Dictionary<string, object>, PullRequestMergeModelResponse>(
             GitHubEndpoints.RepoPullRequestMerge, new Dictionary<string, object>(), PullParams(pullNumber));
