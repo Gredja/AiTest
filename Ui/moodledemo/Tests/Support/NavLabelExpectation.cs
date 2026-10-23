@@ -5,4 +5,4 @@ public sealed record NavLabelExpectation(
     string Home,
     string Calendar,
     string More,
-    bool HomeIsEnglishGap = false);
+    bool IsHomeEnglishGap = false);

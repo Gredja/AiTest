@@ -88,7 +88,7 @@ ContractCheck infrastructure lives on validation attributes (`[RequiredField]`, 
 
 ## Wire-boolean naming exception
 
-Boolean properties whose JSON wire names are GitHub permission flags (`admin`, `maintain`, `push`, `triage`, `pull`) and similar contract keys keep the wire name without `Is`/`Has` prefix (e.g. `CollaboratorPermissions.Admin`). Renaming would obscure the wire mapping; when such a property is new, document the exception in the model file or OB section.
+Boolean properties whose JSON wire names are the GitHub permission flags (`admin`, `maintain`, `push`, `triage`, `pull`) — **and only these** — keep the wire name without `Is`/`Has` prefix (e.g. `CollaboratorPermissions.Admin`). Every other wire boolean follows `Rules/code.md`: the C# name gets the `Is` prefix and the wire name stays in `[JsonPropertyName(JsonFields.…)]` (e.g. `IsMerged`, `IsExpired`). Renaming the permission flags would obscure the wire mapping; when such a property is new, document the exception in the model file or OB section.
 
 ## Attributes
 

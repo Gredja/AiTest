@@ -1,4 +1,4 @@
-﻿using Core.Config;
+using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
@@ -146,9 +146,9 @@ public abstract class GitHubUiTestBase
 
     protected static List<RequestDictionaryModel> UiSandboxRepoParams()
     {
-        var parts = TestConfig.UiTestRepo.Split('/');
+        var (owner, repo) = GitHubParamHelper.ParseRepo(TestConfig.UiTestRepo);
 
-        return GitHubParamHelper.RepoParam(parts[0], parts[1]);
+        return GitHubParamHelper.RepoParam(owner, repo);
     }
 
     protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool isClosed = false, string? title = null)

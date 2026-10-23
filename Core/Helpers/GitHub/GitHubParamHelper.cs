@@ -13,6 +13,13 @@ public static class GitHubParamHelper
             ParamHelper.UrlSegment("repo", repo)
         ];
 
+    public static (string Owner, string Repo) ParseRepo(string fullName)
+    {
+        var parts = fullName.Split('/');
+
+        return (parts[0], parts[1]);
+    }
+
     public static List<RequestDictionaryModel> IssueNumberParam(int number) =>
         [ParamHelper.UrlSegment("issue_number", number)];
 

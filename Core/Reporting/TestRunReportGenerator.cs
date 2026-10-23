@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 using Core.Config;
@@ -109,21 +109,19 @@ public static class TestRunReportGenerator
 
     private static List<TestRunRow> BuildRows(
         List<TestOutcome> outcomes,
-        Dictionary<string, Queue<(string Fixture, string Category)>> categories)
-    {
-        return outcomes
+        Dictionary<string, Queue<(string Fixture, string Category)>> categories) =>
+        outcomes
             .Select(outcome => CreateRow(outcome, categories))
             .OrderBy(row => row.Fixture)
             .ThenBy(row => row.Test)
             .ToList();
-    }
 
     private static TestRunRow CreateRow(
         TestOutcome outcome,
         Dictionary<string, Queue<(string Fixture, string Category)>> categories)
     {
-        var fixture = "-";
-        var category = "-";
+        var fixture = OutcomeMarker.Unknown;
+        var category = OutcomeMarker.Unknown;
 
         if (categories.TryGetValue(outcome.Name, out var queue) && queue.Count > 0)
         {
@@ -310,14 +308,14 @@ public static class TestRunReportGenerator
     {
         // Two testhosts of one run may generate concurrently — write a per-process temp
         // file and swap it in atomically so the report is never torn or half-overwritten
-        var tempFile = $"{reportFile}.{Environment.ProcessId}.tmp";
+        var stagingFile = $"{reportFile}.{Environment.ProcessId}.tmp";
 
         for (var attempt = 1; ; attempt++)
         {
             try
             {
-                File.WriteAllLines(tempFile, lines, _reportEncoding);
-                File.Move(tempFile, reportFile, overwrite: true);
+                File.WriteAllLines(stagingFile, lines, _reportEncoding);
+                File.Move(stagingFile, reportFile, overwrite: true);
 
                 return;
             }

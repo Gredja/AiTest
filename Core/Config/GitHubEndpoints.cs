@@ -36,6 +36,8 @@ public static class GitHubEndpoints
     public const string RefsTagsPrefix = "refs/tags/";
     public const string TagsPrefix = "tags/";
 
+    // Assert target for html_url/pull_request fields — kept apart from testsettings
+    // Ui.BaseUrl (per-run browser config, may point at a proxied environment)
     public const string WebBaseUrl = "https://github.com/";
 
     public const string Repos = "/repos";

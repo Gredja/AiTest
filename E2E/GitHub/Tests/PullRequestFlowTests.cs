@@ -35,7 +35,7 @@ public class PullRequestFlowTests : GitHubE2ETestBase
             GitHubEndpoints.RepoPullRequestMerge, new Dictionary<string, object>(), PullParams(pullNumber));
         merged.ShouldHaveStatusCode(HttpStatusCode.OK);
         merged.Data.Should().NotBeNull(MergeResponseHasBodyMessage);
-        merged.Data!.Merged.Should().BeTrue(MergeReportsMergedTrueMessage);
+        merged.Data!.IsMerged.Should().BeTrue(MergeReportsMergedTrueMessage);
 
         var pulls = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);

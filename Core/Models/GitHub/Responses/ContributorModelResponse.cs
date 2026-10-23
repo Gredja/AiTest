@@ -15,6 +15,6 @@ public class ContributorModelResponse : IdModel<long>
     [JsonPropertyName(JsonFields.HtmlUrl)]
     public string HtmlUrl { get; set; }
 
-    [RequiredField]
+    [ValueRange(min: 0)]
     public int Contributions { get; set; }
 }

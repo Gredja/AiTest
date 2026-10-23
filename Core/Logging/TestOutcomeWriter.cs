@@ -8,7 +8,7 @@ internal static class TestOutcomeWriter
 
     private static readonly Lazy<string> _logPath = new(() => Path.Combine(
         TestRunWorkspace.Resolve(),
-        $"test-results-{DateTime.Now:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log"));
+        $"test-results-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log"));
 
     internal static void Write(TestOutcome outcome)
     {

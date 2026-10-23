@@ -13,7 +13,7 @@ internal static class ActionLogger
     {
         var path = Path.Combine(
             TestRunWorkspace.Resolve(),
-            $"actions-{DateTime.Now:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log");
+            $"actions-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log");
 
         var logger = new LoggerConfiguration()
             .MinimumLevel.Information()

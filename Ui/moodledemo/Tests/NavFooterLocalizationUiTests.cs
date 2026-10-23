@@ -30,7 +30,7 @@ public class NavFooterLocalizationUiTests : MoodledemoTestBase
         navLabels.Should().Contain(labels.Calendar, "calendar nav label must be localized for {0}", labels.Code);
         navLabels.Should().Contain(labels.More, "more nav label must be localized for {0}", labels.Code);
 
-        if (labels.HomeIsEnglishGap)
+        if (labels.IsHomeEnglishGap)
         {
             navLabels.Should().Contain(
                 "Home",

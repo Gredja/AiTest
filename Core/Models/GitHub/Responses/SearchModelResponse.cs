@@ -9,7 +9,7 @@ public class SearchModelResponse<T>
     public int TotalCount { get; set; }
 
     [JsonPropertyName(JsonFields.IncompleteResults)]
-    public bool IncompleteResults { get; set; }
+    public bool IsIncompleteResults { get; set; }
 
     [RequiredField]
     public List<T> Items { get; set; }
