@@ -47,11 +47,12 @@ internal static class TitleScriptAssert
         var translatablePart = title.Split('|')[0];
         var expectedScripts = MoodledemoFixtures.TitleScriptsFor(code);
         var pattern = BuildPattern(expectedScripts, code);
+        var regex = new Regex(pattern, RegexOptions.Compiled);
 
         var offenders = translatablePart
             .Where(char.IsLetter)
             .Distinct()
-            .Where(letter => !Regex.IsMatch(letter.ToString(), pattern))
+            .Where(letter => !regex.IsMatch(letter.ToString()))
             .ToList();
 
         offenders.Should().BeEmpty(

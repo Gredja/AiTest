@@ -9,7 +9,4 @@ internal static class PageLocaleReader
 
     internal static Task<string?> ReadDirAsync(IPage page) =>
         page.GetAttributeAsync("html", "dir");
-
-    internal static Task<string> ReadBodyDirectionAsync(IPage page) =>
-        page.EvaluateAsync<string>("getComputedStyle(document.body).direction");
 }

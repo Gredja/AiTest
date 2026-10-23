@@ -13,9 +13,11 @@ internal static class HtmlLocaleReader
     private static readonly Regex _langPattern = new(
         @"\slang=""([^""]*)""", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+    // dir attribute preceded by whitespace so data-dir="..." never matches the bare dir check
     private static readonly Regex _dirPattern = new(
         @"\sdir=""([^""]*)""", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
+    // full <title> element — captures the inner text
     private static readonly Regex _titlePattern = new(
         @"<title>([^<]*)</title>", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 

@@ -1,6 +1,6 @@
 namespace Core.Logging;
 
-internal static class TestRunWorkspace
+public static class TestRunWorkspace
 {
     internal const string MarkerFileName = ".run-start";
     internal const string ActionLogPrefix = "actions-";
@@ -13,7 +13,7 @@ internal static class TestRunWorkspace
     // distinguishing `dotnet test` from Visual Studio launches.
     private static FileStream? _runLock;
 
-    internal static string Resolve()
+    public static string Resolve()
     {
         var workspace = Path.Combine(Path.GetTempPath(), "GredjaTestRun");
         Directory.CreateDirectory(workspace);

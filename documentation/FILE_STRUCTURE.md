@@ -382,7 +382,7 @@ Ui/
     ├── Fixtures/
     │   └── expected-langs.json      # code → { lang, dir, title } + loginLabels + navLabels + calendarPageCodes + titleScripts — the only source of localized strings
     └── Tests/
-        ├── Support/                # MoodledemoTestBase, MoodledemoBrowser, MoodledemoHttp, HtmlLocaleReader, PageLocaleReader, SiteNavigation, TitleScriptAssert, MoodledemoFixtures, LocaleExpectation, LoginLabelExpectation, NavLabelExpectation
+        ├── Support/                # MoodledemoTestBase, MoodledemoBrowser, MoodledemoHttp, HtmlLocaleReader, PageLocaleReader, SiteNavigation, TitleScriptAssert, TextPatterns, MoodledemoFixtures, ScenarioCodes, LocaleExpectation, LoginLabelExpectation, NavLabelExpectation
         ├── L1SmokeTests.cs          # HTTP-first locale contract + title-script check (data-driven, no browser)
         ├── LanguageSwitcherUiTests.cs   # language menu: list, switch, en vs en_us
         ├── LanguagePersistenceUiTests.cs # session language survives navigation / resets after login

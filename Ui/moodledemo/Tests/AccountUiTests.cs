@@ -8,6 +8,9 @@ namespace Ui.Moodledemo.Tests;
 [Category("MoodleDemo")]
 public class AccountUiTests : MoodledemoTestBase
 {
+    // every test in this fixture types the demo password — never record DOM snapshots
+    protected override bool IsCredentialEntryTest => true;
+
     private static IEnumerable<TestCaseData> AccountCases()
     {
         yield return new TestCaseData(TestConfig.MoodleDemoStudentUsername)

@@ -30,7 +30,7 @@ public class RtlLayoutUiTests : MoodledemoTestBase
         var dir = await PageLocaleReader.ReadDirAsync(Browser.Page);
         dir.Should().Be(expectation.Dir, "the html dir must match the fixture for {0}", expectation.Code);
 
-        var bodyDirection = await PageLocaleReader.ReadBodyDirectionAsync(Browser.Page);
+        var bodyDirection = await Browser.HomePage.ReadBodyDirectionAsync();
         bodyDirection.Should().Be(
             expectation.Dir,
             "the computed body direction must mirror the layout for {0}", expectation.Code);

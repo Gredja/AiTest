@@ -1,5 +1,6 @@
 using System.Net;
 using Core.Config;
+using Core.Helpers;
 using FluentAssertions;
 using Ui.Moodledemo.Tests.Support;
 
@@ -44,7 +45,7 @@ public class L1SmokeTests
         var english = MoodledemoFixtures.English;
         var (status, body) = await MoodledemoHttp.GetAsync(MoodledemoEndpoints.HomePath, english.Lang);
 
-        status.Should().Be(HttpStatusCode.OK);
+        status.ShouldHaveStatusCode(HttpStatusCode.OK);
         var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
         lang.Should().Be(english.Lang);
         dir.Should().Be(english.Dir);
@@ -61,7 +62,7 @@ public class L1SmokeTests
             MoodledemoHttp.HomeWithLang(expectation.Code),
             expectation.Lang);
 
-        status.Should().Be(HttpStatusCode.OK);
+        status.ShouldHaveStatusCode(HttpStatusCode.OK);
         var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
         lang.Should().Be(expectation.Lang);
         dir.Should().Be(expectation.Dir);
@@ -78,13 +79,13 @@ public class L1SmokeTests
             MoodledemoHttp.LoginWithLang(expectation.Code),
             expectation.Lang);
 
-        status.Should().Be(HttpStatusCode.OK);
+        status.ShouldHaveStatusCode(HttpStatusCode.OK);
         var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
         lang.Should().Be(expectation.Lang);
         dir.Should().Be(expectation.Dir);
         HtmlLocaleReader.ReadTitle(body).Should().Be(expectation.Title);
-        body.Should().Contain("name=\"username\"", "the login form must be present in the page markup");
-        body.Should().Contain("id=\"loginbtn\"", "the login submit button must be present in the page markup");
+        body.Should().Contain("name=\"username\"", "documented locale-contract probe: the login form must be present in the page markup");
+        body.Should().Contain("id=\"loginbtn\"", "documented locale-contract probe: the login submit button must be present in the page markup");
     }
 
     [Test]
@@ -97,7 +98,7 @@ public class L1SmokeTests
             MoodledemoHttp.HomeWithLang(MoodledemoEndpoints.UnknownLangCode),
             english.Lang);
 
-        status.Should().Be(HttpStatusCode.OK, "an unknown language code must never break the page");
+        status.ShouldHaveStatusCode(HttpStatusCode.OK, "an unknown language code must never break the page");
         var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
         lang.Should().Be(english.Lang);
         dir.Should().Be(english.Dir);
