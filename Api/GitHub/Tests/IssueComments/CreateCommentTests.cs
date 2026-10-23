@@ -1,4 +1,5 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -108,7 +109,7 @@ public class CreateCommentTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created comment not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
+                $"created comment not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
         }
     }
 

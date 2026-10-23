@@ -2,7 +2,7 @@ using Core.Config;
 using Core.Logging;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
-using Ui.Support;
+using Ui.Helpers;
 
 namespace Ui.Moodledemo.Tests.Support;
 
@@ -78,7 +78,7 @@ public abstract class MoodledemoTestBase
         if (isFailed)
         {
             var artifacts = ResolveArtifactsDirectory();
-            var failedName = ArtifactNaming.SanitizeFileName(TestContext.CurrentContext.Test.Name);
+            var failedName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
             await _page!.ScreenshotAsync(new PageScreenshotOptions
             {
                 Path = Path.Combine(artifacts, $"{failedName}.png"),
@@ -90,7 +90,7 @@ public abstract class MoodledemoTestBase
         {
             if (isFailed)
             {
-                var traceName = ArtifactNaming.SanitizeFileName(TestContext.CurrentContext.Test.Name);
+                var traceName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
                 await _context.Tracing.StopAsync(new TracingStopOptions
                 {
                     Path = Path.Combine(ResolveArtifactsDirectory(), $"{traceName}.zip")

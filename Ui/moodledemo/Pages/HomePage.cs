@@ -1,4 +1,5 @@
 using Core.Config;
+using Ui.Helpers;
 using Microsoft.Playwright;
 using Ui.Moodledemo.Tests.Support;
 
@@ -25,14 +26,14 @@ internal sealed class HomePage(IPage page)
             ? MoodledemoFixtures.English.Lang
             : MoodledemoFixtures.Home.Single(row => row.Code == langCode).Lang;
 
-        return SiteNavigation.GotoVerifiedAsync(
+        return SiteNavigationHelper.GotoVerifiedAsync(
             page,
             $"{MoodledemoEndpoints.BaseUrl}{pathAndQuery}",
             expectedLang);
     }
 
     internal Task GotoMyDashboardAsync(string expectedLang) =>
-        SiteNavigation.GotoVerifiedAsync(
+        SiteNavigationHelper.GotoVerifiedAsync(
             page,
             $"{MoodledemoEndpoints.BaseUrl}{MoodledemoEndpoints.MyDashboardPath}",
             expectedLang);
@@ -191,7 +192,7 @@ internal sealed class HomePage(IPage page)
             ? MoodledemoFixtures.English.Lang
             : MoodledemoFixtures.Home.Single(row => row.Code == langCode).Lang;
 
-        return SiteNavigation.GotoVerifiedAsync(
+        return SiteNavigationHelper.GotoVerifiedAsync(
             page,
             $"{MoodledemoEndpoints.BaseUrl}{pathAndQuery}",
             expectedLang);
@@ -202,7 +203,7 @@ internal sealed class HomePage(IPage page)
         var texts = await page.Locator(NavLabelSelector).AllTextContentsAsync();
 
         return texts
-            .Select(text => TextPatterns.CollapseWhitespace(text))
+            .Select(text => TextPatternsHelper.CollapseWhitespace(text))
             .Where(text => !string.IsNullOrEmpty(text))
             .ToList();
     }
@@ -212,7 +213,7 @@ internal sealed class HomePage(IPage page)
         var controls = page.Locator(CalendarControlsSelector).First;
         var text = await controls.TextContentAsync();
 
-        return TextPatterns.CollapseWhitespace(text);
+        return TextPatternsHelper.CollapseWhitespace(text);
     }
 
     internal async Task<(long ScrollWidth, long ClientWidth)> ReadPageOverflowAsync()

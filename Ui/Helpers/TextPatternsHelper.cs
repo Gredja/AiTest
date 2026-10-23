@@ -1,8 +1,8 @@
 using System.Text.RegularExpressions;
 
-namespace Ui.Moodledemo.Tests.Support;
+namespace Ui.Helpers;
 
-internal static class TextPatterns
+internal static class TextPatternsHelper
 {
     // collapses runs of whitespace (newlines/tabs/multiple spaces) to one space and trims —
     // text comparisons must not depend on layout wrapping

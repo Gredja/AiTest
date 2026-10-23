@@ -1,4 +1,5 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -46,7 +47,7 @@ public class CreateIssueVisibilityTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
+                $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
         }
     }
 

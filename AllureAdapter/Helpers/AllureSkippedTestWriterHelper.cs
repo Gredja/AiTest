@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace AllureAdapter.Helpers;
 
-public static class AllureSkippedTestWriter
+public static class AllureSkippedTestWriterHelper
 {
     public static void WriteSkippedTests(Assembly assembly, string resultsDir)
     {
@@ -37,7 +37,7 @@ public static class AllureSkippedTestWriter
         var uuid = Guid.NewGuid().ToString();
         var description = AllureHelper.GetDescription(method);
 
-        var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
+        var testResult = AllureTestResultBuilderHelper.BuildTestResult(new TestResultParams(
             Uuid: uuid,
             FullName: fullName,
             Name: method.Name,
@@ -49,7 +49,7 @@ public static class AllureSkippedTestWriter
             TestClassName: type.FullName,
             Categories: GetCategories(type, method)));
 
-        AllureJsonWriter.WriteResultFile(resultsDir, testResult);
+        AllureJsonWriterHelper.WriteResultFile(resultsDir, testResult);
     }
 
     private static List<string>? GetCategories(Type type, MethodInfo method)

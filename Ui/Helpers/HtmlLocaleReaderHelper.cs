@@ -1,9 +1,9 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 
-namespace Ui.Moodledemo.Tests.Support;
+namespace Ui.Helpers;
 
-internal static class HtmlLocaleReader
+internal static class HtmlLocaleReaderHelper
 {
     // opening tag only: "<html dir=... lang=...>" — carries the locale attributes
     private static readonly Regex _htmlTagPattern = new(

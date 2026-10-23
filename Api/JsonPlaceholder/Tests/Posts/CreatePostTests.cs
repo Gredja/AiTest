@@ -1,4 +1,5 @@
 using Core.Models.JsonPlaceholder;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -201,7 +202,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created post not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
+                $"created post not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
         }
     }
 }

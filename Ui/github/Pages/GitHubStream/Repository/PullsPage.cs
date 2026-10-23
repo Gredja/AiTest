@@ -1,7 +1,7 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Tests.Support;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.GitHubStream.Repository;
 
@@ -35,7 +35,7 @@ internal sealed class PullsPage(IPage page)
     {
         var text = await _tabLinks.Filter(new() { HasTextString = tabName }).First.TextContentAsync();
 
-        return TabCountParser.Parse(text);
+        return TabCountParserHelper.Parse(text);
     }
 
     internal async Task ClickNewPullRequestAsync()

@@ -241,11 +241,12 @@ Gredja/
 │   │   ├── GitHubEndpoints.cs
 │   │   ├── GitHubErrors.cs
 │   │   └── TestConfig.cs         # читает testsettings.json (+ env fallback)
+│   ├── Generators/                # DataGenerator: RandomString/RandomIntExclusive для write-данных (своя папка по правилу Generator)
 │   ├── Helpers/                  # Тестовая инфраструктура (всегда здесь, даже для E2E)
 │   │   ├── Http/                 # RequestHelper (Get/Post/Put/Patch/Delete) + JsonPlaceholder/GitHubRequestHelper
 │   │   ├── Params/               # Общие IdParam/UrlSegment/Query
 │   │   ├── Assertions/           # ShouldHaveStatusCode и др.
-│   │   ├── Data/                 # DataGenerator: RandomString/RandomIntExclusive для write-данных
+│   │   ├── Data/                 # TestDataConstants: общие длины/значения тестовых данных
 │   │   ├── Waiting/              # WaitHelper: асинхронное ожидание условия (polling)
 │   │   └── GitHub/               # GitHubTestBase + GitHubParamHelper
 │   ├── Logging/                   # Лог действий (Serilog → %TEMP%\GredjaTestRun) + test-results-*.log
@@ -425,7 +426,7 @@ git checkout -b features/add-user-tests
 - Guarantee Data: GET пуст → POST в OneTimeSetUp → GET снова → Assertion → DELETE в OneTimeTearDown — cleanup = удаление, ЕСЛИ API позволяет; нет endpoint удаления → soft-close (GitHub issues: PATCH `state=closed`, DELETE → 404)
 - Read-after-write visibility: baseline GET → POST в OneTimeSetUp → GET снова → assert «+1» и ShouldMatchRequest всех полей → DELETE в OneTimeTearDown (ошибка cleanup = warning, не failure); КАЖДЫЙ POST-flow включает проверку скорости добавления записи — `*_RecordVisibleWithinTimeLimit` (Performance): `WaitHelper.WaitUntilAsync` с timeout `MaxResponseTimeMs`; успех = pass, таймаут = `Inconclusive` (informational wall-clock на живом сервисе, 2026-10-19), диагностика через `Elapsed`/`Attempts`/`LastValue` (mock-API без persistence — тест с `[Ignore]`)
 - Ожидание условий (API с задержкой видимости): `WaitHelper.WaitUntilAsync(action, condition, timeout?, interval?)` → `WaitResult<T>` (`IsSuccess`/`Elapsed`/`Attempts`/`LastValue`) в `Core/Helpers/Waiting/`; дефолты 30s/2s; ассерт на `Elapsed` для time-limit тестов (`*_AppearsWithinTimeLimit`, категория Performance). Мгновенные API и latency одного запроса — не через хелпер: `AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds)` (Inconclusive при превышении)
-- Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности (вариативные поля — через `Core/Helpers/Data/DataGenerator`), обфускация заменой, метод-нота для сложных наборов
+- Test data для write: только вымышленные значения (публичный sandbox), vary ≥2 размерности (вариативные поля — через `Core/Generators/DataGenerator`), обфускация заменой, метод-нота для сложных наборов
 - Чистка артефактов обязательна: temp-логи (`%TEMP%\GredjaTestRun`) чистит `TestRunWorkspace.PrepareRun()`; файлы старше 7 дней (`ArtifactRetentionDays`) в `allure-results/` и `TestResults/` — `TestRunReportGenerator.PrepareRun()` → `CleanupAccumulatedArtifacts()`; новые каталоги артефактов регистрировать там же в том же коммите; cleanup не фейлит прогон (warning вместо failure)
 
 **Workflow:**

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Ui.Helpers;
 using Ui.Moodledemo.Tests.Support;
 
 namespace Ui.Moodledemo.Tests;
@@ -48,7 +49,7 @@ public class LanguageSwitcherUiTests : MoodledemoTestBase
         await Browser.HomePage.OpenLanguageMenuAsync();
         await Browser.HomePage.ClickLanguageAsync(scenarios.SwitchTarget);
 
-        var lang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be(scenarios.SwitchTarget, "the clicked language must be applied to the page");
 
         var currentText = await Browser.HomePage.CurrentLanguageTextAsync();
@@ -64,7 +65,7 @@ public class LanguageSwitcherUiTests : MoodledemoTestBase
         await Browser.HomePage.GotoAsync();
 
         // en-US Accept-Language → en_us, but the html lang normalizes to the parent "en"
-        var defaultLang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var defaultLang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         defaultLang.Should().Be(scenarios.PlainEnglish, "the html lang of the en_us default normalizes to en");
 
         var variantText = await Browser.HomePage.CurrentLanguageTextAsync();
@@ -72,7 +73,7 @@ public class LanguageSwitcherUiTests : MoodledemoTestBase
 
         await Browser.HomePage.GotoAsync(scenarios.PlainEnglish);
 
-        var englishLang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var englishLang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         englishLang.Should().Be(scenarios.PlainEnglish, "plain en renders with html lang=en");
 
         var englishText = await Browser.HomePage.CurrentLanguageTextAsync();

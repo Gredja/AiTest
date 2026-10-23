@@ -1,8 +1,8 @@
 using Microsoft.Playwright;
 
-namespace Ui.Moodledemo.Tests.Support;
+namespace Ui.Helpers;
 
-internal static class PageLocaleReader
+internal static class PageLocaleReaderHelper
 {
     internal static Task<string?> ReadLangAsync(IPage page) =>
         page.GetAttributeAsync("html", "lang");

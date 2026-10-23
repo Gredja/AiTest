@@ -1,4 +1,4 @@
-﻿using Core.Helpers;
+using Core.Generators;
 using FluentAssertions;
 using Ui.Github.Tests.Support;
 using static Core.Helpers.TestDataConstants;

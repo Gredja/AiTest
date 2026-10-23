@@ -1,4 +1,5 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -200,7 +201,7 @@ public class CreateRefTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created ref not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
+                $"created ref not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
         }
     }
 

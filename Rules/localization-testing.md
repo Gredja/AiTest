@@ -121,7 +121,8 @@ L1 is a **smoke** — it runs first, catches a broken site per language in secon
 |---|---|---|
 | Page/Form objects | `Ui/moodledemo/Pages/` | Per-component classes: `HomePage`, `LoginPage` |
 | Fixture data | `Ui/moodledemo/Fixtures/expected-langs.json` | Language sets + `loginLabels`, `navLabels`, `scenarioCodes`, `calendarPageCodes`, `titleScripts` |
-| Support (base, fixtures, HTTP) | `Ui/moodledemo/Tests/Support/` | `MoodledemoTestBase`, `MoodledemoBrowser`, `MoodledemoHttp`, `MoodledemoFixtures`, `ScenarioCodes`, readers/asserts |
+| Project helpers | `Ui/Helpers/` | `MoodledemoHttpHelper`, `SiteNavigationHelper`, `TextPatternsHelper`, `HtmlLocaleReaderHelper`, `PageLocaleReaderHelper`, `TitleScriptAssertHelper` |
+| Support (base, fixtures) | `Ui/moodledemo/Tests/Support/` | `MoodledemoTestBase`, `MoodledemoBrowser`, `MoodledemoFixtures`, `ScenarioCodes`, expectation records |
 | Tests | `Ui/moodledemo/Tests/` | `L1SmokeTests` (L1), `*UiTests.cs` (L2/L3) |
 | Config | `Core/Config/MoodledemoEndpoints.cs` | Base URL, `/lang` paths (no per-language constants — the fixture owns the language set) |
 | Rules | `Rules/localization-testing.md` | This file |

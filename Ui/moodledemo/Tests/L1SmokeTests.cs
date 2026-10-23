@@ -1,4 +1,5 @@
 using System.Net;
+using Ui.Helpers;
 using Core.Config;
 using Core.Helpers;
 using FluentAssertions;
@@ -43,13 +44,13 @@ public class L1SmokeTests
     public async Task Home_Default_IsEnglishLtr()
     {
         var english = MoodledemoFixtures.English;
-        var (status, body) = await MoodledemoHttp.GetAsync(MoodledemoEndpoints.HomePath, english.Lang);
+        var (status, body) = await MoodledemoHttpHelper.GetAsync(MoodledemoEndpoints.HomePath, english.Lang);
 
         status.ShouldHaveStatusCode(HttpStatusCode.OK);
-        var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
+        var (lang, dir) = HtmlLocaleReaderHelper.ReadLocale(body);
         lang.Should().Be(english.Lang);
         dir.Should().Be(english.Dir);
-        HtmlLocaleReader.ReadTitle(body).Should().Be(english.Title);
+        HtmlLocaleReaderHelper.ReadTitle(body).Should().Be(english.Title);
     }
 
     [Test]
@@ -58,15 +59,15 @@ public class L1SmokeTests
     [TestCaseSource(nameof(HomeCases))]
     public async Task Home_Lang_MatchesFixture(LocaleExpectation expectation)
     {
-        var (status, body) = await MoodledemoHttp.GetAsync(
-            MoodledemoHttp.HomeWithLang(expectation.Code),
+        var (status, body) = await MoodledemoHttpHelper.GetAsync(
+            MoodledemoHttpHelper.HomeWithLang(expectation.Code),
             expectation.Lang);
 
         status.ShouldHaveStatusCode(HttpStatusCode.OK);
-        var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
+        var (lang, dir) = HtmlLocaleReaderHelper.ReadLocale(body);
         lang.Should().Be(expectation.Lang);
         dir.Should().Be(expectation.Dir);
-        HtmlLocaleReader.ReadTitle(body).Should().Be(expectation.Title);
+        HtmlLocaleReaderHelper.ReadTitle(body).Should().Be(expectation.Title);
     }
 
     [Test]
@@ -75,15 +76,15 @@ public class L1SmokeTests
     [TestCaseSource(nameof(LoginPageCases))]
     public async Task LoginPage_Lang_PersistsLocale(LocaleExpectation expectation)
     {
-        var (status, body) = await MoodledemoHttp.GetAsync(
-            MoodledemoHttp.LoginWithLang(expectation.Code),
+        var (status, body) = await MoodledemoHttpHelper.GetAsync(
+            MoodledemoHttpHelper.LoginWithLang(expectation.Code),
             expectation.Lang);
 
         status.ShouldHaveStatusCode(HttpStatusCode.OK);
-        var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
+        var (lang, dir) = HtmlLocaleReaderHelper.ReadLocale(body);
         lang.Should().Be(expectation.Lang);
         dir.Should().Be(expectation.Dir);
-        HtmlLocaleReader.ReadTitle(body).Should().Be(expectation.Title);
+        HtmlLocaleReaderHelper.ReadTitle(body).Should().Be(expectation.Title);
         body.Should().Contain("name=\"username\"", "documented locale-contract probe: the login form must be present in the page markup");
         body.Should().Contain("id=\"loginbtn\"", "documented locale-contract probe: the login submit button must be present in the page markup");
     }
@@ -94,12 +95,12 @@ public class L1SmokeTests
     public async Task Home_UnknownLang_FallsBackToEnglish()
     {
         var english = MoodledemoFixtures.English;
-        var (status, body) = await MoodledemoHttp.GetAsync(
-            MoodledemoHttp.HomeWithLang(MoodledemoEndpoints.UnknownLangCode),
+        var (status, body) = await MoodledemoHttpHelper.GetAsync(
+            MoodledemoHttpHelper.HomeWithLang(MoodledemoEndpoints.UnknownLangCode),
             english.Lang);
 
         status.ShouldHaveStatusCode(HttpStatusCode.OK, "an unknown language code must never break the page");
-        var (lang, dir) = HtmlLocaleReader.ReadLocale(body);
+        var (lang, dir) = HtmlLocaleReaderHelper.ReadLocale(body);
         lang.Should().Be(english.Lang);
         dir.Should().Be(english.Dir);
     }
@@ -109,5 +110,5 @@ public class L1SmokeTests
     [Description("3.2 Home title translatable part is written in the expected script(s) for the code")]
     [TestCaseSource(nameof(HomeScriptCases))]
     public void Home_TitlePart_MatchesExpectedScript(LocaleExpectation expectation) =>
-        TitleScriptAssert.ShouldMatch(expectation.Title, expectation.Code);
+        TitleScriptAssertHelper.ShouldMatch(expectation.Title, expectation.Code);
 }

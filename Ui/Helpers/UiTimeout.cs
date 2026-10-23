@@ -1,4 +1,4 @@
-namespace Ui.Github.Pages.Common;
+namespace Ui.Helpers;
 
 internal static class UiTimeout
 {

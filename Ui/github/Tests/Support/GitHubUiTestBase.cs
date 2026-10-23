@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Generators;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
@@ -7,8 +8,7 @@ using FluentAssertions;
 using Microsoft.Playwright;
 using NUnit.Framework.Interfaces;
 using System.Net;
-using Ui.Github.Pages.Common;
-using Ui.Support;
+using Ui.Helpers;
 
 namespace Ui.Github.Tests.Support;
 
@@ -96,7 +96,7 @@ public abstract class GitHubUiTestBase
         if (isFailed)
         {
             var artifacts = ResolveArtifactsDirectory();
-            var failedName = ArtifactNaming.SanitizeFileName(TestContext.CurrentContext.Test.Name);
+            var failedName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
             await _page!.ScreenshotAsync(new PageScreenshotOptions
             {
                 Path = Path.Combine(artifacts, $"{failedName}.png"),

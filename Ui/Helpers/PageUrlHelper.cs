@@ -1,6 +1,6 @@
-namespace Ui.Github.Pages.Common;
+namespace Ui.Helpers;
 
-internal static class PageUrl
+internal static class PageUrlHelper
 {
     internal static int? TryGetResourceNumber(string url)
     {

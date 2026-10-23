@@ -1,7 +1,7 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Pages.Common;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.GitHubStream.Repository;
 

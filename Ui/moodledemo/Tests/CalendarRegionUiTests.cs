@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Ui.Helpers;
 using FluentAssertions;
 using Ui.Moodledemo.Tests.Support;
 
@@ -33,7 +34,7 @@ public class CalendarRegionUiTests : MoodledemoTestBase
 
         await Browser.HomePage.GotoCalendarAsync(code);
 
-        var lang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be(expectation.Lang, "calendar html lang must match the fixture for {0}", code);
 
         var controlsText = await Browser.HomePage.ReadCalendarControlsTextAsync();

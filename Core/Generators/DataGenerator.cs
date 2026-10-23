@@ -1,4 +1,4 @@
-namespace Core.Helpers;
+namespace Core.Generators;
 
 public static class DataGenerator
 {

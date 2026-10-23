@@ -1,4 +1,5 @@
 using Core.Config;
+using Ui.Helpers;
 using FluentAssertions;
 using Ui.Moodledemo.Tests.Support;
 
@@ -22,7 +23,7 @@ public class LanguagePersistenceUiTests : MoodledemoTestBase
         await Browser.HomePage.GotoAsync(SessionLanguage);
         await Browser.HomePage.OpenCalendarAsync();
 
-        var lang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be(SessionLanguage, "the session language must persist on a lang-less URL");
     }
 
@@ -37,7 +38,7 @@ public class LanguagePersistenceUiTests : MoodledemoTestBase
             TestConfig.MoodleDemoStudentUsername,
             TestConfig.MoodleDemoPassword);
 
-        var lang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be(
             MoodledemoFixtures.English.Lang,
             "observed 2026-10-22: authentication re-applies the account/site language over the session choice");
@@ -55,11 +56,11 @@ public class LanguagePersistenceUiTests : MoodledemoTestBase
 
         // the header hides the switcher for authenticated users — the ?lang URL is the way in
         await Browser.HomePage.GotoAsync(SessionLanguage);
-        var selectedLang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var selectedLang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         selectedLang.Should().Be(SessionLanguage);
 
         await Browser.HomePage.GotoMyDashboardAsync(SessionLanguage);
-        var lang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be(SessionLanguage, "the language chosen while logged in must persist on a lang-less URL");
     }
 
@@ -69,14 +70,14 @@ public class LanguagePersistenceUiTests : MoodledemoTestBase
     public async Task SwitchingToEnUs_ResetsLanguage()
     {
         await Browser.HomePage.GotoAsync(SessionLanguage);
-        var selectedLang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var selectedLang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         selectedLang.Should().Be(SessionLanguage);
 
         var activeDefault = MoodledemoFixtures.Scenarios.ActiveDefault;
         var englishUs = MoodledemoFixtures.Home.Single(row => row.Code == activeDefault);
         await Browser.HomePage.GotoAsync(englishUs.Code);
 
-        var resetLang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var resetLang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         resetLang.Should().Be(englishUs.Lang, "en_us must reset the session language to English");
 
         var resetTitle = await Browser.Page.TitleAsync();

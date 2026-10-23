@@ -1,4 +1,5 @@
 using Core.Config;
+using Ui.Helpers;
 using Microsoft.Playwright;
 using Ui.Moodledemo.Tests.Support;
 
@@ -20,7 +21,7 @@ internal sealed class LoginPage(IPage page)
             ? MoodledemoFixtures.English.Lang
             : MoodledemoFixtures.LoginPage.Single(row => row.Code == langCode).Lang;
 
-        return SiteNavigation.GotoVerifiedAsync(page, url, expectedLang);
+        return SiteNavigationHelper.GotoVerifiedAsync(page, url, expectedLang);
     }
 
     internal async Task<bool> HasLoginFormAsync() =>
@@ -119,7 +120,7 @@ internal sealed class LoginPage(IPage page)
         (await UsernameField.InputValueAsync(), await PasswordField.InputValueAsync());
 
     private async Task<string> ReadTextAsync(ILocator locator) =>
-        TextPatterns.CollapseWhitespace(await locator.TextContentAsync());
+        TextPatternsHelper.CollapseWhitespace(await locator.TextContentAsync());
 
     // The submit button's accessible name is localized — take the language from the page
     // that actually rendered (a lingering ?lang=session can serve the login page in another

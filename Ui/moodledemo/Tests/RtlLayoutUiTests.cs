@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Ui.Helpers;
 using Ui.Moodledemo.Tests.Support;
 
 namespace Ui.Moodledemo.Tests;
@@ -24,10 +25,10 @@ public class RtlLayoutUiTests : MoodledemoTestBase
     {
         await Browser.HomePage.GotoAsync(expectation.Code);
 
-        var lang = await PageLocaleReader.ReadLangAsync(Browser.Page);
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be(expectation.Lang, "the html lang must match the fixture for {0}", expectation.Code);
 
-        var dir = await PageLocaleReader.ReadDirAsync(Browser.Page);
+        var dir = await PageLocaleReaderHelper.ReadDirAsync(Browser.Page);
         dir.Should().Be(expectation.Dir, "the html dir must match the fixture for {0}", expectation.Code);
 
         var bodyDirection = await Browser.HomePage.ReadBodyDirectionAsync();

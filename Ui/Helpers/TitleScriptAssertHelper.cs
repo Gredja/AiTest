@@ -1,9 +1,10 @@
 using System.Text.RegularExpressions;
+using Ui.Moodledemo.Tests.Support;
 using FluentAssertions;
 
-namespace Ui.Moodledemo.Tests.Support;
+namespace Ui.Helpers;
 
-internal static class TitleScriptAssert
+internal static class TitleScriptAssertHelper
 {
     // .NET regex has no \p{IsLatin}-style script properties — only Unicode blocks,
     // so scripts are expressed as unions of the blocks that hold their letters.

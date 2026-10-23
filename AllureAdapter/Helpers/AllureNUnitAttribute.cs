@@ -40,7 +40,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
         var status = MapTestStatus(result.Outcome.Status);
         var description = GetDescription(test);
 
-        var testResult = AllureTestResultBuilder.BuildTestResult(new TestResultParams(
+        var testResult = AllureTestResultBuilderHelper.BuildTestResult(new TestResultParams(
             Uuid: uuid,
             FullName: test.FullName,
             Name: test.Name,
@@ -53,7 +53,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             TestClassName: test.ClassName,
             Categories: GetCategories(test)));
 
-        AllureJsonWriter.WriteResultFile(_resultsDir, testResult);
+        AllureJsonWriterHelper.WriteResultFile(_resultsDir, testResult);
         AddToContainer(test, uuid);
     }
 
@@ -85,8 +85,8 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             snapshot = containerInfo.Children.ToList();
         }
 
-        var container = AllureTestResultBuilder.BuildContainer(containerUuid, containerInfo.Name, snapshot);
-        AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
+        var container = AllureTestResultBuilderHelper.BuildContainer(containerUuid, containerInfo.Name, snapshot);
+        AllureJsonWriterHelper.WriteContainerFile(_resultsDir, containerUuid, container);
     }
 
     private static string EnsureContainer(ITest test)

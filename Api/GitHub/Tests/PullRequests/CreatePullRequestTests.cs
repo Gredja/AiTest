@@ -1,4 +1,5 @@
 using Core.Models.GitHub;
+using Core.Generators;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -237,7 +238,7 @@ public class CreatePullRequestTests : GitHubTestBase
         if (!result.IsSuccess)
         {
             Assert.Inconclusive(
-                $"created PR not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnostics.Describe(result)}");
+                $"created PR not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
         }
     }
 

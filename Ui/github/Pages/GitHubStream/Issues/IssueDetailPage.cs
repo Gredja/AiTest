@@ -1,7 +1,7 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
-using Ui.Github.Pages.Common;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.GitHubStream.Issues;
 
@@ -12,7 +12,7 @@ internal sealed class IssueDetailPage(IPage page)
     internal async Task OpenAsync(int issueNumber) =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/{issueNumber}");
 
-    internal int? TryGetIssueNumberFromUrl() => PageUrl.TryGetResourceNumber(_page.Url);
+    internal int? TryGetIssueNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(_page.Url);
 
     internal async Task<bool> HasTitleAsync(string title) =>
         await _issueHeadings.Filter(new() { HasTextString = title }).CountAsync() > 0;

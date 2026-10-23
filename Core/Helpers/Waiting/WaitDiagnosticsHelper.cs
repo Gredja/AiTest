@@ -2,7 +2,7 @@ using RestSharp;
 
 namespace Core.Helpers;
 
-public static class WaitDiagnostics
+public static class WaitDiagnosticsHelper
 {
     public static string Describe<T>(WaitResult<T> result)
         where T : RestResponse =>
