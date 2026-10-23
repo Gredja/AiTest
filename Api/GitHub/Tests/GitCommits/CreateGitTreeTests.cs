@@ -3,7 +3,6 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
-using AllureAdapter;
 
 namespace Api.GitHub.GitCommits;
 

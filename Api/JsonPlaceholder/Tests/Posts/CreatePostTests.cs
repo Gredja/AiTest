@@ -4,7 +4,6 @@ using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using RestSharp;
-using AllureAdapter;
 using static Core.Helpers.ParamHelper;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
 using static Core.Helpers.TestDataConstants;

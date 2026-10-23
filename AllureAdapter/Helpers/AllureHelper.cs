@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Core.Config;
 using NUnit.Framework;
 
@@ -11,7 +11,7 @@ public static class AllureHelper
         var dir = AppContext.BaseDirectory;
         while (dir is not null)
         {
-            if (File.Exists(Path.Combine(dir, TestConfig.SolutionFileName)) || Directory.GetFiles(dir, "*.sln").Length > 0)
+            if (File.Exists(Path.Combine(dir, TestConfig.SolutionFileName)) || Directory.EnumerateFiles(dir, "*.sln").Any())
             {
                 return dir;
             }

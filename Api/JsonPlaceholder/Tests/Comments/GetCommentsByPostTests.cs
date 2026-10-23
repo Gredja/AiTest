@@ -3,7 +3,6 @@ using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 
 namespace Api.JsonPlaceholder.Comments;

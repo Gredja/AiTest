@@ -70,7 +70,13 @@ public static class AllureSkippedTestWriter
 
     private static Type[] GetTypesSafely(Assembly assembly)
     {
-        try { return assembly.GetTypes(); }
-        catch (ReflectionTypeLoadException exception) { return exception.Types.Where(type => type is not null).ToArray()!; }
+        try
+        {
+            return assembly.GetTypes();
+        }
+        catch (ReflectionTypeLoadException exception)
+        {
+            return exception.Types.OfType<Type>().ToArray();
+        }
     }
 }

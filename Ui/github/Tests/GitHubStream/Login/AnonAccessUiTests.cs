@@ -1,4 +1,3 @@
-using AllureAdapter;
 using FluentAssertions;
 using Ui.Github.Tests.Support;
 

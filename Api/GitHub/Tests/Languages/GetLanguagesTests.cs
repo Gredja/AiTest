@@ -4,7 +4,6 @@ using Core.Helpers.GitHub;
 using System.Net;
 using System.Text.Json;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
 

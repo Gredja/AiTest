@@ -1,4 +1,3 @@
-using AllureAdapter.Helpers;
 
 namespace E2E;
 

@@ -5,7 +5,6 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 using static Core.Helpers.ParamHelper;
 using static Core.Helpers.TestDataConstants;
 

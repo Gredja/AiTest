@@ -4,7 +4,6 @@ using Core.Helpers;
 using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
-using AllureAdapter;
 
 namespace Api.JsonPlaceholder.Users;
 

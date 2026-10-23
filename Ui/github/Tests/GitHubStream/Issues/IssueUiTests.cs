@@ -3,7 +3,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
 using FluentAssertions;
-using AllureAdapter;
 using Ui.Github.Tests.Support;
 using static Core.Helpers.TestDataConstants;
 

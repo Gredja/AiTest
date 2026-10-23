@@ -1,6 +1,5 @@
 using Core.Helpers;
 using FluentAssertions;
-using AllureAdapter;
 using Ui.Github.Tests.Support;
 using static Core.Helpers.TestDataConstants;
 

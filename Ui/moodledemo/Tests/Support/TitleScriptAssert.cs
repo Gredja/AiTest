@@ -70,6 +70,6 @@ internal static class TitleScriptAssert
             : throw new InvalidOperationException(
                 $"titleScripts: unknown script '{script}' for code '{code}'"));
 
-        return $"[{string.Join("", classes)}]";
+        return $"[{string.Join(string.Empty, classes)}]";
     }
 }

@@ -63,7 +63,7 @@ internal static class AllureTestResultBuilder
         new Dictionary<string, string>
         {
             ["message"] = message,
-            ["trace"] = trace ?? ""
+            ["trace"] = trace ?? string.Empty
         };
 
     private static List<Dictionary<string, string>> BuildLabels(TestResultParams resultParams)

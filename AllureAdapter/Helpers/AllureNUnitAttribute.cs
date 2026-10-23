@@ -2,9 +2,8 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal;
 using System.Collections.Concurrent;
-using AllureAdapter.Helpers;
 
-namespace AllureAdapter;
+namespace AllureAdapter.Helpers;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AllureNUnitAttribute : Attribute, ITestAction
@@ -69,24 +68,24 @@ public class AllureNUnitAttribute : Attribute, ITestAction
     private static void AddToContainer(ITest test, string uuid)
     {
         var containerUuid = EnsureContainer(test);
-        if (!_containers.TryGetValue(containerUuid, out var info))
+        if (!_containers.TryGetValue(containerUuid, out var containerInfo))
         {
             return;
         }
 
         List<string> snapshot;
-        lock (info.Children)
+        lock (containerInfo.Children)
         {
-            if (info.Children.Contains(uuid))
+            if (containerInfo.Children.Contains(uuid))
             {
                 return;
             }
 
-            info.Children.Add(uuid);
-            snapshot = info.Children.ToList();
+            containerInfo.Children.Add(uuid);
+            snapshot = containerInfo.Children.ToList();
         }
 
-        var container = AllureTestResultBuilder.BuildContainer(containerUuid, info.Name, snapshot);
+        var container = AllureTestResultBuilder.BuildContainer(containerUuid, containerInfo.Name, snapshot);
         AllureJsonWriter.WriteContainerFile(_resultsDir, containerUuid, container);
     }
 

@@ -3,7 +3,6 @@ using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
-using AllureAdapter;
 using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
