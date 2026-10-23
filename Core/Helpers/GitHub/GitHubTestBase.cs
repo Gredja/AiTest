@@ -133,7 +133,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         mainCommit.ShouldHaveStatusCode(HttpStatusCode.OK);
 
         var blobSha = await CreateScratchBlobAsync(headBranch);
-        var treeSha = await CreateScratchTreeAsync(headBranch, mainCommit.Data!.Tree.Sha, blobSha);
+        var treeSha = await CreateScratchTreeAsync(mainCommit.Data!.Tree.Sha, blobSha);
 
         var commit = await Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
             GitHubEndpoints.RepoGitCommits,
@@ -160,7 +160,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
         return blob.Data!.Sha;
     }
 
-    private async Task<string> CreateScratchTreeAsync(string headBranch, string baseTreeSha, string blobSha)
+    private async Task<string> CreateScratchTreeAsync(string baseTreeSha, string blobSha)
     {
         var tree = await Post<CreateGitTreeModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitTrees,

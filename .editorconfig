@@ -14,3 +14,34 @@ csharp_style_var_elsewhere = true:warning
 # Rules/code.md: "File-scoped namespaces"
 dotnet_diagnostic.IDE0161.severity = warning
 csharp_style_namespace_declarations = file_scoped:warning
+
+# --- Roslynator curated starter set (audit batch 9, approved 2026-10-23) ---
+# Package: Directory.Build.props (Roslynator.Analyzers, diagnostics opt-in via this file).
+# First run: measure noise; promoting the set into the CI gate = a separate decision.
+# Bug-class detectors
+dotnet_diagnostic.RCS1155.severity = warning   # StringComparison on string comparisons
+dotnet_diagnostic.RCS1157.severity = warning   # composite enum value with undefined flag
+dotnet_diagnostic.RCS1166.severity = warning   # value-type == null comparisons
+dotnet_diagnostic.RCS1202.severity = warning   # patterns that lead to NullReferenceException
+dotnet_diagnostic.RCS1210.severity = warning   # return completed task instead of null
+dotnet_diagnostic.RCS1215.severity = warning   # expression always true/false
+dotnet_diagnostic.RCS1256.severity = warning   # invalid argument null check
+# Dead code (audit category U, automated)
+dotnet_diagnostic.RCS1213.severity = warning   # unused member declaration
+dotnet_diagnostic.RCS1163.severity = warning   # unused parameter
+# Project rules made executable (Rules/*.md)
+dotnet_diagnostic.RCS1060.severity = warning   # code.md Types: one type per file
+dotnet_diagnostic.RCS1015.severity = warning   # code-style: nameof() for exceptions
+dotnet_diagnostic.RCS1113.severity = warning   # code-style Strings: string.IsNullOrEmpty
+dotnet_diagnostic.RCS1156.severity = warning   # code-style Strings: no comparison with ""
+dotnet_diagnostic.RCS1186.severity = warning   # code-style Regex: instance over static Regex.IsMatch
+dotnet_diagnostic.RCS1077.severity = warning   # code-style LINQ: optimized method calls
+dotnet_diagnostic.RCS1249.severity = warning   # unnecessary null-forgiving operator (!)
+dotnet_diagnostic.RCS1265.severity = warning   # redundant catch block
+# Deliberately NOT enabled (conflicts with project rules/idioms — first-run noise 2026-10-23):
+#   RCS1046 Async suffix — NUnit test methods are scenario names (code.md test naming) and the
+#          REST-verb API idiom (Get/Post/Put) is deliberate; first run: 1428 hits, all false fits
+#   RCS1174 redundant async/await — Rules/code.md Async mandates "async Task methods with await"
+#   RCS1078 "" vs string.Empty — project rule mandates string.Empty (except compile-time constants)
+#   RCS1018 add accessibility modifiers — project style: omitted modifier = private (code.md)
+#   RCS1138/RCS1139 xml-doc summaries — project has no XML documentation by design

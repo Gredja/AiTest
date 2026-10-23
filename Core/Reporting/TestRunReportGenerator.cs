@@ -53,7 +53,7 @@ public static class TestRunReportGenerator
             return;
         }
 
-        var lines = AssembleReportLines(root, workspace, runStart, outcomeLogs, outcomes);
+        var lines = AssembleReportLines(root, workspace, runStart, outcomes);
 
         var resultsDirectory = Path.Combine(root, TestConfig.ResultsDirName);
         Directory.CreateDirectory(resultsDirectory);
@@ -65,7 +65,6 @@ public static class TestRunReportGenerator
         string root,
         string workspace,
         DateTime runStart,
-        List<string> outcomeLogs,
         List<TestOutcome> outcomes)
     {
         var actionLogs = CollectLogs(workspace, runStart, TestRunWorkspace.ActionLogPrefix);
@@ -104,7 +103,7 @@ public static class TestRunReportGenerator
             .Where(path => Path.GetFileName(path).StartsWith(filePrefix, StringComparison.Ordinal))
             .Where(path => path.EndsWith(".log", StringComparison.Ordinal))
             .Where(path => File.GetLastWriteTime(path) >= runStart.AddSeconds(-LogTimeSkewSeconds))
-            .OrderBy(path => path)
+            .Order()
             .ToList();
 
     private static List<TestRunRow> BuildRows(
