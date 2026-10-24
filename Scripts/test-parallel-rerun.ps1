@@ -57,6 +57,15 @@ function Get-FailedTests {
     return @($failed | Sort-Object -Unique)
 }
 
+# VSTest --filter breaks on parentheses in parameterized FQNs (e.g. Method(en))
+# and on an overly long OR chain; strip "(...)" so ~ matches the method base name.
+function Get-RerunFilterTerms {
+    param([string[]]$TestNames)
+    return @($TestNames |
+        ForEach-Object { $_ -replace '\([^()]*\)$', '' } |
+        Sort-Object -Unique)
+}
+
 Write-Host "== PASS 1: workers=$ParallelWorkers $Project $Filter" -ForegroundColor Cyan
 Invoke-DotnetTest -Workers $ParallelWorkers -TestFilter $Filter
 $pass1Exit = $script:LastTestExit
@@ -71,9 +80,10 @@ if ($null -eq $failed -or $failed.Count -eq 0) {
     exit $pass1Exit
 }
 
-Write-Host "== PASS 2: rerun $($failed.Count) failed test(s) with 1 worker" -ForegroundColor Cyan
+$filterTerms = Get-RerunFilterTerms -TestNames $failed
+Write-Host "== PASS 2: rerun $($failed.Count) failed test(s) as $($filterTerms.Count) filter term(s) with 1 worker" -ForegroundColor Cyan
 $failed | ForEach-Object { Write-Host "  - $_" }
-$rerunFilter = ($failed | ForEach-Object { "FullyQualifiedName~$_" }) -join "|"
+$rerunFilter = ($filterTerms | ForEach-Object { "FullyQualifiedName~$_" }) -join "|"
 
 Get-ChildItem $resultsDir -Filter *.trx | Remove-Item -Force
 Invoke-DotnetTest -Workers 1 -TestFilter $rerunFilter
@@ -85,10 +95,14 @@ if ($pass2Exit -eq 0) {
 }
 
 $stillFailed = Get-FailedTests
-Write-Host "PASS 2 red - persistent failure(s):" -ForegroundColor Red
-if ($stillFailed) {
-    $stillFailed | ForEach-Object { Write-Host "  x $_" }
+if ($null -eq $stillFailed -or $stillFailed.Count -eq 0) {
+    Write-Host "PASS 2 red - infrastructure/filter error (exit $pass2Exit), no Failed results in trx - not a recovery:" -ForegroundColor Red
+    $failed | ForEach-Object { Write-Host "  ? $_" }
+    exit 1
 }
+
+Write-Host "PASS 2 red - persistent failure(s):" -ForegroundColor Red
+$stillFailed | ForEach-Object { Write-Host "  x $_" }
 $recovered = @($failed | Where-Object { $stillFailed -notcontains $_ })
 if ($recovered.Count -gt 0) {
     Write-Host "Recovered on rerun (flaky):" -ForegroundColor Yellow

@@ -29,6 +29,10 @@ jobs:
       - name: Build
         run: dotnet build
 
+      - name: Install Playwright Chromium
+        shell: pwsh
+        run: ./Scripts/install-playwright.ps1 -WithDeps
+
       - name: Run API + E2E suite (two-pass)
         shell: pwsh
         env:

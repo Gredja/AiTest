@@ -416,8 +416,11 @@ The UI rarely exposes the created id. Cleanup composition:
   or fix the timing assumption). Keep a known-flakes list; a single red among known flakes is
   triaged before being called a regression.
 - **Two-pass runner:** pass 1 runs the suite in parallel (e.g. 8 workers), collects failures
-  from the test logger output, pass 2 reruns just those sequentially; exit code = pass-2 verdict.
-  This separates real failures from parallelism flakes in one command.
+  from the test logger output, pass 2 reruns just those sequentially (strip parameterized
+  `(…)` suffixes from FQNs so the VSTest filter stays valid); exit code = pass-2 verdict.
+  A pass-2 non-zero exit with **no** Failed results in the trx is an infrastructure/filter
+  error — report it as such, never as "recovered". This separates real failures from
+  parallelism flakes in one command.
 - **Baseline tracking:** keep the green counts in memory/docs (e.g. "gate: N/N, suite: M/M") so
   a drop is visible immediately.
 - **Repo hygiene:** feature branches + PRs; English `action + object` commits; EOL normalization

@@ -33,18 +33,22 @@ PRs from `features/...` into `main` — only after review and approval.
 - `.github/workflows/pr-checks.yml` — required PR gate on `main`: `format` runs on every PR;
   live `HealthCheck` only for same-repo branches (fork PRs get an explicit stub — secrets are
   unavailable to forks, and a missing required check would pend forever and block merges)
-- `.github/workflows/nightly-tests.yml` — informational API + E2E suite (`--filter
-  "Category!=GitHubUi"`): cron `17 3 * * *` UTC (off the hour — GitHub delays/drops top-of-hour
-  schedules) + `workflow_dispatch`; two-pass via `Scripts/test-parallel-rerun.ps1` (`shell: pwsh`
-  on `ubuntu-latest` + setup-dotnet; no container — browsers are not needed once the UI leg is
-  excluded): pass 1 in 8 fixture workers, failed tests rerun sequentially (1 worker); only
-  persistent failures fail the run (flaky races self-heal, drift stays red); clean clone gets CI
-  `testsettings.json` with `Headless: true` generated from the example before build; cron
-  auto-disables after 60 days of repo inactivity (public repos)
-- **UI leg excluded (2026-10-15, user decision):** GitHub device verification (email OTP) fires
-  on the `gredjapl` web login from CI runner IPs, so the in-run `LoginSignInTests` storageState
-  refresh can never complete — nightly runs `Category!=GitHubUi`, UI suite stays local-only
-  (alternatives storageState-secret / OTP automation rejected)
+- `.github/workflows/nightly-tests.yml` — informational API + E2E + MoodleDemo suite
+  (`--filter "Category!=GitHubUi"`): cron `17 3 * * *` UTC (off the hour — GitHub delays/drops
+  top-of-hour schedules) + `workflow_dispatch`; Playwright Chromium is installed via
+  `Scripts/install-playwright.ps1 -WithDeps` after Build (MoodleDemo UI needs the browser; GitHub
+  UI stays excluded); two-pass via `Scripts/test-parallel-rerun.ps1` (`shell: pwsh` on
+  `ubuntu-latest` + setup-dotnet; no container): pass 1 in 8 fixture workers, failed tests
+  rerun sequentially (1 worker); only persistent failures fail the run (flaky races self-heal,
+  drift stays red); a pass-2 exit without Failed trx results is reported as an
+  infrastructure/filter error, never as recovered; clean clone gets CI `testsettings.json` with
+  `Headless: true` generated from the example before build; cron auto-disables after 60 days of
+  repo inactivity (public repos)
+- **GitHub UI excluded (2026-10-15, user decision):** GitHub device verification (email OTP)
+  fires on the `gredjapl` web login from CI runner IPs, so the in-run `LoginSignInTests`
+  storageState refresh can never complete — nightly runs `Category!=GitHubUi`, GitHub UI stays
+  local-only (alternatives storageState-secret / OTP automation rejected); MoodleDemo UI is
+  included and needs the Playwright install step
 - Nightly red is a drift/flake report for the owner — it never blocks merges; the live suite is
   NEVER a required check (rate-limit exhaustion and external-API instability are the documented
   Top-3 risks — `documentation/GitHubTestingStructure.md`)
@@ -56,7 +60,8 @@ PRs from `features/...` into `main` — only after review and approval.
   `TEST_PAT`, `UI_EMAIL`, `UI_PASSWORD`, `UI_PAT`; each workflow maps them to the env vars the
   code reads (`GITHUB_PAT`, `GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) in its
   `env:` block — values live only in GitHub settings, never in the repo
-- Artifacts: test report + allure 7 days (UI traces are not uploaded — UI suite is local-only)
+- Artifacts: test report + allure 7 days (GitHub UI traces are not uploaded — that suite is
+  local-only)
 
 ## Secrets
 
