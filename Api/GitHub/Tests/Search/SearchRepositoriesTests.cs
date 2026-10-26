@@ -49,4 +49,44 @@ public class SearchRepositoriesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
+
+    [Test]
+    [Category("Regression")]
+    [Description("29.4 total_count is non-negative and items fit the count")]
+    public async Task SearchRepositories_TotalCountIsConsistent()
+    {
+        var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(RepositoryQuery));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.TotalCount.Should().BeGreaterThanOrEqualTo(response.Data.Items.Count);
+        response.Data.Items.Should().NotBeEmpty();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("29.5 Each returned repository has name, owner and html_url")]
+    public async Task SearchRepositories_ItemsHaveRepositoryFields()
+    {
+        var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(RepositoryQuery));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Items.Should().OnlyContain(repository =>
+            !string.IsNullOrWhiteSpace(repository.Name)
+            && repository.Owner != null
+            && !string.IsNullOrWhiteSpace(repository.HtmlUrl));
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("29.6 Content-Type is application/json")]
+    public async Task SearchRepositories_ContentTypeIsJson()
+    {
+        var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(RepositoryQuery));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
+    }
 }
