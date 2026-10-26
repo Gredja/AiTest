@@ -73,16 +73,21 @@ Write-Host ""
 Write-Host "=== File Coverage (endpoint → test) ===" -ForegroundColor Cyan
 Write-Host ""
 
-$services = @("JsonPlaceholder", "GitHub")
+$serviceConfigs = @(
+    @{ Name = "JsonPlaceholder"; EndpointsFile = "Core/Config/JsonPlaceholderEndpoints.cs"; TestDir = "Api/JsonPlaceholder/Tests"; Namespaces = @("Core/Models/JsonPlaceholder", "Api/JsonPlaceholder") }
+    @{ Name = "GitHub";          EndpointsFile = "Core/Config/GitHubEndpoints.cs";          TestDir = "Api/GitHub/Tests";          Namespaces = @("Core/Models/GitHub", "Api/GitHub") }
+    @{ Name = "Moodledemo";      EndpointsFile = "Core/Config/MoodledemoEndpoints.cs";      TestDir = "Ui/moodledemo/Tests";       Namespaces = @("Ui/moodledemo") }
+)
+$serviceNames = @($serviceConfigs | ForEach-Object { $_.Name })
 
-foreach ($service in $services) {
-    $endpointsFile = "Core/Config/${service}Endpoints.cs"
+foreach ($config in $serviceConfigs) {
+    $endpointsFile = $config.EndpointsFile
     if (-not (Test-Path $endpointsFile)) { continue }
 
     $content = Get-Content $endpointsFile -Raw
-    $endpoints = ([regex]::Matches($content, 'public const string (\w+) = "(/[^"]+)"')).Count
+    $endpoints = ([regex]::Matches($content, 'public const string (\w+) = "(/[^"]*)"')).Count
 
-    $testDir = "Api/$service/Tests"
+    $testDir = $config.TestDir
     $testFiles = 0
     if (Test-Path $testDir) {
         $testFiles = (Get-ChildItem -Path $testDir -Recurse -Filter "*Tests.cs").Count
@@ -90,7 +95,7 @@ foreach ($service in $services) {
 
     $coverage = if ($endpoints -gt 0) { [math]::Round($testFiles / $endpoints * 100) } else { 0 }
 
-    Write-Host ("{0,-15} Endpoints: {1,-3} Tested: {2,-3} Coverage: {3}%" -f $service, $endpoints, $testFiles, $coverage)
+    Write-Host ("{0,-15} Endpoints: {1,-3} Tested: {2,-3} Coverage: {3}%" -f $config.Name, $endpoints, $testFiles, $coverage)
 }
 
 Write-Host ""
@@ -101,9 +106,9 @@ Write-Host ""
 Write-Host "=== Per-Service Code Coverage ===" -ForegroundColor Cyan
 Write-Host ""
 
-$serviceNamespaces = @{
-    "JsonPlaceholder" = @("Core/Models/JsonPlaceholder", "Api/JsonPlaceholder")
-    "GitHub"         = @("Core/Models/GitHub", "Api/GitHub")
+$serviceNamespaces = @{}
+foreach ($config in $serviceConfigs) {
+    $serviceNamespaces[$config.Name] = $config.Namespaces
 }
 
 $serviceResults = @{}
@@ -138,7 +143,7 @@ foreach ($file in $coverageFiles) {
     }
 }
 
-foreach ($service in @("JsonPlaceholder", "GitHub")) {
+foreach ($service in $serviceNames) {
     if ($serviceResults.ContainsKey($service)) {
         $covered = $serviceResults[$service].Covered
         $total = $serviceResults[$service].Total
@@ -182,20 +187,20 @@ $html = @"
             <tr><th>Service</th><th>Endpoints</th><th>Tested</th><th>Coverage</th></tr>
 "@
 
-foreach ($service in @("JsonPlaceholder", "GitHub")) {
-    $endpointsFile = "Core/Config/${service}Endpoints.cs"
+foreach ($config in $serviceConfigs) {
+    $endpointsFile = $config.EndpointsFile
     if (-not (Test-Path $endpointsFile)) { continue }
     $content = Get-Content $endpointsFile -Raw
-    $pattern = 'public const string (\w+) = "(/[^"]+)"'
+    $pattern = 'public const string (\w+) = "(/[^"]*)"'
     $endpoints = [regex]::Matches($content, $pattern).Count
-    $testDir = "Api/$service/Tests"
+    $testDir = $config.TestDir
     $testFiles = 0
     if (Test-Path $testDir) {
         $testFiles = (Get-ChildItem -Path $testDir -Recurse -Filter "*Tests.cs").Count
     }
     $pct = if ($endpoints -gt 0) { [math]::Round($testFiles / $endpoints * 100) } else { 0 }
     $cls = if ($pct -ge 70) { "high" } elseif ($pct -ge 50) { "mid" } else { "low" }
-    $html += "            <tr><td>$service</td><td>$endpoints</td><td>$testFiles</td><td class=`"$cls`">$pct%</td></tr>`n"
+    $html += "            <tr><td>$($config.Name)</td><td>$endpoints</td><td>$testFiles</td><td class=`"$cls`">$pct%</td></tr>`n"
 }
 
 $html += @"
@@ -208,7 +213,7 @@ $html += @"
             <tr><th>Service</th><th>Lines Covered</th><th>Lines Total</th><th>Coverage</th></tr>
 "@
 
-foreach ($service in @("JsonPlaceholder", "GitHub")) {
+foreach ($service in $serviceNames) {
     if ($serviceResults.ContainsKey($service)) {
         $covered = $serviceResults[$service].Covered
         $total = $serviceResults[$service].Total
