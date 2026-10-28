@@ -63,6 +63,7 @@ Gredja/
 │   ├── moodledemo-discover-langs.ps1  # regenerate moodledemo expected-langs.json from the live language switcher
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── read-github-pat.ps1       # the single token-read + never-print contract (used by skills)
+│   ├── coverage.runsettings      # coverlet IncludeTestAssembly — only for test-coverage.ps1 (not auto-applied)
 │   ├── test-coverage.ps1
 │   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
 ├── education/

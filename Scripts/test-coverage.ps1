@@ -22,7 +22,7 @@ if (Test-Path "TestResults/Report") {
 # Run tests with coverlet
 if (-not $SkipTests) {
     Write-Host "[2/4] Running tests with coverage collection..." -ForegroundColor Yellow
-    dotnet test --verbosity minimal --collect:"XPlat Code Coverage" --results-directory "$coverageDir"
+    dotnet test --verbosity minimal --collect:"XPlat Code Coverage" --settings Scripts/coverage.runsettings --results-directory "$coverageDir"
 } else {
     Write-Host "[2/4] Skipping tests (using existing results)..." -ForegroundColor Yellow
 }
@@ -118,12 +118,13 @@ foreach ($file in $coverageFiles) {
 
     foreach ($package in $xml.coverage.packages.package) {
         foreach ($class in $package.classes.class) {
-            $filename = $class.filename
+            $filename = ($class.filename -replace '\\', '/')
 
             foreach ($service in $serviceNamespaces.Keys) {
                 $matched = $false
                 foreach ($ns in $serviceNamespaces[$service]) {
-                    if ($filename -like "$ns*") {
+                    $nsNorm = $ns -replace '\\', '/'
+                    if ($filename -like "*/$nsNorm/*" -or $filename -like "$nsNorm/*" -or $filename -eq $nsNorm) {
                         $matched = $true
                         break
                     }
