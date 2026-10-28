@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Coverlet-only settings for Scripts/test-coverage.ps1.
+  Not auto-applied (unlike repo-root .runsettings) so HealthCheck / PR gate
+  never collect coverage.
+  IncludeTestAssembly: instrument Ui/Api/E2E test assemblies themselves so
+  page-objects (Ui/moodledemo, Ui/github) appear in line coverage, not only Core.
+-->
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <IncludeTestAssembly>true</IncludeTestAssembly>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>
