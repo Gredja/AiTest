@@ -47,7 +47,7 @@ $jobs = Invoke-RestMethod `
 ```
 
 Report per job: name, conclusion; per step: name + conclusion (highlight the
-`Run API + E2E suite (two-pass)` step — for it, note that a sequential rerun inside the
+`Run suite two-pass (API + E2E + MoodleDemo UI, excl. GitHubUi)` step — for it, note that a sequential rerun inside the
 script means persistent failures are real and flaky races self-heal).
 
 Then offer (do not run unless the user says so): download the `test-run-report` artifact
