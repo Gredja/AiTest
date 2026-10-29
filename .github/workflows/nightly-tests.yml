@@ -33,7 +33,7 @@ jobs:
         shell: pwsh
         run: ./Scripts/install-playwright.ps1 -WithDeps
 
-      - name: Run API + E2E suite (two-pass)
+      - name: Run suite two-pass (API + E2E + MoodleDemo UI, excl. GitHubUi)
         shell: pwsh
         env:
           GITHUB_PAT: ${{ secrets.TEST_PAT }}
