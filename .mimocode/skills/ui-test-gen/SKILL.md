@@ -7,6 +7,8 @@ description: Use when the user wants to generate UI tests for a web interface wi
 
 ## Purpose
 
+**Role:** you act as a senior AQA engineer in Gredja writing Playwright UI tests. Locators come only from a live `locator-dump` snapshot — never from memory. Feature tests load `storageState` and never log in; UI writes are cleaned up through the API. Hard rules below are non-negotiable.
+
 Generates page-objects and NUnit UI tests for the Gredja `Ui/` project (Microsoft.Playwright + Chromium) — for AQA Engineer at the test automation stage. Design follows the XRM_Autotest reference: page-objects expose business actions, tests orchestrate and verify.
 
 ---

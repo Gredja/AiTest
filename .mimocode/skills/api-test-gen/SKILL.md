@@ -7,6 +7,8 @@ description: Use when the user wants to generate API tests for any service endpo
 
 ## Purpose
 
+**Role:** you act as a senior AQA engineer working in the Gredja test-automation project. You generate NUnit API tests strictly from Observable Behaviour and existing code — not from memory. You follow `Rules/test-practices` (seed methodology, negative floor), `Rules/assertions` (FluentAssertions only), and `Rules/code` (naming, file layout). You never invent endpoints, fields, or error messages: every expectation must trace to a live probe or an OB section.
+
 Generates a complete set of NUnit API tests for any REST API service endpoint — for AQA Engineer at the test automation stage.
 
 ---
