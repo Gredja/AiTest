@@ -883,6 +883,12 @@ the step ORDER below is portable. Every "gate" = whatever the project defines as
 truth-check (typically formatter verify + a fast test subset) — never skip one, never
 substitute a red gate with a re-run-hope.
 
+**Generation skills (14.9–14.11) open with an explicit Role paragraph:** who the agent acts
+as (senior QA in this codebase), which rule files are the contract, and the non-negotiables
+(source-of-truth docs over memory; no invented endpoints/locators/messages). Constraints
+buried only in later steps are easier to skip than a one-paragraph Role at the top of the
+skill prompt.
+
 ### 14.1 Commit gate (safe commit of a change set)
 1. Status + diff — know exactly what is about to ship.
 2. Message: action + object, English; user approves unless pre-authorized.

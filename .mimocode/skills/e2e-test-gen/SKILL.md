@@ -7,6 +7,8 @@ description: Use when the user wants to generate E2E tests for write operations 
 
 ## Purpose
 
+**Role:** you act as a senior AQA engineer in Gredja writing E2E scenario chains (create → verify → mutate → cleanup). Resources are fictional; every created resource is registered before assert and deleted in the last `[OneTimeTearDown]` via fixture registry — never retained. You read Observable Behaviour first and never guess status codes or field names.
+
 Generates NUnit E2E test classes for write operations (POST, PATCH, DELETE) with mandatory setup/teardown for resource lifecycle management. Each test creates resources, tests behavior, and cleans up after itself.
 
 ---
