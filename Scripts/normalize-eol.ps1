@@ -5,8 +5,8 @@
 $ErrorActionPreference = 'Stop'
 Set-Location (git rev-parse --show-toplevel)
 
-$crlfExtensions = 'cs', 'csx', 'csproj', 'props', 'sln', 'slnx', 'json', 'jsonc', 'ps1', 'runsettings'
-$extraFiles = '.editorconfig'
+$crlfExtensions = 'cs', 'csx', 'csproj', 'props', 'sln', 'slnx', 'json', 'jsonc', 'ps1', 'runsettings', 'mjs'
+$extraFiles = '.editorconfig', '.gitattributes'
 $converted = 0
 
 $paths = @((git ls-files) + @(git ls-files --others --exclude-standard) + $extraFiles | Select-Object -Unique)
