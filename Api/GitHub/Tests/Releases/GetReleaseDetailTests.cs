@@ -84,6 +84,28 @@ public class GetReleaseDetailTests : GitHubTestBase
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 
+    [Test]
+    [Category("Negative")]
+    [Description("15c.3 Non-existent owner returns 404")]
+    public async Task GetLatestRelease_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<ReleaseModelResponse>(GitHubEndpoints.RepoReleasesLatest,
+            RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("15c.4 Invalid token returns 401")]
+    public async Task GetLatestRelease_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoReleasesLatest, InvalidAuthorization, TestRepoParam());
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {

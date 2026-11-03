@@ -175,4 +175,27 @@ public class GetPullRequestsTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("5.13 Non-existent owner with a real repo name returns 404")]
+    public async Task GetPullRequests_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
+            RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("5.14 Invalid state is ignored and falls back to the default open filter (OB §9)")]
+    public async Task GetPullRequests_InvalidState_ReturnsOpenDefault()
+    {
+        var response = await Get<List<PullRequestModelResponse>>(GitHubEndpoints.RepoPullRequests,
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateInvalid)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().OnlyContain(pullRequest => pullRequest.State == GitHubEndpoints.StateOpen);
+    }
 }

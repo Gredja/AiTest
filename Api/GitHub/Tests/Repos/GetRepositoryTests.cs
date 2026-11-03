@@ -154,4 +154,15 @@ public class GetRepositoryTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("1.12 Invalid token returns 401")]
+    public async Task GetRepository_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.ReposById, InvalidAuthorization, TestRepoParam());
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
 }

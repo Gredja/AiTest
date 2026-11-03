@@ -209,6 +209,28 @@ public class GetIssuesTests : GitHubTestBase
     }
 
     [Test]
+    [Category("Negative")]
+    [Description("3.15 Non-existent owner returns 404")]
+    public async Task GetIssues_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("3.16 Invalid token returns 401")]
+    public async Task GetIssues_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoIssues, InvalidAuthorization, TestRepoParam());
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [Test]
     [Category("Regression")]
     [Description("3.14 Issues list includes pull requests (pull_request field present)")]
     public async Task GetIssues_ItemsIncludePullRequests()

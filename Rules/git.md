@@ -7,6 +7,9 @@
 
 ## Branches
 
+- **Hard rule (user, 2026-11-02): before making ANY change to the codebase, check which branch
+  you are on (`git branch --show-current`). All edits go to `features/...` branches; `main`
+  receives changes only via merge — never edit files while on `main`.**
 - `main` — stable branch, do not touch directly
 - `main` is protected (2026-10-16): PR required (0 approvals) + required check `gate` with
   strict up-to-date, no force pushes/deletions; `enforce_admins` is off — the admin can bypass

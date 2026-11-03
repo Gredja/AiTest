@@ -13,6 +13,10 @@ namespace Api.GitHub.UserRepos;
 [Category("GitHub")]
 public class GetUserReposTests : GitHubTestBase
 {
+    private const string InvalidUsername = "!invalid!";
+    private const string UsernameWithSpaces = "abc def";
+    private const int DefaultingPerPage = 0;
+
     private static readonly string _testUsername = TestConfig.GitHubTestUsername;
 
     [Test]
@@ -83,6 +87,40 @@ public class GetUserReposTests : GitHubTestBase
             GitHubEndpoints.UsersRepos, InvalidAuthorization, UsernameParam(_testUsername));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("7.8 Username with invalid characters returns 404")]
+    public async Task GetUserRepos_InvalidUsernameCharacters_ReturnsNotFound()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
+            UsernameParam(InvalidUsername));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("7.9 Username with spaces returns 404")]
+    public async Task GetUserRepos_UsernameWithSpaces_ReturnsNotFound()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
+            UsernameParam(UsernameWithSpaces));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("7.10 per_page=0 falls back to the default page (200)")]
+    public async Task GetUserRepos_PerPageZero_ReturnsDefaultPage()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
+            [.. UsernameParam(_testUsername), .. PerPageParam(DefaultingPerPage)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty("per_page=0 must fall back to the default page, not an empty one");
     }
 
     [Test]

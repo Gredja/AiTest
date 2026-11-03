@@ -157,4 +157,15 @@ public class GetBranchesTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("4.13 Non-existent owner returns 404")]
+    public async Task GetBranches_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<List<BranchModelResponse>>(GitHubEndpoints.RepoBranches,
+            RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
 }

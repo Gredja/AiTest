@@ -423,7 +423,9 @@ The UI rarely exposes the created id. Cleanup composition:
   parallelism flakes in one command.
 - **Baseline tracking:** keep the green counts in memory/docs (e.g. "gate: N/N, suite: M/M") so
   a drop is visible immediately.
-- **Repo hygiene:** feature branches + PRs; English `action + object` commits; EOL normalization
+- **Repo hygiene:** verify the current branch **before any codebase edit** (`git branch --show-current`)
+  — edits go only to feature branches, the default branch receives changes solely via merge;
+  feature branches + PRs; English `action + object` commits; EOL normalization
   before `git add` (zero line-ending warnings); `.gitignore` covers auth states, results,
   artifacts, `.env`; tracked `backups/` copies of setup docs are updated in the same commit as
   the change they mirror.

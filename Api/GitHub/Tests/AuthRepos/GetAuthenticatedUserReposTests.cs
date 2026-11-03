@@ -81,4 +81,15 @@ public class GetAuthenticatedUserReposTests : GitHubTestBase
 
         AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("9.7 Missing authorization returns 401")]
+    public async Task GetAuthenticatedUserRepos_NoAuth_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.AuthenticatedUserRepos, null);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.RequiresAuthentication);
+    }
 }

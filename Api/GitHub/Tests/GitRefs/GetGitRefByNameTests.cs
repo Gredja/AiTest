@@ -61,4 +61,28 @@ public class GetGitRefByNameTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("26a.5 Non-existent owner returns 404")]
+    public async Task GetGitRefByName_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<GitRefModelResponse>(GitHubEndpoints.RepoGitRefByName,
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo),
+             .. GitRefParam(DefaultBranchRef)]);
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("26a.6 Invalid token returns 401")]
+    public async Task GetGitRefByName_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoGitRefByName, InvalidAuthorization,
+            [.. TestRepoParam(), .. GitRefParam(DefaultBranchRef)]);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
 }

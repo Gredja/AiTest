@@ -91,4 +91,28 @@ public class GetGitCommitTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("27.2b Non-existent owner returns 404")]
+    public async Task GetGitCommit_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<GitCommitModelResponse>(GitHubEndpoints.RepoGitCommitsById,
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo),
+             .. GitCommitParam(_mainCommitSha)]);
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("27.2c Invalid token returns 401")]
+    public async Task GetGitCommit_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoGitCommitsById, InvalidAuthorization,
+            [.. TestRepoParam(), .. GitCommitParam(_mainCommitSha)]);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
 }

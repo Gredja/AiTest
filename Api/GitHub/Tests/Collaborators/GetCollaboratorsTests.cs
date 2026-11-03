@@ -84,4 +84,27 @@ public class GetCollaboratorsTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28.6 Non-existent owner returns 404")]
+    public async Task GetCollaborators_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<List<CollaboratorModelResponse>>(
+            GitHubEndpoints.RepoCollaborators,
+            RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28.7 Missing authorization returns 401")]
+    public async Task GetCollaborators_NoAuth_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoCollaborators, null, TestRepoParam());
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.RequiresAuthentication);
+    }
 }

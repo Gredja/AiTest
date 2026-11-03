@@ -74,4 +74,16 @@ public class DeleteInvitationTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28d.5 Non-existent owner returns 404")]
+    public async Task DeleteInvitation_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Delete<object>(GitHubEndpoints.RepoInvitationById,
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo),
+             .. InvitationIdParam(_nonExistentId)]);
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
 }

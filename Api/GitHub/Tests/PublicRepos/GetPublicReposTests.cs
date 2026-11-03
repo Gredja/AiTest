@@ -8,6 +8,7 @@ using System.Net;
 using FluentAssertions;
 using static Core.Helpers.ParamHelper;
 using static Core.Helpers.TestDataConstants;
+using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.PublicRepos;
 
@@ -17,6 +18,9 @@ namespace Api.GitHub.PublicRepos;
 public class GetPublicReposTests : GitHubTestBase
 {
     private const int FirstRepositoryId = 1;
+    private const long HugeSinceId = 999999999;
+    private const int DefaultingPerPage = 0;
+    private const int MaxPerPageCap = 100;
 
     [Test]
     [Category("HealthCheck")]
@@ -96,5 +100,42 @@ public class GetPublicReposTests : GitHubTestBase
         stopwatch.Stop();
 
         AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8.8 since=999999999 returns only repos with greater ids (200)")]
+    public async Task GetPublicRepos_SinceBeyondAllIds_ReturnsFilteredRepos()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
+            [Query(JsonFields.Since, HugeSinceId)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty("public repos with id >= 1e9 exist (probe 2026-11-02)");
+        response.Data.Should().OnlyContain(repository => repository.Id > HugeSinceId);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8.9 per_page=0 falls back to the default page (200)")]
+    public async Task GetPublicRepos_PerPageZero_ReturnsDefaultPage()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
+            PerPageParam(DefaultingPerPage));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().NotBeEmpty("per_page=0 must fall back to the default page, not an empty one");
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("8.10 per_page=101 is capped at 100 items (200)")]
+    public async Task GetPublicRepos_PerPageOverMax_ReturnsCappedPage()
+    {
+        var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
+            PerPageParam(MaxPerPageCap + 1));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Count.Should().Be(MaxPerPageCap);
     }
 }
