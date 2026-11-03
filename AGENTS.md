@@ -72,7 +72,7 @@ All changes: plan → approval → report. After a commit — review `Rules/`. A
 
 ### Git
 - Repo: github.com/Gredja/AiTest.git, branch: `main`
-- Make changes in `features/<topic>` branches
+- **Before ANY codebase change — check the current branch** (`git branch --show-current`): edits go only to `features/<topic>` branches; `main` receives changes **only via merge** (hard rule, user 2026-11-02 — `Rules/git.md` → Branches)
 - Commits: ONLY via the `/commit` skill (never by hand); only on request, English, format: action + object
 - Never commit `.env` or tokens
 - **Before committing:** `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` — both must pass (full run — `/test`)
