@@ -26,7 +26,7 @@
 | 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (30 tests) |
 | 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), POST git/blobs (§26c, infra-only — no dedicated fixture), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (18 tests) |
 
-**Total:** 425 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups), 9 E2E scenario chains and 44 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Thin-fixture deepening (search/invitations/repos-no-route/git-commit: contract + count-consistency + content-type + auth negatives) closed 2026-10-26; negative-floor priority batch (search ×3 to 5, pulls owner/state negatives, ceiling docs) closed 2026-11-02 (§7). The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted).
+**Total:** 456 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups), 9 E2E scenario chains and 44 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Thin-fixture deepening (search/invitations/repos-no-route/git-commit: contract + count-consistency + content-type + auth negatives) closed 2026-10-26; negative-floor program (priority batch + follow-up batch: +45 tests, all 48 fixtures at floor or with documented ceiling) closed 2026-11-02 (§7). The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted).
 
 ## 2. Out of Scope
 
@@ -102,21 +102,57 @@ The reserved `E2E-N` prefixes in `[Description]` (`Rules/test-practices.md` → 
 
 Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint; mock-API exception + ceiling rule apply when distinct useful failure modes are exhausted (live probes 2026-11-02).
 
-### Priority fixtures (negative-test-gap batch, 2026-11-02)
+**Coverage (2026-11-02, both batches closed): 48 / 48 fixtures accounted for — 32 at floor + 16 with a documented ceiling; 217 active negatives of 456 GitHub tests.**
 
-| Fixture | Active negatives | Status |
-|---|---|---|
-| GET /search/issues, /search/repositories, /search/users ×3 | 5 each: missing `q`, garbage qualifier, `q` > 256 chars, operators-only `q`, invalid token | **Floor met** |
-| GET /repos/{owner}/{repo}/pulls | 4: non-existent repo 404, non-existent owner 404, invalid token 401, invalid-state sentinel 200 (falls back to default open) | **Ceiling = 4** — missing auth → 200 (public repo), `per_page`/`page` normalized → 200; a 5th test would be padding |
-| GET /rate_limit | 1: invalid token 401 | **Ceiling = 1** — no auth → 200 (60/h quota by design), endpoint always 200 when credentials are absent or valid (OB §16) |
-| GET /users | 1: invalid token 401 | **Ceiling = 1** (OB §3a) — no path segments, invalid query params silently ignored → 200 |
+### Fixtures at floor (32)
+
+| Fixture | Neg | Fixture | Neg | Fixture | Neg |
+|---|---:|---|---:|---|---:|
+| AuthNegative | 5 | CreateComment | 5 | CreateGitCommit | 5 |
+| CreateGitTree | 5 | CreateInvitation | 5 | CreateIssueNegative | 5 |
+| CreatePullRequest | 7 | CreateRef | 6 | DeleteComment | 5 |
+| DeleteInvitation | 5 | DeleteRef | 5 | GetBranchByName | 5 |
+| GetCollaboratorPermission | 5 | GetCommits | 5 | GetContributors | 5 |
+| GetIssueById | 5 | GetIssueComments | 8 | GetIssues | 5 |
+| GetLanguages | 5 | GetPublicRepos | 5 | GetPullRequestById | 6 |
+| GetPullRequestCommits | 6 | GetPullRequestFiles | 6 | GetReleases | 5 |
+| GetRepository | 5 | GetTags | 5 | GetTopics | 5 |
+| GetUserRepos | 5 | SearchIssues | 5 | SearchRepositories | 5 |
+| SearchUsers | 5 | UpdateIssue | 5 | | |
+
+### Fixtures with a documented ceiling (16)
+
+| Fixture | Neg | Ceiling | Where documented |
+|---|---:|---:|---|
+| GetAuthenticatedUser | 2 | 2 | OB §5a — both auth modes covered; no path/query surface |
+| GetAuthenticatedUserRepos | 2 | 2 | OB §5 — 403 wrong-scope needs a scopeless token the suite does not hold |
+| GetBranches | 4 | 4 | OB §10 — missing auth → 200, query normalization → 200 |
+| GetCollaborators | 4 | 4 | OB §28 — auth-required route fully covered, no query modes |
+| GetGitCommit | 4 | 4 | OB §27 — missing auth is not a 401 on this public read |
+| GetGitRefByName | 4 | 4 | OB §26a — missing auth → 200, no query surface |
+| GetInvitations | 4 | 4 | OB §28c — auth-required route fully covered |
+| GetPullRequests | 4 | 4 | OB §9 — missing auth → 200 (public), `per_page`/`page` normalized |
+| GetRateLimit | 1 | 1 | OB §16 — endpoint always 200 when credentials are absent or valid |
+| GetReleases* → GetReleaseDetail | 4 | 4 | OB §15c/15d — no-releases mode untestable while the fixture creates a release |
+| GetRepos | 2 | 2 | OB §1a — a non-existent route can only 404 (route check precedes auth) |
+| GetUser | 4 | 4 | OB §3 — no query params; missing auth → 200 |
+| GetUsers | 1 | 1 | OB §3a — no path segments; invalid queries silently ignored |
+| MergePullRequest | 4 | 4 | OB §23 — all other modes collapse to 200 |
+| UpdatePullRequest | 4 | 4 | OB §22 — null `title` / unknown `state` accepted (200) |
+| CreateIssueVisibility | 0 | — | OB §17 — per-ENDPOINT floor met by `CreateIssueNegativeTests` (5); this fixture is Performance-only by design |
 
 ### Auth strategy (shared ceiling)
 
-Auth failures are one uniform middleware: `AuthNegativeTests` clusters invalid / missing / malformed `Authorization` on key routes, and priority read fixtures keep their own `*_InvalidToken_*`. Expanding 401s to every route adds no new failure class — ceiling rule: *a uniform GitHub auth middleware doesn't need a 401 test on every route*.
+Auth failures are one uniform middleware: `AuthNegativeTests` clusters invalid / missing / malformed `Authorization` on key routes, and read fixtures keep their own `*_InvalidToken_*` where the floor needed it. Expanding 401s to every route adds no new failure class — ceiling rule: *a uniform GitHub auth middleware doesn't need a 401 test on every route*.
 
-### Coverage summary (2026-11-02)
+### Method (reproducible for any future batch)
 
-- **25 / 48** GitHub fixtures at ≥5 active negatives; 186 active negatives of 425 GitHub tests total
-- Remaining 23 fixtures below 5 have **no ceiling claimed yet** — each needs its own live-probe pass (same method as this batch) before tests or a ceiling are written; tracked in `.mimocode/plans/negative-test-gap.md`
-- JsonPlaceholder ceilings live in `JsonPlaceholderTestPlan.md` → Negative Floor Status (closed 2026-10-02)
+1. Count `Category("Negative")` per fixture file; list those below 5.
+2. For each, read the OB section's Negative list + Validation Rules (path segments, headers, query params).
+3. **Live-probe every uncertain mode before writing a test** (read-only GET/PUT-to-missing-resource; batch-1 and batch-2 probes both corrected wrong OB claims — invalid pulls `state`, `since` beyond 1e9).
+4. Add tests until 5 or until modes are exhausted; write the ceiling line into the OB section for the remainder.
+5. Refresh this table and the counters above.
+
+### JsonPlaceholder
+
+Ceilings live in `JsonPlaceholderTestPlan.md` → Negative Floor Status (closed 2026-10-02: mock-API exception for GetAll ×6, filter rationale ×7).

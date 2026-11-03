@@ -4,6 +4,7 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
+using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.Collaborators;
@@ -58,6 +59,55 @@ public class CreateInvitationTests : GitHubTestBase
             GitHubEndpoints.RepoCollaboratorByUsername,
             new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
             [.. TestRepoParam(), .. UsernameParam(GitHubEndpoints.NonExistentUser)]);
+
+        invite.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28b.4 PUT without auth returns 401")]
+    public async Task CreateInvitation_NoAuth_ReturnsUnauthorized()
+    {
+        var request = new RestRequest(GitHubEndpoints.RepoCollaboratorByUsername, Method.Put)
+        {
+            RequestFormat = DataFormat.Json
+        };
+        request.AddJsonBody(new Dictionary<string, object> { ["permission"] = GitHubEndpoints.PermissionPush });
+        AddParams(request, [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
+
+        var response = await Client.ExecuteAsync(request);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.RequiresAuthentication);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28b.5 Invalid token returns 401")]
+    public async Task CreateInvitation_InvalidToken_ReturnsUnauthorized()
+    {
+        var request = new RestRequest(GitHubEndpoints.RepoCollaboratorByUsername, Method.Put)
+        {
+            RequestFormat = DataFormat.Json
+        };
+        request.AddHeader(AuthorizationHeader, InvalidAuthorization);
+        request.AddJsonBody(new Dictionary<string, object> { ["permission"] = GitHubEndpoints.PermissionPush });
+        AddParams(request, [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
+
+        var response = await Client.ExecuteAsync(request);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28b.6 Non-existent repo returns 404")]
+    public async Task CreateInvitation_NonExistentRepo_ReturnsNotFound()
+    {
+        var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
+            GitHubEndpoints.RepoCollaboratorByUsername,
+            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName),
+             .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
 
         invite.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }

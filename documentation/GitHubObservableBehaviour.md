@@ -52,6 +52,9 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
 - Non-existent owner → 404, body has `message` (string: "Not Found")
 - Private repo without auth → 404 (not 403), body has `message` (string: "Not Found")
+- Invalid token → 401, body has `message` (string: "Bad credentials") (probe 2026-11-02)
+- No auth header → 200 OK for a public repo (auth layer does not gate public reads)
+- Floor status: 5 active negatives (repo, owner, invalid-chars, spaces, invalid token) — **≥5 floor met**
 
 ---
 
@@ -63,6 +66,8 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 **Negative:**
 - `GET /repos` → 404, body has `message` (string: "Not Found") (verified 2026-10-09)
+- Invalid token → still 404 (the route check precedes auth)
+- Ceiling = 2 active negatives < 5 floor: a non-existent route can only 404 — no other failure mode exists (ceiling rule)
 
 ---
 
@@ -79,9 +84,12 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - `?per_page=N` — array length ≤ N
 
 **Negative:**
-- `?since=999999999` → 200 OK, empty array `[]`
+- `?since=999999999` → 200 OK with repositories whose `id` ≥ 1000000000 — filter semantics, NOT an empty array (the earlier "empty array" claim was wrong; public repos past id 1e9 exist — probe 2026-11-02)
 - `?per_page=0` → 200 OK, returns default page (30 items)
 - `?per_page=101` → 200 OK, capped at 100 items
+- `?since=abc` → 422 UnprocessableEntity (covered by the fixture)
+- Invalid token → 401 (covered by the fixture)
+- Floor status: 5 active negatives — **≥5 floor met**
 
 ---
 
@@ -95,6 +103,11 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 **Negative:**
 - Non-existent user → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Username with invalid characters (`!invalid!`) → 404 (probe 2026-11-02)
+- Username with spaces (URL-encoded) → 404 (probe 2026-11-02)
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- No auth header → 200 OK (public endpoint)
+- Ceiling = 4 active negatives < 5 floor: no query parameters exist and missing auth is not a failure (ceiling rule)
 
 ---
 
@@ -130,7 +143,11 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 **Negative:**
 - Non-existent user → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Username with invalid characters (`!invalid!`) → 404 (probe 2026-11-02)
+- Username with spaces (URL-encoded) → 404 (probe 2026-11-02)
 - `?per_page=0` → 200 OK, returns default page (30 items)
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- Floor status: 5 active negatives — **≥5 floor met**
 
 ---
 
@@ -146,6 +163,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - No auth header → 401, body has `message` (string: "Requires authentication"), `documentation_url` (url)
 - Invalid token → 401, body has `message` (string: "Bad credentials"), `documentation_url` (url)
 - Token with wrong scope → 403, body has `message` (string), `documentation_url` (url)
+- Ceiling = 2 active testable negatives < 5 floor: the 403 wrong-scope mode needs a second scopeless token that the suite does not hold; path/query surfaces are absent (ceiling rule)
 
 ---
 
@@ -158,6 +176,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 **Negative (probed 2026-10-16):**
 - No auth header → 401, body has `message` (string: "Requires authentication"), `documentation_url` (url)
 - Invalid token → 401, body has `message` (string: "Bad credentials")
+- Ceiling = 2 active negatives < 5 floor: both documented auth modes are covered; the endpoint has no path/query failure surface (ceiling rule)
 
 ---
 
@@ -178,7 +197,12 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 **Negative:**
 - Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Non-existent owner → 404 (probe 2026-11-02)
 - Invalid `?state=invalid` → 422 UnprocessableEntity
+- `?since=abc` → 422 UnprocessableEntity
+- Invalid token → 401, body has `message` (string: "Bad credentials") (probe 2026-11-02)
+- No auth header → 200 OK (public repo)
+- Floor status: 5 active negatives — **≥5 floor met**
 
 ---
 
@@ -327,6 +351,10 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 **Negative:**
 - Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Non-existent owner → 404 (probe 2026-11-02)
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- No auth header → 200 OK (public repo)
+- Ceiling = 4 active negatives < 5 floor: missing auth and query normalization (`per_page`) both return 200 — no fifth failure mode (ceiling rule)
 
 ---
 
@@ -450,6 +478,10 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 **Negative (probed 2026-10-16):**
 - Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Non-existent owner → 404 (probe 2026-11-02)
+- Invalid token → 401, body has `message` (string: "Bad credentials") (probe 2026-11-02)
+- No auth header → 200 OK for a public repo when releases exist (ambiguous while the repo has zero releases: latest → 404 either way)
+- Ceiling = 4 active negatives (fixture file covers §15c+§15d) < 5 floor: the fifth mode (repo-with-no-releases → 404) cannot be tested while the fixture itself creates a release (ceiling rule)
 
 ---
 
@@ -518,6 +550,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - `labels: null` (JSON null instead of array/absent) → 422 Unprocessable Entity, body has `message` (string: `Invalid request.\n\nFor 'properties/labels', nil is not an array.`) — optional fields must be omitted, not sent as null
 - Invalid token → 401, body has `message` (string: "Bad credentials")
 - Non-existent repo → 404, body has `message` (string: "Not Found")
+- Floor status: POST /issues ≥5 floor met by `CreateIssueNegativeTests` (5 active) — `CreateIssueVisibilityTests` is a Performance-only fixture for the same endpoint by design (per-endpoint floor, not per-file)
 
 ---
 
@@ -666,6 +699,10 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 **Negative (probed 2026-10-16):**
 - Non-existent ref → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
 - Non-existent repo → 404, body has `message` (string: "Not Found")
+- Non-existent owner → 404 (probe 2026-11-02)
+- Invalid token → 401, body has `message` (string: "Bad credentials") (probe 2026-11-02)
+- No auth header → 200 OK (public repo — probe 2026-11-02)
+- Ceiling = 4 active negatives < 5 floor: missing auth returns 200, no query surface (ceiling rule)
 
 ---
 
@@ -704,6 +741,11 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - GET returns the commit with `tree.sha` (needed as POST's `tree` argument)
 - Invalid parent sha → 422
 - Non-existent commit sha → 404, body has `message` (string: "Not Found"), `documentation_url` (url) (probed 2026-10-16)
+- Non-existent repo → 404 (covered by the fixture)
+- Non-existent owner → 404 (probe 2026-11-02)
+- Invalid token → 401, body has `message` (string: "Bad credentials") (probe 2026-11-02)
+- No auth header → resource check first (invalid sha → 404; probe 2026-11-02)
+- Ceiling = 4 active negatives < 5 floor (GET §27 fixture): missing auth is not a 401 on this public read (ceiling rule)
 
 ---
 
@@ -718,6 +760,10 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 **Negative:**
 - Non-existent repo → 404, body has `message` (string: "Not Found")
+- Non-existent owner → 404 (probe 2026-11-02)
+- No auth header → 401, body has `message` (string: "Requires authentication") (probe 2026-11-02)
+- Invalid token → 401, body has `message` (string: "Bad credentials") (probe 2026-11-02)
+- Ceiling = 4 active negatives < 5 floor: the auth-required surface is fully covered, no query failure modes (ceiling rule)
 
 ---
 
@@ -735,6 +781,10 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
   endpoint-specific, NOT "Not Found"; re-verified 2026-10-16 — earlier OB claim of
   "Not Found" did not reproduce), `documentation_url` (url)
 - Non-existent repo → 404
+- Non-existent owner → 404 (probe 2026-11-02)
+- Invalid token → 401, body has `message` (string: "Bad credentials") (probe 2026-11-02)
+- No auth header → 401, body has `message` (string: "Requires authentication") (probe 2026-11-02)
+- Floor status: 5 active negatives — **≥5 floor met**
 
 ---
 
@@ -749,8 +799,10 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 **Negative (verified 2026-10-09):**
 - `permission: "pull"` on a PUBLIC repo → 422, body `message`: "Validation Failed", `errors`: "Cannot assign {username} permission of read" (read is already everyone's base access on a public repo)
 - Non-existent user → 404, body has `message` (string: "Not Found")
+- Non-existent repo → 404 (probe 2026-11-02 — no invitation can be created for a missing repo)
 - No auth → 401
 - Invalid token → 401
+- Floor status: 5 active negatives — **≥5 floor met**
 
 ---
 
@@ -763,6 +815,10 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 **Negative:**
 - Non-existent repo → 404
+- Non-existent owner → 404 (probe 2026-11-02)
+- No auth → 401, body has `message` (string: "Requires authentication") (probe 2026-11-02)
+- Invalid token → 401, body has `message` (string: "Bad credentials") (probe 2026-11-02)
+- Ceiling = 4 active negatives < 5 floor: auth-required route fully covered, no query failure modes (ceiling rule)
 
 ---
 
@@ -776,6 +832,9 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - Non-existent invitation id → 404, body has `message` (string: "Not Found"), `documentation_url` contains `/collaborators/invitations#delete-a-repository-invitation`
 - No auth → 401
 - Invalid token → 401
+- Non-existent repo → 404 (covered by the fixture)
+- Non-existent owner → 404 (probe 2026-11-02)
+- Floor status: 5 active negatives — **≥5 floor met**
 
 ---
 
@@ -871,7 +930,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 | `state` | `"open"`, `"closed"`, `"all"` (where supported) | Issues list: any other string → 422 UnprocessableEntity (§6); pulls list: invalid value is **ignored → default `open`** (§9) — both probes 2026-11-02 | Endpoint-dependent: issues reject invalid values, pulls ignore them |
 | `per_page` | Integer 1–100 | 0 → treated as default (30), >100 → capped at 100, negative → treated as default | GitHub silently normalizes |
 | `page` | Positive integer (1, 2, 3...) | 0 → treated as page 1, negative → treated as page 1 | No 400 for invalid values |
-| `since` | Positive integer (repo ID) | Non-numeric (e.g. `abc`) → 422; very large → empty array `[]` | Filters repos created after given ID |
+| `since` | Positive integer (repo ID) | Non-numeric (e.g. `abc`) → 422; very large → 200 with whatever repos have greater ids (may be non-empty — probe 2026-11-02) | Filters repos created after given ID |
 | `sort` | `"created"`, `"updated"`, `"pushed"`, `"full_name"` (where supported) | Invalid → default sort | Not tested in current scope |
 
 ### Headers

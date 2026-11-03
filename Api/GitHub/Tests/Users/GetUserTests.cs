@@ -13,6 +13,8 @@ namespace Api.GitHub.Users;
 [Category("GitHub")]
 public class GetUserTests : GitHubTestBase
 {
+    private const string InvalidUsername = "!invalid!";
+    private const string UsernameWithSpaces = "abc def";
     private static readonly string _testUsername = TestConfig.GitHubTestUsername;
 
     [Test]
@@ -117,5 +119,27 @@ public class GetUserTests : GitHubTestBase
             GitHubEndpoints.UsersById, InvalidAuthorization, UsernameParam(_testUsername));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.10 Username with invalid characters returns 404")]
+    public async Task GetUser_InvalidUsernameCharacters_ReturnsNotFound()
+    {
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById,
+            UsernameParam(InvalidUsername));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("2.11 Username with spaces returns 404")]
+    public async Task GetUser_UsernameWithSpaces_ReturnsNotFound()
+    {
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById,
+            UsernameParam(UsernameWithSpaces));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
 }

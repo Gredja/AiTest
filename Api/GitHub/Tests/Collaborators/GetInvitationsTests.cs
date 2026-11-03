@@ -69,4 +69,37 @@ public class GetInvitationsTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28c.6 Non-existent owner returns 404")]
+    public async Task GetInvitations_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<List<InvitationModelResponse>>(GitHubEndpoints.RepoInvitations,
+            RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28c.7 Missing authorization returns 401")]
+    public async Task GetInvitations_NoAuth_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoInvitations, null, TestRepoParam());
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.RequiresAuthentication);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28c.8 Invalid token returns 401")]
+    public async Task GetInvitations_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoInvitations, InvalidAuthorization, TestRepoParam());
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
 }

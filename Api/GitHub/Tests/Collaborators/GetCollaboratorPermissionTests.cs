@@ -60,4 +60,40 @@ public class GetCollaboratorPermissionTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28a.5 Non-existent owner returns 404")]
+    public async Task GetCollaboratorPermission_NonExistentOwner_ReturnsNotFound()
+    {
+        var response = await Get<PermissionModelResponse>(GitHubEndpoints.RepoCollaboratorPermission,
+            [.. RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo),
+             .. UsernameParam(TestConfig.GitHubTestUsername)]);
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28a.6 Invalid token returns 401")]
+    public async Task GetCollaboratorPermission_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoCollaboratorPermission, InvalidAuthorization,
+            [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubTestUsername)]);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("28a.7 Missing authorization returns 401")]
+    public async Task GetCollaboratorPermission_NoAuth_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoCollaboratorPermission, null,
+            [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubTestUsername)]);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.RequiresAuthentication);
+    }
 }
