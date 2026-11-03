@@ -16,7 +16,7 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 - `Core/Logging/` — action logging (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) and raw test results (`test-results-*.log`). `TestResults/` contains **reports only**, raw run artifacts live in the temp folder
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (invoked from the NUnit teardown `TestReportSetup`), age-based cleanup of artifacts older than 7 days
 - `AllureAdapter/` — solution project: Allure NUnit attribute + JSON writers/report helpers (`AllureAdapter/Helpers/`, flat layout by design)
-- `Scripts/` — one-off helper scripts: `locator-dump.mjs` (CDP locator dump), `normalize-eol.ps1`, `read-github-pat.ps1` (the single token-read/redaction contract), allure/test runners
+- `Scripts/` — one-off helper scripts: `locator-dump.mjs` (CDP locator dump), `normalize-eol.ps1`, `read-github-pat.ps1` (the single token-read/redaction contract), `mcp-slack/` (local Slack MCP server: `post_message`/`list_channels`, token from `.env`), allure/test runners
 - `Ui/Helpers/` — project-level helpers shared by both site trees (`RetryHelper`, `PageUrlHelper`, `TabCountParserHelper`, `ArtifactNamingHelper`, `SiteNavigationHelper`, `TextPatternsHelper`, `MoodledemoHttpHelper`, `HtmlLocaleReaderHelper`, `PageLocaleReaderHelper`, `TitleScriptAssertHelper`, `UiTimeout` constants holder)
 - `Rules/` — full rules (this file is only a brief digest)
 - `documentation/` — project documentation; `documentation/Katas/` — learning materials, do not touch; full tree (incl. `research/`, `backups/`, `TestResults/`) — `documentation/FILE_STRUCTURE.md`

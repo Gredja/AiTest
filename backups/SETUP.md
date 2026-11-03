@@ -151,7 +151,11 @@ MiMoCode хранит настройки в файле `~/.config/mimocode/mimoc
 
 ### 3.2. Проектный конфиг
 
-В папке проекта уже есть файл `.mimocode/mimocode.jsonc`. Он минимальный — просто указывает где лежат скиллы. Менять его не нужно.
+В папке проекта уже есть файл `.mimocode/mimocode.jsonc`. Он содержит пути к скиллам и
+локальный MCP-сервер `slack-local` (`node Scripts/mcp-slack/server.mjs`) — инструменты
+`post_message`/`list_channels` для Slack-уведомлений; секретов в конфиге нет (токен сервер
+сам читает из `.env`). Менять его не нужно; при любом изменении — синк
+`backups/mimocode-project.jsonc` в том же коммите.
 
 ---
 
@@ -267,7 +271,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol)
+├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, mcp-slack/ — локальный Slack MCP-сервер)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
@@ -322,7 +326,7 @@ MiMoCode:
 |---------|-----------|
 | `/test` | Запускает все тесты + пишет TestRunReport-*.md в `TestResults/` |
 | `/test-report` | Запускает тесты + генерирует Allure-отчёт |
-| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш |
+| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`) |
 | `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
@@ -333,7 +337,7 @@ MiMoCode:
 | `/coverage` | Запускает тесты + считает code coverage (coverlet) + file coverage (endpoint→test) |
 | `/update-docs` | Обновляет .md файлы проекта после структурных изменений |
 | `/nightly-check` | Проверяет последний ночной прогон (API GitHub) и выдаёт однострочный вердикт; при падении — шаги jobs |
-| `/merge` | Финал ветки целиком: `/commit` → PR в main → ожидание всех GitHub-гейтов → мерж → удаление remote-ветки → переход на main → напоминание про локальную ветку |
+| `/merge` | Финал ветки целиком: `/commit` → PR в main → ожидание всех GitHub-гейтов → мерж → удаление remote-ветки → Slack-уведомление (`✅ merge …`) → напоминание про локальную чистку (сам на main не переключается) |
 | `/gredja-rules` | Показывает правила проекта |
 
 Просто напиши `/test` в чате с MiMoCode — и он запустит тесты.

@@ -900,6 +900,8 @@ skill prompt.
 6. Sync duty: backups/education/structure docs that mirror what changed — same flow, same commit.
 7. EOL-normalize the worktree, stage everything, confirm zero line-ending warnings, no secrets staged.
 8. Commit → push (never to the default branch without explicit confirmation).
+9. Slack notification after a successful push, via the project's Slack MCP tool
+   (`✅ commit <sha>: <message>`); a failed/unavailable notification is reported, never a blocker.
 
 ### 14.2 Branch finalize (PR → merge)
 1. Preconditions: not on the default branch; tree clean (else 14.1 first).
@@ -907,7 +909,9 @@ skill prompt.
 3. Wait for CI gates via a BACKGROUND watcher (poll check-runs; never a blocking main-thread loop).
 4. Any check red → stop with names/conclusions; all green → merge via API (no force options).
 5. Delete the merged remote branch; verify it is gone; remind the human to delete the local one.
-6. The agent never switches to the default branch and never deletes local branches itself.
+6. Slack notification via the project's Slack MCP tool (`✅ merge PR <n> → <sha>`); same
+   never-blocking rule as 14.1.9.
+7. The agent never switches to the default branch and never deletes local branches itself.
 
 ### 14.3 CI/nightly verdict (read-only check-in)
 1. Fetch the latest scheduled run of the project's informational suite (token from env, never printed).
