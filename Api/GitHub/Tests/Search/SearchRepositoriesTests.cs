@@ -14,6 +14,8 @@ namespace Api.GitHub.Search;
 public class SearchRepositoriesTests : GitHubTestBase
 {
     private const string RepositoryQuery = "user:Gredja";
+    private const string GarbageQualifierQuery = "repo:";
+    private const string LogicalOperatorsOnlyQuery = "AND";
 
     [Test]
     [Category("HealthCheck")]
@@ -88,5 +90,50 @@ public class SearchRepositoriesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("29.7 Garbage qualifier in q returns 422")]
+    public async Task SearchRepositories_GarbageQualifier_Returns422()
+    {
+        var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(GarbageQualifierQuery));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("29.8 Query longer than 256 chars returns 422")]
+    public async Task SearchRepositories_OversizedQuery_Returns422()
+    {
+        var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
+            GitHubEndpoints.SearchRepositories,
+            SearchQueryParam(new string('a', GitHubEndpoints.SearchQueryMaxLength + 1)));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("29.9 Logical operators without search terms return 422")]
+    public async Task SearchRepositories_LogicalOperatorsOnly_Returns422()
+    {
+        var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(LogicalOperatorsOnlyQuery));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("29.10 Invalid token returns 401")]
+    public async Task SearchRepositories_InvalidToken_ReturnsUnauthorized()
+    {
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.SearchRepositories, InvalidAuthorization, SearchQueryParam(RepositoryQuery));
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 }

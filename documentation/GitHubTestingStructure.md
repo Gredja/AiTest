@@ -1,7 +1,7 @@
 # GitHub Testing Structure
 
 **Project:** Gredja (.NET 10.0)
-**Date:** 2026-10-26
+**Date:** 2026-11-02
 
 ---
 
@@ -23,10 +23,10 @@
 | 12 | **Collaborators & invitations** | GET/PUT /collaborators, /collaborators/{username}/permission, GET/DELETE /invitations (OB §28–28d) | Done (21 tests) |
 | 13 | **Authenticated user** | GET /user (OB §5a) — status, contract, login match, 401s | Done (5 tests) |
 | 14 | **Release detail** | GET /releases/latest, /releases/tags/{tag} (OB §15c–15d) + fixture infra §15e | Done (4 tests) |
-| 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (18 tests) |
+| 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (30 tests) |
 | 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), POST git/blobs (§26c, infra-only — no dedicated fixture), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (18 tests) |
 
-**Total:** 411 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups), 9 E2E scenario chains and 44 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Thin-fixture deepening (search/invitations/repos-no-route/git-commit: contract + count-consistency + content-type + auth negatives) closed 2026-10-26. The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted).
+**Total:** 425 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~26 endpoint groups), 9 E2E scenario chains and 44 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Thin-fixture deepening (search/invitations/repos-no-route/git-commit: contract + count-consistency + content-type + auth negatives) closed 2026-10-26; negative-floor priority batch (search ×3 to 5, pulls owner/state negatives, ceiling docs) closed 2026-11-02 (§7). The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted).
 
 ## 2. Out of Scope
 
@@ -76,7 +76,7 @@ The team loses trust in the suite and stops running it — the moment coverage s
 - [ ] All `Smoke` tests pass — Content-Type, pagination, filters
 - [ ] All `Negative` tests pass — 404 for non-existent resources
 - [ ] All `Performance` tests pass — response time < 5s for every list endpoint
-- [ ] Every endpoint has ≥ 5 negative tests (seed methodology floor)
+- [ ] Every endpoint has ≥ 5 active negative tests **or a documented ceiling** (`Rules/test-practices.md` Step 4 — see §7 Negative Floor Status)
 - [ ] Zero `Assert` or `NullReference` exceptions in test output
 - [ ] Allure report generated with no broken/unknown statuses
 - [ ] `dotnet format --verify-no-changes` passes
@@ -97,3 +97,26 @@ The reserved `E2E-N` prefixes in `[Description]` (`Rules/test-practices.md` → 
 | E2E-7 | `GitRefLifecycleTests` | create branch → visible → duplicate 422 → delete → gone |
 | E2E-8 | `IssueStateMachineTests` | open → closed → reopen with list filters |
 | E2E-9 | `FailedWriteTests` | PR without commits → 422 → no side effects |
+
+## 7. Negative Floor Status
+
+Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint; mock-API exception + ceiling rule apply when distinct useful failure modes are exhausted (live probes 2026-11-02).
+
+### Priority fixtures (negative-test-gap batch, 2026-11-02)
+
+| Fixture | Active negatives | Status |
+|---|---|---|
+| GET /search/issues, /search/repositories, /search/users ×3 | 5 each: missing `q`, garbage qualifier, `q` > 256 chars, operators-only `q`, invalid token | **Floor met** |
+| GET /repos/{owner}/{repo}/pulls | 4: non-existent repo 404, non-existent owner 404, invalid token 401, invalid-state sentinel 200 (falls back to default open) | **Ceiling = 4** — missing auth → 200 (public repo), `per_page`/`page` normalized → 200; a 5th test would be padding |
+| GET /rate_limit | 1: invalid token 401 | **Ceiling = 1** — no auth → 200 (60/h quota by design), endpoint always 200 when credentials are absent or valid (OB §16) |
+| GET /users | 1: invalid token 401 | **Ceiling = 1** (OB §3a) — no path segments, invalid query params silently ignored → 200 |
+
+### Auth strategy (shared ceiling)
+
+Auth failures are one uniform middleware: `AuthNegativeTests` clusters invalid / missing / malformed `Authorization` on key routes, and priority read fixtures keep their own `*_InvalidToken_*`. Expanding 401s to every route adds no new failure class — ceiling rule: *a uniform GitHub auth middleware doesn't need a 401 test on every route*.
+
+### Coverage summary (2026-11-02)
+
+- **25 / 48** GitHub fixtures at ≥5 active negatives; 186 active negatives of 425 GitHub tests total
+- Remaining 23 fixtures below 5 have **no ceiling claimed yet** — each needs its own live-probe pass (same method as this batch) before tests or a ceiling are written; tracked in `.mimocode/plans/negative-test-gap.md`
+- JsonPlaceholder ceilings live in `JsonPlaceholderTestPlan.md` → Negative Floor Status (closed 2026-10-02)

@@ -112,6 +112,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 **Negative:**
 - Invalid token → 401, body has `message` (string: "Bad credentials")
+- No auth header → 200 OK (public endpoint; probe 2026-11-02)
 - Ceiling: no path segments and all invalid queries are ignored → invalid-token 401 is the only active failure mode (1 < 5 floor; documented per ceiling rule)
 
 ---
@@ -247,8 +248,12 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 **Negative:**
 - Non-existent repo → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
-- Invalid `?state=invalid` → 422 UnprocessableEntity
+- Non-existent owner (with a real repo name) → 404, body has `message` (string: "Not Found")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- Invalid `?state=bogus` → **200 OK, value ignored — falls back to the default `open` filter** (probe 2026-11-02; unlike the issues list §6, the pulls list does NOT return 422). Active test asserts 200 + only-open items as a conformance sentinel
+- No auth header → 200 OK (public repo — the auth layer does not gate this route; probe 2026-11-02)
 - Repo with no PRs → 200 OK, empty array `[]`
+- Ceiling = 4 active negatives < 5 floor: missing auth → 200 and `per_page`/`page` normalization → 200 leave no distinct failure mode to add (ceiling rule)
 
 ---
 
@@ -483,7 +488,9 @@ release and the auto-created tag ref):
 - Content-Type is application/json
 
 **Negative:**
-- Always returns 200 OK — no negative cases for this endpoint
+- Invalid token → 401, body has `message` (string: "Bad credentials") — auth layer, not endpoint logic (probe 2026-11-02)
+- No auth header → 200 OK with `rate.limit` = 60 (unauthenticated quota) — missing auth is NOT a failure here (probe 2026-11-02)
+- The endpoint itself always returns 200 OK when credentials are absent or valid — no endpoint-level failure modes; **ceiling = 1 active negative** (1 < 5 floor; documented per ceiling rule)
 - When `remaining` = 0, next requests (not this one) return 403
 
 ---
@@ -777,9 +784,18 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - `?q=` required → 200 OK, body: `total_count` (integer), `incomplete_results` (boolean),
   `items` (array of repository objects) (probed 2026-10-16)
 
-**Negative (probed 2026-10-16):**
+**Negative (probed 2026-10-16, extended 2026-11-02):**
 - Missing `q` → 422, body has `message` (string: "Validation Failed"), `errors` (array:
   resource "Search", field "q", code "missing")
+- Empty / whitespace-only `q` → 422, same `code: "missing"` payload
+- Garbage qualifier (`q=repo:`) → 422, `errors[0].code` = "invalid",
+  message (string: "The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.")
+- `q` longer than 256 chars → 422, message (string: "The search is longer than 256 characters.")
+- Logical operators without terms (`q=AND`) → 422, message (string: "The search contains only logical operators (AND / OR / NOT) without any search terms. Logical operators only apply to text, not to qualifiers.")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- No auth header → 200 OK (public search, 60 req/h unauthenticated)
+- Invalid `sort` / `per_page` → 200 OK, silently ignored
+- Floor status: 5 active negatives (missing, garbage, oversized, operators-only, invalid token) — **≥5 floor met**
 
 ---
 
@@ -787,11 +803,29 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 - `?q=` required → 200 OK, body has `items` (array of issue objects) (probed 2026-10-16)
 
+**Negative (probed 2026-11-02):**
+- Missing / empty `q` → 422, `errors[0]`: resource "Search", field "q", code "missing"
+- Garbage qualifier (`q=repo:`) → 422, message (string: "The listed users and repositories cannot be searched either because the resources do not exist or you do not have permission to view them.")
+- `q` longer than 256 chars → 422, message (string: "The search is longer than 256 characters.")
+- Logical operators without terms (`q=AND`) → 422, message (string: "The search contains only logical operators (AND / OR / NOT) without any search terms. Logical operators only apply to text, not to qualifiers.")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- No auth header → 200 OK (public search)
+- Floor status: 5 active negatives — **≥5 floor met**
+
 ---
 
 ## 29b. GET /search/users
 
 - `?q=` required → 200 OK, body has `items` (array of user objects) (probed 2026-10-16)
+
+**Negative (probed 2026-11-02):**
+- Missing / empty `q` → 422, `errors[0]`: resource "Search", field "q", code "missing"
+- Garbage qualifier (`q=repo:`) → 422, message (string: "None of the search qualifiers apply to this search type.")
+- `q` longer than 256 chars → 422, message (string: "The search is longer than 256 characters.")
+- Logical operators without terms (`q=AND`) → 422, message (string: "The search contains only logical operators (AND / OR / NOT) without any search terms. Logical operators only apply to text, not to qualifiers.")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- No auth header → 200 OK (public search)
+- Floor status: 5 active negatives — **≥5 floor met**
 
 ---
 
@@ -834,7 +868,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 | Parameter | Valid | Invalid | API behavior |
 |---|---|---|---|
-| `state` | `"open"`, `"closed"`, `"all"` (where supported) | Any other string → 422 UnprocessableEntity (verified on the issues/pulls lists, §6/§8) | Invalid values are rejected, not ignored |
+| `state` | `"open"`, `"closed"`, `"all"` (where supported) | Issues list: any other string → 422 UnprocessableEntity (§6); pulls list: invalid value is **ignored → default `open`** (§9) — both probes 2026-11-02 | Endpoint-dependent: issues reject invalid values, pulls ignore them |
 | `per_page` | Integer 1–100 | 0 → treated as default (30), >100 → capped at 100, negative → treated as default | GitHub silently normalizes |
 | `page` | Positive integer (1, 2, 3...) | 0 → treated as page 1, negative → treated as page 1 | No 400 for invalid values |
 | `since` | Positive integer (repo ID) | Non-numeric (e.g. `abc`) → 422; very large → empty array `[]` | Filters repos created after given ID |

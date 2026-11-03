@@ -23,6 +23,8 @@ public static class GitHubEndpoints
     public const string StateOpen = "open";
     public const string StateClosed = "closed";
     public const string StateAll = "all";
+    // Not a valid state value — GitHub ignores it on the pulls list (falls back to default open)
+    public const string StateInvalid = "bogus";
     public const string PermissionAdmin = "admin";
     public const string PermissionRead = "read";
     public const string PermissionPull = "pull";
@@ -91,6 +93,9 @@ public static class GitHubEndpoints
     public const string SearchRepositories = "/search/repositories";
     public const string SearchIssues = "/search/issues";
     public const string SearchUsers = "/search/users";
+
+    // GitHub search rejects q longer than 256 chars with 422 (probe 2026-11-02)
+    public const int SearchQueryMaxLength = 256;
 
     public const string RateLimit = "/rate_limit";
 }
