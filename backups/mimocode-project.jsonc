@@ -2,5 +2,11 @@
   "$schema": "https://mimo.xiaomi.com/mimocode/config.json",
   "skills": {
     "paths": [".mimocode/skills"]
+  },
+  "mcp": {
+    "slack-local": {
+      "type": "local",
+      "command": ["node", "Scripts/mcp-slack/server.mjs"]
+    }
   }
 }

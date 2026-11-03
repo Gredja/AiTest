@@ -92,6 +92,11 @@ worktree-only; it never alters committed blobs).
 If branch is `main` — do NOT push. Report that push was skipped.
 Otherwise: `git push -u origin HEAD`
 
+**Slack notification (after a successful push):** call the `slack-local` MCP tool
+`post_message` with text `✅ commit <sha>: <commit message>` — omit `channel` (the server
+takes `SLACK_CHANNEL` from `.env`). If the tool is unavailable or the post fails, note it
+in Step 8 — a failed notification never blocks the commit.
+
 ## Step 8: Report
 
 Report in execution order:
@@ -104,6 +109,7 @@ Report in execution order:
 - Backup sync: synced / skipped with reason (Step 6)
 - Files changed, Commit hash (Step 7)
 - Push: pushed / skipped (Step 7)
+- Slack notification: sent / failed (Step 7)
 
 ---
 

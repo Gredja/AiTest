@@ -61,6 +61,8 @@ Gredja/
 │   ├── install-playwright.ps1    # playwright install chromium (+ deps)
 │   ├── locator-dump.mjs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
 │   ├── moodledemo-discover-langs.ps1  # regenerate moodledemo expected-langs.json from the live language switcher
+│   ├── mcp-slack/
+│   │   └── server.mjs             # local Slack MCP server over stdio (post_message, list_channels; token from .env)
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── read-github-pat.ps1       # the single token-read + never-print contract (used by skills)
 │   ├── coverage.runsettings      # coverlet IncludeTestAssembly — only for test-coverage.ps1 (not auto-applied)

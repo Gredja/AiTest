@@ -83,8 +83,14 @@ Never delete `main`. Verify with `git ls-remote --heads origin <branch>` (empty 
 
 ### Step 7: Report
 
+**Slack notification first:** call the `slack-local` MCP tool `post_message` with text
+`✅ merge PR #<n>: <title> → <merge sha>` — omit `channel` (the server takes
+`SLACK_CHANNEL` from `.env`). A failed or unavailable notification is reported below and
+never blocks the merge flow.
+
 In execution order: commit (message/hash) or "skipped — tree clean" · PR number/url/title ·
-gates result (names + verdict) · merge sha · remote branch deleted.
+gates result (names + verdict) · merge sha · remote branch deleted · Slack notification
+(sent / failed).
 
 End every report with this warning — it is a manual action the agent cannot perform
 (shared ref store):
