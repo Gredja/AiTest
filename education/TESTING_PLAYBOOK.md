@@ -196,6 +196,13 @@ Principles:
 - Assert in layers: **status code → contract (required fields, types) → values**. Key verbs live
   in one assertion helper (`ShouldHaveStatusCode`, `ShouldHaveError`, `ShouldHaveValidContract`,
   `ShouldMatchRequest`) so the style can't drift per test file.
+- **Unit-test the assertion helper itself, offline.** The green suite only walks the helper's
+  happy path — its fail-paths (wrong status, empty body, attribute violations, request/response
+  mismatch) otherwise stay unexecuted and a bug there silently corrupts every verdict. Feed the
+  helper hand-built inputs (responses faked in memory — status + body assigned directly, no
+  network) and assert both directions: good input passes, bad input throws the assertion-library
+  exception (`Action` + `Throw`/`NotThrow`). Own service category keeps them filterable and out
+  of live gates.
 - Use a real assertion library with fluent semantics (FluentAssertions-style
   `.Should().Be/NotBeNull/GreaterThan/OnlyContain`) — never bare `Assert.That` sprawl; failure
   messages must name the intent.

@@ -13,6 +13,7 @@ Add exactly one service category to the `[TestFixture]` class:
 | GitHub E2E | `[Category("GitHubE2E")]` |
 | GitHub UI (Playwright) | `[Category("GitHubUi")]` |
 | Moodle demo UI (Playwright/HTTP, `Ui/moodledemo/`) | `[Category("MoodleDemo")]` |
+| Core helpers unit tests (offline, `Api/CoreHelpers/`) | `[Category("Core")]` |
 
 ```csharp
 [TestFixture]

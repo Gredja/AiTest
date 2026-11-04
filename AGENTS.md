@@ -5,7 +5,7 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 
 ## Project Structure
 
-- `Api/` — NUnit API tests (JsonPlaceholder, GitHub), including single write tests
+- `Api/` — NUnit API tests (JsonPlaceholder, GitHub), including single write tests; offline unit tests of the shared assertion helper (`Api/CoreHelpers/Tests/`, `Category=Core`, no live API)
 - `Ui/` — NUnit UI tests (Playwright .NET + Chromium): site scope — the `Ui/github/` folder (future sites — sibling folders, e.g. `Ui/moodledemo/`); pages/forms — `Ui/github/Pages/` (shared common chrome — `Ui/github/Pages/Common/`, family base classes — `RepositoryPageBase`), infrastructure — `Ui/github/Tests/Support/`, tests — `Ui/github/Tests/`; authorization via storageState (`.auth/github-ui-state.json`): the state is refreshed by the automated test `LoginSignInTests` (login via `GITHUB_UI_EMAIL`/`GITHUB_UI_PASSWORD`), the other tests only read the state; write via UI → cleanup via API; locators ONLY on Page/Form (at the bottom of the file), helpers receive `ILocator` as parameters; rules — `Rules/ui-testing.md`. The `Ui/moodledemo/` sibling covers the Moodle demo multilingual site (`https://school.moodledemo.net`): HTTP-first L1 locale smoke + Playwright checks (language switcher, persistence, RTL layout, login localization), anonymous contexts for L1/L2 (no storageState; the L3 `AccountUiTests` signs in with the shared demo accounts), locale expectations from `Ui/moodledemo/Fixtures/expected-langs.json`, rules — `Rules/localization-testing.md`, category `MoodleDemo`
 - `E2E/` — NUnit E2E tests: scenario chains only (create → verify → mutate → cleanup)
 - `Core/Models/` — response/request models
