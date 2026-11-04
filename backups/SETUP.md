@@ -169,7 +169,15 @@ GITHUB_PAT=твой_личный_токен_здесь
 GITHUB_UI_EMAIL=email_аккаунта_для_UI-входа
 GITHUB_UI_PASSWORD=пароль_аккаунта_для_UI-входа
 GITHUB_UI_PAT=токен_для_UI-sandbox_репозитория
+
+SLACK_BOT_TOKEN=xoxb-...            # бот Slack (scopes chat:write, channels:read) — для MCP slack-local и CI-уведомлений
+SLACK_CHANNEL=#general              # канал по умолчанию для уведомлений
 ```
+
+`SLACK_BOT_TOKEN`/`SLACK_CHANNEL` дублируются в Settings → Secrets and variables → Actions
+репозитория (те же значения): workflow-шаг `Scripts/slack-notify-run.ps1` шлёт в Slack отчёт
+о каждом ране (название, статус, итог и разбивка по категориям из `TestRunReport-*.md`);
+без секретов (fork PR) шаг тихо пропускается.
 
 **Как получить токен:**
 1. Зайди на GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
@@ -271,7 +279,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, mcp-slack/ — локальный Slack MCP-сервер)
+├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, slack-notify-run (GitHub Actions → Slack), mcp-slack/ — локальный Slack MCP-сервер)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация

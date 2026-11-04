@@ -55,3 +55,11 @@ jobs:
             TestResults/*.md
             allure-results/
           retention-days: 7
+
+      - name: Slack notification
+        if: always()
+        shell: pwsh
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+        run: ./Scripts/slack-notify-run.ps1 -Title "🧪 Nightly full suite" -Status "${{ job.status }}" -Event "${{ github.event_name }}" -RunUrl "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" -ReportPath "TestResults"

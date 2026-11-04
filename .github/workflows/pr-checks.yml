@@ -36,3 +36,11 @@ jobs:
       - name: HealthCheck skipped for fork PRs
         if: github.event.pull_request.head.repo.full_name != github.repository
         run: echo "Repository secrets are not available to fork PRs — live checks skipped, format and analyzer gates still apply"
+
+      - name: Slack notification
+        if: always()
+        shell: pwsh
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL: ${{ secrets.SLACK_CHANNEL }}
+        run: ./Scripts/slack-notify-run.ps1 -Title "🔬 PR checks" -Status "${{ job.status }}" -Event "${{ github.event_name }}" -RunUrl "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
