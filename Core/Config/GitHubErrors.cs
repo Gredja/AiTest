@@ -8,4 +8,6 @@ public static class GitHubErrors
     public const string BadCredentials = "Bad credentials";
     public const string MissingTitle = "Invalid request.\n\n\"title\" wasn't supplied.";
     public const string LabelsNull = "Invalid request.\n\nFor 'properties/labels', nil is not an array.";
+    public const string ValidationFailed = "Validation Failed";
+    public const string ContentNotString = "content must be a string";
 }

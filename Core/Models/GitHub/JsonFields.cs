@@ -12,6 +12,7 @@ public static class JsonFields
     public const string CreatedAt = "created_at";
     public const string DefaultBranch = "default_branch";
     public const string Draft = "draft";
+    public const string Encoding = "encoding";
     public const string Expired = "expired";
     public const string ForksCount = "forks_count";
     public const string FullName = "full_name";

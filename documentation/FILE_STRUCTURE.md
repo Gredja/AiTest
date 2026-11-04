@@ -256,6 +256,9 @@ Api/
 │           ├── GetUserTodosTests.cs
 │           └── GetUserAlbumsTests.cs
 ├── GitHub/
+│   ├── Helpers/
+│   │   ├── GitBlobTestBase.cs      # narrow family base: random blob content + git blob sha oracle
+│   │   └── ReleaseTestBase.cs      # narrow family base: release fixture create + cleanup registry
 │   └── Tests/
 │       ├── Auth/
 │       │   ├── AuthNegativeTests.cs
@@ -276,6 +279,7 @@ Api/
 │       ├── Contributors/
 │       │   └── GetContributorsTests.cs
 │       ├── GitCommits/
+│       │   ├── CreateGitBlobTests.cs
 │       │   ├── CreateGitCommitTests.cs
 │       │   ├── CreateGitTreeTests.cs
 │       │   └── GetGitCommitTests.cs
@@ -308,6 +312,8 @@ Api/
 │       ├── RateLimit/
 │       │   └── GetRateLimitTests.cs
 │       ├── Releases/
+│       │   ├── DeleteReleaseTests.cs
+│       │   ├── GetReleaseByIdTests.cs
 │       │   ├── GetReleaseDetailTests.cs
 │       │   └── GetReleasesTests.cs
 │       ├── Repos/

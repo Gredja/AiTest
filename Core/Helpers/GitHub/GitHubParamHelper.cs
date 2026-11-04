@@ -62,6 +62,9 @@ public static class GitHubParamHelper
     public static List<RequestDictionaryModel> ReleaseIdParam(long id) =>
         [ParamHelper.UrlSegment("release_id", id)];
 
+    public static List<RequestDictionaryModel> ReleaseIdParam(string id) =>
+        [ParamHelper.UrlSegment("release_id", id)];
+
     public static List<RequestDictionaryModel> ReleaseTagParam(string tag) =>
         [ParamHelper.UrlSegment("release_tag", tag)];
 

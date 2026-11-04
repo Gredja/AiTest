@@ -1,40 +1,24 @@
+using Api.GitHub.Helpers;
 using Core.Models.GitHub;
-using Core.Generators;
 using Core.Config;
 using Core.Helpers;
-using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
-using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Releases;
 
 [TestFixture]
 [AllureNUnit]
 [Category("GitHub")]
-public class GetReleaseDetailTests : GitHubTestBase
+public class GetReleaseDetailTests : ReleaseTestBase
 {
-    private const string ReleaseTagPrefix = "phase2-release-";
-
     private string _tagName = string.Empty;
     private long _releaseId;
 
     [OneTimeSetUp]
-    public async Task CreateFixtureRelease()
-    {
-        _tagName = $"{ReleaseTagPrefix}{DataGenerator.RandomString(RandomNameLength)}";
-        var created = await Post<CreateReleaseModelRequest, ReleaseModelResponse>(
-            GitHubEndpoints.RepoReleases,
-            new CreateReleaseModelRequest { TagName = _tagName, Name = "release detail fixture" },
-            TestRepoParam());
-        if (created.Data is not null)
-        {
-            _releaseId = created.Data.Id;
-        }
-
-        created.ShouldHaveStatusCode(HttpStatusCode.Created);
-    }
+    public async Task CreateFixtureRelease() =>
+        (_releaseId, _tagName) = await CreateReleaseFixtureAsync();
 
     [Test]
     [Category("HealthCheck")]
@@ -107,9 +91,5 @@ public class GetReleaseDetailTests : GitHubTestBase
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        await CleanupReleaseAsync(_releaseId);
-        await CleanupGitRefAsync($"{GitHubEndpoints.TagsPrefix}{_tagName}");
-    }
+    public async Task OneTimeTearDown() => await CleanupReleaseFixturesAsync();
 }
