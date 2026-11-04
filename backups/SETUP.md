@@ -268,6 +268,7 @@ Gredja/
 │       ├── GitHub/               # Модели GitHub API
 │       └── Generic/              # Общие модели
 ├── Api/
+│   ├── CoreHelpers/Tests/        # Юнит-тесты AssertHelper (офлайн, категория Core)
 │   ├── JsonPlaceholder/Tests/    # Тесты JSONPlaceholder
 │   │   ├── Albums/               # Тесты альбомов
 │   │   ├── Comments/             # Тесты комментариев

@@ -216,6 +216,12 @@ Api/
 ├── Api.csproj
 ├── AllureGlobalSetup.cs
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(Fixtures)] + LevelOfParallelism(1)
+├── CoreHelpers/
+│   └── Tests/                     # AssertHelper unit tests (offline, no live API, Category=Core)
+│       ├── AssertHelperErrorTests.cs
+│       ├── AssertHelperFieldsTests.cs
+│       ├── AssertHelperMatchTests.cs
+│       └── AssertHelperShaBudgetTests.cs
 ├── JsonPlaceholder/
 │   ├── Helpers/
 │   │   ├── Data/
