@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
@@ -32,7 +33,7 @@ public class GetIssueCommentsTests : GitHubTestBase
         {
             var create = await Post<CreateCommentModelRequest, CommentModelResponse>(
                 GitHubEndpoints.RepoIssueComments,
-                new CreateCommentModelRequest { Body = TestComment },
+                CommentGenerator.CreateWithBody(TestComment),
                 [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
             create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdCommentId = create.Data!.Id;

@@ -1,10 +1,10 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
-using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -24,16 +24,16 @@ public class CommentChainTests : GitHubE2ETestBase
     public async Task CommentChain_Create_AddComments_VerifyCountAndOrdering()
     {
         var issue = await CreateIssueTrackedAsync(
-            new CreateIssueModelRequest { Title = $"Chain {DataGenerator.RandomString(TitleRandomLength)}" },
+            IssueGenerator.CreateRandom("Chain"),
             _createdIssueNumbers);
         var issueNumber = issue.Number;
 
         var createdBodies = new List<string>();
         for (var index = 0; index < ChainLength; index++)
         {
-            var body = $"Chain {index} {DataGenerator.RandomString(BodyRandomLength)}";
+            var body = DataGenerator.RandomBody($"Chain {index}");
             await CreateCommentTrackedAsync(
-                new CreateCommentModelRequest { Body = body },
+                CommentGenerator.CreateWithBody(body),
                 issueNumber,
                 _createdCommentIds);
             createdBodies.Add(body);

@@ -1,11 +1,10 @@
 using Core.Models.GitHub;
-using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
-using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -22,11 +21,7 @@ public class IssueStateMachineTests : GitHubE2ETestBase
     public async Task IssueStateMachine_Open_Close_Reopen_VerifyFilters()
     {
         var created = await CreateIssueTrackedAsync(
-            new CreateIssueModelRequest
-            {
-                Title = $"State {DataGenerator.RandomString(TitleRandomLength)}",
-                Body = $"State machine body {DataGenerator.RandomString(BodyRandomLength)}"
-            },
+            IssueGenerator.CreateRandom("State", "State machine body"),
             _createdIssueNumbers);
         var issueNumber = created.Number;
 

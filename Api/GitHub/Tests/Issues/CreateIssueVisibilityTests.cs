@@ -1,12 +1,11 @@
 using Core.Models.GitHub;
-using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
-using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Issues;
 
@@ -22,11 +21,7 @@ public class CreateIssueVisibilityTests : GitHubTestBase
     [Description("17.1 Created issue becomes visible within max response time")]
     public async Task CreateIssue_RecordVisibleWithinTimeLimit()
     {
-        var request = new CreateIssueModelRequest
-        {
-            Title = $"Visibility probe {DataGenerator.RandomString(TitleRandomLength)}",
-            Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}"
-        };
+        var request = IssueGenerator.CreateRandom("Visibility probe", "Body");
 
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, request, TestRepoParam());

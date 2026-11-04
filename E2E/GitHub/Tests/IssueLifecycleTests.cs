@@ -1,10 +1,9 @@
 using Core.Models.GitHub;
-using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
-using static Core.Helpers.TestDataConstants;
 
 namespace E2E.GitHub.Tests;
 
@@ -22,19 +21,12 @@ public class IssueLifecycleTests : GitHubE2ETestBase
     public async Task IssueLifecycle_Create_Comment_Close()
     {
         var created = await CreateIssueTrackedAsync(
-            new CreateIssueModelRequest
-            {
-                Title = $"Lifecycle {DataGenerator.RandomString(TitleRandomLength)}",
-                Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}"
-            },
+            IssueGenerator.CreateRandom("Lifecycle", "Body"),
             _createdIssueNumbers);
         created.State.Should().Be(GitHubEndpoints.StateOpen);
         await AssertIssueStateAsync(created.Number, GitHubEndpoints.StateOpen, "freshly created issue must be open");
 
-        var commentRequest = new CreateCommentModelRequest
-        {
-            Body = $"Comment {DataGenerator.RandomString(BodyRandomLength)}"
-        };
+        var commentRequest = CommentGenerator.CreateRandom("Comment");
         var comment = await CreateCommentTrackedAsync(commentRequest, created.Number, _createdCommentIds);
         comment.ShouldMatchRequest(commentRequest);
 

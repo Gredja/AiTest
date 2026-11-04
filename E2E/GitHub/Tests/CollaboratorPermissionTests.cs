@@ -1,4 +1,5 @@
 using Core.Models.GitHub;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -62,7 +63,7 @@ public class CollaboratorPermissionTests : GitHubE2ETestBase
 
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
-            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
+            CollaboratorGenerator.Create(GitHubEndpoints.PermissionPush),
             [.. TestRepoParam(), .. UsernameParam(collaboratorUser)]);
         if (invite.Data is not null)
         {

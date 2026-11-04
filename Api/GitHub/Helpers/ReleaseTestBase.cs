@@ -1,10 +1,9 @@
 using Core.Config;
-using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
 using System.Net;
-using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Helpers;
 
@@ -18,10 +17,11 @@ public abstract class ReleaseTestBase : GitHubTestBase
     // so a failed POST still leaves nothing to leak in the sandbox repo.
     protected async Task<(long Id, string TagName)> CreateReleaseFixtureAsync()
     {
-        var tagName = $"{ReleaseTagPrefix}{DataGenerator.RandomString(RandomNameLength)}";
+        var request = ReleaseGenerator.CreateRandom(ReleaseTagPrefix, "release fixture");
+        var tagName = request.TagName;
         var created = await Post<CreateReleaseModelRequest, ReleaseModelResponse>(
             GitHubEndpoints.RepoReleases,
-            new CreateReleaseModelRequest { TagName = tagName, Name = "release fixture" },
+            request,
             TestRepoParam());
 
         if (created.Data is not null)

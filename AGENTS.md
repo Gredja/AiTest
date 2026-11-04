@@ -10,7 +10,7 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 - `E2E/` — NUnit E2E tests: scenario chains only (create → verify → mutate → cleanup)
 - `Core/Models/` — response/request models
 - `Core/Helpers/` — shared helpers by subfolder: `Http/` (request infrastructure: `RequestHelper`, `JsonPlaceholder/GitHubRequestHelper`), `Data/` (`TestDataConstants` — write-data constants), `Assertions/` (`AssertHelper`), `Params/` (`ParamHelper`), `Waiting/` (`WaitHelper`, `WaitDiagnosticsHelper`, `WaitResult`); needed for E2E → `GitHub/` (`GitHubTestBase`, `GitHubParamHelper`); API tests only → `Api/<Service>/Helpers/`
-- `Core/Generators/` — generator classes (`DataGenerator` — varied write data); generators have the `Generator` suffix and live in their own folder, never in `Helpers/`
+- `Core/Generators/` — generator classes (`DataGenerator` — varied write data; service subfolders `GitHub/`, `JsonPlaceholder/` — request-model factories, the only place `new *ModelRequest` is allowed); generators have the `Generator` suffix and live in their own folder, never in `Helpers/`
 - `Core/Attributes/` — model-field validation attributes (`PositiveIdAttribute`, `RequiredFieldAttribute`, `ValueRangeAttribute`)
 - `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`, `Core/Config/MoodledemoEndpoints.cs` — URLs and endpoint paths
 - `Core/Logging/` — action logging (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) and raw test results (`test-results-*.log`). `TestResults/` contains **reports only**, raw run artifacts live in the temp folder

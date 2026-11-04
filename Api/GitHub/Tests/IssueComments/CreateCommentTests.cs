@@ -1,5 +1,5 @@
 using Core.Models.GitHub;
-using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -16,12 +16,6 @@ namespace Api.GitHub.IssueComments;
 [Category("GitHub")]
 public class CreateCommentTests : GitHubTestBase
 {
-    private static CreateCommentModelRequest CreateTestComment() =>
-        new()
-        {
-            Body = $"Comment {DataGenerator.RandomString(BodyRandomLength)}"
-        };
-
     private readonly List<long> _createdCommentIds = [];
 
     [Test]
@@ -30,7 +24,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_ReturnsCreated()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, CreateTestComment(), IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"), IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -46,7 +40,7 @@ public class CreateCommentTests : GitHubTestBase
     [Description("18.2 Response matches request")]
     public async Task CreateComment_MatchesRequest()
     {
-        var testComment = CreateTestComment();
+        var testComment = CommentGenerator.CreateRandom("Comment");
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, testComment, IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
@@ -65,7 +59,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_VisibleInList()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, CreateTestComment(), IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"), IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -90,7 +84,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_RecordVisibleWithinTimeLimit()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, CreateTestComment(), IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"), IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -119,7 +113,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_ContentTypeIsJson()
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, CreateTestComment(), IssueParams(ExistingIssueNumber));
+            GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"), IssueParams(ExistingIssueNumber));
         if (created.Data is not null)
         {
             _createdCommentIds.Add(created.Data.Id);
@@ -138,7 +132,7 @@ public class CreateCommentTests : GitHubTestBase
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(CreateTestComment());
+        request.AddJsonBody(CommentGenerator.CreateRandom("Comment"));
         AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<CommentModelResponse>(request);
@@ -156,7 +150,7 @@ public class CreateCommentTests : GitHubTestBase
             RequestFormat = DataFormat.Json
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        request.AddJsonBody(CreateTestComment());
+        request.AddJsonBody(CommentGenerator.CreateRandom("Comment"));
         AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<CommentModelResponse>(request);
@@ -187,7 +181,7 @@ public class CreateCommentTests : GitHubTestBase
         var nonExistentIssueNumber = issues.Data!.Max(issue => issue.Number) + GitHubEndpoints.NonExistentIdOffset;
 
         var response = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, CreateTestComment(),
+            GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"),
             [.. TestRepoParam(), .. IssueNumberParam(nonExistentIssueNumber)]);
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -199,7 +193,7 @@ public class CreateCommentTests : GitHubTestBase
     public async Task CreateComment_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Post<CreateCommentModelRequest, CommentModelResponse>(
-            GitHubEndpoints.RepoIssueComments, CreateTestComment(),
+            GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"),
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);

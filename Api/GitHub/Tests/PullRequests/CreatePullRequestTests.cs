@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -25,7 +26,7 @@ public class CreatePullRequestTests : GitHubTestBase
     public async Task CreatePullRequest_ReturnsCreated()
     {
         var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
-            $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
+            DataGenerator.RandomTitle("Scratch"));
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
@@ -37,7 +38,7 @@ public class CreatePullRequestTests : GitHubTestBase
     [Description("21.2 Response echoes title and starts open")]
     public async Task CreatePullRequest_EchoesTitleAndIsOpen()
     {
-        var title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}";
+        var title = DataGenerator.RandomTitle("Scratch");
         var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(title);
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
@@ -56,7 +57,7 @@ public class CreatePullRequestTests : GitHubTestBase
     public async Task CreatePullRequest_ContentTypeIsJson()
     {
         var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
-            $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
+            DataGenerator.RandomTitle("Scratch"));
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
@@ -76,12 +77,7 @@ public class CreatePullRequestTests : GitHubTestBase
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(new CreatePullRequestModelRequest
-        {
-            Title = ProbeTitle,
-            Head = GitHubEndpoints.DefaultBranch,
-            Base = GitHubEndpoints.DefaultBranch
-        });
+        request.AddJsonBody(PullRequestGenerator.Create(ProbeTitle, GitHubEndpoints.DefaultBranch, GitHubEndpoints.DefaultBranch));
         AddParams(request, TestRepoParam());
 
         var response = await Client.ExecuteAsync<PullRequestModelResponse>(request);
@@ -99,12 +95,7 @@ public class CreatePullRequestTests : GitHubTestBase
             RequestFormat = DataFormat.Json
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        request.AddJsonBody(new CreatePullRequestModelRequest
-        {
-            Title = ProbeTitle,
-            Head = GitHubEndpoints.DefaultBranch,
-            Base = GitHubEndpoints.DefaultBranch
-        });
+        request.AddJsonBody(PullRequestGenerator.Create(ProbeTitle, GitHubEndpoints.DefaultBranch, GitHubEndpoints.DefaultBranch));
         AddParams(request, TestRepoParam());
 
         var response = await Client.ExecuteAsync<PullRequestModelResponse>(request);
@@ -137,12 +128,7 @@ public class CreatePullRequestTests : GitHubTestBase
     {
         var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,
-            new CreatePullRequestModelRequest
-            {
-                Title = ProbeTitle,
-                Head = GitHubEndpoints.DefaultBranch,
-                Base = GitHubEndpoints.DefaultBranch
-            },
+            PullRequestGenerator.Create(ProbeTitle, GitHubEndpoints.DefaultBranch, GitHubEndpoints.DefaultBranch),
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -154,18 +140,15 @@ public class CreatePullRequestTests : GitHubTestBase
     public async Task CreatePullRequest_Duplicate_Returns422()
     {
         var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
-            $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
+            DataGenerator.RandomTitle("Scratch"));
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
+        var title = DataGenerator.RandomTitle("Scratch");
+
         var duplicate = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,
-            new CreatePullRequestModelRequest
-            {
-                Title = $"Scratch {DataGenerator.RandomString(TitleRandomLength)}",
-                Head = headBranch,
-                Base = baseBranch
-            },
+            PullRequestGenerator.Create(title, headBranch, baseBranch),
             TestRepoParam());
 
         duplicate.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -183,7 +166,7 @@ public class CreatePullRequestTests : GitHubTestBase
 
         var branch = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", Sha = mainBranch.Data!.Commit.Sha },
+            GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", mainBranch.Data!.Commit.Sha),
             TestRepoParam());
 
         _createdBranchNames.Add(branchName);
@@ -192,12 +175,7 @@ public class CreatePullRequestTests : GitHubTestBase
 
         var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,
-            new CreatePullRequestModelRequest
-            {
-                Title = ProbeTitle,
-                Head = branchName,
-                Base = GitHubEndpoints.DefaultBranch
-            },
+            PullRequestGenerator.Create(ProbeTitle, branchName, GitHubEndpoints.DefaultBranch),
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -210,12 +188,7 @@ public class CreatePullRequestTests : GitHubTestBase
     {
         var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,
-            new CreatePullRequestModelRequest
-            {
-                Title = ProbeTitle,
-                Head = GitHubEndpoints.DefaultBranch,
-                Base = GitHubEndpoints.DefaultBranch
-            },
+            PullRequestGenerator.Create(ProbeTitle, GitHubEndpoints.DefaultBranch, GitHubEndpoints.DefaultBranch),
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -227,7 +200,7 @@ public class CreatePullRequestTests : GitHubTestBase
     public async Task CreatePullRequest_RecordVisibleWithinTimeLimit()
     {
         var (pullNumber, headBranch, baseBranch) = await CreateScratchPullRequestAsync(
-            $"Scratch {DataGenerator.RandomString(TitleRandomLength)}");
+            DataGenerator.RandomTitle("Scratch"));
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var result = await WaitHelper.WaitUntilAsync(

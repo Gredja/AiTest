@@ -1,5 +1,5 @@
 using Core.Models.JsonPlaceholder;
-using Core.Generators;
+using Core.Generators.JsonPlaceholder;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -7,7 +7,6 @@ using FluentAssertions;
 using RestSharp;
 using static Core.Helpers.ParamHelper;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
-using static Core.Helpers.TestDataConstants;
 
 namespace Api.JsonPlaceholder.Posts;
 
@@ -23,20 +22,12 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     private const string NonObjectJson = "\"just-a-string\"";
     private const string NotANumberUserId = "not-a-number";
 
-    private static PostModelRequest CreateTestPost() =>
-        new()
-        {
-            UserId = TestUserId,
-            Title = $"Post {DataGenerator.RandomString(TitleRandomLength)}",
-            Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}"
-        };
-
     [Test]
     [Category("HealthCheck")]
     [Description("4.1 POST returns 201 Created")]
     public async Task CreatePost_ReturnsCreated()
     {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, CreateTestPost());
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
     }
@@ -46,7 +37,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.2 Response has valid fields")]
     public async Task CreatePost_HasValidFields()
     {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, CreateTestPost());
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.ShouldHaveValidFields();
@@ -57,7 +48,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.3 Response contains correct data")]
     public async Task CreatePost_ReturnsCorrectData()
     {
-        var testPost = CreateTestPost();
+        var testPost = PostGenerator.Create(TestUserId);
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, testPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -69,7 +60,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.4 Response has generated ID")]
     public async Task CreatePost_HasGeneratedId()
     {
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, CreateTestPost());
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.Id.Should().BeGreaterThan(0);
@@ -80,7 +71,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.6 Response matches request via ShouldMatchRequest")]
     public async Task CreatePost_ShouldMatchRequest()
     {
-        var testPost = CreateTestPost();
+        var testPost = PostGenerator.Create(TestUserId);
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, testPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -93,7 +84,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.7 Empty body returns error")]
     public async Task CreatePost_EmptyBody_ReturnsError()
     {
-        var emptyPost = new PostModelRequest();
+        var emptyPost = PostGenerator.Empty();
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, emptyPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.BadRequest);
@@ -104,7 +95,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.8 Special chars in title are accepted")]
     public async Task CreatePost_SpecialCharsInTitle_ReturnsCreated()
     {
-        var specialPost = new PostModelRequest { UserId = TestUserId, Title = SpecialCharsTitle, Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}" };
+        var specialPost = PostGenerator.Create(TestUserId, SpecialCharsTitle);
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, specialPost);
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -191,7 +182,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
     [Description("4.15 Created post becomes visible within max response time")]
     public async Task CreatePost_RecordVisibleWithinTimeLimit()
     {
-        var created = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, CreateTestPost());
+        var created = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         var result = await WaitHelper.WaitUntilAsync(

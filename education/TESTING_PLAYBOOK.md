@@ -162,7 +162,8 @@ Never seed data by hand and hope; the test owns its fixture lifecycle and proves
 ├── Core/
 │   ├── Config/     # base URLs + endpoint paths (one home; never inline URLs in tests)
 │   ├── Models/     # request/response DTOs per service domain
-│   ├── Helpers/    # Http/ (request infra), Data/ (generators), Assertions/, Params/
+│   ├── Generators/ # data primitives + per-domain request-model factories (only place models are built)
+│   ├── Helpers/    # Http/ (request infra), Data/ (shared test-data constants), Assertions/, Params/
 │   └── Logging/    # action log + raw run results (reports stay, raw artifacts temp)
 ├── Rules/          # full written rules (entry doc carries only the summary)
 ├── documentation/  # observable behavior, plans, structure docs
@@ -178,6 +179,11 @@ Principles:
   them; value types nullable only if the JSON field can be null; no constructors/validation/logic
   in models; JSON field names come from a single constants class per domain — never inline
   string literals.
+- **Request models are constructed only in generator classes** (one factory per domain,
+  `*Generator` suffix): tests and base classes call `IssueGenerator.CreateRandom(...)`, never
+  write `new CreateIssueModelRequest { … }`. Generators own randomized write data, field
+  defaults and named command shapes (Close/Reopen). Wire-level negative payloads (raw
+  dictionaries with deliberately wrong types) are not models and stay at the call site.
 - **Before creating ANY file, decide its place** by naming match + future growth. "Closest
   existing folder" is not a reason. Folder names must match their contents; rename when drift
   appears (structure audit on a schedule).

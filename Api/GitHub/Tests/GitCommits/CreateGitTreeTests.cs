@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
@@ -28,20 +29,7 @@ public class CreateGitTreeTests : GitHubTestBase
     {
         var response = await Post<CreateGitTreeModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitTrees,
-            new CreateGitTreeModelRequest
-            {
-                BaseTree = _baseTreeSha,
-                Tree =
-                [
-                    new GitTreeEntry
-                    {
-                        Path = ProbeEntryPath,
-                        Mode = FileMode644,
-                        Type = BlobType,
-                        Sha = GitHubEndpoints.NonExistentSha
-                    }
-                ]
-            },
+            GitObjectGenerator.CreateTree(_baseTreeSha, ProbeEntryPath, GitHubEndpoints.NonExistentSha),
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);

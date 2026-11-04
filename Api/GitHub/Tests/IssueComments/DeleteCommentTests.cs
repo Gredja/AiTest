@@ -1,5 +1,5 @@
 using Core.Models.GitHub;
-using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -18,10 +18,8 @@ public class DeleteCommentTests : GitHubTestBase
 {
     private const long NonExistentCommentId = 0;
 
-    private static readonly CreateCommentModelRequest _testComment = new()
-    {
-        Body = $"Cleanup probe {DataGenerator.RandomString(BodyRandomLength)}"
-    };
+    private static readonly CreateCommentModelRequest _testComment =
+        CommentGenerator.CreateRandom("Cleanup probe");
 
     private readonly List<long> _createdCommentIds = [];
 

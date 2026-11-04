@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
@@ -59,7 +60,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
     {
         var patched = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById,
-            new UpdateIssueModelRequest { State = state },
+            IssueGenerator.WithState(state),
             IssueParams(issueNumber));
         patched.ShouldHaveStatusCode(HttpStatusCode.OK);
 
@@ -93,7 +94,7 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
     {
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", Sha = sha },
+            GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", sha),
             TestRepoParam());
         if (created.Data is not null)
         {

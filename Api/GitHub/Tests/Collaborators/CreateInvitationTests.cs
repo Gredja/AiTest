@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
@@ -26,7 +27,7 @@ public class CreateInvitationTests : GitHubTestBase
     {
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
-            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
+            CollaboratorGenerator.Create(GitHubEndpoints.PermissionPush),
             [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
         if (invite.Data is not null)
         {
@@ -44,7 +45,7 @@ public class CreateInvitationTests : GitHubTestBase
     {
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
-            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPull },
+            CollaboratorGenerator.Create(GitHubEndpoints.PermissionPull),
             [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
 
         invite.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -57,7 +58,7 @@ public class CreateInvitationTests : GitHubTestBase
     {
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
-            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
+            CollaboratorGenerator.Create(GitHubEndpoints.PermissionPush),
             [.. TestRepoParam(), .. UsernameParam(GitHubEndpoints.NonExistentUser)]);
 
         invite.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -105,7 +106,7 @@ public class CreateInvitationTests : GitHubTestBase
     {
         var invite = await Put<CreateCollaboratorModelRequest, InvitationModelResponse>(
             GitHubEndpoints.RepoCollaboratorByUsername,
-            new CreateCollaboratorModelRequest { Permission = GitHubEndpoints.PermissionPush },
+            CollaboratorGenerator.Create(GitHubEndpoints.PermissionPush),
             [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName),
              .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
 

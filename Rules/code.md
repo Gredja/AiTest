@@ -48,6 +48,9 @@
 - **Generators live in their own folder** — classes with the `Generator` suffix go into a
   dedicated `Generators/` folder of their layer (e.g. `Core/Generators/`), never into
   `Helpers/` — helpers and generators are different roles with different name suffixes.
+  Service-scoped generators sit in a subfolder of that folder (`Core/Generators/GitHub/`,
+  `Core/Generators/JsonPlaceholder/`). Request-model construction (`new *ModelRequest`)
+  happens ONLY in generators — see `Rules/test-practices.md` → API testing patterns.
   Exception: a generator that is part of a domain module stays with that module
   (`Core/Reporting/TestRunReportGenerator` — its row DTO and retention companion live there too)
 
