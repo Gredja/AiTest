@@ -503,6 +503,33 @@ release and the auto-created tag ref):
 - DELETE → 204 No Content; re-delete → 404 (probed 2026-10-16)
 - The auto-created tag ref is removable via DELETE `/git/refs/tags/{tag}` → 204 (probed 2026-10-16)
 
+**DELETE negative (probed 2026-11-04, covered by `DeleteReleaseTests`):**
+- Non-existent `release_id` (static 0/-1 and 999999999 all) → 404, body has `message` (string: "Not Found")
+- Non-existent repo → 404; non-existent owner → 404
+- No auth header → 401, body has `message` (string: "Requires authentication")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- 5 active negatives (floor met by the DELETE fixture)
+
+**POST negative (probed 2026-11-04, no dedicated fixture yet — POST is exercised only by the read fixtures' `OneTimeSetUp`):**
+- Missing `tag_name` → 422, body has `message` (string: `Invalid request.\n\n"tag_name" wasn't supplied.`)
+- No auth → 401 "Requires authentication"; invalid token → 401 "Bad credentials"
+
+---
+
+## 15f. GET /repos/{owner}/{repo}/releases/{release_id}
+
+- Existing release id → 200 OK, body is a §15b release object (probed 2026-11-04)
+- Public read: no auth header → 200 OK (missing auth is NOT a failure here; probed 2026-11-04)
+- Content-Type is application/json
+
+**Negative (probed 2026-11-04, covered by `GetReleaseByIdTests`):**
+- Non-existent `release_id` → 404, body has `message` (string: "Not Found"), `documentation_url` (url)
+- Non-numeric `release_id` (e.g. `notanumber`) → 404 (path segment never reaches id lookup)
+- Non-existent repo → 404; non-existent owner → 404
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- No auth + non-existent id → 404 (resource check precedes auth on this public read; probe 2026-11-04)
+- 5 active negatives (floor met; missing-auth modes are covered by the 200 public read above)
+
 ---
 
 ## 16. GET /rate_limit
@@ -723,13 +750,24 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 
 ## 26c. POST /repos/{owner}/{repo}/git/blobs
 
-- Infrastructure endpoint (first step of the scratch pipeline: blob → tree §26b → commit §27):
-  body `content` (string) → 201 Created, body has `sha` (40 hex) (as consumed by the
-  `CreateScratchBlobAsync` fixtures; dedicated negative probes not yet run)
-- **Infrastructure-only by design** (audit 2026-10-22): no dedicated test fixture — the
-  endpoint is exercised on every scratch-pipeline run and its failure modes are covered
-  upstream/downstream (§26b/§27 negatives); renumber into the tested set only if a
-  blob-specific failure mode is found
+- Body `content` (string) → 201 Created, body has `sha` (40 hex) and `url` (probed 2026-10-16);
+  `sha` = git blob hash `sha1("blob <byte_len>\0" + content)` (verified 2026-11-04)
+- Used by the scratch-pipeline fixtures (`CreateScratchBlobAsync`); dedicated tests since
+  2026-11-04 (`CreateGitBlobTests`) after the probe below found blob-specific failure modes
+  (the 2026-10-22 audit deferred exactly this condition)
+
+**Negative (probed 2026-11-04):**
+- Missing `content` → 422, body has `message` (string: "Validation Failed"), `errors[0].field`
+  = "content", `errors[0].code` = "missing_field"
+- Non-string `content` → 422, body has `message` (string: "content must be a string")
+- Non-existent repo → 404; non-existent owner → 404
+- No auth header → 401, body has `message` (string: "Requires authentication")
+- Invalid token → 401, body has `message` (string: "Bad credentials")
+- 6 active negatives (floor met)
+
+**Gotcha (probed 2026-11-04):** the optional `encoding` field is NOT validated — unsupported
+values (`rot13`, invalid `base64`) still → 201 and the raw `content` string is stored
+byte-for-byte (blob sha matches `sha1` of the raw string, not of any decoded form).
 
 ---
 

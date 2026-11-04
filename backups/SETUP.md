@@ -276,7 +276,8 @@ Gredja/
 │   │   ├── Posts/                # Тесты постов
 │   │   ├── Todos/                # Тесты задач
 │   │   └── Users/                # Тесты пользователей
-│   └── GitHub/Tests/             # Тесты GitHub API (Auth/, Issues/, Repos/ и др.)
+│   ├── GitHub/Helpers/             # ReleaseTestBase + GitBlobTestBase (узкие базы фикстур, наследуют GitHubTestBase)
+│   └── GitHub/Tests/               # Тесты GitHub API (Auth/, Issues/, Repos/ и др.)
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
