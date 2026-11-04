@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -31,7 +32,7 @@ public class UpdatePullRequestTests : GitHubTestBase
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
         var newTitle = $"Patched {DataGenerator.RandomString(TitleRandomLength)}";
-        var patchRequest = new UpdatePullRequestModelRequest { Title = newTitle };
+        var patchRequest = PullRequestGenerator.PatchTitle(newTitle);
         var patched = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
             patchRequest,
@@ -56,7 +57,7 @@ public class UpdatePullRequestTests : GitHubTestBase
 
         _createdPullRequests.Add((pullNumber, headBranch, baseBranch));
 
-        var closeRequest = new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed };
+        var closeRequest = PullRequestGenerator.Close();
 
         var closed = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
@@ -84,7 +85,7 @@ public class UpdatePullRequestTests : GitHubTestBase
 
         var patched = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
-            new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+            PullRequestGenerator.Close(),
             PullParams(pullNumber));
 
         patched.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -100,7 +101,7 @@ public class UpdatePullRequestTests : GitHubTestBase
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed });
+        request.AddJsonBody(PullRequestGenerator.Close());
         AddParams(request, PullParams(ExistingPullNumber));
 
         var response = await Client.ExecuteAsync<PullRequestModelResponse>(request);
@@ -118,7 +119,7 @@ public class UpdatePullRequestTests : GitHubTestBase
             RequestFormat = DataFormat.Json
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        request.AddJsonBody(new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed });
+        request.AddJsonBody(PullRequestGenerator.Close());
         AddParams(request, PullParams(ExistingPullNumber));
 
         var response = await Client.ExecuteAsync<PullRequestModelResponse>(request);
@@ -139,7 +140,7 @@ public class UpdatePullRequestTests : GitHubTestBase
 
         var response = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
-            new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+            PullRequestGenerator.Close(),
             PullParams(nonExistentPullNumber));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -152,7 +153,7 @@ public class UpdatePullRequestTests : GitHubTestBase
     {
         var response = await Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
-            new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+            PullRequestGenerator.Close(),
             [.. RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName),
              .. PullRequestNumberParam(1)]);
 

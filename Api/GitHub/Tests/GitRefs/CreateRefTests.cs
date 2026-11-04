@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -38,7 +39,7 @@ public class CreateRefTests : GitHubTestBase
         var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+            GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
         _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -51,14 +52,14 @@ public class CreateRefTests : GitHubTestBase
     public async Task CreateRef_MatchesRequest()
     {
         var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
-        var createRequest = new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha };
+        var createRequest = GitRefGenerator.Create(refName, _baseSha);
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs, createRequest, TestRepoParam());
         _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
-        created.Data!.ShouldMatchRequest(new CreateGitRefModelRequest { Ref = refName });
+        created.Data!.ShouldMatchRequest(GitRefGenerator.CreateRefOnly(refName));
         created.Data.Object.Sha.Should().Be(_baseSha, "request Sha maps to nested object.sha — documented ShouldMatchRequest exception");
     }
 
@@ -70,7 +71,7 @@ public class CreateRefTests : GitHubTestBase
         var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+            GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
         _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -83,15 +84,12 @@ public class CreateRefTests : GitHubTestBase
     [Description("25.4 POST without auth returns 401")]
     public async Task CreateRef_NoAuth_ReturnsUnauthorized()
     {
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var request = new RestRequest(GitHubEndpoints.RepoGitRefs, Method.Post)
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(new CreateGitRefModelRequest
-        {
-            Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}",
-            Sha = _baseSha
-        });
+        request.AddJsonBody(GitRefGenerator.Create(refName, _baseSha));
         AddParams(request, TestRepoParam());
 
         var response = await Client.ExecuteAsync<GitRefModelResponse>(request);
@@ -104,16 +102,13 @@ public class CreateRefTests : GitHubTestBase
     [Description("25.5 Invalid token returns 401")]
     public async Task CreateRef_InvalidToken_ReturnsUnauthorized()
     {
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var request = new RestRequest(GitHubEndpoints.RepoGitRefs, Method.Post)
         {
             RequestFormat = DataFormat.Json
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        request.AddJsonBody(new CreateGitRefModelRequest
-        {
-            Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}",
-            Sha = _baseSha
-        });
+        request.AddJsonBody(GitRefGenerator.Create(refName, _baseSha));
         AddParams(request, TestRepoParam());
 
         var response = await Client.ExecuteAsync<GitRefModelResponse>(request);
@@ -126,9 +121,10 @@ public class CreateRefTests : GitHubTestBase
     [Description("25.6 Non-existent sha returns 422")]
     public async Task CreateRef_MissingSha_Returns422()
     {
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var response = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}", Sha = GitHubEndpoints.NonExistentSha },
+            GitRefGenerator.Create(refName, GitHubEndpoints.NonExistentSha),
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -153,14 +149,14 @@ public class CreateRefTests : GitHubTestBase
         var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var first = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+            GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
         _createdRefs.Add(refName);
 
         first.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         var second = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+            GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
 
         second.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
@@ -170,9 +166,10 @@ public class CreateRefTests : GitHubTestBase
     [Description("25.9 Non-existent repo returns 404")]
     public async Task CreateRef_NonExistentRepo_ReturnsNotFound()
     {
+        var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var response = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}", Sha = _baseSha },
+            GitRefGenerator.Create(refName, _baseSha),
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -186,7 +183,7 @@ public class CreateRefTests : GitHubTestBase
         var refName = $"{BranchPrefix}{DataGenerator.RandomString(RandomNameLength)}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = refName, Sha = _baseSha }, TestRepoParam());
+            GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
         _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);

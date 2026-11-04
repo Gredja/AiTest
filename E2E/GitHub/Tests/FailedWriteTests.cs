@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -38,12 +39,10 @@ public class FailedWriteTests : GitHubE2ETestBase
 
         var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,
-            new CreatePullRequestModelRequest
-            {
-                Title = $"Failed {DataGenerator.RandomString(TitleRandomLength)}",
-                Head = branchName,
-                Base = GitHubEndpoints.DefaultBranch
-            },
+            PullRequestGenerator.Create(
+                DataGenerator.RandomTitle("Failed"),
+                branchName,
+                GitHubEndpoints.DefaultBranch),
             TestRepoParam());
         pullRequest.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
 

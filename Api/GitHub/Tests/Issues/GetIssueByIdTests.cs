@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
@@ -27,7 +28,7 @@ public class GetIssueByIdTests : GitHubTestBase
         {
             var create = await Post<CreateIssueModelRequest, IssueModelResponse>(
                 GitHubEndpoints.RepoIssues,
-                new CreateIssueModelRequest { Title = IssueContractCheckTitle },
+                IssueGenerator.CreateWithTitle(IssueContractCheckTitle),
                 TestRepoParam());
             create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdIssueNumber = create.Data!.Number;
@@ -195,7 +196,7 @@ public class GetIssueByIdTests : GitHubTestBase
                 // REST has no issue-delete endpoint (DELETE → 404, see OB §17) — cleanup closes instead
                 var cleanup = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
                     GitHubEndpoints.RepoIssueById,
-                    new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+                    IssueGenerator.Close(),
                     [.. TestRepoParam(), .. IssueNumberParam(_createdIssueNumber.Value)]);
 
                 if (!cleanup.IsSuccessful)

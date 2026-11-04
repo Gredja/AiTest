@@ -1,6 +1,7 @@
 using Api.GitHub.Helpers;
 using Core.Models.GitHub;
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
@@ -23,7 +24,7 @@ public class CreateGitBlobTests : GitBlobTestBase
     {
         var response = await Post<CreateGitBlobModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitBlobs,
-            new CreateGitBlobModelRequest { Content = RandomBlobContent() },
+            GitObjectGenerator.CreateBlob(RandomBlobContent()),
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -39,7 +40,7 @@ public class CreateGitBlobTests : GitBlobTestBase
 
         var response = await Post<CreateGitBlobModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitBlobs,
-            new CreateGitBlobModelRequest { Content = content },
+            GitObjectGenerator.CreateBlob(content),
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -97,7 +98,7 @@ public class CreateGitBlobTests : GitBlobTestBase
     {
         var response = await Post<CreateGitBlobModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitBlobs,
-            new CreateGitBlobModelRequest { Content = RandomBlobContent() },
+            GitObjectGenerator.CreateBlob(RandomBlobContent()),
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -110,7 +111,7 @@ public class CreateGitBlobTests : GitBlobTestBase
     {
         var response = await Post<CreateGitBlobModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitBlobs,
-            new CreateGitBlobModelRequest { Content = RandomBlobContent() },
+            GitObjectGenerator.CreateBlob(RandomBlobContent()),
             RepoParam(GitHubEndpoints.NonExistentUser, ParseRepo().Repo));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -122,7 +123,7 @@ public class CreateGitBlobTests : GitBlobTestBase
     public async Task CreateGitBlob_NoAuth_ReturnsUnauthorized()
     {
         var request = new RestRequest(GitHubEndpoints.RepoGitBlobs, Method.Post);
-        request.AddJsonBody(new CreateGitBlobModelRequest { Content = RandomBlobContent() });
+        request.AddJsonBody(GitObjectGenerator.CreateBlob(RandomBlobContent()));
         AddParams(request, TestRepoParam());
 
         var response = await Client.ExecuteAsync(request);
@@ -137,7 +138,7 @@ public class CreateGitBlobTests : GitBlobTestBase
     {
         var request = new RestRequest(GitHubEndpoints.RepoGitBlobs, Method.Post);
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        request.AddJsonBody(new CreateGitBlobModelRequest { Content = RandomBlobContent() });
+        request.AddJsonBody(GitObjectGenerator.CreateBlob(RandomBlobContent()));
         AddParams(request, TestRepoParam());
 
         var response = await Client.ExecuteAsync(request);

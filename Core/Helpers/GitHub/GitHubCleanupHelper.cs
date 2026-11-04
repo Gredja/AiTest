@@ -1,4 +1,5 @@
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Models.Generic;
 using Core.Models.GitHub;
 using NUnit.Framework;
@@ -33,7 +34,7 @@ public class GitHubCleanupHelper : GitHubRequestHelper
         await RunCleanupAsync(
             () => Patch<UpdateIssueModelRequest, IssueModelResponse>(
                 GitHubEndpoints.RepoIssueById,
-                new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+                IssueGenerator.Close(),
                 IssueParams(issueNumber.Value, TestRepoParam())),
             $"close issue {issueNumber}");
     }
@@ -101,7 +102,7 @@ public class GitHubCleanupHelper : GitHubRequestHelper
             await RunCleanupAsync(
                 () => Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
                     GitHubEndpoints.RepoPullRequestById,
-                    new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+                    PullRequestGenerator.Close(),
                     PullParams(pullNumber.Value, TestRepoParam())),
                 $"close pull request {pullNumber}");
         }

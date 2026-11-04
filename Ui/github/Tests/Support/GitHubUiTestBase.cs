@@ -1,5 +1,6 @@
 using Core.Config;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
@@ -152,10 +153,10 @@ public abstract class GitHubUiTestBase
 
     protected async Task<int> CreateIssueViaApiAsync(List<int> createdIssueNumbers, bool isClosed = false, string? title = null)
     {
-        title ??= $"API setup {DataGenerator.RandomString(TestDataConstants.TitleRandomLength)}";
+        title ??= DataGenerator.RandomTitle("API setup");
         var created = await Cleanup.Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues,
-            new CreateIssueModelRequest { Title = title },
+            IssueGenerator.CreateWithTitle(title),
             UiSandboxRepoParams());
         if (created.Data is not null)
         {
@@ -286,7 +287,7 @@ public abstract class GitHubUiTestBase
         var mainSha = await ResolveUiSandboxMainShaAsync();
         var created = await Cleanup.Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", Sha = mainSha },
+            GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", mainSha),
             UiSandboxRepoParams());
         createdBranches.Add(branchName);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
@@ -358,7 +359,7 @@ public abstract class GitHubUiTestBase
         var (headBranch, baseBranch) = await CreateDivergentBranchesViaApiAsync(createdBranches);
         var pullRequest = await Cleanup.Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,
-            new CreatePullRequestModelRequest { Title = title, Head = headBranch, Base = baseBranch },
+            PullRequestGenerator.Create(title, headBranch, baseBranch),
             UiSandboxRepoParams());
         if (pullRequest.Data is not null)
         {
@@ -377,7 +378,7 @@ public abstract class GitHubUiTestBase
     {
         var closed = await Cleanup.Patch<UpdatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequestById,
-            new UpdatePullRequestModelRequest { State = GitHubEndpoints.StateClosed },
+            PullRequestGenerator.Close(),
             [.. UiSandboxRepoParams(), .. GitHubParamHelper.PullRequestNumberParam(pullNumber)]);
         closed.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -401,37 +402,19 @@ public abstract class GitHubUiTestBase
 
         var blob = await Cleanup.Post<CreateGitBlobModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitBlobs,
-            new CreateGitBlobModelRequest { Content = $"ui scratch {DataGenerator.RandomString(TestDataConstants.RandomNameLength)}" },
+            GitObjectGenerator.CreateBlob($"ui scratch {DataGenerator.RandomString(TestDataConstants.RandomNameLength)}"),
             UiSandboxRepoParams());
         blob.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         var tree = await Cleanup.Post<CreateGitTreeModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitTrees,
-            new CreateGitTreeModelRequest
-            {
-                BaseTree = mainCommit.Data!.Tree.Sha,
-                Tree =
-                [
-                    new GitTreeEntry
-                    {
-                        Path = treePath,
-                        Mode = GitHubEndpoints.FileMode644,
-                        Type = GitHubEndpoints.ObjectTypeBlob,
-                        Sha = blob.Data!.Sha
-                    }
-                ]
-            },
+            GitObjectGenerator.CreateTree(mainCommit.Data!.Tree.Sha, treePath, blob.Data!.Sha),
             UiSandboxRepoParams());
         tree.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         var commit = await Cleanup.Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
             GitHubEndpoints.RepoGitCommits,
-            new CreateGitCommitModelRequest
-            {
-                Message = $"ui scratch {DataGenerator.RandomString(TestDataConstants.RandomNameLength)}",
-                Tree = tree.Data!.Sha,
-                Parents = [mainSha]
-            },
+            GitObjectGenerator.CreateCommit($"ui scratch {DataGenerator.RandomString(TestDataConstants.RandomNameLength)}", tree.Data!.Sha, [mainSha]),
             UiSandboxRepoParams());
         commit.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -442,7 +425,7 @@ public abstract class GitHubUiTestBase
     {
         var created = await Cleanup.Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", Sha = sha },
+            GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", sha),
             UiSandboxRepoParams());
         createdBranches.Add(branchName);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);

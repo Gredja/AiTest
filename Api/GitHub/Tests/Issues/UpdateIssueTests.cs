@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -16,13 +17,8 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class UpdateIssueTests : GitHubTestBase
 {
-    private const string InvalidStateValue = "bogus";
-
-    private static readonly CreateIssueModelRequest _createRequest = new()
-    {
-        Title = $"Patch target {DataGenerator.RandomString(TitleRandomLength)}",
-        Body = $"Body {DataGenerator.RandomString(TitleRandomLength)}"
-    };
+    private static readonly CreateIssueModelRequest _createRequest =
+        IssueGenerator.CreateRandom("Patch target", "Body");
 
     private readonly List<int> _createdIssueNumbers = [];
 
@@ -42,10 +38,7 @@ public class UpdateIssueTests : GitHubTestBase
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
 
-        var patchRequest = new UpdateIssueModelRequest
-        {
-            Title = $"Patched {DataGenerator.RandomString(TitleRandomLength)}"
-        };
+        var patchRequest = IssueGenerator.PatchTitle(DataGenerator.RandomTitle("Patched"));
         var patched = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById, patchRequest,
             IssueParams(created.Data!.Number));
@@ -76,7 +69,7 @@ public class UpdateIssueTests : GitHubTestBase
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
 
-        var closeRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed };
+        var closeRequest = IssueGenerator.Close();
         var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById, closeRequest, IssueParams(created.Data!.Number));
 
@@ -105,13 +98,13 @@ public class UpdateIssueTests : GitHubTestBase
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         created.Data.Should().NotBeNull();
 
-        var closeRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed };
+        var closeRequest = IssueGenerator.Close();
         var closed = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById, closeRequest, IssueParams(created.Data!.Number));
         closed.ShouldHaveStatusCode(HttpStatusCode.OK);
         closed.Data!.ShouldMatchRequest(closeRequest);
 
-        var reopenRequest = new UpdateIssueModelRequest { State = GitHubEndpoints.StateOpen };
+        var reopenRequest = IssueGenerator.Reopen();
         var reopened = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById, reopenRequest, IssueParams(created.Data.Number));
         reopened.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -140,7 +133,7 @@ public class UpdateIssueTests : GitHubTestBase
 
         var patched = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById,
-            new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+            IssueGenerator.Close(),
             IssueParams(created.Data!.Number));
 
         patched.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -156,7 +149,7 @@ public class UpdateIssueTests : GitHubTestBase
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed });
+        request.AddJsonBody(IssueGenerator.Close());
         AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<IssueModelResponse>(request);
@@ -174,7 +167,7 @@ public class UpdateIssueTests : GitHubTestBase
             RequestFormat = DataFormat.Json
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        request.AddJsonBody(new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed });
+        request.AddJsonBody(IssueGenerator.Close());
         AddParams(request, IssueParams(ExistingIssueNumber));
 
         var response = await Client.ExecuteAsync<IssueModelResponse>(request);
@@ -208,7 +201,7 @@ public class UpdateIssueTests : GitHubTestBase
 
         var response = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById,
-            new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+            IssueGenerator.Close(),
             IssueParams(nonExistentIssueNumber));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -221,7 +214,7 @@ public class UpdateIssueTests : GitHubTestBase
     {
         var response = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById,
-            new UpdateIssueModelRequest { State = GitHubEndpoints.StateClosed },
+            IssueGenerator.Close(),
             RepoParam(GitHubEndpoints.NonExistentUser, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
@@ -245,7 +238,7 @@ public class UpdateIssueTests : GitHubTestBase
 
         var bogus = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById,
-            new UpdateIssueModelRequest { State = InvalidStateValue },
+            IssueGenerator.UnrecognizedState(),
             IssueParams(created.Data!.Number));
 
         bogus.ShouldHaveStatusCode(HttpStatusCode.OK);

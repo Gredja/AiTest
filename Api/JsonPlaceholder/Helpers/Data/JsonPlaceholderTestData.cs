@@ -1,3 +1,4 @@
+using Core.Generators.JsonPlaceholder;
 using Core.Models.JsonPlaceholder;
 
 namespace Api.JsonPlaceholder.Helpers;
@@ -12,16 +13,9 @@ public static class JsonPlaceholderTestData
     public const string TodoNotDeletedWarningFormat = "Warning: todo {0} not deleted: HTTP {1}";
     public const string TodoDeleteFailedWarningFormat = "Warning: failed to delete todo {0}: {1}";
 
-    public static readonly PostModelRequest TestPost = new()
-    {
-        UserId = 1,
-        Title = "Test Post for contract",
-        Body = "Guarantee data"
-    };
+    public static readonly PostModelRequest TestPost =
+        PostGenerator.Create(1, "Test Post for contract", "Guarantee data");
 
-    public static readonly TodoModelRequest TestTodo = new()
-    {
-        UserId = 1,
-        Title = "Test Todo for contract"
-    };
+    public static readonly TodoModelRequest TestTodo =
+        TodoGenerator.Create(1, "Test Todo for contract");
 }

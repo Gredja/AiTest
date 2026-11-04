@@ -93,7 +93,18 @@ Core/
 │   ├── MoodledemoEndpoints.cs
 │   └── TestConfig.cs
 ├── Generators/
-│   └── DataGenerator.cs            # RandomString/RandomIntExclusive for varying write payloads
+│   ├── DataGenerator.cs            # RandomString/RandomIntExclusive + RandomTitle/RandomBody prefixes
+│   ├── GitHub/                     # request-model factories — the only place *ModelRequest is constructed
+│   │   ├── CollaboratorGenerator.cs
+│   │   ├── CommentGenerator.cs
+│   │   ├── GitObjectGenerator.cs   # blob/tree/commit scratch-pipeline shapes
+│   │   ├── GitRefGenerator.cs
+│   │   ├── IssueGenerator.cs       # create/patch/close/reopen/with-state commands
+│   │   ├── PullRequestGenerator.cs
+│   │   └── ReleaseGenerator.cs
+│   └── JsonPlaceholder/
+│       ├── PostGenerator.cs
+│       └── TodoGenerator.cs
 ├── Helpers/
 │   ├── Assertions/
 │   │   └── AssertHelper.cs        # ShouldHaveValidContract, ShouldHaveValidFields, etc.

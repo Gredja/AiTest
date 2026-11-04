@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
@@ -29,7 +30,7 @@ public class GetIssuesTests : GitHubTestBase
         {
             var create = await Post<CreateIssueModelRequest, IssueModelResponse>(
                 GitHubEndpoints.RepoIssues,
-                new CreateIssueModelRequest { Title = IssueContractCheckTitle },
+                IssueGenerator.CreateWithTitle(IssueContractCheckTitle),
                 TestRepoParam());
             create.ShouldHaveStatusCode(HttpStatusCode.Created);
             _createdIssueNumber = create.Data!.Number;

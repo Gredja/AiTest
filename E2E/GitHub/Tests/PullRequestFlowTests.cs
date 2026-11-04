@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -31,7 +32,7 @@ public class PullRequestFlowTests : GitHubE2ETestBase
         created.Data!.State.Should().Be(GitHubEndpoints.StateOpen, "freshly created PR must be open");
 
         // request Head/Base map to nested response objects — asserted explicitly after merge below
-        created.Data.ShouldMatchRequest(new CreatePullRequestModelRequest { Title = title });
+        created.Data.ShouldMatchRequest(PullRequestGenerator.CreateWithTitle(title));
 
         var merged = await Put<Dictionary<string, object>, PullRequestMergeModelResponse>(
             GitHubEndpoints.RepoPullRequestMerge, new Dictionary<string, object>(), PullParams(pullNumber));

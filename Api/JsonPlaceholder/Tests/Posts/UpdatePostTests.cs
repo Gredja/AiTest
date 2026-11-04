@@ -1,5 +1,5 @@
 using Core.Models.JsonPlaceholder;
-using Core.Generators;
+using Core.Generators.JsonPlaceholder;
 using GenericJsonFields = Core.Models.Generic.JsonFields;
 using Core.Config;
 using Core.Helpers;
@@ -21,23 +21,13 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     private const int TestUserId = 1;
     private const string IgnorePutNoValidationBug = "JsonPlaceholder mock: PUT accepts body missing required fields — no validation — Bug: documentation/Bugs/JsonPlaceholder/JP-005-put-post-accepts-missing-required-fields.md";
     private const string IgnorePatchAnyIdBug = "JsonPlaceholder mock: PATCH returns 200 for any ID, including invalid and non-existent — Bug: documentation/Bugs/JsonPlaceholder/JP-006-patch-post-returns-200-for-any-id.md";
-    private static PostModelRequest CreatePutBody() =>
-        new()
-        {
-            UserId = TestUserId,
-            Title = $"Updated {DataGenerator.RandomString(TitleRandomLength)}",
-            Body = $"Body {DataGenerator.RandomString(BodyRandomLength)}"
-        };
-
-    private static PostModelRequest CreatePatchBody() =>
-        new() { Title = $"Patched {DataGenerator.RandomString(TitleRandomLength)}" };
 
     [Test]
     [Category("HealthCheck")]
     [Description("5.1 PUT returns 200 OK")]
     public async Task UpdatePost_Put_ReturnsOk()
     {
-        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePutBody(),
+        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -48,7 +38,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.2 PUT response has valid fields")]
     public async Task UpdatePost_Put_HasValidFields()
     {
-        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePutBody(),
+        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -60,7 +50,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.3 PATCH returns 200 OK")]
     public async Task UpdatePost_Patch_ReturnsOk()
     {
-        var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePatchBody(),
+        var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.PatchTitle(),
             IdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -71,7 +61,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.4 PATCH response contains updated title")]
     public async Task UpdatePost_Patch_ReturnsUpdatedTitle()
     {
-        var patchBody = CreatePatchBody();
+        var patchBody = PostGenerator.PatchTitle();
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, patchBody,
             IdParam(TestPostId));
 
@@ -84,7 +74,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.5 PUT response matches request via ShouldMatchRequest")]
     public async Task UpdatePost_Put_ShouldMatchRequest()
     {
-        var putBody = CreatePutBody();
+        var putBody = PostGenerator.Update(TestUserId);
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, putBody,
             IdParam(TestPostId));
 
@@ -97,7 +87,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.6 PUT preserves original ID")]
     public async Task UpdatePost_Put_PreservesOriginalId()
     {
-        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePutBody(),
+        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(TestPostId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -109,7 +99,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.7 PUT with ID 0 returns error")]
     public async Task UpdatePost_Put_ZeroId_ReturnsError()
     {
-        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePutBody(),
+        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
@@ -121,7 +111,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.8 PATCH only changes specified fields")]
     public async Task UpdatePost_Patch_OnlyChangesSpecifiedFields()
     {
-        var patchBody = CreatePatchBody();
+        var patchBody = PostGenerator.PatchTitle();
         var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, patchBody,
             IdParam(TestPostId));
 
@@ -135,7 +125,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.9 PUT with negative ID returns 500")]
     public async Task UpdatePost_Put_NegativeId_ReturnsInternalServerError()
     {
-        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePutBody(),
+        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(-1));
 
         response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
@@ -151,7 +141,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         allPosts.Data.Should().NotBeEmpty();
         var nonExistentId = allPosts.Data!.Max(post => post.Id) + 1;
 
-        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePutBody(),
+        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
@@ -162,7 +152,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.11 PUT with non-numeric ID returns 500")]
     public async Task UpdatePost_Put_InvalidSegment_ReturnsInternalServerError()
     {
-        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePutBody(),
+        var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
@@ -241,7 +231,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.17 PATCH with ID 0 returns 404")]
     public async Task UpdatePost_Patch_ZeroId_ReturnsNotFound()
     {
-        var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePatchBody(),
+        var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.PatchTitle(),
             IdParam(0));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -258,7 +248,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         allPosts.Data.Should().NotBeEmpty();
         var nonExistentId = allPosts.Data!.Max(post => post.Id) + 1;
 
-        var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePatchBody(),
+        var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.PatchTitle(),
             IdParam(nonExistentId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
@@ -270,7 +260,7 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
     [Description("5.19 PATCH with non-numeric ID returns 404")]
     public async Task UpdatePost_Patch_InvalidSegment_ReturnsNotFound()
     {
-        var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, CreatePatchBody(),
+        var response = await Patch<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.PatchTitle(),
             [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.NotFound);

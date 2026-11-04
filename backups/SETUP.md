@@ -253,7 +253,7 @@ Gredja/
 │   │   ├── GitHubEndpoints.cs
 │   │   ├── GitHubErrors.cs
 │   │   └── TestConfig.cs         # читает testsettings.json (+ env fallback)
-│   ├── Generators/                # DataGenerator: RandomString/RandomIntExclusive для write-данных (своя папка по правилу Generator)
+│   ├── Generators/                # DataGenerator (RandomString/RandomTitle/RandomBody) + подпапки GitHub/, JsonPlaceholder/ — фабрики request-моделей (единственное место new *ModelRequest)
 │   ├── Helpers/                  # Тестовая инфраструктура (всегда здесь, даже для E2E)
 │   │   ├── Http/                 # RequestHelper (Get/Post/Put/Patch/Delete) + JsonPlaceholder/GitHubRequestHelper
 │   │   ├── Params/               # Общие IdParam/UrlSegment/Query
@@ -585,4 +585,4 @@ dotnet build
 - [ ] Установлена Visual Studio Community (или VS Code) для удобной работы с кодом
 - [ ] Подана заявка на MiMo Desktop (https://mimocode.mi.com)
 - [ ] Прочитал OB своего сервиса (`documentation/{Service}ObservableBehaviour.md`) — понимаешь структуру документа
-- [ ] Прочитал `Rules/test-practices.md` — знаешь seed-методологию и read-after-write visibility
+- [ ] Прочитал `Rules/test-practices.md` — знаешь seed-методологию, read-after-write visibility и правило «request-модели строятся только в `Core/Generators/`»

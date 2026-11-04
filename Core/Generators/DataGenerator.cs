@@ -1,3 +1,5 @@
+using static Core.Helpers.TestDataConstants;
+
 namespace Core.Generators;
 
 public static class DataGenerator
@@ -17,4 +19,10 @@ public static class DataGenerator
     }
 
     public static int RandomIntExclusive(int min, int max) => Random.Shared.Next(min, max);
+
+    public static string RandomTitle(string prefix) =>
+        $"{prefix} {RandomString(TitleRandomLength)}";
+
+    public static string RandomBody(string prefix) =>
+        $"{prefix} {RandomString(BodyRandomLength)}";
 }

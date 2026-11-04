@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
@@ -39,7 +40,7 @@ public class GitRefLifecycleTests : GitHubE2ETestBase
 
         var duplicate = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{refName}", Sha = _baseSha },
+            GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{refName}", _baseSha),
             TestRepoParam());
         duplicate.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
 

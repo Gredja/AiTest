@@ -1,5 +1,6 @@
 using Core.Config;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Models.Generic;
 using Core.Models.GitHub;
 using RestSharp;
@@ -137,12 +138,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
 
         var commit = await Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
             GitHubEndpoints.RepoGitCommits,
-            new CreateGitCommitModelRequest
-            {
-                Message = $"scratch {headBranch}",
-                Tree = treeSha,
-                Parents = [mainSha]
-            },
+            GitObjectGenerator.CreateCommit($"scratch {headBranch}", treeSha, [mainSha]),
             TestRepoParam());
         commit.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -153,7 +149,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     {
         var blob = await Post<CreateGitBlobModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitBlobs,
-            new CreateGitBlobModelRequest { Content = $"scratch {headBranch}" },
+            GitObjectGenerator.CreateBlob($"scratch {headBranch}"),
             TestRepoParam());
         blob.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -164,20 +160,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     {
         var tree = await Post<CreateGitTreeModelRequest, GitShaModelResponse>(
             GitHubEndpoints.RepoGitTrees,
-            new CreateGitTreeModelRequest
-            {
-                BaseTree = baseTreeSha,
-                Tree =
-                [
-                    new GitTreeEntry
-                    {
-                        Path = ScratchFileName,
-                        Mode = FileMode644,
-                        Type = BlobType,
-                        Sha = blobSha
-                    }
-                ]
-            },
+            GitObjectGenerator.CreateTree(baseTreeSha, ScratchFileName, blobSha),
             TestRepoParam());
         tree.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -188,13 +171,13 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     {
         var head = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{headBranch}", Sha = commitSha },
+            GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{headBranch}", commitSha),
             TestRepoParam());
         head.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         var baseRef = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{baseBranch}", Sha = mainSha },
+            GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{baseBranch}", mainSha),
             TestRepoParam());
         baseRef.ShouldHaveStatusCode(HttpStatusCode.Created);
     }
@@ -203,12 +186,7 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     {
         var pullRequest = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,
-            new CreatePullRequestModelRequest
-            {
-                Title = title,
-                Head = headBranch,
-                Base = baseBranch
-            },
+            PullRequestGenerator.Create(title, headBranch, baseBranch),
             TestRepoParam());
         pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
 

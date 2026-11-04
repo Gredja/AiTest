@@ -15,6 +15,7 @@
 ## API testing patterns
 
 - **Test classes contain only tests** — `[Test]` methods, `[OneTimeSetUp]`/`[OneTimeTearDown]` lifecycle, and test data (constants, state fields). No helper methods inside `*Tests.cs`: shared request/param builders live in base classes (`GitHubTestBase` → `PullParams`, `MercyPreviewRepoParams`) or param helpers; when 2+ test classes grow the same private builder — extract it to the base, never duplicate
+- **Request models are built only in `Core/Generators/`** — tests, base classes and helpers never construct a `*ModelRequest` inline (`new CreateIssueModelRequest { … }` is a violation): call the domain generator (`IssueGenerator.CreateRandom(...)`, `GitRefGenerator.Create(...)`, `PullRequestGenerator.Close()`). Generators own field defaults, randomized write data and named command shapes; prefixed random strings come from `DataGenerator.RandomTitle`/`RandomBody`. Raw `Dictionary<string, object>` payloads for wire-level negatives are not models and stay at the call site
 - **`[OneTimeTearDown]` is the LAST member of the test class** — after all `[Test]` methods; fields and `[OneTimeSetUp]` stay at the top
 - Use Given/When/Then structure (Arrange/Act/Assert)
 - Check HTTP status code and response body separately — don't combine

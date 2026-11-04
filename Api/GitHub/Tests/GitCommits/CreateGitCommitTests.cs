@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Config;
+using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
@@ -28,12 +29,7 @@ public class CreateGitCommitTests : GitHubTestBase
     {
         var response = await Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
             GitHubEndpoints.RepoGitCommits,
-            new CreateGitCommitModelRequest
-            {
-                Message = ProbeCommitMessage,
-                Tree = _baseTreeSha,
-                Parents = [GitHubEndpoints.NonExistentSha]
-            },
+            GitObjectGenerator.CreateCommit(ProbeCommitMessage, _baseTreeSha, [GitHubEndpoints.NonExistentSha]),
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
@@ -72,12 +68,7 @@ public class CreateGitCommitTests : GitHubTestBase
     {
         var response = await Post<CreateGitCommitModelRequest, GitCommitModelResponse>(
             GitHubEndpoints.RepoGitCommits,
-            new CreateGitCommitModelRequest
-            {
-                Message = ProbeCommitMessage,
-                Tree = GitHubEndpoints.NonExistentSha,
-                Parents = []
-            },
+            GitObjectGenerator.CreateCommit(ProbeCommitMessage, GitHubEndpoints.NonExistentSha, []),
             TestRepoParam());
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);

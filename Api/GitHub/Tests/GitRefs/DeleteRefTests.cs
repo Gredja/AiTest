@@ -1,5 +1,6 @@
 using Core.Models.GitHub;
 using Core.Generators;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -36,9 +37,10 @@ public class DeleteRefTests : GitHubTestBase
     public async Task DeleteRef_ReturnsNoContent()
     {
         var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(RandomNameLength)}";
+        var fullRef = $"{GitHubEndpoints.RefsHeadsPrefix}{refPath[GitHubEndpoints.HeadsPrefix.Length..]}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{refPath[GitHubEndpoints.HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
+            GitRefGenerator.Create(fullRef, _baseSha), TestRepoParam());
         _createdRefs.Add(refPath);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
@@ -54,9 +56,10 @@ public class DeleteRefTests : GitHubTestBase
     public async Task DeleteRef_Twice_Returns422()
     {
         var refPath = $"{RefPathPrefix}{DataGenerator.RandomString(RandomNameLength)}";
+        var fullRef = $"{GitHubEndpoints.RefsHeadsPrefix}{refPath[GitHubEndpoints.HeadsPrefix.Length..]}";
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
-            new CreateGitRefModelRequest { Ref = $"{GitHubEndpoints.RefsHeadsPrefix}{refPath[GitHubEndpoints.HeadsPrefix.Length..]}", Sha = _baseSha }, TestRepoParam());
+            GitRefGenerator.Create(fullRef, _baseSha), TestRepoParam());
         _createdRefs.Add(refPath);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
 
