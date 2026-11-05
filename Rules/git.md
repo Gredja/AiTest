@@ -16,6 +16,9 @@
   in a real emergency
 - All changes go into `features/...` branches
 - Format: `features/<topic>`
+- **After every merge (user rule, 2026-11-04): delete the merged branch — remote AND local
+  (`git branch -d`, never `-D`) — and fast-forward local `main` (`git switch main && git pull --ff-only`).
+  No confirmation or reminder needed; never leave a merged branch behind as a "manual action".**
 
 ## Commits
 

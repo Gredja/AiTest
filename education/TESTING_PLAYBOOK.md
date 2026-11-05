@@ -920,10 +920,11 @@ skill prompt.
 2. Push; open a PR (title ≤70 chars action+object; body = commit summary + verification numbers).
 3. Wait for CI gates via a BACKGROUND watcher (poll check-runs; never a blocking main-thread loop).
 4. Any check red → stop with names/conclusions; all green → merge via API (no force options).
-5. Delete the merged remote branch; verify it is gone; remind the human to delete the local one.
+5. Delete the merged branch on the remote AND locally (switch to the default branch,
+   fast-forward it with `pull --ff-only`, `branch -d` — never `-D`); verify the remote ref is
+   gone. Cleanup is part of the flow — no reminder, no "manual action" hand-off.
 6. Slack notification via the project's Slack MCP tool (`✅ merge PR <n> → <sha>`); same
    never-blocking rule as 14.1.9.
-7. The agent never switches to the default branch and never deletes local branches itself.
 
 ### 14.3 CI/nightly verdict (read-only check-in)
 1. Fetch the latest scheduled run of the project's informational suite (token from env, never printed).
