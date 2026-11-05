@@ -154,23 +154,17 @@ function Send-SlackMessage {
     param([string]$Text)
 
     $payload = @{ channel = $env:SLACK_CHANNEL; text = $Text } | ConvertTo-Json -Compress -Depth 3
-    $payloadFile = [IO.Path]::GetTempFileName()
-    try {
-        [IO.File]::WriteAllText($payloadFile, $payload, [Text.UTF8Encoding]::new($false))
-        $response = curl.exe -s -X POST 'https://slack.com/api/chat.postMessage' `
-            -H "Authorization: Bearer $($env:SLACK_BOT_TOKEN)" `
-            -H 'Content-Type: application/json' `
-            --data-binary "@$payloadFile"
-        $result = $response | ConvertFrom-Json
-        if (-not $result.ok) {
-            Write-Warning "Slack post failed: $($result.error)"
-        }
-        else {
-            Write-Output "Slack message posted ts=$($result.ts) channel=$($result.channel)"
-        }
+    $bodyBytes = [Text.UTF8Encoding]::new($false).GetBytes($payload)
+    $result = Invoke-RestMethod -Uri 'https://slack.com/api/chat.postMessage' `
+        -Method Post `
+        -Headers @{ Authorization = "Bearer $($env:SLACK_BOT_TOKEN)" } `
+        -ContentType 'application/json; charset=utf-8' `
+        -Body $bodyBytes
+    if (-not $result.ok) {
+        Write-Warning "Slack post failed: $($result.error)"
     }
-    finally {
-        Remove-Item -Path $payloadFile -ErrorAction SilentlyContinue
+    else {
+        Write-Output "Slack message posted ts=$($result.ts) channel=$($result.channel)"
     }
 }
 
