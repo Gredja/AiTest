@@ -69,7 +69,7 @@ Warnings are visible to the user in real time. The agent must not start new tool
 
 ## Rules
 
-- Every workflow spec in the repository must include a `token_budget` section
+- Long-running workflow specs SHOULD include a `token_budget` section (aspirational — no spec carries one yet as of 2026-11-04; adopt when a workflow actually needs budgeting)
 - Budget is set at spec time, not at billing time
 - Budget must include warning thresholds (50% / 80% / 90%) and hard-stop escalation
 - When budget is hit — stop, report, escalate. No silent overruns.

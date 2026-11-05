@@ -29,74 +29,17 @@ Working dir: {working_dir}
 
 1. Read all Rules/*.md files for project rules context.
 
-2. Read ALL .cs files (excluding obj/ directories):
-   - Core/Attributes/**/*.cs
-   - Core/Config/*.cs
-   - Core/Helpers/**/*.cs
-   - Core/Models/**/*.cs
-   - Core/Logging/*.cs
-   - Core/Reporting/*.cs
-   - Api/JsonPlaceholder/Tests/**/*.cs
-   - Api/JsonPlaceholder/Helpers/*.cs
-   - Api/GitHub/Tests/**/*.cs
-   - Api/GitHub/Helpers/*.cs (if present)
-   - Api/TestReportSetup.cs
-   - E2E/GitHub/Tests/**/*.cs
-   - E2E/TestReportSetup.cs
-   - AllureAdapter/**/*.cs
-   - Ui/github/Pages/**/*.cs
-   - Ui/github/Tests/**/*.cs
-   - Ui/TestReportSetup.cs
+2. Read ALL .cs files from the Step 1 glob — every source folder, never a static subset
+   (Core/Attributes, Config, Generators, Helpers, Models, Logging, Reporting; Api/** tests +
+   helpers incl. CoreHelpers; E2E/** tests + base classes; AllureAdapter/**; Ui/** Pages,
+   Tests, Support, Helpers, moodledemo). New folders count automatically — a hardcoded
+   file list goes stale and silently drops files from the review.
 
-3. Review EACH file against ALL project rules:
-
-   Code rules (Rules/code.md):
-   - PascalCase for classes, methods, properties, constants
-   - camelCase for locals, params
-   - _camelCase for private fields
-   - No abbreviations (response, not resp)
-   - Boolean prefixes: Is, Has, Can, Should
-   - File-scoped namespaces
-   - One class per file
-   - Use `var` wherever possible (explicit type only when `var` is not applicable)
-   - Methods: short, one responsibility, max ~30 lines, max 5 params
-   - All API requests async
-   - No magic numbers
-   - No nested ternary
-   - nameof() for exceptions
-   - {} for all if blocks, even single-line
-
-   Model rules (Rules/models.md):
-   - Response: suffix ModelResponse (includes Id)
-   - Request: suffix ModelRequest (no Id)
-   - Reference types: no ?, no initializer
-   - Value types: ? only if JSON field can be null/absent
-   - Namespace: Core.Models.{Service}
-   - Pure data containers — no constructors, validation, logic
-
-   Assertion rules (Rules/assertions.md):
-   - FluentAssertions only (no NUnit Assert)
-   - Key patterns: .Should().Be(), .NotBeNull(), .NotBeNullOrWhiteSpace(), .BeGreaterThan(), .BeInRange(), .OnlyContain()
-
-   Comment rules (Rules/comments.md):
-   - Default: no comments
-   - Exceptions: regex explanations, TODO (remove before merge), non-obvious WHY
-
-   Config rules (Rules/config.md):
-   - Base URL and endpoints in JsonPlaceholderEndpoints.cs/GitHubEndpoints.cs
-   - Never hardcode in tests
-
-   Category rules (Rules/categories.md):
-   - [Category] on [TestFixture] class — service type
-   - [Category] on [Test] method — check type
-   - Both dimensions applied
-
-   Test practices (Rules/test-practices.md):
-   - Every request in [OneTimeSetUp] asserts its status (no bare Data! dereference); teardown/cleanup never asserts status — try/catch + warning only
-   - Status check before any `.Data` dereference, including test bodies; NotBeEmpty before Max/First in setups
-   - Cleanup lives in `[OneTimeTearDown]` — LAST member of the class, fixture-registry pattern (register-then-assert, no per-test `finally`), via `RunCleanupAsync` = try/catch + warning, never an unhandled exception or a status assertion; resources are DELETED after use (create → remove), never retained — no-delete APIs → closest cleanup (close issue/PR)
-   - ShouldMatchRequest() after POST/PATCH — no hand-rolled field-by-field comparisons
-   - No hardcoded volatile entities (live branch names → dynamic lookup or Entry Criteria)
+3. Review EACH file against ALL project rules — the single source of truth is `Rules/*.md`
+   (read every rule file in full; this prompt deliberately does NOT copy rule text, to
+   prevent drift between the rules and the review). Apply at minimum: code.md, code-style.md,
+   code-principles.md, models.md, assertions.md, comments.md, config.md, categories.md,
+   test-practices.md — plus ui-testing.md / localization-testing.md for Ui files.
 
 4. Cross-cutting checks:
    - Dead code: unused methods, unused models, unused using statements

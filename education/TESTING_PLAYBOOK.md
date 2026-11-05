@@ -623,7 +623,9 @@ same change (document sync, §2.3).
 Language shown is C# / NUnit / FluentAssertions (the stack this method was forged on) — the
 shapes port directly to other stacks. Rules embedded below: one service category on class, one
 check-type on method; zero comments; `var`; async throughout; register-then-assert; teardown
-last and warning-only; no helper methods inside test classes (they belong to base/helpers).
+last and warning-only; no helper methods inside test classes (they belong to base/helpers);
+request models are built only in domain generators (`{Endpoint}Generator.Create…`), never
+constructed inline in the test class.
 
 ### 12.1 API test class
 
@@ -635,11 +637,8 @@ namespace Api.{Service}.{Feature};
 [Category("{Service}")]
 public class GetAll{Endpoint}Tests : {Service}RequestHelper
 {
-    private static readonly {Endpoint}ModelRequest TestBody = new()
-    {
-        Field = "fictional value",
-        Count = 7
-    };
+    private static readonly {Endpoint}ModelRequest TestBody =
+        {Endpoint}Generator.Create();
 
     [Test]
     [Category("HealthCheck")]
@@ -977,19 +976,33 @@ skill prompt.
 ### 14.9 API test generation (new endpoint/surface)
 1. Read the surface's Observable Behavior doc first; re-verify claims that look stale.
 2. Design seeds (happy path + contract + fields) → expand → enforce a minimum set of active
-   negatives (documented error messages, invalid ids, auth walls).
+   negatives (documented error messages, invalid ids, auth walls). Present the seed table as a
+   plan and STOP for user approval before writing any code (plan → approval → code).
 3. Generate tests in the project's existing style (categories, naming, shared helpers — extend,
-   never duplicate files); writes use fictional, varied data; dynamic non-existent ids derived
-   from the live max, not invented constants.
+   never duplicate files); hard style constraints are stated AT the generation point, not only in
+   a final checklist (assertion library, typed models, async-only, no comments); writes use
+   fictional, varied data; dynamic non-existent ids derived from the live max, not invented
+   constants. Ship a negative example beside the positive template — one explicitly rejected
+   sample with its violation list (a boundary shown once kills a family of near-miss outputs).
 4. Gate (14.1 gates); cross-verify writes via API read-back; cleanup via register-then-assert.
-5. Sync the OB doc / plan / rules if behavior or structure changed (same flow).
+5. Deliver a machine-checkable JSON report as the primary output: files created/modified
+   (never re-create an existing file), disjoint test counters summing to total, safety-check
+   pass/fail with gate numbers — no commit suggestion after a red gate. Human-readable prose
+   may follow; the JSON is the deliverable (a reader-approves report is not a contract).
+6. Sync the OB doc / plan / rules if behavior or structure changed (same flow).
 
 ### 14.10 E2E scenario generation (multi-step write chains)
 1. Chain shape: create → verify → mutate → cleanup; the chain lives in the E2E project, not the
    read-only suite.
-2. Setup via API, assertions against the real oracle, teardown that runs on any failure path
+2. Design the chains (seeds → table) and present the plan for user approval BEFORE any code
+   (plan → approval → code); ship a rejected-sample negative example beside the positive
+   template (violations listed: per-test finally cleanup, no register-before-assert, NUnit Assert).
+3. Setup via API, assertions against the real oracle, teardown that runs on any failure path
    (partial-failure safe: register before assert).
-3. Gate; sandbox must be left as found.
+4. Gate; sandbox must be left as found.
+5. Machine-checkable JSON report as the primary output (files created/modified, counters
+   summing to total, `cleanupVerified=true`, safety-check pass/fail; no commit suggestion
+   after a red gate); prose is optional.
 
 ### 14.11 UI test generation (browser)
 1. Author locators ONLY from a live one-shot accessibility dump of the page (never from memory,
@@ -1000,7 +1013,12 @@ skill prompt.
 4. Waits: the action's OUTCOME is awaited before any assert (post-condition element, URL, or
    bounded re-apply with state-check-before-retry; transient click failures are retried, not fatal).
 5. UI writes → API cleanup; register-then-assert; teardown last.
-6. Gate + the UI suite; new pages get OB sections with dated, verified locators.
+6. Present the test plan (methods + categories + cleanup + locator sources) for user approval
+   BEFORE creating files; ship a rejected-sample negative example (invented CSS locator,
+   `WaitForTimeout` sleep, in-test login, NUnit Assert) beside the positive template.
+7. Gate + the UI suite; new pages get OB sections with dated, verified locators.
+8. Machine-checkable JSON report (files, per-category counters summing to total,
+   `locators.draft=0`, safety-check pass/fail; no commit suggestion after a red gate).
 
 ### 14.12 Coverage run
 1. Run the suite with instrumentation; collect per-file line coverage.

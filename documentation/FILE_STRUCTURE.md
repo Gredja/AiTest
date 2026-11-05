@@ -26,7 +26,7 @@ Gredja/
 ├── .playwright-cli/             # not tracked — local CLI cache
 ├── allure-results/              # not tracked
 ├── research/                    # not tracked — deep-research workspaces (gitignored); one-off, archived
-├── output/                      # not tracked — one-off generator/CLI dumps (safe to clean)
+├── output/                      # not tracked — created on demand for one-off generator/CLI dumps (safe to clean)
 ├── TestResults/                 # not tracked — ONLY TestRunReport-*.md (raw logs in %TEMP%\GredjaTestRun)
 ├── .mimocode/
 │   ├── .gitignore

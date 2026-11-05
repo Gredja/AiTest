@@ -52,7 +52,7 @@ Against checklist:
 - No hardcoded secrets/tokens
 - No dead code, no duplicate code
 - File structure: one class per file
-- Build passes (if buildable from diff)
+- CI `gate` check passed (format + HealthCheck) — read the PR check-runs; never infer build health from the diff alone
 - New code has test coverage
 
 ## Step 5: Post review comment

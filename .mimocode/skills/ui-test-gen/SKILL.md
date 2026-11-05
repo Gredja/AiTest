@@ -36,7 +36,35 @@ Generates page-objects and NUnit UI tests for the Gredja `Ui/` project (Microsof
 
 ## Output Format Instruction
 
-Model must return: page-object files (.cs) and test files (.cs) in C# with namespaces, classes, methods. Code without comments (comments only for non-obvious WHY). After generation — report: list of files, test count by category, and the verification commands run.
+Model must return: page-object files (.cs) and test files (.cs) in C# with namespaces, classes, methods. Code without comments (comments only for non-obvious WHY).
+
+After generation — return ONE JSON object as the FIRST part of the reply, no surrounding prose before it:
+
+```json
+{
+  "files": {
+    "created": ["path/to/Page.cs", "path/to/Tests.cs"],
+    "modified": ["path/to/Existing.cs"]
+  },
+  "tests": { "total": 0, "byCategory": { "Smoke": 0, "Regression": 0, "Negative": 0 } },
+  "locators": { "verifiedLive": 0, "draft": 0 },
+  "safetyCheck": {
+    "format": "pass",
+    "testRun": { "filter": "Category=GitHubUi&FullyQualifiedName~...", "passed": 0, "failed": 0 },
+    "issues": []
+  },
+  "suggestedCommitMessage": "Add {area} {flow} UI tests"
+}
+```
+
+**Contract validation — the reply is invalid unless ALL hold:**
+1. JSON parses; every key above is present; `safetyCheck.format` is exactly `pass` or `fail`.
+2. `tests.byCategory` sums to `tests.total`.
+3. `locators.draft = 0` — every locator in generated code came from a live `locator-dump` snapshot; a draft locator must not ship (fix or drop the test).
+4. `safetyCheck.format = "pass"` AND `failed = 0` — otherwise `suggestedCommitMessage` MUST be omitted.
+5. `files.created` lists only paths that did NOT exist before this run; `suggestedCommitMessage` matches `action + object`.
+
+A human-readable summary MAY follow the JSON; the JSON is the deliverable, the prose is optional.
 
 ---
 
@@ -92,6 +120,8 @@ Before generating — verify the target directories exist; create missing page-o
 - Pick ONE check-type category per test per `Rules/categories.md` boundaries: Smoke = single-response sanity (content, count); Regression = rule/invariant/state-transition; Negative = error/404/empty states.
 - List UI-created resources → plan their API cleanup (issue → close via PATCH; comment → API DELETE — Core `RequestHelper` by composition).
 - Prefer hybrid verification: **act via UI, assert via API** (Core `RequestHelper`) for created resources — the API read-back is the reliable oracle; UI asserts are for what only exists visually (badges, URLs, empty states).
+
+**Plan gate (mandatory):** output the planned tests (method name + category + created resources → cleanup + locator sources) as a short table and STOP — ask the user to approve it. Create/modify any file only after approval; requested changes → update the plan, re-present, then generate.
 
 ### Step 3: Create/extend the page-object
 
@@ -164,6 +194,19 @@ public class {{area_name}}{{flow_name}}Tests : {{service_name}}UiTestBase
 - Do not paste screenshot/trace code — the base fixture captures artifacts on failure.
 - UI base has **no** `Get<>` / `ShouldHaveStatusCode` / `CleanupIssueAsync` members — wire Core helpers by composition (or extend the fixture) before using them in tests.
 
+**Negative example — a UI test that must NEVER be generated (and why):**
+```csharp
+[Test]
+public void CreateIssueTest()
+{
+    _page.ClickAsync(".css-1x6g8xn");
+    _page.FillAsync("#title", "test");
+    _page.WaitForTimeoutAsync(3000);
+    Assert.IsTrue(_page.Url.Contains("issues"));
+}
+```
+Why it is rejected: CSS selector invented from memory (hard rule 1 — role/text locators from a live `locator-dump` only); `WaitForTimeout` sleep (hard rule 4 — Playwright auto-waits, poll via `WaitHelper` for documented eventual consistency); login likely repeated in-test (hard rule 2 — `storageState`, login only in `LoginSignInTests`); NUnit `Assert.*` (FluentAssertions only); no register-then-assert for the created issue (hard rule 3 — UI write → API cleanup); no `[Category]`/`[Description]`; static "test" data.
+
 ### Step 5: Sync UI Observable Behaviour
 
 Append/extend `documentation/{{service_name}}UiObservableBehaviour.md` for every page touched:
@@ -178,9 +221,7 @@ Append/extend `documentation/{{service_name}}UiObservableBehaviour.md` for every
 
 ### Step 7: Report
 
-- Files created/modified; test count by category
-- Locators verified live (page + date) vs still draft
-- Verification results; suggested commit message
+Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `locators` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. An optional human-readable summary may follow — the JSON is the deliverable, not the prose.
 
 ---
 
@@ -215,3 +256,4 @@ Append/extend `documentation/{{service_name}}UiObservableBehaviour.md` for every
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 1.0 | 2026-10-09 | Initial: XRM_Autotest-inspired structure, live-snapshot locator rule, UI-write→API-cleanup, storageState auth | MiMo |
+| 1.1 | 2026-11-04 | Machine-checkable JSON report (incl. locators.draft=0 invariant), mandatory plan gate (plan → approval → files), negative example (rejected UI test with violation list) | MiMo |
