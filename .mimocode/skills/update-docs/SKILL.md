@@ -15,7 +15,15 @@ Run `git diff --name-only` and `git status --short` to identify:
 - Files modified
 - Untracked files
 
-## Step 2: Update FILE_STRUCTURE.md
+## Step 2: Plan gate (mandatory)
+
+Present a table of planned documentation edits (`file → what changes`) and STOP — wait for user approval before touching any file. Requested changes → update the plan, re-present, then apply.
+
+Constraints in force at every edit:
+- Never remove content that hasn't been deleted from the project
+- Every file path you write must be verified against disk first (Glob) — no guessed paths
+
+## Step 3: Update FILE_STRUCTURE.md
 
 Read `documentation/FILE_STRUCTURE.md` and compare with actual file system:
 
@@ -27,15 +35,17 @@ Read `documentation/FILE_STRUCTURE.md` and compare with actual file system:
 Checklist:
 - [ ] `Core/Models/` — new model files?
 - [ ] `Core/Config/` — new endpoint files?
+- [ ] `Core/Generators/` — new generator files?
 - [ ] `Core/Helpers/` — new helper files?
 - [ ] `Api/` — new test files?
 - [ ] `E2E/` — new test files?
+- [ ] `Ui/` — new pages/tests/support files?
 - [ ] `.mimocode/skills/` — new skills?
 - [ ] `Scripts/` — new scripts?
 - [ ] `Rules/` — new rule files?
 - [ ] `documentation/` — new doc files?
 
-## Step 3: Update README.md
+## Step 4: Update README.md
 
 Read `README.md` (repository root) and verify:
 
@@ -46,7 +56,7 @@ Read `README.md` (repository root) and verify:
 5. **Documentation** — new doc files?
 6. **Coverage** — new coverage tools/commands?
 
-## Step 4: Update backups/SETUP.md
+## Step 5: Update backups/SETUP.md
 
 Read `backups/SETUP.md` and verify:
 
@@ -57,18 +67,27 @@ Read `backups/SETUP.md` and verify:
 5. **Config** — new endpoints?
 6. **AGENTS.md** or **README.md** — changes?
 
-## Step 5: Update other md files
+## Step 6: Update other md files
 
 Check and update if needed:
 
-- `Rules/*.md` — if code/rules changed
+- `Rules/*.md` — if code/rules changed (includes `Rules/localization-testing.md` for UI/locale changes)
 - `documentation/*ObservableBehaviour.md` — if endpoints changed
 - `documentation/*TestPlan.md` — if test coverage changed
 - `AGENTS.md` — if project rules changed
+- `education/TESTING_PLAYBOOK.md` — if test rules, generation skills, gates, categories, or templates changed (portable delta only)
 
-## Step 6: Report
+## Step 7: Verify (external — not delegated to the user)
 
-Report what was updated:
+Before reporting done:
+
+1. Glob every file path newly written into the changed `.md` files — each must exist on disk (or be a documented on-demand path)
+2. Re-read `git diff` of the changed `.md` files — no stale claims, nothing removed that still exists in the project
+3. Report the verification result (`paths checked: N, all exist`) as part of the report — a "manually verify" checklist item delegated to the user is NOT acceptable
+
+## Step 8: Report
+
+Report what was updated AND the Step 7 verification result:
 
 ```
 ## Documentation Updated
@@ -77,12 +96,10 @@ Report what was updated:
 |------|---------|
 | FILE_STRUCTURE.md | Added coverage/SKILL.md, test-coverage.ps1 |
 | README.md | Updated FluentAssertions version, added coverage section |
-| backups/SETUP.md | Added Guarantee Data pattern |
-| Rules/test-practices.md | Added Guarantee Data section |
 
-## Files to Verify
-- [ ] FILE_STRUCTURE.md — manually verify new file locations
-- [ ] README.md — manually verify tech stack and commands
+## Verification
+- paths checked: N — all exist
+- git diff re-read — no stale claims
 ```
 
 ---
@@ -90,6 +107,7 @@ Report what was updated:
 ## Rules
 
 - Run `git diff --name-only` first to detect actual changes
+- Plan gate first (Step 2) — no edits before approval (Rules/workflow.md)
 - Never remove content that hasn't been deleted from the project
 - Keep file paths accurate — verify before writing
 - Update backups/SETUP.md whenever skills, rules, or structure change

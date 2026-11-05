@@ -24,7 +24,40 @@ Generates a complete set of NUnit API tests for any REST API service endpoint �
 
 ## Output Format Instruction
 
-Model must return: test files (.cs), models (.cs), and constants (.cs) in C# format with namespace, class, methods. Format — code without comments. After generation — report: list of files, test count (total / positive / negative / ignored).
+Model must return: test files (.cs), models (.cs), and constants (.cs) in C# format with namespace, class, methods. Format — code without comments.
+
+After generation — return ONE JSON object as the FIRST part of the reply, no surrounding prose before it:
+
+```json
+{
+  "files": {
+    "created": ["path/to/NewTests.cs"],
+    "modified": ["path/to/Existing.cs"]
+  },
+  "tests": {
+    "total": 0,
+    "positive": 0,
+    "negative": 0,
+    "edge": 0,
+    "ignored": 0
+  },
+  "safetyCheck": {
+    "format": "pass",
+    "testRun": { "filter": "GetAll{Endpoint}", "passed": 0, "failed": 0 },
+    "issues": []
+  },
+  "suggestedCommitMessage": "Add {Service} {endpoint} API tests"
+}
+```
+
+**Contract validation — the reply is invalid unless ALL hold:**
+1. JSON parses; every key above is present; `safetyCheck.format` is exactly `pass` or `fail`.
+2. `tests.total = positive + negative + edge + ignored` (counters are disjoint).
+3. `safetyCheck.format = "pass"` AND `safetyCheck.testRun.failed = 0` — otherwise `suggestedCommitMessage` MUST be omitted (no commit suggestion after a red gate).
+4. `files.created` lists only paths that did NOT exist before this run — extending an existing file goes to `files.modified`; never re-create an existing file (duplicate-file kata: `documentation/Katas/model-selection-note.md`).
+5. `suggestedCommitMessage` matches `action + object` (capitalized verb + object, e.g. "Add GitHub issue API tests").
+
+A human-readable summary MAY follow the JSON; the JSON is the deliverable, the prose is optional.
 
 ---
 
@@ -109,12 +142,20 @@ If models already exist — verify they match current API response.
 
 ### Step 4: Generate Tests
 
+**Hard constraints (every line generated in this step):**
+- FluentAssertions only — never NUnit `Assert.*`; status/errors via `ShouldHaveStatusCode`/`ShouldHaveError` (see `Rules/assertions.md`)
+- Typed response models only — never `JsonElement` + `TryGetProperty`
+- Async only — `await` through the shared `Get/Post/...` wrappers; never the sync `Execute`
+- No comments in generated code (regex / non-obvious WHY only — `Rules/comments.md`)
+
 **Seed methodology** — before writing code, plan test cases using Seed → Expand → Review:
 1. Write 5 seeds per endpoint (2 happy, 2 failure, 1 edge) — see `Rules/test-practices.md` → "Seed methodology"
 2. Expand to table: `# | Case | Category | Priority | Source seed` — with concrete example for the endpoint
 3. Enforce minimum 5 active negatives per endpoint (`[Ignore]`d don't count; mock-API exception + ceiling rule — see `Rules/test-practices.md` Step 4)
 4. **One negative test per required request field** — `*_Missing{Field}_*` for EVERY required body field (mandatory for all services; empty-body test doesn't substitute)
 5. Target ~15-20 unique test cases per endpoint
+
+**Plan gate (mandatory):** output the seed table as the plan and STOP — ask the user to approve it. Write code only after approval; requested changes → update the table, re-present, then generate. Never jump straight from seeds to code.
 
 **Base class** — check if `{Service}RequestHelper` exists in `Core/Helpers/`. If not, create it extending `RequestHelper`. If it exists, use it.
 
@@ -229,6 +270,20 @@ public class GetAll{Endpoint}Tests : {BaseClass}
 }
 ```
 
+**Negative example — a test that must NEVER be generated (and why):**
+```csharp
+[Test]
+public void Test1()
+{
+    // checks that deletion works
+    Thread.Sleep(2000);
+    var response = Client.Execute(new RestRequest("/releases/999", Method.Delete));
+    Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+    Assert.That(response.Content.Contains("wrong release id"));
+}
+```
+Why it is rejected: name `Test1` says nothing (needs `Endpoint_Case_Expected`); `Thread.Sleep` instead of real waits; sync `Execute` (async only); hardcoded `/releases/999` (endpoint from config; ids dynamic — only 0/-1 are safe static); NUnit `Assert.*` (FluentAssertions only); hand-rolled `.Contains` on a free string instead of `ShouldHaveError` with the OB-documented message; invented error text (must come from OB/`GitHubErrors`); excess comment; no `[Category]`/`[Description]`.
+
 **For negative tests (non-existent ID):**
 - Use dynamic approach: `GET all → maxId + 1` (concurrent writes in same run → `maxId + Offset`, see Rules/test-practices.md)
 - Never hardcode 999 or any static number
@@ -300,11 +355,7 @@ Before finishing:
 
 ### Step 7: Report
 
-Show:
-- Files created/modified
-- Test count (total, positive, negative, edge cases)
-- Any issues found during safety check
-- Suggested commit message
+Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. An optional human-readable summary may follow — the JSON is the deliverable, not the prose.
 
 ---
 
@@ -351,3 +402,6 @@ Show:
 | 1.7 | 2026-09-30 | Step 1: added "read existing code first — never duplicate files" (from model-selection-note katka) | MiMo |
 | 1.8 | 2026-10-02 | Step 4: negative floor counts active tests only, mock-API list exception, one negative per required request field | MiMo |
 | 1.9 | 2026-10-02 | Step 5: write payloads vary via Core/Helpers/DataGenerator | MiMo |
+| 1.10 | 2026-11-04 | Output report → machine-checkable JSON contract: required keys, counter sum invariant, gate-linked commit suggestion, created/modified split | MiMo |
+| 1.11 | 2026-11-04 | Step 4: hard style constraints at the point of action (FluentAssertions / typed models / async-only / no comments) — was final-checklist-only in Step 5 | MiMo |
+| 1.12 | 2026-11-04 | Step 4: mandatory plan gate (seed table → user approval → code) + negative example (rejected test with violation list) | MiMo |

@@ -30,7 +30,8 @@ Test application for learning AI-Native SDLC. API, E2E and UI test automation pr
 - `Ui/` — UI tests (Playwright .NET + Chromium): `Pages/` (pages+forms — the only home of locators), `Tests/` + `Tests/Support/` (infra), storageState auth, write via UI → cleanup via API
 - `Core/Models/` — response/request models
 - `Core/Config/` — endpoint constants
-- `Core/Helpers/` — Http/, Assertions/, Params/, Data/, GitHub/ (request infra, asserts, params, data generators)
+- `Core/Generators/` — data primitives (`DataGenerator`) + per-domain request-model factories (`GitHub/`, `JsonPlaceholder/`) — the only place `new *ModelRequest` is allowed
+- `Core/Helpers/` — Http/, Assertions/, Params/, Data/, GitHub/, Waiting/ (request infra, asserts, params, shared test-data constants, cleanup)
 - `Core/Logging/` — action logging + raw test results; `Core/Reporting/` — TestRunReport generation
 - `AllureAdapter/` — custom Allure adapter
 

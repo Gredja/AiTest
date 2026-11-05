@@ -220,7 +220,8 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ## Authoring Method
 
-- **Structure + fields:** AI-drafted from {Service} API docs
+- **No claim without a live probe (hard rule):** every behavioral claim (status code, field, type, error message) may be written ONLY after a live probe of the real endpoint, tagged `(verified {Date})`. AI-drafting an expectation from API docs alone is forbidden — unprobed statements do not enter the document at all; they are questions to probe, not drafts to keep
+- **Structure + fields:** skeleton may be AI-drafted from {Service} API docs, then verified section-by-section by live probe before any expectation is written
 - **Edge cases + gotchas:** Human-reviewed from production incidents
 - **Risk framing:** Human-owned (business context)
-- **Verified claims are dated:** behavior confirmed by a live probe carries `(verified {Date})` or `probe {Date}`; an undated claim is an unverified draft
+- **Verified claims are dated:** behavior confirmed by a live probe carries `(verified {Date})` or `probe {Date}`; an undated claim is an unverified draft and must not be cited as expected behavior

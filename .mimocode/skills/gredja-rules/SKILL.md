@@ -30,6 +30,7 @@ Read the relevant file before working on the corresponding entity:
 | `Rules/test-practices.md` | Isolation, seed methodology, cleanup, non-existent IDs |
 | `Rules/categories.md` | Category-to-test mapping, check-type boundaries |
 | `Rules/ui-testing.md` | Playwright UI tests: locators, storageState, cleanup |
+| `Rules/localization-testing.md` | Localization testing (Moodle demo): locale locators, contract, HTTP-first L1 |
 | `Rules/comments.md` | When comments are needed (regex, non-obvious WHY only) |
 | `Rules/git.md` | Remote, branches, commits, secrets |
 | `Rules/workflow.md` | Plan → approval → changes → report |

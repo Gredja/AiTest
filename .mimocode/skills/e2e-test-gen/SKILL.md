@@ -24,7 +24,35 @@ Generates NUnit E2E test classes for write operations (POST, PATCH, DELETE) with
 
 ## Output Format Instruction
 
-Model must return: test files (.cs) in C# format with namespace, class, setup, teardown, test methods. Format — code without comments. After generation — report: list of files, test count (total / positive / negative / ignored).
+Model must return: test files (.cs) in C# format with namespace, class, setup, teardown, test methods. Format — code without comments.
+
+After generation — return ONE JSON object as the FIRST part of the reply, no surrounding prose before it:
+
+```json
+{
+  "files": {
+    "created": ["path/to/NewChainTests.cs"],
+    "modified": ["path/to/Existing.cs"]
+  },
+  "tests": { "total": 0, "active": 0, "ignored": 0 },
+  "cleanupVerified": true,
+  "safetyCheck": {
+    "format": "pass",
+    "testRun": { "filter": "Category={Service}E2E", "passed": 0, "failed": 0 },
+    "issues": []
+  },
+  "suggestedCommitMessage": "Add {Service} {endpoint} E2E chain tests"
+}
+```
+
+**Contract validation — the reply is invalid unless ALL hold:**
+1. JSON parses; every key above is present; `safetyCheck.format` is exactly `pass` or `fail`.
+2. `tests.total = active + ignored`.
+3. `cleanupVerified = true` — every chain registers resources before assert and cleans them in `[OneTimeTearDown]` (fixture-registry); `false` invalidates the reply.
+4. `safetyCheck.format = "pass"` AND `failed = 0` — otherwise `suggestedCommitMessage` MUST be omitted.
+5. `files.created` lists only paths that did NOT exist before this run; `suggestedCommitMessage` matches `action + object`.
+
+A human-readable summary MAY follow the JSON; the JSON is the deliverable, the prose is optional.
 
 ---
 
@@ -102,6 +130,8 @@ Apply seed methodology from `Rules/test-practices.md`:
 
 Output as table: `# | Case | Category | Priority | Source seed`
 
+**Plan gate (mandatory):** output the seed table as the plan and STOP — ask the user to approve it. Write code only after approval; requested changes → update the table, re-present, then generate. Never jump straight from seeds to code.
+
 ### Step 4: Generate test class
 
 **Required pattern** (fixture-registry; cleanup ONLY in `[OneTimeTearDown]` LAST member — no per-test `[SetUp]`/`[TearDown]`):
@@ -155,6 +185,25 @@ public class {Endpoint}Tests : {Service}E2ETestBase
 - Use `ShouldMatchRequest()` for request/response comparison
 - **Test data:** fictional values only (public sandbox repo), vary ≥2 dimensions — see `Rules/test-practices.md` → "Test data for write operations"
 
+**Negative example — a chain that must NEVER be generated (and why):**
+```csharp
+[Test]
+public void TestCleanup()
+{
+    var created = Post<CreateIssueModelRequest, IssueModelResponse>(
+        GitHubEndpoints.RepoIssues, new CreateIssueModelRequest { Title = "test" }, TestRepoParam());
+    try
+    {
+        Assert.That(created.Data!.State, Is.EqualTo("open"));
+    }
+    finally
+    {
+        Delete<object>(GitHubEndpoints.RepoIssueById, IssueParams(created.Data!.Number));
+    }
+}
+```
+Why it is rejected: cleanup in per-test `finally` instead of `[OneTimeTearDown]` fixture-registry (teardown-last rule); no register-before-assert (a failed assert path leaks if `finally` itself throws); helper-style orchestration inside the test class; NUnit `Assert.*` (FluentAssertions only); no `[Category]`/`[Description]`; static "test" data (must be fictional + varied via `DataGenerator`).
+
 ### Step 5: Cleanup helpers live in base, not in tests
 
 Complex cleanup chains (delete comments → then issue) belong in `{Service}E2ETestBase` (or a dedicated helper) — never as private methods in `*Tests.cs` (Rules/test-practices: no helpers in test classes).
@@ -177,10 +226,7 @@ Complex cleanup chains (delete comments → then issue) belong in `{Service}E2ET
 
 ### Step 8: Report
 
-- Files created/modified
-- Test count (total, active, ignored)
-- Cleanup chain verified
-- Suggested commit message
+Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `cleanupVerified` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. An optional human-readable summary may follow — the JSON is the deliverable, not the prose.
 
 ---
 
@@ -206,3 +252,4 @@ Complex cleanup chains (delete comments → then issue) belong in `{Service}E2ET
 | 1.1 | 2026-09-30 | Fixed stale `Get<T>` signature in Setup example — removed `Method.Get` argument | MiMo |
 | 1.2 | 2026-09-30 | Added test data rule reference (fictional values, vary dimensions) from kata 6.W.3 | MiMo |
 | 1.3 | 2026-10-02 | Seed methodology: active negatives only + one negative per required request field | MiMo |
+| 1.4 | 2026-11-04 | Machine-checkable JSON report (incl. cleanupVerified), mandatory plan gate (seed table → approval → code), negative example (rejected chain with violation list) | MiMo |

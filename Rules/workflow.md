@@ -1,5 +1,7 @@
 # Rules: Workflow
 
+Canonical cycle: **plan → approval → changes → report**.
+
 All changes require a plan first, then user approval, then execution.
 
 1. Show the plan (what files, what changes)
