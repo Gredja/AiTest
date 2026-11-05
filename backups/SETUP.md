@@ -269,13 +269,8 @@ Gredja/
 │       └── Generic/              # Общие модели
 ├── Api/
 │   ├── CoreHelpers/Tests/        # Юнит-тесты AssertHelper (офлайн, категория Core)
-│   ├── JsonPlaceholder/Tests/    # Тесты JSONPlaceholder
-│   │   ├── Albums/               # Тесты альбомов
-│   │   ├── Comments/             # Тесты комментариев
-│   │   ├── Photos/               # Тесты фотографий
-│   │   ├── Posts/                # Тесты постов
-│   │   ├── Todos/                # Тесты задач
-│   │   └── Users/                # Тесты пользователей
+│   ├── JsonPlaceholder/          # JP: Helpers/ (TestData, ParamHelper, CleanupHelper — warning-only delete) + Tests/ (Albums/, Comments/, Photos/, Posts/, Todos/, Users/)
+│   │   └── Tests/                # (см. FILE_STRUCTURE.md — Albums/, Comments/, Photos/, Posts/, Todos/, Users/)
 │   ├── GitHub/Helpers/             # ReleaseTestBase + GitBlobTestBase (узкие базы фикстур, наследуют GitHubTestBase)
 │   └── GitHub/Tests/               # Тесты GitHub API (Auth/, Issues/, Repos/ и др.)
 ├── E2E/                          # E2E тесты (цепочки связей)

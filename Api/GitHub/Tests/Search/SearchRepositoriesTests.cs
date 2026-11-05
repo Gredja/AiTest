@@ -5,6 +5,7 @@ using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Search;
 
@@ -14,8 +15,6 @@ namespace Api.GitHub.Search;
 public class SearchRepositoriesTests : GitHubTestBase
 {
     private const string RepositoryQuery = "user:Gredja";
-    private const string GarbageQualifierQuery = "repo:";
-    private const string LogicalOperatorsOnlyQuery = "AND";
 
     [Test]
     [Category("HealthCheck")]
@@ -44,7 +43,7 @@ public class SearchRepositoriesTests : GitHubTestBase
     [Test]
     [Category("Negative")]
     [Description("29.3 Missing q returns 422")]
-    public async Task SearchRepositories_InvalidQuery_Returns422()
+    public async Task SearchRepositories_MissingQuery_Returns422()
     {
         var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
             GitHubEndpoints.SearchRepositories);

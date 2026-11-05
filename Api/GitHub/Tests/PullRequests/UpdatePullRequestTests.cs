@@ -19,8 +19,6 @@ public class UpdatePullRequestTests : GitHubTestBase
 {
     private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
 
-    private const int ExistingPullNumber = 1;
-
     [Test]
     [Category("Smoke")]
     [Description("22.1 PATCH title returns 200 and persists")]

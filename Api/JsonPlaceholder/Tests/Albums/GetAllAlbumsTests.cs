@@ -12,7 +12,6 @@ namespace Api.JsonPlaceholder.Albums;
 [Category("JsonPlaceholder")]
 public class GetAllAlbumsTests : JsonPlaceholderRequestHelper
 {
-
     [Test]
     [Category("HealthCheck")]
     [Description("1.1 Status code is 200")]

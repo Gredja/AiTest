@@ -16,6 +16,7 @@ public class CreateGitTreeTests : GitHubTestBase
     // base_tree is wire-optional (POST without it → 201, probed 2026-10-22), so no
     // MissingBaseTree negative exists even though the request model marks it required
     private const string ProbeEntryPath = "phase1-probe.txt";
+    private const string ProbeEntryContent = "phase1 probe content";
 
     private string _baseTreeSha = string.Empty;
 
@@ -89,7 +90,7 @@ public class CreateGitTreeTests : GitHubTestBase
                     {
                         [JsonFields.Mode] = FileMode644,
                         [JsonFields.Type] = BlobType,
-                        [JsonFields.Content] = "phase1 probe content"
+                        [JsonFields.Content] = ProbeEntryContent
                     }
                 }
             },
@@ -114,7 +115,7 @@ public class CreateGitTreeTests : GitHubTestBase
                     {
                         [JsonFields.Path] = ProbeEntryPath,
                         [JsonFields.Type] = BlobType,
-                        [JsonFields.Content] = "phase1 probe content"
+                        [JsonFields.Content] = ProbeEntryContent
                     }
                 }
             },

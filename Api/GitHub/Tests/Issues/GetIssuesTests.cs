@@ -116,7 +116,7 @@ public class GetIssuesTests : GitHubTestBase
     public async Task GetIssues_InvalidState_Returns422()
     {
         var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
-            [.. TestRepoParam(), .. StateParam("invalid")]);
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateInvalid)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.UnprocessableEntity);
     }
@@ -210,6 +210,19 @@ public class GetIssuesTests : GitHubTestBase
     }
 
     [Test]
+    [Category("Regression")]
+    [Description("3.14 Issues list includes pull requests (pull_request field present)")]
+    public async Task GetIssues_ItemsIncludePullRequests()
+    {
+        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
+            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Any(issue => issue.PullRequest is not null).Should().BeTrue(
+            "GitHub serves pull requests through the issues endpoint — OB §6 gotcha");
+    }
+
+    [Test]
     [Category("Negative")]
     [Description("3.15 Non-existent owner returns 404")]
     public async Task GetIssues_NonExistentOwner_ReturnsNotFound()
@@ -229,19 +242,6 @@ public class GetIssuesTests : GitHubTestBase
             GitHubEndpoints.RepoIssues, InvalidAuthorization, TestRepoParam());
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
-    }
-
-    [Test]
-    [Category("Regression")]
-    [Description("3.14 Issues list includes pull requests (pull_request field present)")]
-    public async Task GetIssues_ItemsIncludePullRequests()
-    {
-        var response = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
-            [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateAll)]);
-
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Any(issue => issue.PullRequest is not null).Should().BeTrue(
-            "GitHub serves pull requests through the issues endpoint — OB §6 gotcha");
     }
 
     [OneTimeTearDown]

@@ -5,8 +5,6 @@ namespace Core.Generators.GitHub;
 
 public static class IssueGenerator
 {
-    private const string UnrecognizedStateValue = "bogus";
-
     public static CreateIssueModelRequest CreateRandom(string titlePrefix) =>
         new() { Title = DataGenerator.RandomTitle(titlePrefix) };
 
@@ -29,5 +27,5 @@ public static class IssueGenerator
         new() { State = state };
 
     public static UpdateIssueModelRequest UnrecognizedState() =>
-        new() { State = UnrecognizedStateValue };
+        new() { State = GitHubEndpoints.StateInvalid };
 }

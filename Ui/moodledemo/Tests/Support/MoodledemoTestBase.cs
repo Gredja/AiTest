@@ -12,7 +12,7 @@ public abstract class MoodledemoTestBase
     private const int ViewportHeight = 900;
     private const string PinnedLocale = "en-US";
     private const string MoodledemoArtifactsDirectory = "moodledemo-artifacts";
-    internal const int UiTimeoutMs = 15_000;
+    internal const int UiTimeoutMs = Ui.Helpers.UiTimeout.UiTimeoutMs;
 
     private IPlaywright? _playwright;
     private IBrowser? _browser;

@@ -17,16 +17,16 @@ internal sealed class HeaderPage(IPage page)
 
     internal async Task<string> GetSignedInUsernameAsync()
     {
-        await OpenUserMenuAsync(_userNavigationDialog);
+        await OpenUserMenuAsync(UserNavigationDialog);
 
-        await _userNavigationHeading.WaitForAsync();
+        await UserNavigationHeading.WaitForAsync();
 
-        return (await _userNavigationHeading.TextContentAsync())?.Trim() ?? string.Empty;
+        return (await UserNavigationHeading.TextContentAsync())?.Trim() ?? string.Empty;
     }
 
     internal async Task SignOutAsync()
     {
-        await OpenUserMenuAsync(_userNavigationDialog);
+        await OpenUserMenuAsync(UserNavigationDialog);
 
         await _signOutLink.ClickAsync();
 
@@ -42,15 +42,15 @@ internal sealed class HeaderPage(IPage page)
 
     internal async Task OpenProfileAsync()
     {
-        await OpenUserMenuAsync(_userNavigationDialog);
-        await _profileLink.ClickAsync();
+        await OpenUserMenuAsync(UserNavigationDialog);
+        await ProfileLink.ClickAsync();
         await _page.WaitForURLAsync(url => !url.Contains(TestConfig.UiTestRepo));
     }
 
     internal async Task OpenSettingsAsync()
     {
-        await OpenUserMenuAsync(_userNavigationDialog);
-        await _settingsLink.ClickAsync();
+        await OpenUserMenuAsync(UserNavigationDialog);
+        await SettingsLink.ClickAsync();
         await _page.WaitForURLAsync(url => !url.Contains(TestConfig.UiTestRepo));
     }
 
@@ -77,10 +77,14 @@ internal sealed class HeaderPage(IPage page)
             interval: _menuOpenRetryInterval);
     }
 
-    private readonly ILocator _userNavigationDialog = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" });
-    private readonly ILocator _userNavigationHeading = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" }).GetByRole(AriaRole.Heading);
-    private readonly ILocator _profileLink = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" }).GetByRole(AriaRole.Link, new() { Name = "Profile" });
-    private readonly ILocator _settingsLink = page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" }).GetByRole(AriaRole.Link, new() { Name = "Settings", Exact = true });
+    private ILocator UserNavigationDialog =>
+        page.GetByRole(AriaRole.Dialog, new() { Name = "User navigation" });
+    private ILocator UserNavigationHeading =>
+        UserNavigationDialog.GetByRole(AriaRole.Heading);
+    private ILocator ProfileLink =>
+        UserNavigationDialog.GetByRole(AriaRole.Link, new() { Name = "Profile" });
+    private ILocator SettingsLink =>
+        UserNavigationDialog.GetByRole(AriaRole.Link, new() { Name = "Settings", Exact = true });
     private readonly ILocator _signOutLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true });
     private readonly ILocator _accountSignOutButton = page.GetByRole(AriaRole.Button, new() { Name = $"Sign out of {TestConfig.UiUsername}", Exact = true });
     private readonly ILocator _signInLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true });

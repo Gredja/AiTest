@@ -1,4 +1,3 @@
-﻿using Core.Models.Generic;
 using Core.Models.GitHub;
 using JsonFields = Core.Models.GitHub.JsonFields;
 using Core.Config;
@@ -19,7 +18,6 @@ public class GetPublicReposTests : GitHubTestBase
 {
     private const int FirstRepositoryId = 1;
     private const long HugeSinceId = 999999999;
-    private const int DefaultingPerPage = 0;
     private const int MaxPerPageCap = 100;
 
     [Test]
@@ -61,7 +59,7 @@ public class GetPublicReposTests : GitHubTestBase
     public async Task GetPublicRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.Repositories,
-            [new() { Type = ParamType.Parameter, Key = JsonFields.Since, Value = FirstRepositoryId }]);
+            [Query(JsonFields.Since, FirstRepositoryId)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();

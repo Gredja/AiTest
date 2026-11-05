@@ -10,7 +10,6 @@ namespace Core.Helpers.GitHub;
 
 public class GitHubCleanupHelper : GitHubRequestHelper
 {
-
     public async Task CleanupCommentAsync(long? commentId)
     {
         if (!commentId.HasValue)

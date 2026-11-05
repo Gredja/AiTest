@@ -1,10 +1,11 @@
-﻿using Core.Models.GitHub;
+using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Users;
 
@@ -13,16 +14,12 @@ namespace Api.GitHub.Users;
 [Category("GitHub")]
 public class GetUserTests : GitHubTestBase
 {
-    private const string InvalidUsername = "!invalid!";
-    private const string UsernameWithSpaces = "abc def";
-    private static readonly string _testUsername = TestConfig.GitHubTestUsername;
-
     [Test]
     [Category("HealthCheck")]
     [Description("2.1 GET /users/{username} returns 200 OK")]
     public async Task GetUser_ReturnsOk()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -32,7 +29,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.2 Response matches expected contract")]
     public async Task GetUser_ResponseMatchesContract()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -44,11 +41,11 @@ public class GetUserTests : GitHubTestBase
     [Description("2.3 Response contains valid user fields")]
     public async Task GetUser_HasValidFields()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ShouldHaveValidFields();
-        response.Data!.Login.Should().Be(_testUsername);
+        response.Data!.Login.Should().Be(TestUsername);
     }
 
     [Test]
@@ -56,7 +53,7 @@ public class GetUserTests : GitHubTestBase
     [Description("2.4 Content-Type is application/json")]
     public async Task GetUser_ContentTypeIsJson()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
@@ -68,7 +65,7 @@ public class GetUserTests : GitHubTestBase
     public async Task GetUser_ResponseTimeIsAcceptable()
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
         stopwatch.Stop();
 
         AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
@@ -90,10 +87,10 @@ public class GetUserTests : GitHubTestBase
     [Description("2.7 Login matches request username")]
     public async Task GetUser_LoginMatchesRequest()
     {
-        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
+        var response = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data!.Login.Should().Be(_testUsername);
+        response.Data!.Login.Should().Be(TestUsername);
     }
 
     [Test]
@@ -101,8 +98,8 @@ public class GetUserTests : GitHubTestBase
     [Description("2.8 Repeated calls return same data")]
     public async Task GetUser_RepeatedCalls_ReturnSameData()
     {
-        var response1 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
-        var response2 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(_testUsername));
+        var response1 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
+        var response2 = await Get<UserModelResponse>(GitHubEndpoints.UsersById, UsernameParam(TestUsername));
 
         response1.ShouldHaveStatusCode(HttpStatusCode.OK);
         response2.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -116,7 +113,7 @@ public class GetUserTests : GitHubTestBase
     public async Task GetUser_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.UsersById, InvalidAuthorization, UsernameParam(_testUsername));
+            GitHubEndpoints.UsersById, InvalidAuthorization, UsernameParam(TestUsername));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }

@@ -4,7 +4,6 @@ using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
-using RestSharp;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
 namespace Api.GitHub.Collaborators;
@@ -76,11 +75,8 @@ public class GetCollaboratorsTests : GitHubTestBase
     [Description("28.5 Invalid token returns 401")]
     public async Task GetCollaborators_InvalidToken_ReturnsUnauthorized()
     {
-        var request = new RestRequest(GitHubEndpoints.RepoCollaborators, Method.Get);
-        request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        AddParams(request, TestRepoParam());
-
-        var response = await Client.ExecuteAsync(request);
+        var response = await ExecuteWithAuthorization(
+            GitHubEndpoints.RepoCollaborators, InvalidAuthorization, TestRepoParam());
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }

@@ -18,8 +18,6 @@ public class MergePullRequestTests : GitHubTestBase
 {
     private readonly List<(int Number, string HeadBranch, string BaseBranch)> _createdPullRequests = [];
 
-    private const int ExistingPullNumber = 1;
-
     [Test]
     [Category("HealthCheck")]
     [Description("23.1 PUT merge returns 200 with merged=true")]

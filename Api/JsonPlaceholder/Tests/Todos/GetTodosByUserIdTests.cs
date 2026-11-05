@@ -1,18 +1,18 @@
 using Core.Models.JsonPlaceholder;
+using Api.JsonPlaceholder.Helpers;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderParamHelper;
 using static Api.JsonPlaceholder.Helpers.JsonPlaceholderTestData;
-using static Core.Helpers.ParamHelper;
 
 namespace Api.JsonPlaceholder.Todos;
 
 [TestFixture]
 [AllureNUnit]
 [Category("JsonPlaceholder")]
-public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
+public class GetTodosByUserIdTests : JsonPlaceholderCleanupHelper
 {
     private const int TestUserId = 1;
     private const int OtherUserId = 5;
@@ -141,25 +141,5 @@ public class GetTodosByUserIdTests : JsonPlaceholderRequestHelper
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_createdTodoId.HasValue)
-        {
-            try
-            {
-                var delete = await Delete<object>(JsonPlaceholderEndpoints.TodosById, IdParam(_createdTodoId.Value));
-
-                if (!delete.IsSuccessful)
-                {
-                    TestContext.Progress.WriteLine(
-                        string.Format(TodoNotDeletedWarningFormat, _createdTodoId, (int)delete.StatusCode));
-                }
-            }
-            catch (HttpRequestException exception)
-            {
-                TestContext.Progress.WriteLine(
-                    string.Format(TodoDeleteFailedWarningFormat, _createdTodoId, exception.Message));
-            }
-        }
-    }
+    public async Task OneTimeTearDown() => await CleanupTodoAsync(_createdTodoId);
 }

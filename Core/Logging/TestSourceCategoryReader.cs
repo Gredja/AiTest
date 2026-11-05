@@ -10,9 +10,9 @@ internal static class TestSourceCategoryReader
     private static readonly Regex _classRegex = new(
         @"public\s+(?:sealed\s+|abstract\s+|static\s+|partial\s+)*class\s+(\w+)", RegexOptions.Compiled);
 
-    // Matches `public async Task[<T>] MethodName` signatures — captures the method name
+    // Matches `public [async] Task[<T>] MethodName` and `public void MethodName` signatures
     private static readonly Regex _methodRegex = new(
-        @"public\s+async\s+Task(?:<[^>]+>)?\s+(\w+)", RegexOptions.Compiled);
+        @"public\s+(?:async\s+)?(?:Task(?:<[^>]+>)?|void)\s+(\w+)", RegexOptions.Compiled);
 
     // Matches [Category("Value")] attributes — captures the category value
     private static readonly Regex _categoryRegex = new(@"Category\(""(\w+)""\)", RegexOptions.Compiled);

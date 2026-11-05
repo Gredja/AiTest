@@ -19,6 +19,8 @@ public abstract class GitHubTestBase : GitHubRequestHelper
     protected const string InvalidToken = "invalid-token-sentinel";
     protected const string InvalidAuthorization = $"Bearer {InvalidToken}";
 
+    protected static readonly string TestUsername = TestConfig.GitHubTestUsername;
+
     // GitHub topic naming: lowercase letters, digits and hyphens (OB §14), e.g. "api-v2"
     protected static readonly Regex TopicNamePattern = new("^[a-z0-9-]+$", RegexOptions.Compiled);
 

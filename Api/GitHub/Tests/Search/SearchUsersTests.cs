@@ -5,6 +5,7 @@ using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Search;
 
@@ -14,8 +15,6 @@ namespace Api.GitHub.Search;
 public class SearchUsersTests : GitHubTestBase
 {
     private const string UserQuery = "Gredja";
-    private const string GarbageQualifierQuery = "repo:";
-    private const string LogicalOperatorsOnlyQuery = "AND";
 
     [Test]
     [Category("HealthCheck")]

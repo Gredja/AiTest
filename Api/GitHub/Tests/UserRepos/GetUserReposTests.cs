@@ -1,10 +1,11 @@
-﻿using Core.Models.GitHub;
+using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.UserRepos;
 
@@ -13,19 +14,13 @@ namespace Api.GitHub.UserRepos;
 [Category("GitHub")]
 public class GetUserReposTests : GitHubTestBase
 {
-    private const string InvalidUsername = "!invalid!";
-    private const string UsernameWithSpaces = "abc def";
-    private const int DefaultingPerPage = 0;
-
-    private static readonly string _testUsername = TestConfig.GitHubTestUsername;
-
     [Test]
     [Category("HealthCheck")]
     [Description("7.1 GET /users/{username}/repos returns 200 OK")]
     public async Task GetUserRepos_ReturnsOk()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            UsernameParam(_testUsername));
+            UsernameParam(TestUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -36,7 +31,7 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_ResponseMatchesContract()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            UsernameParam(_testUsername));
+            UsernameParam(TestUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty();
@@ -49,7 +44,7 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_HasValidFields()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            UsernameParam(_testUsername));
+            UsernameParam(TestUsername));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.ForEach(repo => repo.ShouldHaveValidFields());
@@ -72,7 +67,7 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_PaginationWorks()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            [.. UsernameParam(_testUsername), .. PaginationParams(FirstPage, DefaultPageSize)]);
+            [.. UsernameParam(TestUsername), .. PaginationParams(FirstPage, DefaultPageSize)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Count.Should().BeLessThanOrEqualTo(DefaultPageSize);
@@ -84,7 +79,7 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.UsersRepos, InvalidAuthorization, UsernameParam(_testUsername));
+            GitHubEndpoints.UsersRepos, InvalidAuthorization, UsernameParam(TestUsername));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
@@ -117,7 +112,7 @@ public class GetUserReposTests : GitHubTestBase
     public async Task GetUserRepos_PerPageZero_ReturnsDefaultPage()
     {
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            [.. UsernameParam(_testUsername), .. PerPageParam(DefaultingPerPage)]);
+            [.. UsernameParam(TestUsername), .. PerPageParam(DefaultingPerPage)]);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeEmpty("per_page=0 must fall back to the default page, not an empty one");
@@ -130,7 +125,7 @@ public class GetUserReposTests : GitHubTestBase
     {
         var stopwatch = System.Diagnostics.Stopwatch.StartNew();
         var response = await Get<List<RepositoryModelResponse>>(GitHubEndpoints.UsersRepos,
-            UsernameParam(_testUsername));
+            UsernameParam(TestUsername));
         stopwatch.Stop();
 
         AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
