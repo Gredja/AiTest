@@ -7,9 +7,15 @@ public static class TestDataConstants
     public const int RandomNameLength = 8;
     public const int SingleItemPageSize = 1;
     public const int ExistingIssueNumber = 5;
+    public const int ExistingPullNumber = 1;
+    public const int DefaultingPerPage = 0;
     public const string NonNumericValue = "abc";
     public const string SpecialCharsSegment = "sp@ec!al";
     public const string ProbeTitle = "probe";
+    public const string InvalidUsername = "!invalid!";
+    public const string UsernameWithSpaces = "abc def";
+    public const string GarbageQualifierQuery = "repo:";
+    public const string LogicalOperatorsOnlyQuery = "AND";
     public const string EntryCriteriaRepoDataMessage = "repo must keep data — Entry Criteria, documentation/GitHubTestingStructure.md";
     public const string EntryCriteriaPullRequestMessage = "repo must keep at least one PR — Entry Criteria, documentation/GitHubTestingStructure.md";
     public const string IssueContractCheckTitle = "Test issue for contract check";

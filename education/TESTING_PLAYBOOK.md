@@ -301,7 +301,10 @@ page.GetByRole(AriaRole.Heading, new() { Name = lang.FixtureTitle });
 The expected-language forms (page title, `html lang`, `dir`, header strings) live in JSON
 fixtures, never in code or `[TestCase]` attributes — adding a language is a data change, not a
 code change. The only DOM-attribute locator allowed in a localization suite is the root element
-(`html[lang]`, `html[dir]`).
+(`html[lang]`, `html[dir]`), plus a **documented structural exception**: a markup-specific
+selector (class, `label[for]`, non-landmark `nav`) only when a dated live-dump comment in the
+page object proves no accessible-name path exists — record the dump date and why role/name
+failed; without that comment the selector is a violation.
 
 ### 5.4 Auth in browser tests
 

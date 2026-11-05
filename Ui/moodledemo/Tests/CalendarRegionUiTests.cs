@@ -6,6 +6,7 @@ using Ui.Moodledemo.Tests.Support;
 namespace Ui.Moodledemo.Tests;
 
 [TestFixture]
+[AllureNUnit]
 [Category("MoodleDemo")]
 public class CalendarRegionUiTests : MoodledemoTestBase
 {

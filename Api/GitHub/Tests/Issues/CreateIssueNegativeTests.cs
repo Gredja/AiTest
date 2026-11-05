@@ -14,7 +14,6 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class CreateIssueNegativeTests : GitHubTestBase
 {
-
     [Test]
     [Category("Negative")]
     [Description("17.2 POST without title returns 422 naming the missing field")]

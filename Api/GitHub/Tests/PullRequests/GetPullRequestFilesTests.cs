@@ -13,7 +13,6 @@ namespace Api.GitHub.PullRequests;
 [Category("GitHub")]
 public class GetPullRequestFilesTests : GitHubTestBase
 {
-
     private static readonly string[] _validFileStatuses = ["added", "modified", "removed", "renamed", "changed"];
 
     private int _existingPullNumber;

@@ -1,4 +1,5 @@
 using Core.Models.JsonPlaceholder;
+using Api.JsonPlaceholder.Helpers;
 using GenericJsonFields = Core.Models.Generic.JsonFields;
 using Core.Config;
 using Core.Helpers;
@@ -13,7 +14,7 @@ namespace Api.JsonPlaceholder.Posts;
 [TestFixture]
 [AllureNUnit]
 [Category("JsonPlaceholder")]
-public class GetPostByIdTests : JsonPlaceholderRequestHelper
+public class GetPostByIdTests : JsonPlaceholderCleanupHelper
 {
     private const int TestPostId = 1;
     private const int BoundaryPostId = 50;
@@ -198,25 +199,5 @@ public class GetPostByIdTests : JsonPlaceholderRequestHelper
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_createdPostId.HasValue)
-        {
-            try
-            {
-                var delete = await Delete<object>(JsonPlaceholderEndpoints.PostsById, IdParam(_createdPostId.Value));
-
-                if (!delete.IsSuccessful)
-                {
-                    TestContext.Progress.WriteLine(
-                        string.Format(PostNotDeletedWarningFormat, _createdPostId, (int)delete.StatusCode));
-                }
-            }
-            catch (HttpRequestException exception)
-            {
-                TestContext.Progress.WriteLine(
-                    string.Format(PostDeleteFailedWarningFormat, _createdPostId, exception.Message));
-            }
-        }
-    }
+    public async Task OneTimeTearDown() => await CleanupPostAsync(_createdPostId);
 }

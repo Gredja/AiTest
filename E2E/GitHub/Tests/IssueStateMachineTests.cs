@@ -21,7 +21,7 @@ public class IssueStateMachineTests : GitHubE2ETestBase
     public async Task IssueStateMachine_Open_Close_Reopen_VerifyFilters()
     {
         var created = await CreateIssueTrackedAsync(
-            IssueGenerator.CreateRandom("State", "State machine body"),
+            IssueGenerator.CreateRandom("State"),
             _createdIssueNumbers);
         var issueNumber = created.Number;
 

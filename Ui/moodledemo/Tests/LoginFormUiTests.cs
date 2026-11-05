@@ -4,6 +4,7 @@ using Ui.Moodledemo.Tests.Support;
 namespace Ui.Moodledemo.Tests;
 
 [TestFixture]
+[AllureNUnit]
 [Category("MoodleDemo")]
 public class LoginFormUiTests : MoodledemoTestBase
 {
@@ -17,7 +18,8 @@ public class LoginFormUiTests : MoodledemoTestBase
         var hasForm = await Browser.LoginPage.HasLoginFormAsync();
         hasForm.Should().BeTrue("the login form must expose username, password and the submit button");
 
-        var hasLocale = await Browser.LoginPage.HasLocaleMarkerAsync("en");
-        hasLocale.Should().BeTrue("the default session must render as lang=en");
+        var expectedLang = MoodledemoFixtures.English.Lang;
+        var hasLocale = await Browser.LoginPage.HasLocaleMarkerAsync(expectedLang);
+        hasLocale.Should().BeTrue($"the default session must render as lang={expectedLang}");
     }
 }

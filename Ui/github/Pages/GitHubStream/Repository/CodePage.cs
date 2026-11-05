@@ -34,6 +34,6 @@ internal sealed class CodePage(IPage page) : RepositoryPageBase(page)
             _presenceTimeout);
 
     private readonly ILocator _fileLinks = page.GetByRole(AriaRole.Link);
-    private readonly ILocator _renderedReadmeHeading = page.GetByRole(AriaRole.Heading, new() { Name = "ui-sandbox" });
+    private readonly ILocator _renderedReadmeHeading = page.GetByRole(AriaRole.Heading, new() { Name = TestConfig.UiTestRepo });
     private readonly ILocator _commitHeadings = page.GetByRole(AriaRole.Heading);
 }

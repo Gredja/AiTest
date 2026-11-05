@@ -23,6 +23,7 @@ L1 is a **smoke** — it runs first, catches a broken site per language in secon
 
 - **Locator construction**: build all locators from *visible* page elements (accessible role + accessible name), never from markup specifics (DOM classes, ids, data-attributes)
 - **Root element**: only `<html>` may be addressed by DOM attribute (`lang`/`dir`) — the single exception
+- **Documented structural exception**: a markup-specific selector (class, `label[for]`, non-landmark `nav`) is allowed **only** when a dated live-dump comment in the Page class proves no accessible-name path exists (same pattern as `ui-testing.md` for `<html>`). The comment must record the dump date and why role/name failed; without that comment the selector is a rule violation
 - **Locator input**: any string that enters a locator must come from the fixture — the one place where the expected language form is decided
 - **Why**: a locator like `page.GetByRole(AriaRole.Heading, new() { Name = "Site administration" })` is a hidden hardcoded English literal — it breaks on the first localized locale. `new() { Name = fixtureTitle }` works on every locale
 

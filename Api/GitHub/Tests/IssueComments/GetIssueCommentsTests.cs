@@ -295,27 +295,5 @@ public class GetIssueCommentsTests : GitHubTestBase
     }
 
     [OneTimeTearDown]
-    public async Task OneTimeTearDown()
-    {
-        if (_createdCommentId.HasValue)
-        {
-            try
-            {
-                var delete = await Delete<object>(
-                    GitHubEndpoints.RepoIssueCommentById,
-                    [.. TestRepoParam(), .. CommentIdParam(_createdCommentId.Value)]);
-
-                if (!delete.IsSuccessful)
-                {
-                    TestContext.Progress.WriteLine(
-                        $"Warning: comment {_createdCommentId} not deleted: HTTP {(int)delete.StatusCode}");
-                }
-            }
-            catch (HttpRequestException exception)
-            {
-                TestContext.Progress.WriteLine(
-                    $"Warning: failed to delete comment {_createdCommentId}: {exception.Message}");
-            }
-        }
-    }
+    public async Task OneTimeTearDown() => await CleanupCommentAsync(_createdCommentId);
 }

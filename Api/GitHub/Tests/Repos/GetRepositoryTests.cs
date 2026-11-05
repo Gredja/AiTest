@@ -5,6 +5,7 @@ using Core.Helpers.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using static Core.Helpers.TestDataConstants;
 
 namespace Api.GitHub.Repos;
 
@@ -13,8 +14,6 @@ namespace Api.GitHub.Repos;
 [Category("GitHub")]
 public class GetRepositoryTests : GitHubTestBase
 {
-    private static readonly string _testUsername = TestConfig.GitHubTestUsername;
-    private const string InvalidOwnerName = "!invalid!";
     private const string InvalidRepoName = "bad repo name";
 
     [Test]
@@ -87,7 +86,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_NonExistentRepo_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(_testUsername, GitHubEndpoints.NonExistentRepoName));
+            RepoParam(TestUsername, GitHubEndpoints.NonExistentRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
@@ -139,7 +138,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_InvalidOwnerCharacters_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(InvalidOwnerName, _testUsername));
+            RepoParam(InvalidUsername, TestUsername));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
@@ -150,7 +149,7 @@ public class GetRepositoryTests : GitHubTestBase
     public async Task GetRepository_RepoNameWithSpaces_ReturnsNotFound()
     {
         var response = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById,
-            RepoParam(_testUsername, InvalidRepoName));
+            RepoParam(TestUsername, InvalidRepoName));
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
