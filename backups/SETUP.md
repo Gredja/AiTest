@@ -347,7 +347,7 @@ MiMoCode:
 | `/coverage` | Запускает тесты + считает code coverage (coverlet) + file coverage (endpoint→test) |
 | `/update-docs` | Обновляет .md файлы проекта после структурных изменений |
 | `/nightly-check` | Проверяет последний ночной прогон (API GitHub) и выдаёт однострочный вердикт; при падении — шаги jobs |
-| `/merge` | Финал ветки целиком: `/commit` → PR в main → ожидание всех GitHub-гейтов → мерж → удаление remote-ветки → Slack-уведомление (`✅ merge …`) → напоминание про локальную чистку (сам на main не переключается) |
+| `/merge` | Финал ветки целиком: `/commit` → PR в main → ожидание всех GitHub-гейтов → мерж → удаление ветки remote И локально (`git switch main && git pull --ff-only && git branch -d`) → Slack-уведомление (`✅ merge …`) |
 | `/gredja-rules` | Показывает правила проекта |
 
 Просто напиши `/test` в чате с MiMoCode — и он запустит тесты.

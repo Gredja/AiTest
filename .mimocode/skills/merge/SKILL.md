@@ -1,6 +1,6 @@
 ---
 name: merge
-description: Finish the current branch end-to-end — commit pending changes via /commit, open a PR to main (title composed from the changes), wait for all GitHub gates green, merge the PR, delete the branch on the remote, and remind the user to delete it locally. Use when the user says "/merge", "смержи", "влий ветку в main", "закрой ветку", "сделай merge", "прогони до слияния".
+description: Finish the current branch end-to-end — commit pending changes via /commit, open a PR to main (title composed from the changes), wait for all GitHub gates green, merge the PR, delete the branch on the remote AND locally, fast-forward local main. Use when the user says "/merge", "смержи", "влий ветку в main", "закрой ветку", "сделай merge", "прогони до слияния".
 ---
 
 # Merge
@@ -73,13 +73,25 @@ Spawn a background watcher subagent: poll
 Verify `merged: true`; record the merge sha. If the API rejects (405/behind) → report the
 reason (conflicts / required checks) and STOP — no force options.
 
-### Step 6: Delete the remote branch
+### Step 6: Delete the merged branch (remote + local) and update main
+
+Remote:
 
 ```powershell
 # DELETE /repos/Gredja/AiTest/git/refs/heads/<branch>   (204; 404 = already gone, OK)
 ```
 
-Never delete `main`. Verify with `git ls-remote --heads origin <branch>` (empty = gone).
+Verify with `git ls-remote --heads origin <branch>` (empty = gone).
+
+Local — always, no reminder needed (user rule, 2026-11-04):
+
+```powershell
+git switch main
+git pull --ff-only
+git branch -d <branch>    # -d only (never -D): refuses to delete an unmerged branch
+```
+
+Never delete `main` itself.
 
 ### Step 7: Report
 
@@ -89,14 +101,8 @@ Never delete `main`. Verify with `git ls-remote --heads origin <branch>` (empty 
 never blocks the merge flow.
 
 In execution order: commit (message/hash) or "skipped — tree clean" · PR number/url/title ·
-gates result (names + verdict) · merge sha · remote branch deleted · Slack notification
-(sent / failed).
-
-End every report with this warning — it is a manual action the agent cannot perform
-(shared ref store):
-
-**⚠ Local cleanup:** the merged branch still exists **locally** — run
-`git branch -d <branch>` (if needed, first `git switch main && git pull --ff-only`).
+gates result (names + verdict) · merge sha · branch deleted (remote + local) · local main
+fast-forwarded · Slack notification (sent / failed).
 
 ## Important
 
@@ -104,8 +110,8 @@ End every report with this warning — it is a manual action the agent cannot pe
 - All commits inside this flow go through the `/commit` skill — this skill never invents its
   own `git commit`.
 - Gates include the PR `gate` check (format + HealthCheck) — local green does not replace it.
-- The skill NEVER switches to `main` and NEVER deletes local branches — only the report
-  warning above (local `git branch -d` is always the user's command).
+- Branch cleanup is part of this flow (Step 6): the agent deletes the merged branch remotely
+  AND locally and fast-forwards local `main` itself — no user action, no warning-only reports.
 
 ## Troubleshooting
 
