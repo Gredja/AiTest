@@ -25,12 +25,8 @@ public class CreateIssueVisibilityTests : GitHubTestBase
 
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, request, TestRepoParam());
-        if (created.Data is not null)
-        {
-            _createdIssueNumbers.Add(created.Data.Number);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdIssueNumbers.Add(created.Data!.Number);
         created.Data.Should().NotBeNull();
 
         var result = await WaitHelper.WaitUntilAsync(
@@ -39,11 +35,8 @@ public class CreateIssueVisibilityTests : GitHubTestBase
             response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
-        if (!result.IsSuccess)
-        {
-            Assert.Inconclusive(
-                $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
-        }
+        result.IsSuccess.Should().BeTrue(
+            $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
     }
 
     [OneTimeTearDown]

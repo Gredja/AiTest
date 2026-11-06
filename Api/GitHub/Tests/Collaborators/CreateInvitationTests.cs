@@ -29,12 +29,8 @@ public class CreateInvitationTests : GitHubTestBase
             GitHubEndpoints.RepoCollaboratorByUsername,
             CollaboratorGenerator.Create(GitHubEndpoints.PermissionPush),
             [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
-        if (invite.Data is not null)
-        {
-            _createdInvitationIds.Add(invite.Data.Id);
-        }
-
         invite.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdInvitationIds.Add(invite.Data!.Id);
         invite.Data.Should().NotBeNull();
     }
 

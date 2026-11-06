@@ -30,11 +30,8 @@ public class DeleteCommentTests : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
-        if (created.Data is not null)
-        {
-            _createdCommentIds.Add(created.Data.Id);
-        }
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdCommentIds.Add(created.Data!.Id);
         created.Data.Should().NotBeNull();
 
         var deleted = await Delete<object>(
@@ -50,11 +47,8 @@ public class DeleteCommentTests : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, _testComment, IssueParams(ExistingIssueNumber));
-        if (created.Data is not null)
-        {
-            _createdCommentIds.Add(created.Data.Id);
-        }
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdCommentIds.Add(created.Data!.Id);
         created.Data.Should().NotBeNull();
 
         var deleted = await Delete<object>(

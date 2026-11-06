@@ -36,9 +36,9 @@ public class GetTagsTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
 
-        if (response.Data.Count > 0)
+        foreach (var tag in response.Data)
         {
-            response.Data.First().ShouldHaveValidContract();
+            tag.ShouldHaveValidContract();
         }
     }
 

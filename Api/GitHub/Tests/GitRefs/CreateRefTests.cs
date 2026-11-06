@@ -195,11 +195,8 @@ public class CreateRefTests : GitHubTestBase
             response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
-        if (!result.IsSuccess)
-        {
-            Assert.Inconclusive(
-                $"created ref not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
-        }
+        result.IsSuccess.Should().BeTrue(
+            $"created ref not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
     }
 
     [OneTimeTearDown]

@@ -208,11 +208,8 @@ public class CreatePullRequestTests : GitHubTestBase
             response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
-        if (!result.IsSuccess)
-        {
-            Assert.Inconclusive(
-                $"created PR not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
-        }
+        result.IsSuccess.Should().BeTrue(
+            $"created PR not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
     }
 
     [OneTimeTearDown]

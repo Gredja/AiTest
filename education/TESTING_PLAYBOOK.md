@@ -133,8 +133,11 @@ Never seed data by hand and hope; the test owns its fixture lifecycle and proves
 
 ### 2.8 Cleanup discipline
 
-- Register a created resource **before any assert** (register-then-assert). An assertion failure
-  must not leak the record: teardown runs regardless, a failed assert must not skip registration.
+- Register a created resource (register-then-assert): assert the create call's **status code
+  first**, then add the id to the registry **unconditionally**, before any content assertion —
+  the status assert is the creation guarantee. Never guard registration behind
+  `if (data is not null)` (a failed guard silently leaks the record) and never dereference
+  the body before the status check.
 - Teardown is **the last member of the fixture/class**, runs per fixture (not per test) unless
   isolation demands otherwise, and is **warning-only**: cleanup failure must never turn a green
   run red, but must be loudly logged.
@@ -1023,7 +1026,7 @@ skill prompt.
    negative example beside the positive template (violations listed: per-test finally cleanup,
    no register-before-assert, NUnit Assert).
 3. Setup via API, assertions against the real oracle, teardown that runs on any failure path
-   (partial-failure safe: register before assert).
+   (partial-failure safe: status check of the create, then unconditional register before content asserts).
 4. Gate; sandbox must be left as found. Before the gates, reconcile plan vs implementation as a
    table (green before format/tests); after the run, a mandatory per-test results table
    (method, result, duration, error) — green before the report step.

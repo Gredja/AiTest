@@ -158,13 +158,9 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoIssues,
             IssueGenerator.CreateWithTitle(title),
             UiSandboxRepoParams());
-        if (created.Data is not null)
-        {
-            createdIssueNumbers.Add(created.Data.Number);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         var issueNumber = created.Data!.Number;
+        createdIssueNumbers.Add(issueNumber);
 
         if (isClosed)
         {
@@ -361,15 +357,11 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoPullRequests,
             PullRequestGenerator.Create(title, headBranch, baseBranch),
             UiSandboxRepoParams());
-        if (pullRequest.Data is not null)
-        {
-            createdPullRequests.Add((pullRequest.Data.Number, headBranch, baseBranch));
-        }
-
         pullRequest.ShouldHaveStatusCode(HttpStatusCode.Created);
 
         var createdPull = pullRequest.Data
             ?? throw new InvalidOperationException("PR create returned 201 without a body");
+        createdPullRequests.Add((createdPull.Number, headBranch, baseBranch));
 
         return (createdPull.Number, headBranch, baseBranch);
     }

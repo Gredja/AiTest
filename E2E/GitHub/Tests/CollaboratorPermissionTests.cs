@@ -65,12 +65,8 @@ public class CollaboratorPermissionTests : GitHubE2ETestBase
             GitHubEndpoints.RepoCollaboratorByUsername,
             CollaboratorGenerator.Create(GitHubEndpoints.PermissionPush),
             [.. TestRepoParam(), .. UsernameParam(collaboratorUser)]);
-        if (invite.Data is not null)
-        {
-            _createdInvitationId = invite.Data.Id;
-        }
-
         invite.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdInvitationId = invite.Data!.Id;
         invite.Data!.Permissions.Should().Be(PendingPermissionValue, "invitation must carry the requested write access");
 
         var pending = await Get<List<InvitationModelResponse>>(GitHubEndpoints.RepoInvitations, TestRepoParam());

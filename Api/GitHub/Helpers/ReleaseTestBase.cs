@@ -13,8 +13,6 @@ public abstract class ReleaseTestBase : GitHubTestBase
 
     private readonly List<(long Id, string TagName)> _createdReleases = [];
 
-    // Register-then-assert: the release joins the cleanup registry before any status check,
-    // so a failed POST still leaves nothing to leak in the sandbox repo.
     protected async Task<(long Id, string TagName)> CreateReleaseFixtureAsync()
     {
         var request = ReleaseGenerator.CreateRandom(ReleaseTagPrefix, "release fixture");
@@ -23,15 +21,10 @@ public abstract class ReleaseTestBase : GitHubTestBase
             GitHubEndpoints.RepoReleases,
             request,
             TestRepoParam());
-
-        if (created.Data is not null)
-        {
-            _createdReleases.Add((created.Data.Id, tagName));
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdReleases.Add((created.Data!.Id, tagName));
 
-        return (created.Data!.Id, tagName);
+        return (created.Data.Id, tagName);
     }
 
     protected async Task CleanupReleaseFixturesAsync()
