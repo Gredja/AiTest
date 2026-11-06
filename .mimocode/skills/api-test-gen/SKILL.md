@@ -140,7 +140,37 @@ public double Rate { get; set; }
 
 If models already exist — verify they match current API response.
 
-### Step 4: Generate Tests
+### Step 4: Plan the Test List (mandatory gate)
+
+Before writing ANY code — build the plan and STOP for user approval. This step is mandatory for every endpoint; skipping it invalidates the run.
+
+**Part 1 — Seed table.** Plan test cases using Seed → Expand → Review:
+1. Write 5 seeds per endpoint (2 happy, 2 failure, 1 edge) — see `Rules/test-practices.md` → "Seed methodology"
+2. Expand to table: `# | Case | Category | Priority | Source seed` — with concrete example for the endpoint
+3. Enforce minimum 5 active negatives per endpoint (`[Ignore]`d don't count; mock-API exception + ceiling rule — see `Rules/test-practices.md` Step 4)
+4. **One negative test per required request field** — `*_Missing{Field}_*` for EVERY required body field (mandatory for all services; empty-body test doesn't substitute)
+5. Target ~15-20 unique test cases per endpoint
+
+**Part 2 — Full list of future test methods.** Translate the seed table into the exact code-level plan — every future test method as it will appear in the file:
+- method name (`{Endpoint}_{Case}_{Expected}`, PascalCase)
+- `[Category(...)]` (HealthCheck / ContractCheck / Smoke / Regression / Performance / …)
+- `[Description(...)]`
+- target file (`Api/{Service}/Tests/{Category}/{Endpoint}Tests.cs`)
+
+Also list files to be **created** and files to be **modified**.
+
+**Gate:** output Part 1 + Part 2 in chat and STOP. Ask the user to approve or request modifications. On modifications → update the plan, re-present, wait again. Write code ONLY after explicit approval. Never jump straight from seeds to code.
+
+### Step 5: Generate Tests
+
+**Mandatory rules reading (before writing any code):** open and read the full list of project rules — do not rely on memory or on digests duplicated in AGENTS.md:
+- `Rules/code.md`, `Rules/code-style.md`, `Rules/code-principles.md`
+- `Rules/models.md`, `Rules/assertions.md`
+- `Rules/test-practices.md`, `Rules/categories.md`
+- `Rules/comments.md`, `Rules/config.md`
+- `Rules/workflow.md`, `Rules/git.md`
+
+`Rules/ui-testing.md` and `Rules/localization-testing.md` apply only when the endpoint belongs to a UI/localization scope — otherwise skip them. If any rule here contradicts this skill, the Rules file wins — flag the contradiction to the user instead of silently choosing one.
 
 **Hard constraints (every line generated in this step):**
 - FluentAssertions only — never NUnit `Assert.*`; status/errors via `ShouldHaveStatusCode`/`ShouldHaveError` (see `Rules/assertions.md`)
@@ -148,14 +178,7 @@ If models already exist — verify they match current API response.
 - Async only — `await` through the shared `Get/Post/...` wrappers; never the sync `Execute`
 - No comments in generated code (regex / non-obvious WHY only — `Rules/comments.md`)
 
-**Seed methodology** — before writing code, plan test cases using Seed → Expand → Review:
-1. Write 5 seeds per endpoint (2 happy, 2 failure, 1 edge) — see `Rules/test-practices.md` → "Seed methodology"
-2. Expand to table: `# | Case | Category | Priority | Source seed` — with concrete example for the endpoint
-3. Enforce minimum 5 active negatives per endpoint (`[Ignore]`d don't count; mock-API exception + ceiling rule — see `Rules/test-practices.md` Step 4)
-4. **One negative test per required request field** — `*_Missing{Field}_*` for EVERY required body field (mandatory for all services; empty-body test doesn't substitute)
-5. Target ~15-20 unique test cases per endpoint
-
-**Plan gate (mandatory):** output the seed table as the plan and STOP — ask the user to approve it. Write code only after approval; requested changes → update the table, re-present, then generate. Never jump straight from seeds to code.
+Generated tests must match the approved plan from Step 4 — no extra tests, no dropped tests.
 
 **Base class** — check if `{Service}RequestHelper` exists in `Core/Helpers/`. If not, create it extending `RequestHelper`. If it exists, use it.
 
@@ -330,7 +353,7 @@ public async Task OneTimeTearDown()
 - Extend the setup into an assertion: baseline GET → POST in `[OneTimeSetUp]` → tests assert the collection grew by exactly 1, set-diff by Id equals the created Id, and `ShouldMatchRequest()` compares the POST request against the new record in the GET response (all fields, not only Id) → `[OneTimeTearDown]` deletes the record (cleanup failure = warning, not test failure)
 - Full pattern: `Rules/test-practices.md` → "Read-after-write visibility (GET + POST)"
 
-### Step 5: Follow All Rules
+### Step 6: Follow All Rules
 
 - **Code:** PascalCase, file-scoped namespaces, async (`ExecuteAsync`), no magic numbers or strings — see `Rules/code.md`
 - **Code style:** error handling, LINQ, strings, null safety — see `Rules/code-style.md`
@@ -346,16 +369,32 @@ public async Task OneTimeTearDown()
 - **Request/Response comparison:** Use `ShouldMatchRequest()` for POST/PATCH — see `Rules/assertions.md`
 - **Write payloads:** vary fields per run via `Core/Generators/DataGenerator` (`RandomString`, `RandomIntExclusive`); semantic negative-test data stays as named constants — see `Rules/test-practices.md` → "Test data for write operations"
 
-### Step 6: Safety Check
+### Step 7: Safety Check
 
-Before finishing:
+**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 4. Every planned test method must exist; no unplanned tests may appear. Output a table:
+
+| # | Planned test (method name) | Category | In code | Status |
+|---|---|---|---|---|
+| 1 | `GetAllUsers_ReturnsOk` | HealthCheck | ✅ | matched |
+
+Mismatches (renamed / missing / extra method) → fix the code to match the plan (or, if the change was requested by the user during generation, update the plan first) → re-run the reconciliation until every row is `matched`. Proceed below only when the table is fully green.
+
+Then:
 1. Run `dotnet format --verify-no-changes` — fix if needed
 2. Run `dotnet test --filter "GetAll{Endpoint}"` — verify new tests pass
-3. Show test results summary
 
-### Step 7: Report
+**Test run report (mandatory, after the run):** build a per-test table from the run results:
 
-Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. An optional human-readable summary may follow — the JSON is the deliverable, not the prose.
+| # | Test method | Category | Result | Duration | Error (if failed) |
+|---|---|---|---|---|---|
+| 1 | `GetAllUsers_ReturnsOk` | HealthCheck | ✅ passed | 0.3s | — |
+| 2 | `GetAllUsers_InvalidId_ReturnsNotFound` | Smoke | ❌ failed | 0.5s | expected 404, actual 200 |
+
+0 failed → continue to Step 8. ≥1 failed → fix and re-run (or `[Ignore]` with explanation for a documented API bug) — the run must end green before the report step. `safetyCheck.testRun` in the JSON contract is filled from this table.
+
+### Step 8: Report
+
+Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. The plan-vs-implementation reconciliation table and the test run report table from Step 7 are **required** parts of the reply — include them alongside the JSON (before or after, not omitted). A human-readable summary may follow — the JSON + both tables are the deliverable, the prose is optional.
 
 ---
 
@@ -405,3 +444,7 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.10 | 2026-11-04 | Output report → machine-checkable JSON contract: required keys, counter sum invariant, gate-linked commit suggestion, created/modified split | MiMo |
 | 1.11 | 2026-11-04 | Step 4: hard style constraints at the point of action (FluentAssertions / typed models / async-only / no comments) — was final-checklist-only in Step 5 | MiMo |
 | 1.12 | 2026-11-04 | Step 4: mandatory plan gate (seed table → user approval → code) + negative example (rejected test with violation list) | MiMo |
+| 1.13 | 2026-11-05 | Step 4 split: standalone mandatory "Plan the Test List" gate (seed table + full test-method list with names/categories/files → user approval) before code generation; old Step 4 → Step 5, steps 5-7 renumbered to 6-8 | MiMo |
+| 1.14 | 2026-11-05 | Step 7: mandatory plan-vs-implementation reconciliation table (planned vs generated, green before format/test) ; Step 8: reconciliation table is a required part of the report | MiMo |
+| 1.15 | 2026-11-05 | Step 7: mandatory per-test run report table (method/result/duration/error), green before Step 8; Step 8: run table required alongside JSON | MiMo |
+| 1.16 | 2026-11-05 | Step 5: mandatory reading of the full Rules/*.md set before code generation (Rules file wins on conflict; ui-testing/localization-testing only for their scopes) | MiMo |

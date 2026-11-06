@@ -114,16 +114,38 @@ Before generating — verify the target directories exist; create missing page-o
 2. **Take a live snapshot of the page** — HARD RULE: only via `node Scripts/locator-dump.mjs <url> [--waitfor "text"]` (one-shot CDP dump of role+accessible name; the `playwright` skill / playwright-cli is forbidden for locator extraction). Aim it at the real page (`Ui.BaseUrl` from `testsettings.json`). Extract roles/texts/labels for every locator you are about to write. Do NOT invent selectors from memory of the HTML.
 3. Note URL patterns, navigation path, and what eventual-consistency the page exhibits (list refresh after write?).
 
-### Step 2: Design the test
+### Step 2: Design the test (mandatory plan gate)
 
 - Map the flow to one test method (chain = one test, E2E-style) or several single-check tests.
 - Pick ONE check-type category per test per `Rules/categories.md` boundaries: Smoke = single-response sanity (content, count); Regression = rule/invariant/state-transition; Negative = error/404/empty states.
 - List UI-created resources → plan their API cleanup (issue → close via PATCH; comment → API DELETE — Core `RequestHelper` by composition).
 - Prefer hybrid verification: **act via UI, assert via API** (Core `RequestHelper`) for created resources — the API read-back is the reliable oracle; UI asserts are for what only exists visually (badges, URLs, empty states).
 
-**Plan gate (mandatory):** output the planned tests (method name + category + created resources → cleanup + locator sources) as a short table and STOP — ask the user to approve it. Create/modify any file only after approval; requested changes → update the plan, re-present, then generate.
+**Part 1 — Plan table:** `# | Case | Category | Priority | Created resources → cleanup | Locator source (snapshot date)`.
+
+**Part 2 — Full list of future test methods.** Translate the plan table into the exact code-level plan — every future test method as it will appear in the file:
+- method name (`{{area}}_{{Flow}}_{{Outcome}}`, PascalCase)
+- `[Category(...)]` (Smoke / Regression / Negative / …)
+- `[Description(...)]` (UI-OB section reference)
+- target file (`Ui/github/Tests/GitHubStream/{{area_name}}/{{area}}{{flow}}Tests.cs`)
+
+Also list files to be **created** and files to be **modified** (page-objects included).
+
+**Gate:** output Part 1 + Part 2 in chat and STOP. Ask the user to approve or request modifications. On modifications → update the plan, re-present, wait again. Create/modify any file ONLY after explicit approval. Never jump straight from the design to code.
 
 ### Step 3: Create/extend the page-object
+
+**Mandatory rules reading (before writing any code):** open and read the full list of project rules — do not rely on memory or on digests duplicated in AGENTS.md:
+- `Rules/ui-testing.md`
+- `Rules/code.md`, `Rules/code-style.md`, `Rules/code-principles.md`
+- `Rules/models.md`, `Rules/assertions.md`
+- `Rules/test-practices.md`, `Rules/categories.md`
+- `Rules/comments.md`, `Rules/config.md`
+- `Rules/workflow.md`, `Rules/git.md`
+
+`Rules/localization-testing.md` applies only when the flow belongs to a localization scope — otherwise skip it. If any rule here contradicts this skill, the Rules file wins — flag the contradiction to the user instead of silently choosing one.
+
+Generated page-objects and tests must match the approved plan from Step 2 — no extra methods, no dropped tests.
 
 In `Ui/github/Pages/GitHubStream/{{area_name}}/{{area_name}}Page.cs`:
 
@@ -215,13 +237,31 @@ Append/extend `documentation/{{service_name}}UiObservableBehaviour.md` for every
 
 ### Step 6: Safety check
 
+**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 2. Every planned test method (and planned page-object file) must exist; no unplanned tests may appear. Output a table:
+
+| # | Planned test (method name) | Category | In code | Status |
+|---|---|---|---|---|
+| 1 | `Issues_Create_AppearsInList` | Regression | ✅ | matched |
+
+Mismatches (renamed / missing / extra method) → fix the code to match the plan (or, if the change was requested by the user during generation, update the plan first) → re-run the reconciliation until every row is `matched`. Proceed below only when the table is fully green.
+
+Then:
 1. `dotnet format --verify-no-changes`
 2. `dotnet test --filter "Category=GitHubUi&FullyQualifiedName~{{area_name}}{{flow_name}}"` — new tests pass
 3. Hygiene: `git status` — no `.auth/`, no `Ui/bin|obj`, no screenshots staged
 
+**Test run report (mandatory, after the run):** build a per-test table from the run results:
+
+| # | Test method | Category | Result | Duration | Error (if failed) |
+|---|---|---|---|---|---|
+| 1 | `Issues_Create_AppearsInList` | Regression | ✅ passed | 4.5s | — |
+| 2 | `Issues_Create_MissingTitle_ShowsError` | Negative | ❌ failed | 3.1s | expected error text, form submitted |
+
+0 failed → continue to Step 7. ≥1 failed → fix and re-run (or `[Ignore]` with explanation for a documented bug) — the run must end green before the report step. `safetyCheck.testRun` in the JSON contract is filled from this table.
+
 ### Step 7: Report
 
-Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `locators` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. An optional human-readable summary may follow — the JSON is the deliverable, not the prose.
+Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `locators` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. The plan-vs-implementation reconciliation table and the test run report table from Step 6 are **required** parts of the reply — include them alongside the JSON (before or after, not omitted). A human-readable summary may follow — the JSON + both tables are the deliverable, the prose is optional.
 
 ---
 
@@ -257,3 +297,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 |---|---|---|---|
 | 1.0 | 2026-10-09 | Initial: XRM_Autotest-inspired structure, live-snapshot locator rule, UI-write→API-cleanup, storageState auth | MiMo |
 | 1.1 | 2026-11-04 | Machine-checkable JSON report (incl. locators.draft=0 invariant), mandatory plan gate (plan → approval → files), negative example (rejected UI test with violation list) | MiMo |
+| 1.2 | 2026-11-05 | Step 2 gate → Part 1 plan table + Part 2 full test-method list (names/categories/descriptions/files); Step 3: mandatory Rules/*.md reading + match-approved-plan; Step 6: reconciliation + per-test run report tables (green before Step 7); Step 7: both tables required alongside JSON | MiMo |

@@ -106,9 +106,11 @@ Teardown: DELETE → clean up resource → verify cleanup
 2. Delete branches before PRs
 3. Delete PRs before repos (if applicable)
 
-### Step 3: Plan test cases (seed methodology)
+### Step 3: Plan the Test List (mandatory gate)
 
-Apply seed methodology from `Rules/test-practices.md`:
+Before writing ANY code — build the plan and STOP for user approval. This step is mandatory for every endpoint; skipping it invalidates the run.
+
+**Part 1 — Seed table.** Apply seed methodology from `Rules/test-practices.md`:
 
 **Happy path seeds:**
 - Create → verify response → verify via GET → delete → verify deleted
@@ -128,11 +130,30 @@ Apply seed methodology from `Rules/test-practices.md`:
 - Rapid create-delete-create cycle
 - Concurrent creates
 
-Output as table: `# | Case | Category | Priority | Source seed`
+Output the seed table as Part 1 of the plan.
 
-**Plan gate (mandatory):** output the seed table as the plan and STOP — ask the user to approve it. Write code only after approval; requested changes → update the table, re-present, then generate. Never jump straight from seeds to code.
+**Part 2 — Full list of future test methods.** Translate the seed table into the exact code-level plan — every future test method as it will appear in the file:
+- method name (`{Endpoint}_{Case}_{Expected}`, PascalCase)
+- `[Category(...)]` (Smoke / Regression / Negative / …)
+- `[Description(...)]`
+- target file (`E2E/{Service}/Tests/{Endpoint}Tests.cs`)
+
+Also list files to be **created** and files to be **modified**.
+
+**Gate:** output Part 1 + Part 2 in chat and STOP. Ask the user to approve or request modifications. On modifications → update the plan, re-present, wait again. Write code ONLY after explicit approval. Never jump straight from seeds to code.
 
 ### Step 4: Generate test class
+
+**Mandatory rules reading (before writing any code):** open and read the full list of project rules — do not rely on memory or on digests duplicated in AGENTS.md:
+- `Rules/code.md`, `Rules/code-style.md`, `Rules/code-principles.md`
+- `Rules/models.md`, `Rules/assertions.md`
+- `Rules/test-practices.md`, `Rules/categories.md`
+- `Rules/comments.md`, `Rules/config.md`
+- `Rules/workflow.md`, `Rules/git.md`
+
+`Rules/ui-testing.md` and `Rules/localization-testing.md` apply only when the chain belongs to a UI/localization scope — otherwise skip them. If any rule here contradicts this skill, the Rules file wins — flag the contradiction to the user instead of silently choosing one.
+
+Generated tests must match the approved plan from Step 3 — no extra tests, no dropped tests.
 
 **Required pattern** (fixture-registry; cleanup ONLY in `[OneTimeTearDown]` LAST member — no per-test `[SetUp]`/`[TearDown]`):
 
@@ -219,14 +240,31 @@ Complex cleanup chains (delete comments → then issue) belong in `{Service}E2ET
 
 ### Step 7: Safety Check
 
+**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 3. Every planned test method must exist; no unplanned tests may appear. Output a table:
+
+| # | Planned test (method name) | Category | In code | Status |
+|---|---|---|---|---|
+| 1 | `CreateIssue_ReturnsCreated` | Smoke | ✅ | matched |
+
+Mismatches (renamed / missing / extra method) → fix the code to match the plan (or, if the change was requested by the user during generation, update the plan first) → re-run the reconciliation until every row is `matched`. Proceed below only when the table is fully green.
+
+Then:
 1. `dotnet format --verify-no-changes` — fix if needed
 2. `dotnet build` — verify compilation
 3. `dotnet test --filter "Category={Service}E2E"` — verify tests pass
-4. Show test results summary
+
+**Test run report (mandatory, after the run):** build a per-test table from the run results:
+
+| # | Test method | Category | Result | Duration | Error (if failed) |
+|---|---|---|---|---|---|
+| 1 | `CreateIssue_ReturnsCreated` | Smoke | ✅ passed | 1.2s | — |
+| 2 | `CreateIssue_MissingTitle_Returns422` | Negative | ❌ failed | 0.8s | expected 422, actual 200 |
+
+0 failed → continue to Step 8. ≥1 failed → fix and re-run (or `[Ignore]` with explanation for a documented mock limitation) — the run must end green before the report step. `safetyCheck.testRun` in the JSON contract is filled from this table.
 
 ### Step 8: Report
 
-Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `cleanupVerified` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. An optional human-readable summary may follow — the JSON is the deliverable, not the prose.
+Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `cleanupVerified` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. The plan-vs-implementation reconciliation table and the test run report table from Step 7 are **required** parts of the reply — include them alongside the JSON (before or after, not omitted). A human-readable summary may follow — the JSON + both tables are the deliverable, the prose is optional.
 
 ---
 
@@ -253,3 +291,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.2 | 2026-09-30 | Added test data rule reference (fictional values, vary dimensions) from kata 6.W.3 | MiMo |
 | 1.3 | 2026-10-02 | Seed methodology: active negatives only + one negative per required request field | MiMo |
 | 1.4 | 2026-11-04 | Machine-checkable JSON report (incl. cleanupVerified), mandatory plan gate (seed table → approval → code), negative example (rejected chain with violation list) | MiMo |
+| 1.5 | 2026-11-05 | Plan gate → standalone "Plan the Test List" (Part 1 seed table + Part 2 full test-method list); Step 4: mandatory Rules/*.md reading + match-approved-plan; Step 7: reconciliation + per-test run report tables (green before Step 8); Step 8: both tables required alongside JSON | MiMo |
