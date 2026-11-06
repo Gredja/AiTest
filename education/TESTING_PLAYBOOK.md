@@ -980,33 +980,50 @@ skill prompt.
 ### 14.9 API test generation (new endpoint/surface)
 1. Read the surface's Observable Behavior doc first; re-verify claims that look stale.
 2. Design seeds (happy path + contract + fields) → expand → enforce a minimum set of active
-   negatives (documented error messages, invalid ids, auth walls). Present the seed table as a
-   plan and STOP for user approval before writing any code (plan → approval → code).
-3. Generate tests in the project's existing style (categories, naming, shared helpers — extend,
+   negatives (documented error messages, invalid ids, auth walls). Present the plan as two
+   parts — Part 1 the seed table, Part 2 the full list of future test methods (exact method
+   names, categories, descriptions, target files, files to create/modify) — and STOP for user
+   approval before writing any code (plan → approval → code).
+3. Before writing code, read the project's full rules set (never rely on memory or summaries
+   duplicated elsewhere); on any conflict the rules file wins and the contradiction is flagged
+   to the user. Generate tests in the project's existing style (categories, naming, shared helpers — extend,
    never duplicate files); hard style constraints are stated AT the generation point, not only in
    a final checklist (assertion library, typed models, async-only, no comments); writes use
    fictional, varied data; dynamic non-existent ids derived from the live max, not invented
-   constants. Ship a negative example beside the positive template — one explicitly rejected
+   constants. Generated code must match the approved plan — no extra tests, no dropped tests.
+   Ship a negative example beside the positive template — one explicitly rejected
    sample with its violation list (a boundary shown once kills a family of near-miss outputs).
 4. Gate (14.1 gates); cross-verify writes via API read-back; cleanup via register-then-assert.
+   Before the gates, reconcile plan vs implementation as a table (every planned method present,
+   no unplanned ones — mismatches fixed, table fully green before format/tests); after the run,
+   deliver a mandatory per-test results table (method, result, duration, error) — the run must
+   end green before the report step.
 5. Deliver a machine-checkable JSON report as the primary output: files created/modified
    (never re-create an existing file), disjoint test counters summing to total, safety-check
-   pass/fail with gate numbers — no commit suggestion after a red gate. Human-readable prose
-   may follow; the JSON is the deliverable (a reader-approves report is not a contract).
+   pass/fail with gate numbers — no commit suggestion after a red gate. The reconciliation
+   table and the per-test run table are required parts of the reply alongside the JSON.
+   Human-readable prose may follow; the JSON + both tables are the deliverable
+   (a reader-approves report is not a contract).
 6. Sync the OB doc / plan / rules if behavior or structure changed (same flow).
 
 ### 14.10 E2E scenario generation (multi-step write chains)
 1. Chain shape: create → verify → mutate → cleanup; the chain lives in the E2E project, not the
    read-only suite.
-2. Design the chains (seeds → table) and present the plan for user approval BEFORE any code
-   (plan → approval → code); ship a rejected-sample negative example beside the positive
-   template (violations listed: per-test finally cleanup, no register-before-assert, NUnit Assert).
+2. Design the chains (seeds → table), expand the plan with the full list of future test
+   methods (exact names, categories, descriptions, target files, files to create/modify), and
+   present both parts for user approval BEFORE any code (plan → approval → code); before writing
+   code read the project's full rules set (rules file wins on conflict); ship a rejected-sample
+   negative example beside the positive template (violations listed: per-test finally cleanup,
+   no register-before-assert, NUnit Assert).
 3. Setup via API, assertions against the real oracle, teardown that runs on any failure path
    (partial-failure safe: register before assert).
-4. Gate; sandbox must be left as found.
+4. Gate; sandbox must be left as found. Before the gates, reconcile plan vs implementation as a
+   table (green before format/tests); after the run, a mandatory per-test results table
+   (method, result, duration, error) — green before the report step.
 5. Machine-checkable JSON report as the primary output (files created/modified, counters
    summing to total, `cleanupVerified=true`, safety-check pass/fail; no commit suggestion
-   after a red gate); prose is optional.
+   after a red gate); the reconciliation and run tables are required parts of the reply
+   alongside the JSON; prose is optional.
 
 ### 14.11 UI test generation (browser)
 1. Author locators ONLY from a live one-shot accessibility dump of the page (never from memory,
@@ -1017,12 +1034,19 @@ skill prompt.
 4. Waits: the action's OUTCOME is awaited before any assert (post-condition element, URL, or
    bounded re-apply with state-check-before-retry; transient click failures are retried, not fatal).
 5. UI writes → API cleanup; register-then-assert; teardown last.
-6. Present the test plan (methods + categories + cleanup + locator sources) for user approval
-   BEFORE creating files; ship a rejected-sample negative example (invented CSS locator,
+6. Present the test plan in two parts — Part 1 the plan table (method + category + created
+   resources → cleanup + locator sources), Part 2 the full list of future test methods (exact
+   names, categories, descriptions, target files, page-object files to create/modify) — for
+   user approval BEFORE creating files; before writing code read the project's full rules set
+   (rules file wins on conflict); ship a rejected-sample negative example (invented CSS locator,
    `WaitForTimeout` sleep, in-test login, NUnit Assert) beside the positive template.
-7. Gate + the UI suite; new pages get OB sections with dated, verified locators.
+7. Gate + the UI suite; before the gates, reconcile plan vs implementation as a table (tests
+   and page-objects — green before format/tests); after the run, a mandatory per-test results
+   table (method, result, duration, error) — green before the report step. New pages get OB
+   sections with dated, verified locators.
 8. Machine-checkable JSON report (files, per-category counters summing to total,
-   `locators.draft=0`, safety-check pass/fail; no commit suggestion after a red gate).
+   `locators.draft=0`, safety-check pass/fail; no commit suggestion after a red gate); the
+   reconciliation and run tables are required parts of the reply alongside the JSON.
 
 ### 14.12 Coverage run
 1. Run the suite with instrumentation; collect per-file line coverage.
