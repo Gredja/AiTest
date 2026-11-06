@@ -14,6 +14,15 @@ public static class IssueGenerator
     public static CreateIssueModelRequest CreateWithTitle(string title) =>
         new() { Title = title };
 
+    public static CreateIssueModelRequest WithTitleBodyLabels(
+        string titlePrefix, string bodyPrefix, List<string> labels) =>
+        new()
+        {
+            Title = DataGenerator.RandomTitle(titlePrefix),
+            Body = DataGenerator.RandomBody(bodyPrefix),
+            Labels = labels
+        };
+
     public static UpdateIssueModelRequest PatchTitle(string title) =>
         new() { Title = title };
 

@@ -52,6 +52,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 
 - URL: `https://github.com/gredjapl/ui-sandbox` — verified 2026-10-13
 - `button "main branch"` (default-branch switcher, text `main`) — verified 2026-10-13
+- Repo navigation tab: `link "Issues"` (exact name) navigates to `.../issues` — verified 2026-11-06 (anonymous dump)
 - `link "README.md, (File)"` in the file tree — verified 2026-10-13
 - TestRepo path comes from `TestConfig.UiTestRepo` — never hardcode the repo in page-objects
 

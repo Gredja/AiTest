@@ -16,12 +16,8 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
     {
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, request, TestRepoParam());
-        if (created.Data is not null)
-        {
-            createdIssueNumbers.Add(created.Data.Number);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        createdIssueNumbers.Add(created.Data!.Number);
 
         return created.Data!;
     }
@@ -31,12 +27,8 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, request, IssueParams(issueNumber));
-        if (created.Data is not null)
-        {
-            createdCommentIds.Add(created.Data.Id);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        createdCommentIds.Add(created.Data!.Id);
 
         return created.Data!;
     }
@@ -96,12 +88,8 @@ public abstract class GitHubE2ETestBase : GitHubTestBase
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", sha),
             TestRepoParam());
-        if (created.Data is not null)
-        {
-            createdRefs.Add(branchName);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        createdRefs.Add(branchName);
 
         return created.Data!;
     }

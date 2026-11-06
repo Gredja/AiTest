@@ -30,12 +30,8 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        if (created.Data is not null)
-        {
-            _createdIssueNumbers.Add(created.Data.Number);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdIssueNumbers.Add(created.Data!.Number);
         created.Data.Should().NotBeNull();
 
         var patchRequest = IssueGenerator.PatchTitle(DataGenerator.RandomTitle("Patched"));
@@ -61,12 +57,8 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        if (created.Data is not null)
-        {
-            _createdIssueNumbers.Add(created.Data.Number);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdIssueNumbers.Add(created.Data!.Number);
         created.Data.Should().NotBeNull();
 
         var closeRequest = IssueGenerator.Close();
@@ -90,12 +82,8 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        if (created.Data is not null)
-        {
-            _createdIssueNumbers.Add(created.Data.Number);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdIssueNumbers.Add(created.Data!.Number);
         created.Data.Should().NotBeNull();
 
         var closeRequest = IssueGenerator.Close();
@@ -124,12 +112,8 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        if (created.Data is not null)
-        {
-            _createdIssueNumbers.Add(created.Data.Number);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdIssueNumbers.Add(created.Data!.Number);
 
         var patched = await Patch<UpdateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssueById,
@@ -228,12 +212,8 @@ public class UpdateIssueTests : GitHubTestBase
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, _createRequest, TestRepoParam());
 
-        if (created.Data is not null)
-        {
-            _createdIssueNumbers.Add(created.Data.Number);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdIssueNumbers.Add(created.Data!.Number);
         created.Data.Should().NotBeNull();
 
         var bogus = await Patch<UpdateIssueModelRequest, IssueModelResponse>(

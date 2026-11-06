@@ -27,7 +27,7 @@ public class GetReleasesTests : GitHubTestBase
 
     [Test]
     [Category("ContractCheck")]
-    [Description("15b.2 Response matches expected contract when items exist")]
+    [Description("15b.2 Response matches expected contract")]
     public async Task GetReleases_ResponseMatchesContract()
     {
         var response = await Get<List<ReleaseModelResponse>>(GitHubEndpoints.RepoReleases,
@@ -36,9 +36,9 @@ public class GetReleasesTests : GitHubTestBase
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
 
-        if (response.Data.Count > 0)
+        foreach (var release in response.Data)
         {
-            response.Data.First().ShouldHaveValidContract();
+            release.ShouldHaveValidContract();
         }
     }
 

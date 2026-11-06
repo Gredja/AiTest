@@ -372,7 +372,7 @@ public async Task OneTimeTearDown()
 
 ### Step 7: Safety Check
 
-**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 4. Every planned test method must exist; no unplanned tests may appear. Output a table:
+**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 4. Do it mechanically — Part 2 of the plan is the source of truth: extract every test method name from the generated file(s) (Grep `public async Task` in the target file), diff the extracted list against Part 2's method names. The table below is the OUTPUT of that diff, never a hand-typed list (hand-typing drifts on sets of 20+). Every planned test method must exist; no unplanned tests may appear.
 
 | # | Planned test (method name) | Category | In code | Status |
 |---|---|---|---|---|
@@ -450,3 +450,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.15 | 2026-11-05 | Step 7: mandatory per-test run report table (method/result/duration/error), green before Step 8; Step 8: run table required alongside JSON | MiMo |
 | 1.16 | 2026-11-05 | Step 5: mandatory reading of the full Rules/*.md set before code generation (Rules file wins on conflict; ui-testing/localization-testing only for their scopes) | MiMo |
 | 1.17 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |
+| 1.18 | 2026-11-05 | Step 7: reconciliation made mechanical — Grep method names vs approved Part 2, table is the diff output (never hand-typed) | MiMo |

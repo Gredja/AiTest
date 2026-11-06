@@ -73,6 +73,7 @@ Check if any of the following were changed in this commit:
 - Structural changes (new files, moved files, deleted files) → update `documentation/FILE_STRUCTURE.md`
 - **ALWAYS check `education/TESTING_PLAYBOOK.md`** — the portable, project-agnostic testing methodology (carried to other projects/agents). If the change touched test rules, generation skills, gate scripts, category semantics, wait/cleanup policy, locator tooling, or OB/test templates — fold the delta into the playbook in the same commit, keeping it project-agnostic (project facts stay in project docs)
 - **Fact verification for `backups/SETUP.md`**: when you edit (or add) a SETUP section, verify every factual claim in THAT section against the code — env var names (read `TestConfig.cs`, don't guess: `GITHUB_PAT`, not `GITHUB_TOKEN`), commands, file paths, URLs, tool flags. Syncing a line without checking what it asserts is not a sync — a wrong claim that "went through the sync" is worse than a stale one.
+- **Eval gate for test-gen skills**: if the diff touches `.mimocode/skills/api-test-gen/`, `e2e-test-gen/`, or `ui-test-gen/` — the commit is BLOCKED until the report contains an eval run: a status table from `documentation/SkillEval/<skill>.md` (cases with pass/fail + date) and one line on what changed in behavior. No eval table → STOP, run the eval first (`documentation/SkillEval/README.md`), then commit.
 
 If nothing changed — skip. If something changed — update the corresponding backup file.
 

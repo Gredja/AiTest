@@ -13,5 +13,12 @@ internal sealed class RepositoryPage(IPage page) : RepositoryPageBase(page)
     internal async Task<int> GetDescriptionOccurrencesAsync(string description) =>
         await _page.GetByText(description).CountAsync();
 
+    internal async Task NavigateToIssuesAsync()
+    {
+        await _issuesTabLink.ClickAsync();
+        await _page.WaitForURLAsync(url => url.Contains("/issues"));
+    }
+
     private readonly ILocator _branchButton = page.GetByRole(AriaRole.Button, new() { Name = "main branch" });
+    private readonly ILocator _issuesTabLink = page.GetByRole(AriaRole.Link, new() { Name = "Issues", Exact = true });
 }

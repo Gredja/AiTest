@@ -331,7 +331,7 @@ MiMoCode:
 |---------|-----------|
 | `/test` | Запускает все тесты + пишет TestRunReport-*.md в `TestResults/` |
 | `/test-report` | Запускает тесты + генерирует Allure-отчёт |
-| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`) |
+| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/` |
 | `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
@@ -419,7 +419,7 @@ git checkout -b features/add-user-tests
 
 **Тесты:**
 - 1 endpoint = 1 тестовый класс
-- В тестовом классе только тесты: `[Test]`, lifecycle (`OneTimeSetUp`/`TearDown`), тестовые данные (константы/state); общие билдеры параметров — в base/param helpers (дубль в 2+ классах → извлечь в base); cleanup — только в `[OneTimeTearDown]` **последним членом класса** через fixture-реестр (register-then-assert сразу после create, до asserts), не в `finally`; ядро cleanup — общий `RunCleanupAsync` (warning, не failure, NotFound глушится); **создал → удалил, тестовые записи не храним** (нет delete API → ближайшая уборка: close issue/PR; мерж-история неизменяема — мержи идут в одноразовую base-ветку, main не трогается)
+- В тестовом классе только тесты: `[Test]`, lifecycle (`OneTimeSetUp`/`TearDown`), тестовые данные (константы/state); общие билдеры параметров — в base/param helpers (дубль в 2+ классах → извлечь в base); cleanup — только в `[OneTimeTearDown]` **последним членом класса** через fixture-реестр (register-then-assert: статус-ассерт create сразу, затем безусловная регистрация до content-ассертов; условная регистрация `if (Data ...)` запрещена — утечка при срабатывании guard), не в `finally`; ядро cleanup — общий `RunCleanupAsync` (warning, не failure, NotFound глушится); **создал → удалил, тестовые записи не храним** (нет delete API → ближайшая уборка: close issue/PR; мерж-история неизменяема — мержи идут в одноразовую base-ветку, main не трогается)
 - Seed-методология: 5 seeds → expand → enforce 5+ active negatives (mock-API exception + ceiling rule) → ~15-20 тестов на endpoint; **план (seed-таблица) → согласование пользователя → код** (гейт в генеративных скиллах, без прыжка в код); в скиллах лежит **negative example** — явно отвергнутый тест со списком нарушений; отчёт генерации — **JSON-контракт** (машиночитаемый: файлы, счётчики, safety-check; проза опциональна)
 - Обязательные поля request body → тест на КАЖДОЕ отсутствующее поле (`*_Missing{Field}_*`); пустой body не заменяет проверку полей
 - Негативы считаются по АКТИВНЫМ тестам (`[Ignore]` не в счёт); когда полезные режимы исчерпаны — фиксируй достигнутое, не плоди дубли

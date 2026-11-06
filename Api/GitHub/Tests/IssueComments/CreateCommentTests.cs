@@ -25,12 +25,8 @@ public class CreateCommentTests : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"), IssueParams(ExistingIssueNumber));
-        if (created.Data is not null)
-        {
-            _createdCommentIds.Add(created.Data.Id);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdCommentIds.Add(created.Data!.Id);
         created.Data.Should().NotBeNull();
         created.Data!.Id.Should().BeGreaterThan(0, "created comment must get a server id");
     }
@@ -43,12 +39,8 @@ public class CreateCommentTests : GitHubTestBase
         var testComment = CommentGenerator.CreateRandom("Comment");
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, testComment, IssueParams(ExistingIssueNumber));
-        if (created.Data is not null)
-        {
-            _createdCommentIds.Add(created.Data.Id);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdCommentIds.Add(created.Data!.Id);
         created.Data.Should().NotBeNull();
         created.Data!.ShouldMatchRequest(testComment);
     }
@@ -60,12 +52,8 @@ public class CreateCommentTests : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"), IssueParams(ExistingIssueNumber));
-        if (created.Data is not null)
-        {
-            _createdCommentIds.Add(created.Data.Id);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdCommentIds.Add(created.Data!.Id);
         created.Data.Should().NotBeNull();
 
         var result = await WaitHelper.WaitUntilAsync(
@@ -85,12 +73,8 @@ public class CreateCommentTests : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"), IssueParams(ExistingIssueNumber));
-        if (created.Data is not null)
-        {
-            _createdCommentIds.Add(created.Data.Id);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdCommentIds.Add(created.Data!.Id);
         created.Data.Should().NotBeNull();
 
         var result = await WaitHelper.WaitUntilAsync(
@@ -100,11 +84,8 @@ public class CreateCommentTests : GitHubTestBase
                 && response.Data.Any(comment => comment.Id == created.Data!.Id),
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
-        if (!result.IsSuccess)
-        {
-            Assert.Inconclusive(
-                $"created comment not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
-        }
+        result.IsSuccess.Should().BeTrue(
+            $"created comment not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
     }
 
     [Test]
@@ -114,12 +95,8 @@ public class CreateCommentTests : GitHubTestBase
     {
         var created = await Post<CreateCommentModelRequest, CommentModelResponse>(
             GitHubEndpoints.RepoIssueComments, CommentGenerator.CreateRandom("Comment"), IssueParams(ExistingIssueNumber));
-        if (created.Data is not null)
-        {
-            _createdCommentIds.Add(created.Data.Id);
-        }
-
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdCommentIds.Add(created.Data!.Id);
         created.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 

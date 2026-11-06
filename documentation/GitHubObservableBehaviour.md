@@ -577,7 +577,7 @@ All write operations target the sandbox repo `Gredja/AiTest`. Require `Authoriza
 - `labels: null` (JSON null instead of array/absent) → 422 Unprocessable Entity, body has `message` (string: `Invalid request.\n\nFor 'properties/labels', nil is not an array.`) — optional fields must be omitted, not sent as null
 - Invalid token → 401, body has `message` (string: "Bad credentials")
 - Non-existent repo → 404, body has `message` (string: "Not Found")
-- Floor status: POST /issues ≥5 floor met by `CreateIssueNegativeTests` (5 active) — `CreateIssueVisibilityTests` is a Performance-only fixture for the same endpoint by design (per-endpoint floor, not per-file)
+- Floor status: POST /issues ≥5 floor met by `CreateIssueNegativeTests` (6 active) — `CreateIssueVisibilityTests` is a Performance-only fixture for the same endpoint by design (per-endpoint floor, not per-file)
 
 ---
 
