@@ -491,5 +491,10 @@ documentation/
 │   ├── metrics.md                    # AI usage tracking (Gap 1)
 │   └── maturity-gap-analysis.md
 ├── README.md
+├── SkillEval/                    # eval sets for generation skills (fixed inputs + must/must-not checklists; run required when a *test-gen skill changes)
+│   ├── README.md                 # methodology: format, run procedure, the commit-gate rule
+│   ├── api-test-gen.md           # 2 cases (read-only endpoint; required fields / 422 negatives)
+│   ├── e2e-test-gen.md           # 1 case (write chain create→verify→cleanup)
+│   └── ui-test-gen.md            # 1 case (page with locators: navigation + check)
 └── token-budget.md
 ```
