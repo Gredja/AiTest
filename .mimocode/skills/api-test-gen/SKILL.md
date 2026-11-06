@@ -56,6 +56,7 @@ After generation — return ONE JSON object as the FIRST part of the reply, no s
 3. `safetyCheck.format = "pass"` AND `safetyCheck.testRun.failed = 0` — otherwise `suggestedCommitMessage` MUST be omitted (no commit suggestion after a red gate).
 4. `files.created` lists only paths that did NOT exist before this run — extending an existing file goes to `files.modified`; never re-create an existing file (duplicate-file kata: `documentation/Katas/model-selection-note.md`).
 5. `suggestedCommitMessage` matches `action + object` (capitalized verb + object, e.g. "Add GitHub issue API tests").
+6. **Automated check (rules 1–3):** write the JSON to a temp file and run `powershell -File Scripts/validate-skill-report.ps1 <file>` — it must print `PASS` (exit 0). On `FAIL`: fix the JSON and re-run; a report that fails the validator must not be sent.
 
 A human-readable summary MAY follow the JSON; the JSON is the deliverable, the prose is optional.
 
@@ -394,7 +395,7 @@ Then:
 
 ### Step 8: Report
 
-Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. The plan-vs-implementation reconciliation table and the test run report table from Step 7 are **required** parts of the reply — include them alongside the JSON (before or after, not omitted). A human-readable summary may follow — the JSON + both tables are the deliverable, the prose is optional.
+Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–6 (rule 6 = the validator script must print `PASS`). The plan-vs-implementation reconciliation table and the test run report table from Step 7 are **required** parts of the reply — include them alongside the JSON (before or after, not omitted). A human-readable summary may follow — the JSON + both tables are the deliverable, the prose is optional.
 
 ---
 
@@ -448,3 +449,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.14 | 2026-11-05 | Step 7: mandatory plan-vs-implementation reconciliation table (planned vs generated, green before format/test) ; Step 8: reconciliation table is a required part of the report | MiMo |
 | 1.15 | 2026-11-05 | Step 7: mandatory per-test run report table (method/result/duration/error), green before Step 8; Step 8: run table required alongside JSON | MiMo |
 | 1.16 | 2026-11-05 | Step 5: mandatory reading of the full Rules/*.md set before code generation (Rules file wins on conflict; ui-testing/localization-testing only for their scopes) | MiMo |
+| 1.17 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |

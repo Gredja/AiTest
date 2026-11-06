@@ -51,6 +51,7 @@ After generation — return ONE JSON object as the FIRST part of the reply, no s
 3. `cleanupVerified = true` — every chain registers resources before assert and cleans them in `[OneTimeTearDown]` (fixture-registry); `false` invalidates the reply.
 4. `safetyCheck.format = "pass"` AND `failed = 0` — otherwise `suggestedCommitMessage` MUST be omitted.
 5. `files.created` lists only paths that did NOT exist before this run; `suggestedCommitMessage` matches `action + object`.
+6. **Automated check (rules 1–2, 4):** write the JSON to a temp file and run `powershell -File Scripts/validate-skill-report.ps1 <file>` — it must print `PASS` (exit 0). On `FAIL`: fix the JSON and re-run; a report that fails the validator must not be sent.
 
 A human-readable summary MAY follow the JSON; the JSON is the deliverable, the prose is optional.
 
@@ -264,7 +265,7 @@ Then:
 
 ### Step 8: Report
 
-Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `cleanupVerified` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–5. The plan-vs-implementation reconciliation table and the test run report table from Step 7 are **required** parts of the reply — include them alongside the JSON (before or after, not omitted). A human-readable summary may follow — the JSON + both tables are the deliverable, the prose is optional.
+Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `cleanupVerified` / `safetyCheck` / `suggestedCommitMessage`) after validating rules 1–6 (rule 6 = the validator script must print `PASS`). The plan-vs-implementation reconciliation table and the test run report table from Step 7 are **required** parts of the reply — include them alongside the JSON (before or after, not omitted). A human-readable summary may follow — the JSON + both tables are the deliverable, the prose is optional.
 
 ---
 
@@ -292,3 +293,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.3 | 2026-10-02 | Seed methodology: active negatives only + one negative per required request field | MiMo |
 | 1.4 | 2026-11-04 | Machine-checkable JSON report (incl. cleanupVerified), mandatory plan gate (seed table → approval → code), negative example (rejected chain with violation list) | MiMo |
 | 1.5 | 2026-11-05 | Plan gate → standalone "Plan the Test List" (Part 1 seed table + Part 2 full test-method list); Step 4: mandatory Rules/*.md reading + match-approved-plan; Step 7: reconciliation + per-test run report tables (green before Step 8); Step 8: both tables required alongside JSON | MiMo |
+| 1.6 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |

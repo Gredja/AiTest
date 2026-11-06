@@ -68,7 +68,8 @@ Gredja/
 │   ├── slack-notify-run.ps1      # GitHub Actions → Slack run report (summary + per-category stats from TestRunReport)
 │   ├── coverage.runsettings      # coverlet IncludeTestAssembly — only for test-coverage.ps1 (not auto-applied)
 │   ├── test-coverage.ps1
-│   └── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
+│   ├── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
+│   └── validate-skill-report.ps1 # machine-validates a gen-skill JSON report (keys, counter sum, gate↔commit-message link) — contract rule in api/e2e/ui-test-gen
 ├── education/
 │   └── TESTING_PLAYBOOK.md       # portable project-agnostic testing playbook (EN) — methodology deltas folded at every commit
 └── backups/
