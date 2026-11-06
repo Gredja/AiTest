@@ -9,4 +9,5 @@ public static class JsonFields
     public const string PostId = "postId";
     public const string Title = "title";
     public const string UserId = "userId";
+    public const string Username = "username";
 }

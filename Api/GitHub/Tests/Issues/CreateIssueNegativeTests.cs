@@ -1,4 +1,5 @@
 using Core.Models.GitHub;
+using Core.Generators.GitHub;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -79,5 +80,23 @@ public class CreateIssueNegativeTests : GitHubTestBase
             [.. TestRepoParam(), .. IssueNumberParam(ExistingIssueNumber)]);
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
+
+    [Test]
+    [Category("Negative")]
+    [Description("17.18 Invalid token returns 401 with Bad credentials")]
+    public async Task CreateIssue_InvalidToken_ReturnsUnauthorized()
+    {
+        var request = new RestRequest(GitHubEndpoints.RepoIssues, Method.Post)
+        {
+            RequestFormat = DataFormat.Json
+        };
+        request.AddHeader(AuthorizationHeader, InvalidAuthorization);
+        request.AddJsonBody(IssueGenerator.CreateRandom("Invalid token probe", "Body"));
+        AddParams(request, TestRepoParam());
+
+        var response = await Client.ExecuteAsync(request);
+
+        response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
 }

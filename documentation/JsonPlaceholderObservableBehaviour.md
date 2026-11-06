@@ -219,10 +219,18 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - Response status is 200 OK
 - Response body is a JSON array of exactly 10 items (`TestConfig.ExpectedUserCount`)
 - Each item has: `id` (integer > 0, unique), `name` (string), `username` (string), `email` (string), `address` (object: `street`, `suite`, `city`, `zipcode`, `geo` {`lat`, `lng`}), `phone` (string), `website` (string), `company` (object: `name`, `catchPhrase`, `bs`)
+- Query filters (live probe 2026-11-06): `id`, `username`, `email`, `name` — exact match, every returned item equals the filter value; a valid `id` filter returns exactly one user
+- Unknown query parameters are ignored — full list returned
+- Trailing slash (`/users/`) is tolerated — 200 + full list
+- Pagination parameters `_limit`/`_page` are supported (`_page=2&_limit=3` → ids 4–6; `_limit=0` and `_limit=abc` → empty array) — observed live 2026-11-06, not yet covered by tests
 - Response time < 5s
 
-**Negative:**
-- None — list route (mock-API exception)
+**Negative (filter semantics, all active — live probe 2026-11-06):**
+- Non-existent `id` filter (maxId + 1) → **200 OK with empty array**
+- `id` = 0 → **200 OK with empty array**
+- Negative `id` (-1) → **200 OK with empty array**
+- Non-numeric `id` (`abc`) → **200 OK with empty array**
+- Non-existent `username` filter → **200 OK with empty array**
 
 ---
 
@@ -362,6 +370,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 | Parameter | Valid | Invalid | API behavior |
 |---|---|---|---|
 | `postId`, `userId`, `albumId` | Existing owner id | Non-existent id | **200** with empty array (filter semantics, not an error) |
+| `id`, `username`, `email`, `name` (GET /users) | Existing value | Non-existent / non-numeric value | **200** with empty array (filter semantics, not an error) |
 
 ### Headers
 
@@ -450,5 +459,6 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 ## Authoring Method
 
 - **Structure + fields:** AI-drafted from live probes (2026-10-02) + existing C# models (`Core/Models/JsonPlaceholder/`)
+- **GET /users query filters** (`id`/`username`/`email`/`name`, `_page`/`_limit`): probed live 2026-11-06 — id/username filters and their negatives are covered by tests; `_page`/`_limit` observed, uncovered
 - **Edge cases + gotchas:** probed live, documented in `documentation/Bugs/JsonPlaceholder/JP-001…JP-006`
 - **Risk framing:** human-owned (business context)

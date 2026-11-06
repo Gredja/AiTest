@@ -1,35 +1,35 @@
 # Eval: e2e-test-gen
 
-Скилл: `.mimocode/skills/e2e-test-gen/SKILL.md` (версия: смотреть Revision History).
-Формат и правило прогона — `documentation/SkillEval/README.md`.
+Skill: `.mimocode/skills/e2e-test-gen/SKILL.md` (version: see Revision History).
+Format and run procedure: `documentation/SkillEval/README.md`.
 
-| # | Кейс | Статус до | Статус после |
-|---|------|-----------|--------------|
-| 1 | Write-цепочка create → verify → cleanup | not run | not run |
+| # | Case | Status before | Status after |
+|---|------|---------------|--------------|
+| 1 | Write chain create → verify → cleanup | not run | not run |
 
 ---
 
-## Кейс 1 — Write-цепочка create → verify → cleanup
+## Case 1 — Write chain create → verify → cleanup
 
-**Вход (точный запрос агенту):**
+**Input (exact prompt to the agent):**
 
-> Прочитай `documentation/{Service}ObservableBehaviour.md` и сгенерируй E2E-тесты
-> через /e2e-test-gen для `{resource}` в песочнице {repo}. Service = {Service}.
+> Read `documentation/{Service}ObservableBehaviour.md` and generate E2E tests via
+> /e2e-test-gen for `{resource}` in the sandbox {repo}. Service = {Service}.
 
-**Обязано:**
-- [ ] План: Part 1 (сиды: happy/negative/edge) + Part 2 (полный список имён методов, категорий, файл) → STOP; кода до «да» нет
-- [ ] Перед кодом — чтение всех Rules/*.md
-- [ ] Цепочка: POST → verify → GET/PATCH → cleanup; cleanup-порядок (комменты до issues, ветки до PR)
-- [ ] Fixture-registry: ID регистрируются СРАЗУ после создания, ДО assert (register-then-assert)
-- [ ] Cleanup ТОЛЬКО в `[OneTimeTearDown]` (последний член класса), warning-only; per-test `[SetUp]`/`[TearDown]`/`finally` нет
-- [ ] Нет вспомогательных методов в `*Tests.cs` (цепочки — в base/helpers)
-- [ ] Write-данные вымышленные, ≥2 размерности; `ShouldMatchRequest()` для request↔response
-- [ ] Сверка план↔код таблицей до format/build/тестов; таблица результатов прогона; запуск зелёный
-- [ ] JSON-отчёт: `cleanupVerified = true`, validator → PASS
+**Must:**
+- [ ] Plan: Part 1 (seeds: happy/negative/edge) + Part 2 (full list of method names, categories, target file) → STOP; no code before "yes"
+- [ ] All Rules/*.md read before code
+- [ ] Chain: POST → verify → GET/PATCH → cleanup; cleanup order (comments before issues, branches before PRs)
+- [ ] Fixture-registry: IDs registered immediately after creation, BEFORE assert (register-then-assert)
+- [ ] Cleanup ONLY in `[OneTimeTearDown]` (last class member), warning-only; no per-test `[SetUp]`/`[TearDown]`/`finally`
+- [ ] No helper methods in `*Tests.cs` (chains live in base/helpers)
+- [ ] Write data fictional, ≥2 dimensions varied; `ShouldMatchRequest()` for request↔response
+- [ ] Plan↔code reconciliation table before format/build/tests; run report table; run green
+- [ ] Report JSON: `cleanupVerified = true`, validator → PASS
 
-**Запрещено:**
-- [ ] Cleanup в `finally` тест-метода; register после assert (утечка при падении assert)
-- [ ] `Assert.*` (NUnit), синхронный `Execute`, `Thread.Sleep`
-- [ ] Хардкод несуществующих ID (999); статические write-данные («test»); хардкод endpoint-путей
-- [ ] Помощники внутри тест-класса; логин/логаут в тесте; нарушение порядка cleanup
-- [ ] Красный прогон или `cleanupVerified = false` с предложением коммита
+**Must not:**
+- [ ] Cleanup in a test's `finally`; register after assert (leaks on assert failure)
+- [ ] `Assert.*` (NUnit), sync `Execute`, `Thread.Sleep`
+- [ ] Hardcoded non-existent IDs (999); static write data ("test"); hardcoded endpoint paths
+- [ ] Helpers inside the test class; login/logout in a test; violated cleanup order
+- [ ] A red run or `cleanupVerified = false` with a commit suggestion

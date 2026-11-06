@@ -67,7 +67,7 @@
 
 | # | Endpoint | Tests | Status |
 |---|----------|-------|--------|
-| 6.1 | GET /users | Status, contract, non-empty, Content-Type, fields, count=10, unique ids, response time | Done |
+| 6.1 | GET /users | Status, contract, non-empty, Content-Type, fields, count=10, unique ids, email, response time, username/id filters, repeated calls, id range, trailing slash, unknown param, 5 filter negatives (non-existent/0/-1/abc id, non-existent username → 200 empty) | Done |
 | 6.2 | GET /users/{id} | Status, contract, non-null, fields, id match, boundary ids (5, 10), repeated calls, 5 negatives → 404 | Done |
 | 6.3 | GET /users/{id}/albums | Status, contract, all items belong to user, non-existent user → empty | Done |
 | 6.4 | GET /users/{id}/posts | Status, contract, all items belong to user, non-existent user → empty | Done |
@@ -77,22 +77,22 @@
 
 ## Test Categories
 
-Counts by check-type category (214 tests total):
+Counts by check-type category (225 tests total):
 
 | Category | Count |
 |---|---|
 | HealthCheck | 22 |
 | ContractCheck | 18 |
-| Smoke | 36 |
-| Regression | 64 (1 `[Ignore]`d — JP-004) |
-| Negative | 64 (48 active + 16 `[Ignore]`d) |
+| Smoke | 40 |
+| Regression | 66 (1 `[Ignore]`d — JP-004) |
+| Negative | 69 (53 active + 16 `[Ignore]`d) |
 | Performance | 10 |
 
 ---
 
 ## Negative Floor Status
 
-Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint, mock-API exception + ceiling rule apply when distinct useful failure modes are exhausted (verified by live probes 2026-10-02).
+Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint, mock-API exception + ceiling rule apply when distinct useful failure modes are exhausted (verified by live probes 2026-10-02; /users filter probes 2026-11-06).
 
 | Fixture / Endpoint | Active | Ignored | Ceiling / Note |
 |---|---|---|---|
@@ -106,7 +106,8 @@ Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint, m
 | POST /posts | 2 | 5 | Mock accepts any body (JP-001); malformed/non-object JSON → 500 are the only active modes |
 | DELETE /posts/{id} | 2 | 5 | Mock deletes nothing (JP-002/003); malformed → 500 and collection → 404 are active |
 | Filter endpoints (postId/userId/albumId) ×7 | 2 each | 0 | Non-existent filter → 200 empty is the designed behavior; second negative = in-filter validation |
-| GetAll lists ×6 | 0 | 0 | Mock-API exception (lists accept any input) |
+| GetAll lists ×5 | 0 | 0 | Mock-API exception (lists accept any input) |
+| GET /users (id/username filters) | 5 | 0 | Floor met — 200 empty is designed filter semantics (live probe 2026-11-06) |
 
 ---
 

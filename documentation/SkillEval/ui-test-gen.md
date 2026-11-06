@@ -1,36 +1,36 @@
 # Eval: ui-test-gen
 
-Скилл: `.mimocode/skills/ui-test-gen/SKILL.md` (версия: смотреть Revision History).
-Формат и правило прогона — `documentation/SkillEval/README.md`.
+Skill: `.mimocode/skills/ui-test-gen/SKILL.md` (version: see Revision History).
+Format and run procedure: `documentation/SkillEval/README.md`.
 
-| # | Кейс | Статус до | Статус после |
-|---|------|-----------|--------------|
-| 1 | Страница с локаторами: навигация + проверка | not run | not run |
+| # | Case | Status before | Status after |
+|---|------|---------------|--------------|
+| 1 | Page with locators: navigation + check | not run | not run |
 
 ---
 
-## Кейс 1 — Страница с локаторами: навигация + проверка
+## Case 1 — Page with locators: navigation + check
 
-**Вход (точный запрос агенту):**
+**Input (exact prompt to the agent):**
 
-> Прочитай `documentation/{service}UiObservableBehaviour.md` и сгенерируй UI-тесты
-> через /ui-test-gen для страницы `{page}`: `{flow}`. Service = {service}.
+> Read `documentation/{service}UiObservableBehaviour.md` and generate UI tests via
+> /ui-test-gen for the page `{page}`: `{flow}`. Service = {service}.
 
-**Обязано:**
-- [ ] Сначала live-снапшот: `node Scripts/locator-dump.mjs <url>` — каждый локатор из снапшота, с датой в UI-OB
-- [ ] План: Part 1 (кейс, категория, ресурсы→клинер, источник локатора) + Part 2 (имена `{{area}}_{{Flow}}_{{Outcome}}`, категории, `[Description]` с UI-OB §, файлы incl. page-object) → STOP; файлов до «да» нет
-- [ ] Перед кодом — чтение всех Rules (включая `ui-testing.md`)
-- [ ] Локаторы только role/text/label (`GetByRole`/`GetByText`/`GetByLabel`); CSS/XPath на тестируемой странице запрещены
-- [ ] Page-objects: бизнес-действия (`CreateIssue`, не сырые клики); тесты — оркестрация + ассерты
-- [ ] Аутентификация через `storageState`; логин только в `LoginSignInTests`; гибрид «действие в UI → проверка через API»
-- [ ] Write через UI → cleanup через API в `[OneTimeTearDown]` (последний член), register-then-assert
-- [ ] Данные через `DataGenerator.RandomString` + `TestDataConstants`; без `WaitForTimeout` без WHY
-- [ ] Сверка план↔код (тесты и page-object) до format/тестов; таблица результатов; запуск зелёный
-- [ ] JSON-отчёт: `locators.draft = 0`, validator → PASS
+**Must:**
+- [ ] Live snapshot first: `node Scripts/locator-dump.mjs <url>` — every locator from the snapshot, dated in the UI-OB
+- [ ] Plan: Part 1 (case, category, resources→cleanup, locator source) + Part 2 (names `{{area}}_{{Flow}}_{{Outcome}}`, categories, `[Description]` with UI-OB §, files incl. page-object) → STOP; no files before "yes"
+- [ ] All Rules read before code (including `ui-testing.md`)
+- [ ] Locators role/text/label only (`GetByRole`/`GetByText`/`GetByLabel`); CSS/XPath on the page under test forbidden
+- [ ] Page-objects: business actions (`CreateIssue`, not raw clicks); tests orchestrate and assert
+- [ ] Auth via `storageState`; login only in `LoginSignInTests`; hybrid "act via UI → verify via API"
+- [ ] UI write → API cleanup in `[OneTimeTearDown]` (last member), register-then-assert
+- [ ] Data via `DataGenerator.RandomString` + `TestDataConstants`; no `WaitForTimeout` without a WHY
+- [ ] Plan↔code reconciliation (tests and page-object) before format/tests; run report table; run green
+- [ ] Report JSON: `locators.draft = 0`, validator → PASS
 
-**Запрещено:**
-- [ ] Локаторы из памяти модели; CSS-классы/XPath на странице под тестом; draft-локаторы в коде
-- [ ] Логаут в feature-тесте; логин в каждом тесте; `WaitForTimeoutAsync(3000)` как замена ожидания
-- [ ] `Assert.*` (NUnit), helper-методы в `*Tests.cs`, скриншот-код в тестах
-- [ ] Статические «test»-данные; cleanup без register-before-assert
-- [ ] Файлы созданы до одобрения плана; красный прогон с предложением коммита
+**Must not:**
+- [ ] Locators invented from memory; CSS classes/XPath on the page under test; draft locators in code
+- [ ] Logout in a feature test; login in every test; `WaitForTimeoutAsync(3000)` as a wait
+- [ ] `Assert.*` (NUnit), helper methods in `*Tests.cs`, screenshot code in tests
+- [ ] Static "test" data; cleanup without register-before-assert
+- [ ] Files created before plan approval; a red run with a commit suggestion
