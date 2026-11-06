@@ -241,7 +241,7 @@ Complex cleanup chains (delete comments → then issue) belong in `{Service}E2ET
 
 ### Step 7: Safety Check
 
-**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 3. Every planned test method must exist; no unplanned tests may appear. Output a table:
+**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 3. Do it mechanically — Part 2 of the plan is the source of truth: extract every test method name from the generated file(s) (Grep `public async Task` in the target file), diff the extracted list against Part 2's method names. The table below is the OUTPUT of that diff, never a hand-typed list (hand-typing drifts on sets of 20+). Every planned test method must exist; no unplanned tests may appear.
 
 | # | Planned test (method name) | Category | In code | Status |
 |---|---|---|---|---|
@@ -294,3 +294,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.4 | 2026-11-04 | Machine-checkable JSON report (incl. cleanupVerified), mandatory plan gate (seed table → approval → code), negative example (rejected chain with violation list) | MiMo |
 | 1.5 | 2026-11-05 | Plan gate → standalone "Plan the Test List" (Part 1 seed table + Part 2 full test-method list); Step 4: mandatory Rules/*.md reading + match-approved-plan; Step 7: reconciliation + per-test run report tables (green before Step 8); Step 8: both tables required alongside JSON | MiMo |
 | 1.6 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |
+| 1.7 | 2026-11-05 | Step 7: reconciliation made mechanical — Grep method names vs approved Part 2, table is the diff output (never hand-typed) | MiMo |

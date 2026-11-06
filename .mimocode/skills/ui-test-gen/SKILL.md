@@ -238,7 +238,7 @@ Append/extend `documentation/{{service_name}}UiObservableBehaviour.md` for every
 
 ### Step 6: Safety check
 
-**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 2. Every planned test method (and planned page-object file) must exist; no unplanned tests may appear. Output a table:
+**Plan-vs-implementation reconciliation (mandatory, first):** compare the generated code against the plan approved in Step 2. Do it mechanically — Part 2 of the plan is the source of truth: extract every test method name (and planned page-object file) from the generated code (Grep `public async Task` in test files), diff the extracted list against Part 2's method names. The table below is the OUTPUT of that diff, never a hand-typed list (hand-typing drifts on sets of 20+). Every planned test method must exist; no unplanned tests may appear.
 
 | # | Planned test (method name) | Category | In code | Status |
 |---|---|---|---|---|
@@ -300,3 +300,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.1 | 2026-11-04 | Machine-checkable JSON report (incl. locators.draft=0 invariant), mandatory plan gate (plan → approval → files), negative example (rejected UI test with violation list) | MiMo |
 | 1.2 | 2026-11-05 | Step 2 gate → Part 1 plan table + Part 2 full test-method list (names/categories/descriptions/files); Step 3: mandatory Rules/*.md reading + match-approved-plan; Step 6: reconciliation + per-test run report tables (green before Step 7); Step 7: both tables required alongside JSON | MiMo |
 | 1.3 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |
+| 1.4 | 2026-11-05 | Step 6: reconciliation made mechanical — Grep method names vs approved Part 2, table is the diff output (never hand-typed) | MiMo |
