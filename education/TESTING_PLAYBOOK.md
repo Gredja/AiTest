@@ -1000,7 +1000,9 @@ skill prompt.
    end green before the report step.
 5. Deliver a machine-checkable JSON report as the primary output: files created/modified
    (never re-create an existing file), disjoint test counters summing to total, safety-check
-   pass/fail with gate numbers — no commit suggestion after a red gate. The reconciliation
+   pass/fail with gate numbers — no commit suggestion after a red gate. The JSON itself is
+   machine-validated before delivery (a validator script checks keys, the counter-sum
+   invariant, and the gate↔commit-message link; a FAILing report is never sent). The reconciliation
    table and the per-test run table are required parts of the reply alongside the JSON.
    Human-readable prose may follow; the JSON + both tables are the deliverable
    (a reader-approves report is not a contract).
@@ -1022,8 +1024,9 @@ skill prompt.
    (method, result, duration, error) — green before the report step.
 5. Machine-checkable JSON report as the primary output (files created/modified, counters
    summing to total, `cleanupVerified=true`, safety-check pass/fail; no commit suggestion
-   after a red gate); the reconciliation and run tables are required parts of the reply
-   alongside the JSON; prose is optional.
+   after a red gate; the JSON is machine-validated before delivery — keys, counter-sum
+   invariant, gate↔commit-message link); the reconciliation and run tables are required
+   parts of the reply alongside the JSON; prose is optional.
 
 ### 14.11 UI test generation (browser)
 1. Author locators ONLY from a live one-shot accessibility dump of the page (never from memory,
@@ -1045,8 +1048,9 @@ skill prompt.
    table (method, result, duration, error) — green before the report step. New pages get OB
    sections with dated, verified locators.
 8. Machine-checkable JSON report (files, per-category counters summing to total,
-   `locators.draft=0`, safety-check pass/fail; no commit suggestion after a red gate); the
-   reconciliation and run tables are required parts of the reply alongside the JSON.
+   `locators.draft=0`, safety-check pass/fail; no commit suggestion after a red gate; the
+   JSON is machine-validated before delivery); the reconciliation and run tables are required
+   parts of the reply alongside the JSON.
 
 ### 14.12 Coverage run
 1. Run the suite with instrumentation; collect per-file line coverage.

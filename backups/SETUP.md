@@ -276,7 +276,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, slack-notify-run (GitHub Actions → Slack), mcp-slack/ — локальный Slack MCP-сервер)
+├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — локальный Slack MCP-сервер)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
@@ -336,9 +336,9 @@ MiMoCode:
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
 | `/audit` | Аудит + рефакторинг + структура в одном скилле, ДВЕ стадии: (1) аудит по Rules — категории A–F (стиль/типы/принципы/модели/тесты/комменты) + R (структура) + новые: S (безопасность/логи), Y (асинхронность/конкурренция), Z (детерминизм/перезапуск), W (синк код↔доки), U (мёртвый код), плюс Roslyn-прогон (RCS/IDE-диагностика как третий слой находок, Step 2b) — результат ТОЛЬКО **план-таблица** с пояснениями, статусами и исполнителями (`.mimocode/plans/audit-fixes-YYYY-MM-DD.md`), **никаких фиксов в этом же запуске**; (2) отдельный поздний вызов по сигналу — фиксы батчами: гейты (build/format/analyzers/HealthCheck/задетые сьюты) + коммит через `/commit`, move — с синком доков, статусы в плане обновляются; SKIP — с причиной |
-| `/api-test-gen` | Генерирует тесты для нового API endpoint: план (таблица сидов + полный список имён будущих тестов) на согласование → чтение всех Rules → генерация строго по плану → сверка «план↔код» + таблица результатов прогона (обе обязательны в отчёте рядом с JSON) |
-| `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations: план (сиды + список имён тестов) на согласование → чтение всех Rules → генерация → сверка «план↔код» + таблица результатов → JSON-отчёт с обеими таблицами |
-| `/ui-test-gen` | Генерирует UI-тесты Playwright (page-objects, live-снапшоты локаторов): план (таблица + полный список имён тестов) на согласование → чтение всех Rules (включая ui-testing) → генерация → сверка «план↔код» + таблица результатов → JSON-отчёт с обеими таблицами |
+| `/api-test-gen` | Генерирует тесты для нового API endpoint: план (таблица сидов + полный список имён будущих тестов) на согласование → чтение всех Rules → генерация строго по плану → сверка «план↔код» + таблица результатов прогона (обе обязательны в отчёте рядом с JSON; JSON прогоняется через Scripts/validate-skill-report.ps1 — PASS обязателен) |
+| `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations: план (сиды + список имён тестов) на согласование → чтение всех Rules → генерация → сверка «план↔код» + таблица результатов → JSON-отчёт с обеими таблицами (JSON прогоняется через Scripts/validate-skill-report.ps1 — PASS обязателен) |
+| `/ui-test-gen` | Генерирует UI-тесты Playwright (page-objects, live-снапшоты локаторов): план (таблица + полный список имён тестов) на согласование → чтение всех Rules (включая ui-testing) → генерация → сверка «план↔код» + таблица результатов → JSON-отчёт с обеими таблицами (JSON прогоняется через Scripts/validate-skill-report.ps1 — PASS обязателен) |
 | `/coverage` | Запускает тесты + считает code coverage (coverlet) + file coverage (endpoint→test) |
 | `/update-docs` | Обновляет .md файлы проекта после структурных изменений |
 | `/nightly-check` | Проверяет последний ночной прогон (API GitHub) и выдаёт однострочный вердикт; при падении — шаги jobs |
