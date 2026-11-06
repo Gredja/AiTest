@@ -97,12 +97,13 @@ The reserved `E2E-N` prefixes in `[Description]` (`Rules/test-practices.md` → 
 | E2E-7 | `GitRefLifecycleTests` | create branch → visible → duplicate 422 → delete → gone |
 | E2E-8 | `IssueStateMachineTests` | open → closed → reopen with list filters |
 | E2E-9 | `FailedWriteTests` | PR without commits → 422 → no side effects |
+| E2E-10 | `IssuesTests` | full-field create → read-back; combined content PATCH; close-one-of-two count; DELETE absent → 404 → fallback close; rapid create-close-create; special-char read-back |
 
 ## 7. Negative Floor Status
 
 Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint; mock-API exception + ceiling rule apply when distinct useful failure modes are exhausted (live probes 2026-11-02).
 
-**Coverage (2026-11-04, release-by-id/blob batch added; 2026-11-02 batches closed): 51 / 51 fixtures accounted for — 35 at floor + 16 with a documented ceiling; 233 active negatives of 481 GitHub tests.**
+**Coverage (2026-11-06 — `IssuesTests` E2E batch; counters measured on the working tree): 52 / 52 fixtures accounted for — 35 at floor + 17 with a documented ceiling; 235 active negatives of 507 GitHub tests.**
 
 ### Fixtures at floor (35)
 
@@ -110,7 +111,7 @@ Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint; m
 |---|---:|---|---:|---|---:|
 | AuthNegative | 5 | CreateComment | 5 | CreateGitBlob | 6 |
 | CreateGitCommit | 5 | CreateGitTree | 5 | CreateInvitation | 5 |
-| CreateIssueNegative | 5 | CreatePullRequest | 7 | CreateRef | 6 |
+| CreateIssueNegative | 6 | CreatePullRequest | 7 | CreateRef | 6 |
 | DeleteComment | 5 | DeleteInvitation | 5 | DeleteRef | 5 |
 | DeleteRelease | 5 | GetBranchByName | 5 | GetCollaboratorPermission | 5 |
 | GetCommits | 5 | GetContributors | 5 | GetIssueById | 5 |
@@ -140,7 +141,8 @@ Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint; m
 | GetUsers | 1 | 1 | OB §3a — no path segments; invalid queries silently ignored |
 | MergePullRequest | 4 | 4 | OB §23 — all other modes collapse to 200 |
 | UpdatePullRequest | 4 | 4 | OB §22 — null `title` / unknown `state` accepted (200) |
-| CreateIssueVisibility | 0 | — | OB §17 — per-ENDPOINT floor met by `CreateIssueNegativeTests` (5); this fixture is Performance-only by design |
+| CreateIssueVisibility | 0 | — | OB §17 — per-ENDPOINT floor met by `CreateIssueNegativeTests` (6); this fixture is Performance-only by design |
+| IssuesTests (E2E) | 1 | 1 | OB §24 — DELETE /issues/{n} absent (404) is its single failure mode; per-endpoint floor met by `CreateIssueNegativeTests` (6) + `UpdateIssue` (5), no padding per ceiling rule |
 
 ### Auth strategy (shared ceiling)
 

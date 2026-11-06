@@ -5,7 +5,22 @@ Format and run procedure: `documentation/SkillEval/README.md`.
 
 | # | Case | Status before | Status after |
 |---|------|---------------|--------------|
-| 1 | Write chain create → verify → cleanup | not run | not run |
+| 1 | Write chain create → verify → cleanup | not run | **pass (2026-11-05, skill v1.7)** |
+
+**Case 1 — run notes (2026-11-05):** GitHub issues chains (E2E-10), blind subagent with
+anti-hang budget. Plan-gate STOP → approval → generation; only the three approved files
+touched. Mechanical reconciliation: 6/6 matched; live sandbox run 6/6 (0 failed, 19 s);
+format/build green; validator PASS; `cleanupVerified = true`. Spot-check: NUnit
+Assert/Sleep/999/finally/helpers/conditional-registration — 0; registry + OneTimeTearDown
+(last member) present; register-then-assert via the JUST-REWRITTEN helper (status assert →
+unconditional add) confirmed in code. Deviations, all recorded: (1) two planned generator
+factories collapsed into one (`WithTitleBodyLabels`), (2) combined PATCH sent as
+`CreateIssueModelRequest` (the exact OB §19 content subset) instead of extending
+`UpdateIssueModelRequest`, (3) `ShouldMatchRequest` → explicit label-name asserts
+(documented shape exception), (4) filter scoped with `FullyQualifiedName~` to avoid
+substring-matching Api tests. Doc drift found and fixed en route (floor table 5→6, global
+counters re-measured). Verdict: skill held the contract, including the updated
+register-then-assert rule.
 
 ---
 

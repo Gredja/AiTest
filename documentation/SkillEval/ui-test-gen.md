@@ -5,7 +5,18 @@ Format and run procedure: `documentation/SkillEval/README.md`.
 
 | # | Case | Status before | Status after |
 |---|------|---------------|--------------|
-| 1 | Page with locators: navigation + check | not run | not run |
+| 1 | Page with locators: navigation + check | not run | **pass (2026-11-06, skill v1.4)** |
+
+**Case 1 — run notes (2026-11-06):** GitHub issues-tab navigation (UI-4), blind subagent,
+anti-hang budget. Plan-gate STOP → approval → implementation; exactly the 4 approved files.
+Mechanical reconciliation: 1/1 matched, pre-existing tests untouched; run 1/1 (3 s, 0
+failed); format clean; validator PASS; `locators.draft = 0`, `verifiedLive = 3` (live dump
+2026-11-06 for `link "Issues"`, OB-dated reuse for heading/Open-tab per reuse-before-extract).
+Spot-check: WaitForTimeout/CSS/XPath/NUnit Assert — 0; role locators at file bottom;
+outcome wait (`WaitForURLAsync`) before asserts; navigation-only flow → no registry/teardown
+changes (creates nothing). Deviations: none material (Open-tab locator uses `Exact = false`
+to cover `Open (N)`/`Open 0` — OB gotcha, within plan intent). Verdict: skill held the
+contract, including storageState and locator-discipline hard rules.
 
 ---
 

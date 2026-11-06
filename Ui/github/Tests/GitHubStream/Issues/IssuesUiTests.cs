@@ -69,6 +69,20 @@ public class IssuesUiTests : GitHubUiTestBase
             $"closed issue must appear on the Closed tab (attempts={found.Attempts}, elapsed={found.Elapsed})");
     }
 
+    [Test]
+    [Category("Smoke")]
+    [Description("UI-4 Issues list: repository Issues tab navigation lands on the list view")]
+    public async Task Issues_NavigateViaTab_ShowsListView()
+    {
+        await Browser.RepositoryPage.OpenAsync();
+        await Browser.RepositoryPage.NavigateToIssuesAsync();
+
+        (await Browser.IssuesPage.HasIssuesHeadingAsync()).Should().BeTrue(
+            "the Issues heading must render on the list view");
+        (await Browser.IssuesPage.HasOpenTabAsync()).Should().BeTrue(
+            "the Open tab counter must be part of the list view chrome");
+    }
+
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
