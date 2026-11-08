@@ -16,6 +16,12 @@ Run `git status` and `git diff --stat`. Show:
 
 If working tree is clean — report and stop.
 
+**Branch guard (hard rule):** if `git branch --show-current` returns `main` — STOP, do not
+commit. Changes go only to `features/<topic>` (Rules/git.md → Branches): report the
+violation, propose `git switch -c features/<topic>` (uncommitted changes move with the
+switch automatically), and wait for the user. The only commit that legitimately lands on
+`main` locally is a merge commit created by the /merge skill — this skill never runs for it.
+
 ## Step 2: Gather commit message
 
 If the user provided a commit message — use it.
@@ -120,6 +126,7 @@ Report in execution order:
 - HealthCheck tests must pass — if any fail, STOP. Do not commit.
 - Never skip code review
 - Never commit without user approval (gathered in Step 1-2)
+- Never commit on `main` — Step 1 branch guard stops and proposes `features/<topic>` (merges are the /merge skill's job, not this one's)
 - Never push to `main` without explicit confirmation
 - Commits: English only, format: action + object
 - Never commit `.env` or tokens
