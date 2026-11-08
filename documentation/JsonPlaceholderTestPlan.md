@@ -28,7 +28,7 @@
 | 1.1 | GET /posts | Status, contract, non-empty, Content-Type, fields, count=100, unique ids, response time | Done |
 | 1.2 | GET /posts/{id} | Status, contract, fields, id match, boundary ids (50, 100), repeated calls, 5 negatives (non-existent/0/-1/abc/intMax → 404) | Done |
 | 1.3 | POST /posts | Status 201, generated id, fields, ShouldMatchRequest, special chars, malformed JSON → 500, non-object JSON → 500, 5 × missing/wrong-type/empty [Ignore] JP-001 | Done |
-| 1.4 | PUT /posts/{id} | Status 200, fields, ShouldMatchRequest, preserves id, 5 negatives active (0/-1/non-existent/abc/malformed → 500), 3 × missing field [Ignore] JP-005 | Done |
+| 1.4 | PUT /posts/{id} | Status 200, fields, ShouldMatchRequest, preserves id, 5 negatives active (0/-1/non-existent/abc → 404, malformed → 500), 3 × missing field [Ignore] JP-005 | Done |
 | 1.5 | PATCH /posts/{id} | Status 200, updated title, malformed JSON → 500, 3 × invalid id [Ignore] JP-006, merge behavior [Ignore] JP-004 | Done |
 | 1.6 | DELETE /posts/{id} | Status 200, empty object, malformed JSON → 500, collection/trailing slash → 404, 4 × any-id-200 [Ignore] JP-003, still-deleted GET [Ignore] JP-002 | Done |
 
@@ -101,7 +101,7 @@ Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint, m
 | GET /albums/{id} | 5 | 0 | Floor met |
 | GET /photos/{id} | 5 | 0 | Floor met |
 | GET /users/{id} | 5 | 0 | Floor met |
-| PUT /posts/{id} | 5 | 3 | Floor met (500-family) |
+| PUT /posts/{id} | 5 | 3 | Floor met (404-family invalid ids + malformed-JSON 500) |
 | PATCH /posts/{id} | 1 | 4 | Malformed JSON is the only active failure mode; invalid ids return 200 (JP-006) |
 | POST /posts | 2 | 5 | Mock accepts any body (JP-001); malformed/non-object JSON → 500 are the only active modes |
 | DELETE /posts/{id} | 2 | 5 | Mock deletes nothing (JP-002/003); malformed → 500 and collection → 404 are active |

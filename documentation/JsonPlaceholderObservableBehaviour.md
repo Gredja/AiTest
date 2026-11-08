@@ -308,10 +308,10 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 - Response time < 5s
 
 **Negative:**
-- id = 0 → **500 Internal Server Error** (active)
-- Negative id (-1) → **500** (active)
-- Non-existent id (maxId + 1) → **500** — expected 404 (active, mock returns server error)
-- Non-numeric id (`abc`) → **500** (active)
+- id = 0 → **404 Not Found** (active; updated 2026-11-08 — live probe, previously 500)
+- Negative id (-1) → **404** (active; updated 2026-11-08 — live probe, previously 500)
+- Non-existent id (maxId + 1) → **404** (active; updated 2026-11-08 — live probe; previously 500, mock now matches the expected semantics)
+- Non-numeric id (`abc`) → **404** (active; updated 2026-11-08 — live probe, previously 500)
 - Malformed JSON body → **500** (active)
 - Missing `title` / missing `body` / missing `userId` → **200 OK** — expected 400 — Bug: JP-005 ( `[Ignore]`d)
 
@@ -360,7 +360,7 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 | Parameter | Valid | Invalid | API behavior |
 |---|---|---|---|
 | `{id}` (GET by id) | Integer 1..N | 0, -1, abc, int.MaxValue, maxId+1 | **404** (active — the only mock resource that errors correctly) |
-| `{id}` (PUT) | Integer 1..100 | 0, -1, abc, maxId+1 | **500** (server error, not 404) |
+| `{id}` (PUT) | Integer 1..100 | 0, -1, abc, maxId+1 | **404** (updated 2026-11-08 — live probe; previously 500) |
 | `{id}` (PATCH) | Integer 1..100 | 0, -1, abc, maxId+1 | **200** (ignored — Bug JP-006) |
 | `{id}` (DELETE) | Integer 1..100 | 0, -1, abc, maxId+1 | **200** (ignored — Bug JP-003) |
 | `{id}` (users nested) | Integer 1–10 | Non-existent user | **200** with empty array |

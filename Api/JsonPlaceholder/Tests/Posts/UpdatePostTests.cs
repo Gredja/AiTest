@@ -96,13 +96,13 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Negative")]
-    [Description("5.7 PUT with ID 0 returns error")]
-    public async Task UpdatePost_Put_ZeroId_ReturnsError()
+    [Description("5.7 PUT with ID 0 returns 404")]
+    public async Task UpdatePost_Put_ZeroId_ReturnsNotFound()
     {
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(0));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Test]
@@ -122,19 +122,19 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
 
     [Test]
     [Category("Negative")]
-    [Description("5.9 PUT with negative ID returns 500")]
-    public async Task UpdatePost_Put_NegativeId_ReturnsInternalServerError()
+    [Description("5.9 PUT with negative ID returns 404")]
+    public async Task UpdatePost_Put_NegativeId_ReturnsNotFound()
     {
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(-1));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Test]
     [Category("Negative")]
-    [Description("5.10 PUT with non-existent ID returns 500")]
-    public async Task UpdatePost_Put_NonExistentId_ReturnsInternalServerError()
+    [Description("5.10 PUT with non-existent ID returns 404")]
+    public async Task UpdatePost_Put_NonExistentId_ReturnsNotFound()
     {
         var allPosts = await Get<List<PostModelResponse>>(JsonPlaceholderEndpoints.Posts);
         allPosts.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -144,18 +144,18 @@ public class UpdatePostTests : JsonPlaceholderRequestHelper
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             IdParam(nonExistentId));
 
-        response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Test]
     [Category("Negative")]
-    [Description("5.11 PUT with non-numeric ID returns 500")]
-    public async Task UpdatePost_Put_InvalidSegment_ReturnsInternalServerError()
+    [Description("5.11 PUT with non-numeric ID returns 404")]
+    public async Task UpdatePost_Put_InvalidSegment_ReturnsNotFound()
     {
         var response = await Put<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.PostsById, PostGenerator.Update(TestUserId),
             [UrlSegment(GenericJsonFields.Id, NonNumericValue)]);
 
-        response.ShouldHaveStatusCode(HttpStatusCode.InternalServerError);
+        response.ShouldHaveStatusCode(HttpStatusCode.NotFound);
     }
 
     [Test]
