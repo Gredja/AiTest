@@ -1,6 +1,6 @@
 ---
 name: audit
-description: Use when the user says "audit", "/audit", "аудит", "проверь структуру", "/structure-audit", "нейминг структуры", "рефакторинг"/"refactor" for whole-codebase work, or wants code improved against Rules/*.md. One skill, two stages: (1) audit the entire codebase against Rules/*.md (categories A–F + structure) and produce a detailed fix plan — a human-readable table with explanations and statuses, saving it to .mimocode/plans/audit-fixes-YYYY-MM-DD.md — fixes are NOT applied immediately, they happen later on the user's signal; (2) apply the approved plan in gated batches (build/format/HealthCheck/touched suites after each batch, one /commit per batch, structural moves with docs sync) and update plan statuses. NOT for uncommitted-changes review (/review-commit) or PR reviews (/review-pr).
+description: Use when the user says "audit", "/audit", "аудит", "проверь структуру", "/structure-audit", "нейминг структуры", "рефакторинг"/"refactor" for whole-codebase work, or wants code improved against Rules/*.md. One skill, two stages: (1) audit the entire codebase against Rules/*.md (categories A–F + structure) and produce a detailed fix plan — a human-readable table with explanations and statuses, saving it to .mimocode/plans/audit-fixes-YYYY-MM-DD.md — fixes are NOT applied immediately, they happen later on the user's signal; (2) apply the approved plan in gated batches (build/format/HealthCheck/touched suites after each batch, one /commit per batch, structural moves with docs sync) and update plan statuses. Deeper than /review: /audit = full two-stage run with a plan file; /review = quick single-run report, no plan file, no fixes. NOT for uncommitted-changes review (/review-commit) or PR reviews (/review-pr).
 ---
 
 # Skill: Full Code Audit & Refactor
@@ -159,8 +159,7 @@ a rule-documented utility is API, not dead code** (`RandomIntExclusive` lesson).
 ### Execution map — who does what (fill this in the report)
 
 | Check | Owner |
-|----------|-------|
-|----------|---------------------|
+|---|---|
 | A–F, S, Y, Z, W, U, R | one `explore` subagent per category (parallel) |
 | Roslyn analyzer pass (Step 2b: build RCS/IDE inventory + `dotnet format analyzers`) | main agent — always-on tooling layer feeding plan rows |
 | Plan roll-up, statuses, tables | main agent (Step 4) |
@@ -279,3 +278,11 @@ their done-criteria are met.
 - PR/CI waits → background watcher subagent, never a blocking loop
 - Exclusions never touched: `documentation/Katas/`, `bin/`, `obj/`, `.mimocode/node_modules/`, generated
 - Group related fixes per batch for efficient application; batch = one coherent commit
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | S7: fixed broken Execution map table (duplicate separator row). S8: description contrasts /audit vs /review (two-stage plan file vs quick report). Revision History added | MiMo |

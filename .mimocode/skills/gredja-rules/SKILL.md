@@ -9,12 +9,13 @@ Entry point for all Gredja project rules. Overview + pointers to detailed rule f
 
 ## Project
 
-Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). JSONPlaceholder, GitHub API.
+Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). Services: JSONPlaceholder (mock API), GitHub API, Moodle demo (`https://school.moodledemo.net`, localization testing).
 
 - Repo: https://github.com/Gredja/AiTest.git
 - Branch: `main`, changes in `features/<topic>`
-- Test base classes: `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`, `GitHubTestBase` (see `Core/Helpers/`)
-- Endpoints: `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`
+- Test projects: `Api/` (API tests), `E2E/` (scenario chains), `Ui/github/` + `Ui/moodledemo/` (Playwright UI)
+- Test base classes: `JsonPlaceholderRequestHelper`, `GitHubRequestHelper`, `GitHubTestBase` (Core/Helpers); `GitHubE2ETestBase` (E2E/GitHub); `GitHubUiTestBase` (Ui/github/Tests/Support)
+- Endpoints: `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`, `Core/Config/MoodledemoEndpoints.cs`
 
 ## Rule Files
 
@@ -45,4 +46,14 @@ Read the relevant file before working on the corresponding entity:
 - **No comments** unless regex pattern or non-obvious WHY
 - **No magic numbers** — extract to constants
 - **Non-existent IDs:** dynamic (GET all → maxId + 1; concurrent E2E writes → maxId + Offset), never static 999
+- **Categories:** `[Category("{Service}")]` on the class, check-type category on every test method — see `Rules/categories.md`
+- **Localization (Moodle demo):** locale contract, HTTP-first L1, language-agnostic locators — see `Rules/localization-testing.md`
 - **Commits:** only on user request, English, action + object format
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | S5: Project section refreshed (Moodle demo service, moodledemo endpoints file, test projects, E2E/Ui base classes); Key Rules gained categories + localization pointers. Revision History added | MiMo |

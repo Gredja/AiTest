@@ -65,3 +65,11 @@ and open the `## Failed tests` section of the newest `TestResults/TestRunReport-
 - `404` on the workflow → workflow file not on `main` yet (`.github/workflows/nightly-tests.yml`).
 - Empty `workflow_runs` → the workflow never ran; suggest `workflow_dispatch` from the Actions tab.
 - Rate limit on api.github.com itself → report `X-RateLimit-Remaining` from the error headers, retry once after a minute.
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | Revision History added (S9); no functional changes — skill reviewed, no defects found | MiMo |
