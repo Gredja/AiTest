@@ -42,15 +42,21 @@ If fails: run `dotnet format`, then re-verify. If still fails — report and STO
 
 Run `git diff` to see all unstaged changes.
 
-Read `Rules/code.md`, `Rules/code-style.md`, `Rules/code-principles.md`, `Rules/models.md`, `Rules/assertions.md`, `Rules/test-practices.md`, `Rules/comments.md` for full project rules.
+Read the rule files **in full** — `Rules/*.md` is the single source of truth and this skill
+deliberately does NOT restate their text (a restatement drifts the moment a rule file is
+edited; same principle /review already follows). Read from files, never from memory or from
+the AGENTS.md digest:
 
-Review each changed file against ALL project rules:
-- Naming, types, file layout, methods, async, general (from code.md)
-- Models: suffixes, properties, no constructors/logic (from models.md)
-- Assertions: FluentAssertions only (from assertions.md)
-- Comments: default = no comments (from comments.md)
-- No magic numbers — extract to constants
-- Config: Endpoints in `Core/Config/JsonPlaceholderEndpoints.cs` and `Core/Config/GitHubEndpoints.cs`, never hardcoded in tests
+- **Always:** `code.md`, `code-style.md`, `code-principles.md`, `models.md`, `assertions.md`,
+  `test-practices.md`, `comments.md`, `config.md`, `categories.md`, `git.md`, `workflow.md`
+- **Only for Ui/localization changes** (`Ui/**`, moodledemo, Playwright pages/tests):
+  additionally `ui-testing.md`, `localization-testing.md`
+
+Review each changed file against the rules that apply to its subject — match by file kind
+(models → `models.md` + `config.md`; tests → `assertions.md` + `test-practices.md` +
+`categories.md`; everything → `code.md` + `comments.md`; every single file → `git.md` for
+secrets/branch hygiene). If a rule's wording matters, open the Rules file instead of quoting
+it from the current context.
 
 If blocking issues found: report them and STOP. Do not commit.
 
@@ -132,3 +138,12 @@ Report in execution order:
 - Never commit `.env` or tokens
 - Always sync backups/ before commit if relevant files changed
 - Sync is change-driven AND fact-driven: touching a backups/SETUP.md line obliges you to verify that line's claim against the code
+- Review against `Rules/*.md` files, never against a restated checklist — no rule text is copied into this skill (single source of truth)
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | Step 4: restated rule checklist replaced with full Rules/*.md reading (11 always + ui/localization for Ui changes; git.md/workflow.md/config.md/categories.md added — was 7 of 13); single-source-of-truth principle (S2) + Revision History added | MiMo |
