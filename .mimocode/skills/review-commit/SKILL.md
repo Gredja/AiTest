@@ -35,12 +35,20 @@ Collect three lists:
 
 ## Step 4: Review each file against ALL project rules
 
-- Code rules (`Rules/code.md`): PascalCase, no abbreviations, file-scoped namespaces, max ~30 lines, no magic numbers
-- Model rules (`Rules/models.md`): Model/Request suffixes, property types, pure data containers
-- Assertion rules (`Rules/assertions.md`): FluentAssertions only
-- Comment rules (`Rules/comments.md`): default = no comments
-- Config rules (`Rules/config.md`): Endpoints in JsonPlaceholderEndpoints.cs/GitHubEndpoints.cs, never hardcoded
-- Test practices (`Rules/test-practices.md`): every request in `[OneTimeSetUp]` asserts its status; cleanup lives in `[OneTimeTearDown]` as the LAST class member (fixture-registry, register-then-assert, no per-test `finally`) via `RunCleanupAsync` = try/catch + warning, never a status assertion or an unhandled exception; status check before any `.Data` dereference and `NotBeEmpty` before `Max`/`First` in setups; `ShouldMatchRequest()` after POST/PATCH; no hardcoded volatile entities (live branch names etc. → dynamic lookup or Entry Criteria)
+Rules are read from `Rules/*.md` in Step 3 — this skill does NOT restate their text (a
+restatement drifts the moment a rule file is edited; single source of truth, same
+principle as /review and /commit). Match each changed file to the rules by subject and
+re-open the Rules file whenever wording decides a finding:
+
+| File kind | Rules to apply |
+|---|---|
+| any `.cs` | `code.md`, `code-style.md`, `code-principles.md`, `comments.md` |
+| models / config | `models.md`, `config.md` |
+| tests | `assertions.md`, `test-practices.md`, `categories.md` |
+| `Ui/**`, moodledemo | additionally `ui-testing.md`, `localization-testing.md` |
+| every file | `git.md` (secrets/branch hygiene), `workflow.md` |
+
+Review-only heuristics (NOT rule text — keep as-is):
 - False-positive guards (verify BEFORE flagging): `[Ignore]`d negatives — check the documented ceiling first (`documentation/*TestPlan.md` → "Negative Floor Status", OB); unused endpoint constants — check `.mimocode/plans/` (they may be planned endpoints with ready designs)
 - Pattern consistency: compare against existing similar code, check for DRY violations
 
@@ -60,7 +68,16 @@ Collect three lists:
 ## Rules
 
 - Review ALL changed files, not just a sample
+- Review against `Rules/*.md` files read in Step 3 — never against a restated checklist (single source of truth)
 - Always read existing similar files for pattern comparison
 - Line references must be exact (file:line format)
 - "What's good" section is mandatory — acknowledge good work
 - If no issues found, say so explicitly — don't invent nitpicks
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | Step 4: restated rule bullets replaced with subject→file mapping table (Rules stay the single source of truth; false-positive guards kept as review heuristics) (S6) + Revision History added | MiMo |
