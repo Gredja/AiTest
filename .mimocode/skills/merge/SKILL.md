@@ -121,3 +121,11 @@ fast-forwarded · Slack notification (sent / failed).
   (watcher limit 8 min).
 - `405` on merge → branch has conflicts or required checks not met; surface the API `message`.
 - Branch already merged before Step 6 → treat remote `404` as success.
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | Revision History added (S9); no functional changes — skill reviewed, no defects found | MiMo |

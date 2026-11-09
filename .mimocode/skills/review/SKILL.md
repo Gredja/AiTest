@@ -1,6 +1,6 @@
 ---
 name: review
-description: Use when the user says "review", "/review", or wants a full project review. Reviews the entire Gredja codebase against all project rules. NOT for uncommitted changes (use /review-commit) or PR reviews (use /review-pr).
+description: Use when the user says "review", "/review", or wants a full project review. Reviews the entire Gredja codebase against all project rules. Quick single-run report (issues table + what's good), no plan file, no fixes. NOT the same as /audit (deep two-stage run with a fix plan in .mimocode/plans/ and a separate Stage 2), NOT for uncommitted changes (use /review-commit) or PR reviews (use /review-pr).
 ---
 
 # Skill: Full Project Review
@@ -76,3 +76,11 @@ Report the subagent's output to the user.
 - "What's good" section is mandatory
 - If no issues found, say so explicitly
 - Major issues need clear explanation of why they're blocking
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | S8: description contrasts /review vs /audit (quick report vs two-stage plan). Revision History added | MiMo |

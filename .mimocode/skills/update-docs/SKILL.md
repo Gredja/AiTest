@@ -114,3 +114,11 @@ Report what was updated AND the Step 7 verification result:
 - Check for new model naming conventions (ModelResponse/ModelRequest)
 - Verify endpoint counts in coverage tables
 - If unsure about a change — ask user, don't guess
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | Revision History added (S9); no functional changes — skill reviewed, no defects found | MiMo |

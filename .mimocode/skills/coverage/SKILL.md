@@ -44,6 +44,7 @@ Working dir: {working_dir}
      | ... | ... | ... | ... |
      ```
    - List of untested endpoints per service
+   - Next-step offer (never run automatically): for uncovered endpoints suggest `/api-test-gen <service> <endpoint>` as the follow-up
    - HTML report path: TestResults/Report/index.html
 ```
 
@@ -60,3 +61,12 @@ Report the subagent's output to the user.
 - File coverage counts test FILES, not individual test methods
 - Exclude non-endpoint constants from total count
 - Report both code coverage and file coverage — never just one
+- Untested endpoints → offer `/api-test-gen` as the next step (never auto-run it)
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | S10: report now offers /api-test-gen for uncovered endpoints (suggestion only, never auto-run). Revision History added | MiMo |
