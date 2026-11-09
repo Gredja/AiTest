@@ -16,3 +16,4 @@ All changes require a plan first, then user approval, then execution.
 7. After changing any `Rules/*.md` — update root `AGENTS.md` to match
 8. Rule expressible as an analyzer diagnostic (IDE0xxx/RCSxxxx) — add the `.editorconfig` severity in the same change; a rule nothing enforces is a suggestion, not a rule
 9. New or edited rule wording — check it against existing `Rules/*.md` for contradictions: two locally-correct rules can conflict (e.g. "assert every setup/teardown status" vs "cleanup failures are warnings"), and the next agent will then violate one of them
+10. **Single source of truth:** `Rules/*.md` are the binding source. `AGENTS.md` is navigation only (a pointer digest — read the Rules file for the wording), `backups/SETUP.md` and `education/TESTING_PLAYBOOK.md` are retellings for other audiences (synced via `/commit` Step 6). On any conflict the Rules file wins — surface the contradiction to the user instead of silently choosing one side
