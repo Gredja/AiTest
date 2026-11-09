@@ -19,7 +19,9 @@ Verify prerequisites:
 
 ```powershell
 $token = & Scripts/read-github-pat.ps1
-$headers = @{ "Authorization" = "token $token"; "Accept" = "application/vnd.github.v3+json" }
+$headers = @{ Authorization = "Bearer $token"
+               Accept = 'application/vnd.github+json'
+               'X-GitHub-Api-Version' = '2022-11-28' }
 $pr = Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/pulls/{pr_number}" -Headers $headers
 $files = Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/pulls/{pr_number}/files" -Headers $headers
 ```
@@ -55,14 +57,22 @@ Against checklist:
 - CI `gate` check passed (format + HealthCheck) — read the PR check-runs; never infer build health from the diff alone
 - New code has test coverage
 
-## Step 5: Post review comment
+## Step 5: Draft the review comment (approval gate)
+
+Compose the full review comment (markdown: verdict, issues, positives) and show it to the
+user. **STOP — do not post anything yet.** Posting to a PR is visible to everyone
+(blast radius: shared state), so it happens only on explicit user approval. If the user
+declines or asks for edits → apply them, show again, wait; posting stays skipped until
+approved.
+
+## Step 6: Post the review comment (only after Step 5 approval)
 
 ```powershell
-$body = @{ body = "<review markdown>" } | ConvertTo-Json
+$body = @{ body = "<approved review markdown>" } | ConvertTo-Json
 Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/issues/{pr_number}/comments" -Method Post -Headers $headers -Body $body
 ```
 
-## Step 6: Report
+## Step 7: Report
 
 - PR title and author
 - Summary (1-2 sentences)
@@ -76,4 +86,14 @@ Invoke-RestMethod -Uri "https://api.github.com/repos/Gredja/AiTest/issues/{pr_nu
 
 - Never skip code review
 - Severity levels: blocking (must fix) / suggestion (should consider) / nit (optional)
+- Posting a PR comment requires explicit user approval of the drafted comment (Step 5) — never post unprompted
+- GitHub API headers: `Bearer` + `Accept: application/vnd.github+json` + `X-GitHub-Api-Version: 2022-11-28` (same style as /merge and /nightly-check)
 - If GitHub PAT is missing — report and stop
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | Step 5 → approval gate (draft → STOP → post); Step 2 headers unified (Bearer + 2022-11-28); Rules + Revision History added (S3) | MiMo |
