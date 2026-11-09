@@ -14,7 +14,7 @@ main agent
   ├── clean allure-results/
   ├── spawn subagent (test runner)
   │     ├── dotnet format --verify-no-changes
-  │     ├── dotnet test
+  │     ├── & ./Scripts/test-parallel-rerun.ps1   (two-pass: 8 workers → failed rerun in 1)
   │     └── send results → main agent
   ├── generate Allure report (main agent)
   └── report to user
@@ -49,10 +49,16 @@ Working dir: {working_dir}
 1. Safety gate:
    - Run `dotnet format --verify-no-changes`. If fails: run `dotnet format`, then re-verify.
 
-2. Run all tests:
-   - Run `dotnet test --verbosity minimal`
-   - Capture output: passed / failed / skipped counts
-   - Report file: the newest `TestResults/TestRunReport-*.md`
+2. Run all tests (two-pass: pass 1 in 8 workers, failed tests rerun sequentially in 1 worker):
+   - Run `& ./Scripts/test-parallel-rerun.ps1` (from a PowerShell session — same script as /test and the nightly workflow)
+   - Capture the verdict from the exit code: exit 0 = green (either pass 1 green or all
+     failures recovered on the sequential rerun — those are flaky, listed with `~`);
+     exit 1 = persistent failures (listed with `x`)
+   - Report files: every pass writes `TestResults/TestRunReport-*.md` — with failures the
+     NEWEST file is the pass-2 verdict, pass 1 holds the full per-test table
+   - Do NOT clean `allure-results` between passes: the adapter writes a stable `testCaseId`
+     per test, so Allure renders a pass-1 failure + pass-2 recovery as a RETRY of one test —
+     cleaning or regenerating would destroy that signal
 
 3. Report to parent:
    - Branch name
@@ -87,8 +93,18 @@ Combine outputs:
 ## Rules
 
 - Never skip safety gate
-- Show failed test details if any
+- Show failed test details if any — split into persistent (`x`, exit 1) vs recovered flaky (`~`)
+- Two-pass runner (`test-parallel-rerun.ps1`) — same as /test and nightly; never downgrade to a plain single `dotnet test`
+- `allure-results` are kept across both passes on purpose (stable `testCaseId` → Allure retries)
 - Allure report always generated (even on test failures)
 - One subagent: test runner only
 - Allure generation runs from main agent (not subagent)
 - Coverage via `/coverage` skill (separate subagent)
+
+---
+
+## Revision History
+
+| Version | Date | Change | Author |
+|---|---|---|---|
+| 1.0 | 2026-11-08 | Subagent runner switched to two-pass test-parallel-rerun.ps1 (flaky triage parity with /test and nightly); allure-results kept across passes for retry rendering; Rules + Revision History (S4) | MiMo |
