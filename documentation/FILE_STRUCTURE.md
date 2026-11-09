@@ -42,6 +42,7 @@ Gredja/
 │   │   └── gh-pr-create.ps1
 │   └── skills/
 │       ├── api-test-gen/SKILL.md
+│       ├── api-test-gen/references/  # plan-gate, report-contract, test-template, history (anti-dilution split)
 │       ├── coverage/SKILL.md
 │       ├── e2e-test-gen/SKILL.md
 │       ├── audit/SKILL.md

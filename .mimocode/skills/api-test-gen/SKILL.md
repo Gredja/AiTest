@@ -24,41 +24,10 @@ Generates a complete set of NUnit API tests for any REST API service endpoint �
 
 ## Output Format Instruction
 
-Model must return: test files (.cs), models (.cs), and constants (.cs) in C# format with namespace, class, methods. Format — code without comments.
-
-After generation — return ONE JSON object as the FIRST part of the reply, no surrounding prose before it:
-
-```json
-{
-  "files": {
-    "created": ["path/to/NewTests.cs"],
-    "modified": ["path/to/Existing.cs"]
-  },
-  "tests": {
-    "total": 0,
-    "positive": 0,
-    "negative": 0,
-    "edge": 0,
-    "ignored": 0
-  },
-  "safetyCheck": {
-    "format": "pass",
-    "testRun": { "filter": "GetAll{Endpoint}", "passed": 0, "failed": 0 },
-    "issues": []
-  },
-  "suggestedCommitMessage": "Add {Service} {endpoint} API tests"
-}
-```
-
-**Contract validation — the reply is invalid unless ALL hold:**
-1. JSON parses; every key above is present; `safetyCheck.format` is exactly `pass` or `fail`.
-2. `tests.total = positive + negative + edge + ignored` (counters are disjoint).
-3. `safetyCheck.format = "pass"` AND `safetyCheck.testRun.failed = 0` — otherwise `suggestedCommitMessage` MUST be omitted (no commit suggestion after a red gate).
-4. `files.created` lists only paths that did NOT exist before this run — extending an existing file goes to `files.modified`; never re-create an existing file (duplicate-file kata: `documentation/Katas/model-selection-note.md`).
-5. `suggestedCommitMessage` matches `action + object` (capitalized verb + object, e.g. "Add GitHub issue API tests").
-6. **Automated check (rules 1–3):** write the JSON to a temp file and run `powershell -File Scripts/validate-skill-report.ps1 <file>` — it must print `PASS` (exit 0). On `FAIL`: fix the JSON and re-run; a report that fails the validator must not be sent.
-
-A human-readable summary MAY follow the JSON; the JSON is the deliverable, the prose is optional.
+Read `references/report-contract.md` **in full** and follow it exactly: the JSON report
+shape (`files` / `tests` / `safetyCheck` / `suggestedCommitMessage`), contract validation
+rules 1–6 (rule 6 = the validator script must print `PASS`), and the reply layout
+(JSON first, prose optional).
 
 ---
 
@@ -143,24 +112,10 @@ If models already exist — verify they match current API response.
 
 ### Step 4: Plan the Test List (mandatory gate)
 
-Before writing ANY code — build the plan and STOP for user approval. This step is mandatory for every endpoint; skipping it invalidates the run.
-
-**Part 1 — Seed table.** Plan test cases using Seed → Expand → Review:
-1. Write 5 seeds per endpoint (2 happy, 2 failure, 1 edge) — see `Rules/test-practices.md` → "Seed methodology"
-2. Expand to table: `# | Case | Category | Priority | Source seed` — with concrete example for the endpoint
-3. Enforce minimum 5 active negatives per endpoint (`[Ignore]`d don't count; mock-API exception + ceiling rule — see `Rules/test-practices.md` Step 4)
-4. **One negative test per required request field** — `*_Missing{Field}_*` for EVERY required body field (mandatory for all services; empty-body test doesn't substitute)
-5. Target ~15-20 unique test cases per endpoint
-
-**Part 2 — Full list of future test methods.** Translate the seed table into the exact code-level plan — every future test method as it will appear in the file:
-- method name (`{Endpoint}_{Case}_{Expected}`, PascalCase)
-- `[Category(...)]` (HealthCheck / ContractCheck / Smoke / Regression / Performance / …)
-- `[Description(...)]`
-- target file (`Api/{Service}/Tests/{Category}/{Endpoint}Tests.cs`)
-
-Also list files to be **created** and files to be **modified**.
-
-**Gate:** output Part 1 + Part 2 in chat and STOP. Ask the user to approve or request modifications. On modifications → update the plan, re-present, wait again. Write code ONLY after explicit approval. Never jump straight from seeds to code.
+Read `references/plan-gate.md` **in full** and follow it exactly: Part 1 (seed table,
+negative floor, one `*_Missing{Field}_*` per required body field) + Part 2 (full list of
+future test methods with names, categories, descriptions, target file, files
+created/modified) → output both parts and STOP. Code ONLY after explicit user approval.
 
 ### Step 5: Generate Tests
 
@@ -201,98 +156,7 @@ private static readonly PostModelRequest TestPost = new() { UserId = 1, Title = 
 
 **Pattern:** Use `ShouldHaveValidContract()` for ContractCheck (JSON round-trip + attribute validation). Use `ShouldHaveValidFields()` for Regression (attributes only). Use `ShouldMatchRequest()` for request/response comparison — replaces manual field-by-field assertions.
 
-```csharp
-using NUnit.Framework;
-using RestSharp;
-using Core.Models.{Service};
-using Core.Config;
-using Core.Helpers;
-using System.Diagnostics;
-using System.Net;
-using FluentAssertions;
-using AllureAdapter;
-using static {ServiceParamHelperFullName};
-
-namespace Api.{Service}.Tests;
-
-[TestFixture]
-[AllureNUnit]
-[Category("{Service}")]
-public class GetAll{Endpoint}Tests : {BaseClass}
-{
-    [Test]
-    [Category("HealthCheck")]
-    [Description("1.1 Status code is 200")]
-    public async Task GetAll{Endpoint}_ReturnsOk()
-    {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-    }
-
-    [Test]
-    [Category("ContractCheck")]
-    [Description("1.2 Response matches expected model schema")]
-    public async Task GetAll{Endpoint}_ResponseMatchesModel()
-    {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().NotBeEmpty();
-        response.Data!.First().ShouldHaveValidFields();
-    }
-
-    [Test]
-    [Category("Smoke")]
-    [Description("1.3 Content-Type is application/json")]
-    public async Task GetAll{Endpoint}_ContentTypeIsJson()
-    {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
-        response.ContentType.Should().Contain("application/json");
-    }
-
-    [Test]
-    [Category("Smoke")]
-    [Description("1.4 Response body is not empty")]
-    public async Task GetAll{Endpoint}_ReturnsNonEmptyList()
-    {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().NotBeEmpty();
-    }
-
-    [Test]
-    [Category("Regression")]
-    [Description("1.5 Each item has valid required fields (via attributes)")]
-    public async Task GetAll{Endpoint}_EachItemHasValidFields()
-    {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
-        foreach (var item in response.Data!)
-        {
-            item.ShouldHaveValidFields();
-        }
-    }
-
-    [Test]
-    [Category("Performance")]
-    [Description("1.6 Response time < 5 seconds")]
-    public async Task GetAll{Endpoint}_ResponseTimeIsAcceptable()
-    {
-        var stopwatch = Stopwatch.StartNew();
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
-        stopwatch.Stop();
-        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
-    }
-
-    [Test]
-    [Category("Smoke")]
-    [Description("1.7 Returns expected count")]
-    public async Task GetAll{Endpoint}_ReturnsExpectedCount()
-    {
-        var response = await Get<List<{Endpoint}Model>>({Service}Endpoints.{Endpoint});
-        response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        response.Data.Should().HaveCount(Expected{Endpoint}Count);  // const in Endpoints or test class
-    }
-}
-```
+**Positive template:** the complete `GetAll{Endpoint}` class template lives in `references/test-template.md` — read it and follow its structure (usings, fixture attributes, category/description pairs, the seven base tests).
 
 **Negative example — a test that must NEVER be generated (and why):**
 ```csharp
@@ -399,32 +263,7 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 
 ---
 
-## Test Run (Author)
-
-**Input values used:**
-- `{{service_name}}` = FakeStore
-- `{{endpoint_name}}` = users
-
-**Output quality:** Works — generates 12 tests (9 active, 3 ignored), models and constants match API response.
-
----
-
-## Peer Review
-
-**Reviewer:** MiMo (AI — playing teammate)
-**Date reviewed:** 2026-06-25
-**Model used by reviewer:** MiMo V2.5 Pro
-
-**Reviewer input values used:**
-- `{{service_name}}` = FakeStore
-- `{{endpoint_name}}` = products
-
-| Review question | Reviewer answer |
-|---|---|
-| Could you run the template without asking the author anything? | Yes — template contains all steps, file references, and rules. No questions needed. |
-| Was the output format what you expected? | Yes — got Models, Endpoints, Tests in C# format as described. |
-| Would you use this template on your own work? | Yes — works for any endpoint. |
-| One concrete improvement suggestion | Add **Variable Placeholders** table section before Input — already added in v1.1. |
+**Skill provenance** (original author test-run and peer-review record) lives in `references/history.md`.
 
 ---
 
@@ -451,3 +290,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.16 | 2026-11-05 | Step 5: mandatory reading of the full Rules/*.md set before code generation (Rules file wins on conflict; ui-testing/localization-testing only for their scopes) | MiMo |
 | 1.17 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |
 | 1.18 | 2026-11-05 | Step 7: reconciliation made mechanical — Grep method names vs approved Part 2, table is the diff output (never hand-typed) | MiMo |
+| 1.19 | 2026-11-08 | P4 anti-dilution split: Step 4 gate, Output Format contract, GetAll template, and author history moved to references/ (plan-gate, report-contract, test-template, history) — main file shortened with read-in-full pointers; behavior unchanged | MiMo |

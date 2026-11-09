@@ -89,6 +89,8 @@ All changes: plan → approval → changes → report. After a commit — review
 
 ## Detailed Rules (Rules/)
 
+`Rules/*.md` are the **single source of truth** — the bullets below are navigation only; always read the Rules file for binding wording (on conflict the Rules file wins — see `Rules/workflow.md` → item 10).
+
 - `Rules/code.md` — naming, types, file structure, methods, async, access modifiers, cleanup
 - `Rules/code-style.md` — error handling, LINQ, strings, null safety
 - `Rules/code-principles.md` — SOLID, general principles
