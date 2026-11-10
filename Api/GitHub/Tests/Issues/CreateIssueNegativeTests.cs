@@ -99,4 +99,19 @@ public class CreateIssueNegativeTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }
+
+    [Test]
+    [Category("Negative")]
+    [Description("17.19 POST to non-existent owner returns 404 with documented message")]
+    public async Task CreateIssue_NonExistentOwner_ReturnsNotFound()
+    {
+        var body = new Dictionary<string, object> { [JsonFields.Title] = ProbeTitle };
+        var (_, repo) = ParseRepo();
+
+        var response = await Post<Dictionary<string, object>, IssueModelResponse>(
+            GitHubEndpoints.RepoIssues, body,
+            RepoParam(GitHubEndpoints.NonExistentUser, repo));
+
+        response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
+    }
 }

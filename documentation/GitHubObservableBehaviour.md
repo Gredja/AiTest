@@ -977,7 +977,7 @@ byte-for-byte (blob sha matches `sha1` of the raw string, not of any decoded for
 |---|---|---|---|
 | `Authorization` | `Bearer <valid-token>` | Missing → 401, invalid → 401, expired → 401 | Token must have appropriate scope |
 | `Accept` | `application/json` (default) | Topics endpoint needs `application/vnd.github.mercy-preview+json` | Without preview header, topics may return differently |
-| `Content-Type` | `application/json` | Missing or wrong → 415 Unsupported Media Type | Required for POST/PATCH with JSON body |
+| `Content-Type` | `application/json` | Not validated on POST /issues: missing header or wrong type (`text/plain`, `application/xml`, `x-www-form-urlencoded`, `multipart/form-data`, `application/json; charset=utf-8`) → request still processed — valid body with `title` → 201, invalid body → 422; 415 never observed (probes 2026-11-10, 7 variants) | Body is parsed regardless of Content-Type |
 
 ### Request Body (Write Operations)
 
