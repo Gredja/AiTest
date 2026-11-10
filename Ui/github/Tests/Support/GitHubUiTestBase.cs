@@ -66,6 +66,8 @@ public abstract class GitHubUiTestBase
             ViewportSize = new ViewportSize { Width = ViewportWidth, Height = ViewportHeight }
         });
 
+        await InjectDeviceTrustCookiesAsync();
+
         // Credential-entry tests (IsStorageStateEnabled = false) must not record traces:
         // DOM snapshots and network captures would persist the typed password in ui-artifacts/*.zip
         if (IsStorageStateEnabled)
@@ -432,6 +434,54 @@ public abstract class GitHubUiTestBase
         return Path.IsPathRooted(statePath)
             ? statePath
             : Path.Combine(ResolveRepositoryRoot(), statePath);
+    }
+
+    // Device-trust cookies (GitHub sessions/verified-device wall) live in a separate
+    // storage-state file, exported once after a human completes the email verification.
+    // They are injected into EVERY context — including the anonymous login/logout tests,
+    // which must not carry the shared session but DO need the trusted-device identity.
+    private async Task InjectDeviceTrustCookiesAsync()
+    {
+        var trustPath = ResolveDeviceTrustPath();
+        if (!System.IO.File.Exists(trustPath))
+        {
+            return;
+        }
+
+        using var document = System.Text.Json.JsonDocument.Parse(await System.IO.File.ReadAllTextAsync(trustPath));
+        var cookies = new List<Microsoft.Playwright.Cookie>();
+        foreach (var element in document.RootElement.GetProperty("cookies").EnumerateArray())
+        {
+            float? expires = element.TryGetProperty("expires", out var expiresElement) && expiresElement.GetSingle() > 0
+                ? expiresElement.GetSingle()
+                : null;
+            SameSiteAttribute? sameSite = element.TryGetProperty("sameSite", out var sameSiteElement)
+                && Enum.TryParse<SameSiteAttribute>(sameSiteElement.GetString(), out var parsedSameSite)
+                ? parsedSameSite
+                : null;
+
+            cookies.Add(new Microsoft.Playwright.Cookie
+            {
+                Name = element.GetProperty("name").GetString() ?? string.Empty,
+                Value = element.GetProperty("value").GetString() ?? string.Empty,
+                Domain = element.GetProperty("domain").GetString() ?? string.Empty,
+                Path = element.GetProperty("path").GetString() ?? "/",
+                Expires = expires,
+                HttpOnly = element.TryGetProperty("httpOnly", out var httpOnly) && httpOnly.GetBoolean(),
+                Secure = element.TryGetProperty("secure", out var secure) && secure.GetBoolean(),
+                SameSite = sameSite
+            });
+        }
+
+        await Context.AddCookiesAsync([.. cookies]);
+    }
+
+    private static string ResolveDeviceTrustPath()
+    {
+        const string relativeTrustPath = ".auth/github-device-trust.json";
+        return Path.IsPathRooted(relativeTrustPath)
+            ? relativeTrustPath
+            : Path.Combine(ResolveRepositoryRoot(), relativeTrustPath);
     }
 
     private static string ResolveArtifactsDirectory()

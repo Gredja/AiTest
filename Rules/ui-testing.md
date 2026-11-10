@@ -47,6 +47,7 @@ Ui/
 - The logout test (`LogoutSignOutTests`, UI-2) is the only test that signs out: it runs with `IsStorageStateEnabled => false` and never saves state. `/logout` opens an account chooser — click only the per-account `Sign out of {username}` button; the sibling `Sign out from all accounts` destroys the shared storageState session and breaks every other UI test
 - Credentials are required env vars (`.env` / environment): never paste passwords into tests, code, or config files
 - Expired state = re-run `LoginSignInTests`
+- **Device trust persists in the browser profile**, not in storageState: `GitHubUiTestBase` launches Chromium with `UserDataContextDir = .auth/github-ui-profile` (gitignored). Without it a fresh profile is a "new device" and GitHub redirects every login to `sessions/verified-device` (email-code wall the tests cannot pass) — the profile must survive across runs; never delete it as leftover junk (UI-OB UI-1 gotcha, observed 2026-11-09)
 
 ## Waits
 

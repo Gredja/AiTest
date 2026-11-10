@@ -1,5 +1,6 @@
 using Core.Config;
 using Core.Helpers;
+using Core.Helpers.GitHub;
 using Microsoft.Playwright;
 using Ui.Helpers;
 
@@ -21,8 +22,15 @@ internal sealed class CodePage(IPage page) : RepositoryPageBase(page)
     internal async Task OpenReadmeFileAsync() =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/blob/main/README.md");
 
-    internal async Task<bool> HasRenderedReadmeContentAsync() =>
-        await _renderedReadmeHeading.CountAsync() > 0;
+    internal async Task<bool> HasRenderedReadmeContentAsync()
+    {
+        // The blob page renders markdown after navigation (and GitHub now shows a
+        // Preview/Code toggle) — the outcome must be awaited, never sampled once
+        var wait = await WaitHelper.WaitUntilAsync(
+            () => _renderedReadmeHeading.CountAsync(),
+            count => count > 0);
+        return wait.IsSuccess;
+    }
 
     internal async Task OpenCommitsAsync() =>
         await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/commits");
@@ -34,6 +42,8 @@ internal sealed class CodePage(IPage page) : RepositoryPageBase(page)
             _presenceTimeout);
 
     private readonly ILocator _fileLinks = page.GetByRole(AriaRole.Link);
-    private readonly ILocator _renderedReadmeHeading = page.GetByRole(AriaRole.Heading, new() { Name = TestConfig.UiTestRepo });
+    // README H1 is the repo's short name ("# ui-sandbox"), not the full slug —
+    // Ui.TestRepo is "gredjapl/ui-sandbox" (observed mismatch 2026-11-09)
+    private readonly ILocator _renderedReadmeHeading = page.GetByRole(AriaRole.Heading, new() { Name = GitHubParamHelper.ParseRepo(TestConfig.UiTestRepo).Repo });
     private readonly ILocator _commitHeadings = page.GetByRole(AriaRole.Heading);
 }

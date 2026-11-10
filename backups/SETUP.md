@@ -227,7 +227,7 @@ dotnet test --filter LoginSignInTests       # обновить .auth/github-ui-s
 
 Отчёт — таблица по каждому тесту + итог (количество и проценты), создаётся автоматически после любого `dotnet test`. Фильтр: `dotnet test --verbosity minimal --filter "Category=HealthCheck"`.
 
-UI-тестам нужны креды из `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) и свежий storageState: если он протух, сначала `LoginSignInTests` — он логинится анонимно, проверяет меню юзера и сохраняет state-файл.
+UI-тестам нужны креды из `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) и свежий storageState: если он протух, сначала `LoginSignInTests` — он логинится анонимно, проверяет меню юзера и сохраняет state-файл. Плюс **персистентный профиль браузера** `.auth/github-ui-profile` (gitignored, задаётся через `UserDataContextDir` в `GitHubUiTestBase`): он хранит cookie device-trust GitHub — без него каждый прогон выглядит как «новое устройство» и логин упирается в `sessions/verified-device` (код подтверждения по email — тесты его не проходят; наблюдение 2026-11-09). Профиль не удалять как мусор; при первом появлении стены — один ручной проход в headed-браузере.
 
 ### 5.3. Запусти MiMoCode
 
