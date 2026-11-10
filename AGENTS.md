@@ -102,7 +102,7 @@ All changes: plan → approval → changes → report. After a commit — review
 - `Rules/git.md` — remote, commits, secrets, repo hygiene, CI
 - `Rules/workflow.md` — plan → approval → changes → report
 - `Rules/categories.md` — test categories
-- `Rules/ui-testing.md` — UI tests (Playwright): page-object structure, locators, auth/storageState, waits (waiting for the outcome of the action before assert), cleanup, categories
+- `Rules/ui-testing.md` — UI tests (Playwright): page-object structure, locators, auth/storageState + device-trust profile `.auth/github-ui-profile`, waits (waiting for the outcome of the action before assert), cleanup, categories
 - `Rules/localization-testing.md` — localization testing (Moodle demo): language-agnostic locators (L-LOC-1), locale contract (`html lang/dir`, fixture titles), HTTP-first L1, data-driven languages, demo-environment safety
 
 ## AI Onboarding (for beginners)

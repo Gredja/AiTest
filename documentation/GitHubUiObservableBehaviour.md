@@ -39,6 +39,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 - Prerequisites: credentials `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` in `.env`; the login test overrides `IsStorageStateEnabled => false` (anonymous context) and saves storageState only after the assert
 - Gotcha: an account created without a password (social login / passkey-only) fails with "This account does not support password sign-in" — fix: sign in via Google/Apple/passkey once, then Settings → Password and authentication → create a password (verified 2026-10-09)
 - Gotcha: the user-menu click right after the login redirect can be swallowed (menu never opens), and the menu itself renders ~300ms after the click — `HeaderPage` waits for the `User navigation` dialog and re-clicks until it is up, at a 1s interval (verified 2026-10-14)
+- Gotcha (**device verification wall**): a fresh browser profile logs in and is redirected to `https://github.com/sessions/verified-device` (`heading "Device verification"`, email-code challenge) — the user menu never appears there and the test times out at 15s. Observed 2026-11-09 (reproduced isolated). Fix: the shared browser profile persists at `.auth/github-ui-profile` (gitignored, `GitHubUiTestBase.LaunchBrowserAsync` → `UserDataContextDir`) so the trusted-device cookie survives runs; a NEW profile needs one human verification (headed run) before login/logout tests can pass
 
 ## Logout / signed-out header (UI-2)
 
@@ -180,7 +181,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 ## Page: Repo read-only views (UI-21, ui-sandbox)
 
 - Landing About: the API repo description renders TWICE on the landing page — About sidebar first, README section second — assert an occurrence count ≥ 2 (verified 2026-10-19)
-- README blob (`.../blob/main/README.md`): the README's own H1 renders as `heading "ui-sandbox" level=1` — verified 2026-10-19
+- README blob (`.../blob/main/README.md`): the README's own H1 renders as `heading "ui-sandbox" level=1` — verified 2026-10-19; the heading name is the repo SHORT name (`# ui-sandbox`, NOT the full `gredjapl/ui-sandbox` slug from `Ui.TestRepo` — locator must `ParseRepo(...).Repo`, mismatch found 2026-11-09); **renders after navigation** (client-side, Preview/Code toggle observed 2026-11-09) — the check must WAIT for the heading (bounded `WaitHelper`), never sample `Count` once right after `GotoAsync` (observed failing as a race 2026-11-09)
 - Commits (`.../commits`): `heading "Commits" level=1` · `heading "Commits on {date}" level=3` · commit title as `heading level=4` (e.g. `heading "Initial commit"`) — verified 2026-10-19
 - Folder navigation (`.../tree/{branch}/{folder}`): files list as `link` with the file name — verified 2026-10-19
 

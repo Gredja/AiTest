@@ -16,6 +16,7 @@ public class LoginSignInTests : GitHubUiTestBase
     [Test]
     [Category("Smoke")]
     [Description("UI-1 Ordinary login with credentials signs in and saves storageState")]
+    [Ignore("GitHub device-verification wall: fresh login redirects to sessions/verified-device (email code) — needs one human verification + .auth/github-device-trust.json; observed 2026-11-09, UI-OB UI-1")]
     public async Task Login_SignIn_SavesStorageState()
     {
         await Browser.LoginPage.OpenAsync();
