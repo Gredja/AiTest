@@ -5,7 +5,6 @@ param(
     [int]$ParallelWorkers = 8
 )
 
-# twin of Scripts/test-parallel-rerun.sh (CI container has no pwsh guarantee)
 $ErrorActionPreference = "Continue"
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
 $resultsDir = Join-Path ([System.IO.Path]::GetTempPath()) "GredjaTestRun/two-pass-$stamp"
@@ -18,7 +17,9 @@ function Invoke-DotnetTest {
     $testArgs = @("test",
         "--verbosity", "minimal",
         "--results-directory", $resultsDir,
-        "--logger", "trx")
+        "--logger", "trx",
+        "--blame-hang-timeout", "10m",
+        "--blame-hang-dump-type", "none")
     if ($Project) {
         $testArgs += $Project
     }
