@@ -176,4 +176,30 @@ public class GetReleasesTests : GitHubTestBase
 
         response.ShouldHaveError(HttpStatusCode.NotFound, GitHubErrors.NotFound);
     }
+
+    [Test]
+    [Category("Regression")]
+    [Description("15b.14 Release ids are unique within the list")]
+    public async Task GetReleases_IdsAreUnique()
+    {
+        var response = await Get<List<ReleaseModelResponse>>(GitHubEndpoints.RepoReleases,
+            TestRepoParam());
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data!.Select(release => release.Id).Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("15b.15 created_at is populated on every release")]
+    public async Task GetReleases_CreatedAtIsPopulated()
+    {
+        var response = await Get<List<ReleaseModelResponse>>(GitHubEndpoints.RepoReleases,
+            TestRepoParam());
+
+        response.ShouldHaveStatusCode(HttpStatusCode.OK);
+        response.Data.Should().OnlyContain(
+            release => release.CreatedAt != default,
+            "every release needs a populated created_at — OB §15b");
+    }
 }

@@ -486,6 +486,10 @@ The UI rarely exposes the created id. Cleanup composition:
 
 Create `documentation/{Service}ObservableBehaviour.md` from this skeleton when it does not
 exist. It is the single source of truth for test design — tests assert only what it states.
+If the document exists but has **no section for the requested endpoint/item** — STOP and
+escalate to the runner (document-first via live probe, or pick a documented item); never
+probe, plan, or draft the missing section on your own initiative (eval-verified
+2026-11-10: self-assigned improvisation scored 1/4, explicit escalation scored 4/4).
 
 ```markdown
 # Observable Behaviour — {Service} API
