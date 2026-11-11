@@ -4,7 +4,7 @@ Test application for learning AI-Native SDLC. API, E2E and UI test automation pr
 
 ## Technologies
 
-- .NET 10.0
+- .NET 11.0
 - NUnit 4.6.1
 - RestSharp 114.0.0
 - FluentAssertions 8.11.0

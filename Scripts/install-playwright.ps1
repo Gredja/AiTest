@@ -8,7 +8,7 @@ $ErrorActionPreference = 'Stop'
 Push-Location (Join-Path $PSScriptRoot '..')
 try {
     dotnet build Ui/Ui.csproj --nologo
-    $playwrightScript = 'Ui/bin/Debug/net10.0/playwright.ps1'
+    $playwrightScript = 'Ui/bin/Debug/net11.0/playwright.ps1'
     if (-not (Test-Path $playwrightScript)) {
         throw "playwright.ps1 not found at $playwrightScript — Microsoft.Playwright build targets did not emit it"
     }

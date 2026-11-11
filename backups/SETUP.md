@@ -47,7 +47,7 @@ mimo --version
 
 | Инструмент | Зачем | Как установить |
 |------------|-------|----------------|
-| .NET 10.0 SDK | Компиляция и запуск тестов | https://dotnet.microsoft.com/download |
+| .NET 11.0 SDK | Компиляция и запуск тестов | https://dotnet.microsoft.com/download |
 | Java 17+ | Нужен для Allure-отчётов | `winget install Microsoft.OpenJDK.17` |
 | Allure CLI | Генерация отчётов по тестам | `winget install AllureCommandLine` |
 
@@ -443,7 +443,7 @@ git checkout -b features/add-user-tests
 - Все `dotnet build/test/format` — через `Gredja.slnx` (в корне проекта; `.sln` нет)
 - Параллелизм тестов: Api/E2E — **1 поток** (`.runsettings` `<NUnit><NumberOfTestWorkers>`, авто-применяется через `RunSettingsFilePath` в `Directory.Build.props`; это supported-режим Rules/test-practices.md — 8 даёт гонки на shared guarantee data, точечно: `dotnet test` с `NUnit.NumberOfTestWorkers=N` в adapter-секции после двойного тире); Ui — **последовательно** (`[assembly: Parallelizable(None)]` в `Ui/AssemblyInfo.cs` — фикстуры делят один storageState). **Two-pass:** `/test` и nightly гоняют `Scripts/test-parallel-rerun.ps1` — pass 1 в 8 воркеров, упавшие тесты перегоняются в 1 потоке (фильтр без скобок parameterized FQN); вердикт по pass 2: flaky лечится → зелёный, персистентный дрейф → красный, exit ≠ 0 без Failed в TRX → infrastructure/filter error (не recovery), тоже красный
 - Перед коммитом: `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` должны пройти (полный прогон — `/test`)
-- SDK пин: `global.json` → `10.0.401`, `rollForward: latestFeature` — сборка на другой машине берёт ближайший совместимый SDK, а не случайный
+- SDK пин: `global.json` → `11.0.100`, `rollForward: latestFeature` — сборка на другой машине берёт ближайший совместимый SDK, а не случайный
 - Коммиты только по запросу
 - Гигиена репо: корень — только файлы проекта; вывод инструментов → gitignored/%TEMP%; после массовых правок `git add -A` без EOL-warning (`.gitattributes`: .cs/.csproj → CRLF, .md → LF; LF-файлы от инструментов нормализует `Scripts/normalize-eol.ps1` — перед add запускает `/commit`); структурные изменения включают удаления gitignored-файлов → `FILE_STRUCTURE.md`/`AGENTS.md` обновлять в том же ходу, даже без коммита
 - Генерация тестов — только через скиллы `.mimocode/skills/*`; параллельные библиотеки промптов запрещены (`Prompts/` удалён из-за дрейфа содержания)
@@ -494,7 +494,7 @@ git checkout -b features/add-user-tests
 
 **"SDK not found" или "No installed .NET SDK"**
 
-Установи .NET 10.0 SDK: https://dotnet.microsoft.com/download
+Установи .NET 11.0 SDK: https://dotnet.microsoft.com/download
 
 Проверь: `dotnet --version` — должно показать 10.x
 
@@ -565,7 +565,7 @@ dotnet build
 **Обязательно:**
 - [ ] Установлен Node.js + npm
 - [ ] Установлен MiMoCode (`npm install -g mimocode`)
-- [ ] Установлен .NET 10.0 SDK
+- [ ] Установлен .NET 11.0 SDK
 - [ ] Установлен Java 17+ и Allure CLI
 - [ ] Установлен Git
 - [ ] Создан `~/.config/mimocode/mimocode.jsonc` (см. Часть 3)

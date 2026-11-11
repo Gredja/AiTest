@@ -1,6 +1,6 @@
 # Observable Behaviour — {Service} API
 
-**Project:** Gredja (.NET 10.0)
+**Project:** Gredja (.NET 11.0)
 **API Under Test:** {Service} API ({BaseUrl})
 **Date:** {Date}
 **Scope:** {GET / POST / PUT / PATCH / DELETE}
