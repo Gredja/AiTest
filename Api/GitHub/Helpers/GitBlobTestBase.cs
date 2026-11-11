@@ -16,7 +16,9 @@ public abstract class GitBlobTestBase : GitHubTestBase
     {
         var contentBytes = Encoding.UTF8.GetBytes(content);
         var header = Encoding.ASCII.GetBytes($"blob {contentBytes.Length}\0");
-        var payload = header.Concat(contentBytes).ToArray();
+        var payload = new byte[header.Length + contentBytes.Length];
+        Buffer.BlockCopy(header, 0, payload, 0, header.Length);
+        Buffer.BlockCopy(contentBytes, 0, payload, header.Length, contentBytes.Length);
 
         using var sha1 = SHA1.Create();
 
