@@ -27,7 +27,12 @@ Each case:
 
 1. Record the skill version (git hash) in the "before" column.
 2. Give the agent the case INPUT only — never the checklist (the runner sees the checklist,
-   the generator must not).
+   the generator must not). **Explicitly forbid the agent from reading
+   `documentation/SkillEval/` and the skill's own `SKILL.md` (and its `references/`) during
+   the run** — a prompt that only omits the checklist is not enough: the agent can find and
+   read these files on its own, which invalidates the run (observed 2026-11-10, M2 Day 5).
+   If the agent reports having read them anyway, mark the run contaminated and redo it with
+   the ban stated in the prompt.
 3. Check the response against the Must / Must-not checklist by eye; validate the report JSON
    additionally via `powershell -File Scripts/validate-skill-report.ps1 <file>`
    (this is the only mechanical point of the run; everything else is the checklist).

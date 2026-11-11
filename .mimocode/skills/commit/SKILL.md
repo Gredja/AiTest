@@ -112,17 +112,34 @@ in Step 8 — a failed notification never blocks the commit.
 
 ## Step 8: Report
 
-Report in execution order:
+Build the report as **structured JSON first** — it is the durable record (no nuance may be
+lost in translation); the user-facing table is only a view of it.
 
-- Branch name (Step 1)
-- Commit message (Step 2)
-- Format check: pass / fixed / failed (Step 3)
-- Review findings (Step 4)
-- Tests: pass / failed (Step 5)
-- Backup sync: synced / skipped with reason (Step 6)
-- Files changed, Commit hash (Step 7)
-- Push: pushed / skipped (Step 7)
-- Slack notification: sent / failed (Step 7)
+1. Write the JSON to `TestResults/CommitReport-<yyyyMMdd-HHmmss>.json` (the folder is
+   gitignored and already covered by the 7-day age cleanup in `ArtifactRetention`).
+2. Print the same data to the user as a table in execution order, and name the JSON file
+   path in the report.
+
+JSON schema — all fields required; free text stays a string/array, never collapsed into an enum:
+
+```json
+{
+  "timestamp": "2026-11-10T12:34:56Z",
+  "branch": "features/<topic>",
+  "message": "commit message",
+  "format": "pass | fixed+pass | failed",
+  "review": { "blocking": ["finding"], "nits": ["finding"] },
+  "tests": { "name": "HealthCheck", "passed": 66, "failed": 0 },
+  "backup_sync": { "status": "synced | skipped", "reason": "why" },
+  "files_changed": 3,
+  "commit": "<sha>",
+  "push": "pushed | skipped: <reason>",
+  "slack": "sent | failed: <reason>"
+}
+```
+
+Table columns, in execution order: Branch | Commit message | Format | Review | Tests |
+Backup sync | Files / Commit | Push | Slack.
 
 ---
 
@@ -147,3 +164,4 @@ Report in execution order:
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 1.0 | 2026-11-08 | Step 4: restated rule checklist replaced with full Rules/*.md reading (11 always + ui/localization for Ui changes; git.md/workflow.md/config.md/categories.md added — was 7 of 13); single-source-of-truth principle (S2) + Revision History added | MiMo |
+| 1.1 | 2026-11-10 | Step 8: report reworked — structured JSON written to `TestResults/CommitReport-*.json` (durable record, full schema with free-text fields) + user-facing table as a view of it | MiMo |

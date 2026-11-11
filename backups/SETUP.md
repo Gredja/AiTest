@@ -331,7 +331,7 @@ MiMoCode:
 |---------|-----------|
 | `/test` | Запускает все тесты + пишет TestRunReport-*.md в `TestResults/` |
 | `/test-report` | Запускает тесты + генерирует Allure-отчёт |
-| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/` |
+| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); финальный отчёт — JSON в `TestResults/CommitReport-*.json` + таблица в чате; **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/` |
 | `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
