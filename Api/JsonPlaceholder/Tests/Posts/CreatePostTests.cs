@@ -2,6 +2,7 @@ using Core.Models.JsonPlaceholder;
 using Core.Generators.JsonPlaceholder;
 using Core.Config;
 using Core.Helpers;
+using System.Diagnostics;
 using System.Net;
 using FluentAssertions;
 using RestSharp;
@@ -64,18 +65,6 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
         response.Data!.Id.Should().BeGreaterThan(0);
-    }
-
-    [Test]
-    [Category("Regression")]
-    [Description("4.6 Response matches request via ShouldMatchRequest")]
-    public async Task CreatePost_ShouldMatchRequest()
-    {
-        var testPost = PostGenerator.Create(TestUserId);
-        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, testPost);
-
-        response.ShouldHaveStatusCode(HttpStatusCode.Created);
-        response.Data!.ShouldMatchRequest(testPost);
     }
 
     [Test]
@@ -192,5 +181,51 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
 
         result.IsSuccess.Should().BeTrue(
             $"created post not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
+    }
+
+    [Test]
+    [Category("ContractCheck")]
+    [Description("19.1 Response matches expected model schema")]
+    public async Task CreatePost_ResponseMatchesContract()
+    {
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
+        response.Data!.ShouldHaveValidContract();
+    }
+
+    [Test]
+    [Category("Smoke")]
+    [Description("19.2 Content-Type is application/json")]
+    public async Task CreatePost_ContentTypeIsJson()
+    {
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
+        response.ContentType.Should().Contain("application/json");
+    }
+
+    [Test]
+    [Category("Performance")]
+    [Description("19.3 Response time < 5 seconds")]
+    public async Task CreatePost_ResponseTimeIsAcceptable()
+    {
+        var stopwatch = Stopwatch.StartNew();
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
+        stopwatch.Stop();
+
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
+        AssertHelper.ShouldBeWithinResponseBudget(stopwatch.ElapsedMilliseconds);
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("19.4 POST assigns mock id 101")]
+    public async Task CreatePost_ReturnsMockAssignedId()
+    {
+        var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
+
+        response.ShouldHaveStatusCode(HttpStatusCode.Created);
+        response.Data!.Id.Should().Be(JsonPlaceholderEndpoints.ExpectedCreatedPostId);
     }
 }

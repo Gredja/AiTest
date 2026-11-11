@@ -63,6 +63,7 @@ Before generating — verify that `Core/Config/{Service}Endpoints.cs` exists. If
 
 0. **Read the existing code FIRST** — Glob/Grep for the endpoint's existing test class, models, and constants. Extend what exists; NEVER create duplicate files (both models failed this in `documentation/Katas/model-selection-note.md` — they generated new files instead of working with existing ones because they didn't read the project code first)
 1. **Check Observable Behaviour** — if `documentation/{Service}ObservableBehaviour.md` exists, read it first. It contains: expected status codes, response types, field definitions with types, pagination, filtering, and negative cases. Use it as the primary source for test design.
+   **Missing SECTION (not whole file) → STOP and ask the runner.** If the OB file exists but has no section for the requested endpoint: do NOT live-probe, do NOT plan, do NOT create the section on your own initiative. Report "endpoint absent from OB" and ask the runner to choose: (a) live-probe and document a new OB section first, or (b) switch to a documented endpoint. The choice is the runner's, never yours (eval finding 2026-11-10, Case 3).
 2. **Create Observable Behaviour if missing** — if `documentation/{Service}ObservableBehaviour.md` does not exist, create it from `documentation/ObservableBehaviourTemplate.md`. Fill in: endpoint sections, field definitions, negative cases, validation rules, risk framing. This document is the source of truth for test generation.
 3. Fetch the endpoint from the API (use BaseUrl from `testsettings.json` → `TestConfig.{Service}BaseUrl`)
 4. Analyze the response structure — what fields, what types, what's nullable
@@ -133,6 +134,7 @@ created/modified) → output both parts and STOP. Code ONLY after explicit user 
 - Typed response models only — never `JsonElement` + `TryGetProperty`
 - Async only — `await` through the shared `Get/Post/...` wrappers; never the sync `Execute`
 - No comments in generated code (regex / non-obvious WHY only — `Rules/comments.md`)
+- **Register-then-assert, never conditional registration** — after a create call, assert the status FIRST, then add the resource id to the cleanup registry UNCONDITIONALLY; never guard the registration with `if (Data is not null)` / `if (Number > 0)` — a failed assert would then skip cleanup and leak the resource (see `Rules/test-practices.md` → E2E cleanup, register-then-assert)
 
 Generated tests must match the approved plan from Step 4 — no extra tests, no dropped tests.
 
@@ -291,3 +293,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.17 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |
 | 1.18 | 2026-11-05 | Step 7: reconciliation made mechanical — Grep method names vs approved Part 2, table is the diff output (never hand-typed) | MiMo |
 | 1.19 | 2026-11-08 | P4 anti-dilution split: Step 4 gate, Output Format contract, GetAll template, and author history moved to references/ (plan-gate, report-contract, test-template, history) — main file shortened with read-in-full pointers; behavior unchanged | MiMo |
+| 1.20 | 2026-11-10 | Eval before/after (M2 Day 6): Step 1 — missing OB section → STOP and ask the runner (no self-assigned probing/planning, Case 3 finding); Step 5 — register-then-assert hard constraint, conditional registration forbidden (Case 2 finding from 2026-11-05) | MiMo |

@@ -6,6 +6,7 @@ public static class JsonPlaceholderEndpoints
 
     public const string Posts = "/posts";
     public const string PostsById = "/posts/{id}";
+    public const int ExpectedCreatedPostId = 101;
 
     public const string Comments = "/comments";
     public const string CommentsById = "/comments/{id}";
