@@ -14,7 +14,7 @@ Gredja/
 ├── allureConfig.json
 ├── testsettings.json               # not tracked — local overrides (falls back to the example)
 ├── testsettings.example.json       # tracked template — build/tests work from a clean clone
-├── global.json                     # pinned SDK (10.0.401, rollForward: latestFeature)
+├── global.json                     # pinned SDK (11.0.100, rollForward: latestFeature)
 ├── .editorconfig                   # IDE0005/0007/0161 + curated Roslynator (RCS*) set — dotnet format enforces Rules/code.md
 ├── .env                          # secrets (not tracked)
 ├── .gitattributes                # line ending normalization

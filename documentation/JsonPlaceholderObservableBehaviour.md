@@ -1,6 +1,6 @@
 # Observable Behaviour — JsonPlaceholder API
 
-**Project:** Gredja (.NET 10.0)
+**Project:** Gredja (.NET 11.0)
 **API Under Test:** JsonPlaceholder API (https://jsonplaceholder.typicode.com)
 **Date:** 2026-10-02
 **Scope:** GET + POST/PUT/PATCH/DELETE /posts

@@ -1,6 +1,6 @@
 # Observable Behaviour — GitHub UI (Web)
 
-**Project:** Gredja (.NET 10.0)
+**Project:** Gredja (.NET 11.0)
 **Surface under test:** GitHub web UI (https://github.com) — sandbox repo `gredjapl/ui-sandbox` (`TestConfig.UiTestRepo`)
 **Date:** 2026-10-09
 **Last verified:** 2026-10-19 (locator/measurement probes through UI-23)

@@ -1,6 +1,6 @@
 # Observable Behaviour — GitHub REST API v3
 
-**Project:** Gredja (.NET 10.0)
+**Project:** Gredja (.NET 11.0)
 **API Under Test:** GitHub REST API v3 (https://api.github.com)
 **Date:** 2026-02-21
 **Last verified:** 2026-10-16 (section probes carried through §29)

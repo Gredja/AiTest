@@ -13,8 +13,6 @@ internal sealed class HeaderPage(IPage page)
     // burns the whole 15s action timeout. The retry interval must stay well above the open latency.
     private static readonly TimeSpan _menuOpenRetryInterval = TimeSpan.FromSeconds(1);
 
-    private readonly IPage _page = page;
-
     internal async Task<string> GetSignedInUsernameAsync()
     {
         await OpenUserMenuAsync(UserNavigationDialog);
@@ -44,14 +42,14 @@ internal sealed class HeaderPage(IPage page)
     {
         await OpenUserMenuAsync(UserNavigationDialog);
         await ProfileLink.ClickAsync();
-        await _page.WaitForURLAsync(url => !url.Contains(TestConfig.UiTestRepo));
+        await page.WaitForURLAsync(url => !url.Contains(TestConfig.UiTestRepo));
     }
 
     internal async Task OpenSettingsAsync()
     {
         await OpenUserMenuAsync(UserNavigationDialog);
         await SettingsLink.ClickAsync();
-        await _page.WaitForURLAsync(url => !url.Contains(TestConfig.UiTestRepo));
+        await page.WaitForURLAsync(url => !url.Contains(TestConfig.UiTestRepo));
     }
 
     // The click can be swallowed while the header is still wiring up — flaky right after the login

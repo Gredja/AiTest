@@ -1,6 +1,6 @@
 # JsonPlaceholder Test Plan
 
-**Project:** Gredja (.NET 10.0)
+**Project:** Gredja (.NET 11.0)
 **API Under Test:** JsonPlaceholder API (https://jsonplaceholder.typicode.com)
 **Observable Behaviour:** [JsonPlaceholderObservableBehaviour.md](JsonPlaceholderObservableBehaviour.md)
 

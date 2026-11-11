@@ -9,7 +9,7 @@ Entry point for all Gredja project rules. Overview + pointers to detailed rule f
 
 ## Project
 
-Gredja — .NET 10.0 test automation solution (NUnit, RestSharp, Playwright). Services: JSONPlaceholder (mock API), GitHub API, Moodle demo (`https://school.moodledemo.net`, localization testing).
+Gredja — .NET 11.0 test automation solution (NUnit, RestSharp, Playwright). Services: JSONPlaceholder (mock API), GitHub API, Moodle demo (`https://school.moodledemo.net`, localization testing).
 
 - Repo: https://github.com/Gredja/AiTest.git
 - Branch: `main`, changes in `features/<topic>`

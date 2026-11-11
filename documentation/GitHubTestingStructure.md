@@ -1,6 +1,6 @@
 # GitHub Testing Structure
 
-**Project:** Gredja (.NET 10.0)
+**Project:** Gredja (.NET 11.0)
 **Date:** 2026-11-04
 
 ---
