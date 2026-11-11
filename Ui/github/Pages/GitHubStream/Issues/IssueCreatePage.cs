@@ -10,9 +10,7 @@ internal sealed class IssueCreatePage(IPage page)
     private static readonly TimeSpan _openTimeout =
         TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
-    private readonly IPage _page = page;
-
-    internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/new");
+    internal async Task OpenAsync() => await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/new");
 
     internal async Task<WaitResult<bool>> WaitForOpenAsync() =>
         await WaitHelper.WaitUntilAsync(

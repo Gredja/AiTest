@@ -77,11 +77,13 @@ public static class TestRunReportGenerator
         var failures = BuildFailures(fixtureByTest, outcomes);
         var failedActions = ActionLogParser.Read(actionLogs, fixtureByTest);
 
-        var lines = new List<string>();
-        lines.AddRange(BuildHeader(runStart, workspace, actionLogs.Count));
-        lines.AddRange(BuildSummary(rows));
-        lines.AddRange(BuildTests(rows));
-        lines.AddRange(BuildFailedSection(failures, failedActions));
+        List<string> lines =
+        [
+            .. BuildHeader(runStart, workspace, actionLogs.Count),
+            .. BuildSummary(rows),
+            .. BuildTests(rows),
+            .. BuildFailedSection(failures, failedActions)
+        ];
 
         return lines;
     }

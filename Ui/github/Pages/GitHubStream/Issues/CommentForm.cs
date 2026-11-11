@@ -6,19 +6,17 @@ namespace Ui.Github.Pages.GitHubStream.Issues;
 
 internal sealed class CommentForm(IPage page)
 {
-    private readonly IPage _page = page;
-
     internal async Task AddCommentAsync(string body)
     {
         await _commentTextarea.FillAsync(body);
         await _commentButton.ClickAsync();
 
         // the comment is appended after the POST returns — wait for it before the caller asserts
-        await _page.GetByText(body).First.WaitForAsync();
+        await page.GetByText(body).First.WaitForAsync();
     }
 
     internal async Task<bool> HasCommentAsync(string body) =>
-        await _page.GetByText(body).CountAsync() > 0;
+        await page.GetByText(body).CountAsync() > 0;
 
     internal async Task EditFirstCommentAsync(string newBody)
     {
@@ -32,7 +30,7 @@ internal sealed class CommentForm(IPage page)
         // leaving edit mode implies the update POST returned; only then does the rendered
         // comment text (not the editor's content) prove the new body
         await _updateCommentButton.WaitForAsync(new() { State = WaitForSelectorState.Detached });
-        await _page.GetByText(newBody).First.WaitForAsync();
+        await page.GetByText(newBody).First.WaitForAsync();
     }
 
     internal async Task<WaitResult<bool>> DeleteFirstCommentAsync(string body)
@@ -44,7 +42,7 @@ internal sealed class CommentForm(IPage page)
         await _confirmDeleteButton.ClickAsync();
 
         return await WaitHelper.WaitUntilAsync(
-            async () => await _page.GetByText(body).CountAsync() == 0,
+            async () => await page.GetByText(body).CountAsync() == 0,
             isGone => isGone);
     }
 

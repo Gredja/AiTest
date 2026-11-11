@@ -274,7 +274,7 @@ public abstract class GitHubUiTestBase
                 var response = await Cleanup.Get<IssueModelResponse>(
                     GitHubEndpoints.RepoIssueById,
                     [.. UiSandboxRepoParams(), .. GitHubParamHelper.IssueNumberParam(issueNumber)]);
-                var found = response.Data?.Labels?.Any(label => label.Name == labelName) ?? false;
+                var found = response.Data?.Labels?.Any(label => label.Name == labelName) is true;
 
                 return found == hasLabel;
             },

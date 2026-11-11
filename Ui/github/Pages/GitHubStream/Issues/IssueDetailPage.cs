@@ -7,12 +7,10 @@ namespace Ui.Github.Pages.GitHubStream.Issues;
 
 internal sealed class IssueDetailPage(IPage page)
 {
-    private readonly IPage _page = page;
-
     internal async Task OpenAsync(int issueNumber) =>
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/{issueNumber}");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/{issueNumber}");
 
-    internal int? TryGetIssueNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(_page.Url);
+    internal int? TryGetIssueNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(page.Url);
 
     internal async Task<bool> HasTitleAsync(string title) =>
         await _issueHeadings.Filter(new() { HasTextString = title }).CountAsync() > 0;
@@ -78,7 +76,7 @@ internal sealed class IssueDetailPage(IPage page)
 
     private async Task<WaitResult<bool>> ClickLabelOptionUntilAsync(string label, bool shouldBeSelected) =>
         await RetryHelper.UntilAsync(
-            async () => (await _page
+            async () => (await page
                 .GetByRole(AriaRole.Option, new() { Name = label, Selected = true })
                 .CountAsync() > 0) == shouldBeSelected,
             () => _labelOptions.Filter(new() { HasTextString = label }).First.ClickAsync());

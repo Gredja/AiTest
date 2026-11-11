@@ -6,21 +6,19 @@ namespace Ui.Github.Pages.Common;
 
 internal sealed class LoginPage(IPage page)
 {
-    private readonly IPage _page = page;
-
-    internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/login");
+    internal async Task OpenAsync() => await page.GotoAsync($"{TestConfig.UiBaseUrl}/login");
 
     internal async Task SignInAsync(string login, string password)
     {
         await _usernameTextbox.FillAsync(login);
         await _passwordTextbox.FillAsync(password);
         await _signInButton.ClickAsync();
-        await _page.WaitForURLAsync(url => !url.Contains("/login"));
+        await page.WaitForURLAsync(url => !url.Contains("/login"));
     }
 
     internal async Task<WaitResult<bool>> WaitForLoginRedirectAsync() =>
         await WaitHelper.WaitUntilAsync(
-            async () => _page.Url.Contains("/login") && await _signInHeading.CountAsync() > 0,
+            async () => page.Url.Contains("/login") && await _signInHeading.CountAsync() > 0,
             isLogin => isLogin);
 
     internal async Task<bool> HasSignInLinkAsync() =>
