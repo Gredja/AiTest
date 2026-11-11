@@ -14,12 +14,10 @@ internal sealed class PullDetailPage(IPage page)
     // re-applies before the previous effect lands
     private static readonly TimeSpan _actionRetryInterval = TimeSpan.FromMilliseconds(500);
 
-    private readonly IPage _page = page;
-
     internal async Task OpenAsync(int pullNumber) =>
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pull/{pullNumber}");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pull/{pullNumber}");
 
-    internal int? TryGetPullNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(_page.Url);
+    internal int? TryGetPullNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(page.Url);
 
     internal async Task<bool> HasTitleAsync(string title) =>
         await _pullHeadings.Filter(new() { HasTextString = title }).CountAsync() > 0;
@@ -28,10 +26,10 @@ internal sealed class PullDetailPage(IPage page)
         await _branchLinks.Filter(new() { HasTextString = branchName }).CountAsync() > 0;
 
     internal async Task<bool> HasTextAsync(string text) =>
-        await _page.GetByText(text).CountAsync() > 0;
+        await page.GetByText(text).CountAsync() > 0;
 
     internal async Task OpenFilesChangedAsync(int pullNumber) =>
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pull/{pullNumber}/files");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pull/{pullNumber}/files");
 
     // the diff view hydrates after navigation — poll presence instead of an instant count
     internal async Task<WaitResult<bool>> WaitForFileAsync(string fileName) =>
@@ -78,7 +76,7 @@ internal sealed class PullDetailPage(IPage page)
     {
         if (await actionButton.CountAsync() == 0)
         {
-            await _page.ReloadAsync();
+            await page.ReloadAsync();
 
             return;
         }
@@ -127,7 +125,7 @@ internal sealed class PullDetailPage(IPage page)
 
         await _commentBodyTextbox.FillAsync(newBody);
         await _updateCommentButton.ClickAsync();
-        await _page.GetByText(newBody).First.WaitForAsync();
+        await page.GetByText(newBody).First.WaitForAsync();
     }
 
     // The confirm POST can return 200 while the client leaves the dialog open and the
@@ -135,14 +133,14 @@ internal sealed class PullDetailPage(IPage page)
     // await the response, then poll the badge via reload; the server is the source of truth
     internal async Task<WaitResult<bool>> ConvertToDraftAsync()
     {
-        var convertResponse = _page.WaitForResponseAsync(response => response.Url.Contains("convert_to_draft"));
+        var convertResponse = page.WaitForResponseAsync(response => response.Url.Contains("convert_to_draft"));
         await _convertToDraftButton.ClickAsync();
         await _draftConfirmButton.ClickAsync();
         await convertResponse;
 
         return await RetryHelper.UntilAsync(
             async () => await _draftStatusText.CountAsync() > 0,
-            () => _page.ReloadAsync(),
+            () => page.ReloadAsync(),
             _actionTimeout);
     }
 
@@ -157,7 +155,7 @@ internal sealed class PullDetailPage(IPage page)
             _actionRetryInterval);
 
         await _commentButton.ClickAsync();
-        await _page.GetByText(body).First.WaitForAsync();
+        await page.GetByText(body).First.WaitForAsync();
     }
 
     private readonly ILocator _pullHeadings = page.GetByRole(AriaRole.Heading);

@@ -116,7 +116,7 @@ public class AllureNUnitAttribute : Attribute, ITestAction
 
     private static List<string>? GetCategories(ITest test)
     {
-        var categories = new List<string>();
+        List<string> categories = [];
 
         // NUnit keeps fixture-level categories on the fixture test only — walk the parent chain
         for (var current = test; current is not null; current = current.Parent)

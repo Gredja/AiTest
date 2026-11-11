@@ -234,7 +234,7 @@ public class IssueUiTests : GitHubUiTestBase
                     GitHubEndpoints.RepoIssueComments,
                     [.. UiSandboxRepoParams(), .. GitHubParamHelper.IssueNumberParam(issueNumber)]);
 
-                return !(response.Data?.Any(comment => comment.Body == body) ?? false);
+                return response.Data?.Any(comment => comment.Body == body) is not true;
             },
             isGone => isGone);
         gone.IsSuccess.Should().BeTrue(

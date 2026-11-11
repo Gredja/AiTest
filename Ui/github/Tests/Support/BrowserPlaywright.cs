@@ -6,40 +6,21 @@ using Ui.Github.Pages.GitHubStream.Repository;
 
 namespace Ui.Github.Tests.Support;
 
-internal sealed class BrowserPlaywright
+internal sealed class BrowserPlaywright(IPage page)
 {
-    internal BrowserPlaywright(IPage page)
-    {
-        LoginPage = new LoginPage(page);
-        HeaderPage = new HeaderPage(page);
-        ProfilePage = new ProfilePage(page);
-        AccountSettingsPage = new AccountSettingsPage(page);
-        RepositoryPage = new RepositoryPage(page);
-        IssuesPage = new IssuesPage(page);
-        PullsPage = new PullsPage(page);
-        PullDetailPage = new PullDetailPage(page);
-        PullCreatePage = new PullCreatePage(page);
-        BranchesPage = new BranchesPage(page);
-        CodePage = new CodePage(page);
-        NotFoundPage = new NotFoundPage(page);
-        IssueCreatePage = new IssueCreatePage(page);
-        IssueDetailPage = new IssueDetailPage(page);
-        CommentForm = new CommentForm(page);
-    }
-
-    internal LoginPage LoginPage { get; }
-    internal HeaderPage HeaderPage { get; }
-    internal ProfilePage ProfilePage { get; }
-    internal AccountSettingsPage AccountSettingsPage { get; }
-    internal RepositoryPage RepositoryPage { get; }
-    internal IssuesPage IssuesPage { get; }
-    internal PullsPage PullsPage { get; }
-    internal PullDetailPage PullDetailPage { get; }
-    internal PullCreatePage PullCreatePage { get; }
-    internal BranchesPage BranchesPage { get; }
-    internal CodePage CodePage { get; }
-    internal NotFoundPage NotFoundPage { get; }
-    internal IssueCreatePage IssueCreatePage { get; }
-    internal IssueDetailPage IssueDetailPage { get; }
-    internal CommentForm CommentForm { get; }
+    internal LoginPage LoginPage { get; } = new(page);
+    internal HeaderPage HeaderPage { get; } = new(page);
+    internal ProfilePage ProfilePage { get; } = new(page);
+    internal AccountSettingsPage AccountSettingsPage { get; } = new(page);
+    internal RepositoryPage RepositoryPage { get; } = new(page);
+    internal IssuesPage IssuesPage { get; } = new(page);
+    internal PullsPage PullsPage { get; } = new(page);
+    internal PullDetailPage PullDetailPage { get; } = new(page);
+    internal PullCreatePage PullCreatePage { get; } = new(page);
+    internal BranchesPage BranchesPage { get; } = new(page);
+    internal CodePage CodePage { get; } = new(page);
+    internal NotFoundPage NotFoundPage { get; } = new(page);
+    internal IssueCreatePage IssueCreatePage { get; } = new(page);
+    internal IssueDetailPage IssueDetailPage { get; } = new(page);
+    internal CommentForm CommentForm { get; } = new(page);
 }

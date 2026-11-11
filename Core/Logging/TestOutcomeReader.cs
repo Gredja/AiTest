@@ -6,7 +6,7 @@ internal static class TestOutcomeReader
 {
     internal static List<TestOutcome> Read(IReadOnlyCollection<string> logPaths)
     {
-        var outcomes = new List<TestOutcome>();
+        List<TestOutcome> outcomes = [];
 
         foreach (var logPath in logPaths)
         {

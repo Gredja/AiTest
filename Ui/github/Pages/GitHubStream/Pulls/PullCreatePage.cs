@@ -6,12 +6,10 @@ namespace Ui.Github.Pages.GitHubStream.Pulls;
 
 internal sealed class PullCreatePage(IPage page)
 {
-    private readonly IPage _page = page;
-
     internal async Task OpenCompareAsync(string baseBranch, string headBranch) =>
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/compare/{baseBranch}...{headBranch}");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/compare/{baseBranch}...{headBranch}");
 
-    internal int? TryGetPullNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(_page.Url);
+    internal int? TryGetPullNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(page.Url);
 
     internal async Task CreatePullRequestAsync(string title, string description)
     {
@@ -20,7 +18,7 @@ internal sealed class PullCreatePage(IPage page)
         await _titleTextbox.FillAsync(title);
         await _descriptionTextbox.FillAsync(description);
         await _createPullButton.ClickAsync();
-        await _page.WaitForURLAsync(url => url.Contains("/pull/"));
+        await page.WaitForURLAsync(url => url.Contains("/pull/"));
 
         // the PR heading renders after the redirect commits — it is the outcome of the submit
         await _pullHeadings.Filter(new() { HasTextString = title }).First.WaitForAsync();

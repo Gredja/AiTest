@@ -10,10 +10,8 @@ internal sealed class NotFoundPage(IPage page)
     private static readonly TimeSpan _messageTimeout =
         TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
-    private readonly IPage _page = page;
-
     internal async Task OpenAsync() =>
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{GitHubEndpoints.NonExistentUiRepoPath}");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{GitHubEndpoints.NonExistentUiRepoPath}");
 
     internal async Task<WaitResult<bool>> WaitFor404MessageAsync() =>
         await WaitHelper.WaitUntilAsync(

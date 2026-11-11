@@ -5,7 +5,7 @@ namespace Ui.Moodledemo.Tests.Support;
 internal static class MoodledemoFixtures
 {
     private const string EnglishCode = "en";
-    private static readonly IReadOnlyList<string> _defaultTitleScripts = new[] { "Latin" };
+    private static readonly IReadOnlyList<string> _defaultTitleScripts = ["Latin"];
 
     private static readonly string _fixturePath = Path.Combine(
         AppContext.BaseDirectory, "moodledemo", "Fixtures", "expected-langs.json");

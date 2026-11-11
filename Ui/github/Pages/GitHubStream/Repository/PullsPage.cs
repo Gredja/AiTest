@@ -7,9 +7,7 @@ namespace Ui.Github.Pages.GitHubStream.Repository;
 
 internal sealed class PullsPage(IPage page)
 {
-    private readonly IPage _page = page;
-
-    internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pulls");
+    internal async Task OpenAsync() => await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pulls");
 
     internal async Task<bool> HasEmptyStateAsync() =>
         await _emptyStateHeading.CountAsync() > 0;
@@ -25,7 +23,7 @@ internal sealed class PullsPage(IPage page)
         await WaitHelper.WaitUntilAsync(
             async () =>
             {
-                await _page.ReloadAsync();
+                await page.ReloadAsync();
 
                 return await HasPullWithTitleAsync(title);
             },

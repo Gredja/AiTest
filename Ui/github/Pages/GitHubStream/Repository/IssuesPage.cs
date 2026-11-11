@@ -7,9 +7,7 @@ namespace Ui.Github.Pages.GitHubStream.Repository;
 
 internal sealed class IssuesPage(IPage page)
 {
-    private readonly IPage _page = page;
-
-    internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues");
+    internal async Task OpenAsync() => await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues");
 
     internal async Task<bool> HasEmptyStateAsync() =>
         await _emptyStateHeading.CountAsync() > 0;
@@ -26,7 +24,7 @@ internal sealed class IssuesPage(IPage page)
         await WaitHelper.WaitUntilAsync(
             async () =>
             {
-                await _page.ReloadAsync();
+                await page.ReloadAsync();
 
                 return await HasIssueWithTitleAsync(title);
             },
@@ -34,7 +32,7 @@ internal sealed class IssuesPage(IPage page)
 
     internal Task<WaitResult<bool>> SearchAsync(string keyword) =>
         RetryHelper.UntilAsync(
-            () => _page.Url.Contains(keyword, StringComparison.OrdinalIgnoreCase),
+            () => page.Url.Contains(keyword, StringComparison.OrdinalIgnoreCase),
             async () =>
             {
                 await _searchCombobox.FillAsync(keyword);
@@ -45,7 +43,7 @@ internal sealed class IssuesPage(IPage page)
     // to its href "#" and no navigation happens at all, so re-apply until the URL filters
     internal Task<WaitResult<bool>> ClickClosedTabAsync() =>
         RetryHelper.UntilAsync(
-            () => _page.Url.Contains("closed"),
+            () => page.Url.Contains("closed"),
             () => _closedTabLink.ClickAsync());
 
     private readonly ILocator _emptyStateHeading = page.GetByRole(AriaRole.Heading, new() { Name = "No results matched your search" });

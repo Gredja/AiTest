@@ -13,10 +13,8 @@ internal sealed class BranchesPage(IPage page)
     // yet stay above the delete round-trip (~1s), so a delete already in flight is never re-clicked.
     private static readonly TimeSpan _deleteRetryInterval = TimeSpan.FromSeconds(3);
 
-    private readonly IPage _page = page;
-
     internal async Task OpenAsync() =>
-        await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/branches");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/branches");
 
     internal async Task<bool> HasBranchAsync(string branchName) =>
         await _branchLinks.Filter(new() { HasTextString = branchName }).CountAsync() > 0;
@@ -25,7 +23,7 @@ internal sealed class BranchesPage(IPage page)
         await WaitHelper.WaitUntilAsync(
             async () =>
             {
-                await _page.ReloadAsync();
+                await page.ReloadAsync();
 
                 return await HasBranchAsync(branchName);
             },
@@ -90,7 +88,7 @@ internal sealed class BranchesPage(IPage page)
         await WaitHelper.WaitUntilAsync(
             async () =>
             {
-                await _page.ReloadAsync();
+                await page.ReloadAsync();
 
                 return await HasBranchAsync(branchName);
             },
