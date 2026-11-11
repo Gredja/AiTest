@@ -95,6 +95,17 @@ function Get-ReportStats {
     return @{ Summary = $summary; Categories = $categories }
 }
 
+function Get-StatusStyle {
+    param([string]$RunStatus)
+
+    switch ($RunStatus) {
+        'success' { return @{ Emoji = '✅'; Color = '#2eb67d' } }
+        'failure' { return @{ Emoji = '❌'; Color = '#e01e5a' } }
+        'cancelled' { return @{ Emoji = '⏹'; Color = '#7c3085' } }
+        default { return @{ Emoji = '⚠️'; Color = '#ecb22e' } }
+    }
+}
+
 function Format-RunMessage {
     param(
         [string]$TitleText,
@@ -104,12 +115,7 @@ function Format-RunMessage {
         [hashtable]$Stats
     )
 
-    $statusEmoji = switch ($RunStatus) {
-        'success' { '✅' }
-        'failure' { '❌' }
-        'cancelled' { '⏹' }
-        default { '⚠️' }
-    }
+    $statusEmoji = (Get-StatusStyle -RunStatus $RunStatus).Emoji
 
     $runNumber = if (-not [string]::IsNullOrEmpty($env:GITHUB_RUN_NUMBER)) {
         " #$($env:GITHUB_RUN_NUMBER)"
@@ -150,10 +156,93 @@ function Format-RunMessage {
     return ($lines -join "`n")
 }
 
-function Send-SlackMessage {
-    param([string]$Text)
+function Format-RunBlocks {
+    param(
+        [string]$TitleText,
+        [string]$RunStatus,
+        [string]$Url,
+        [string]$EventName,
+        [hashtable]$Stats
+    )
 
-    $payload = @{ channel = $env:SLACK_CHANNEL; text = $Text } | ConvertTo-Json -Compress -Depth 3
+    $style = Get-StatusStyle -RunStatus $RunStatus
+
+    $runNumber = if (-not [string]::IsNullOrEmpty($env:GITHUB_RUN_NUMBER)) {
+        " #$($env:GITHUB_RUN_NUMBER)"
+    }
+    else {
+        [string]::Empty
+    }
+
+    $when = (Get-Date).ToUniversalTime().ToString('yyyy-MM-dd HH:mm')
+
+    $blocks = @()
+    $blocks += [ordered]@{
+        type = 'header'
+        text = [ordered]@{ type = 'plain_text'; text = "$($style.Emoji) $TitleText$runNumber"; emoji = $true }
+    }
+    $blocks += [ordered]@{
+        type = 'section'
+        text = [ordered]@{ type = 'mrkdwn'; text = "*Когда:* $when UTC · *Event:* $EventName" }
+    }
+
+    if ($null -ne $Stats) {
+        $passed = $Stats.Summary['Passed']
+        $failed = $Stats.Summary['Failed']
+        $skipped = $Stats.Summary['Skipped']
+        if ($null -eq $skipped) { $skipped = 0 }
+        $total = $passed + $failed + $skipped
+        $percent = if ($total -gt 0) { [math]::Round(100.0 * $passed / $total, 1) } else { 0 }
+
+        $summaryLine = "*Итог:* $passed passed / $failed failed / $skipped skipped — $total ($percent%)"
+        if ($Stats.Categories.Count -gt 0) {
+            $parts = $Stats.Categories.Keys | Sort-Object | ForEach-Object {
+                $entry = $Stats.Categories[$_]
+                $text = "$_ $($entry.Passed)/$($entry.Total)"
+                if ($entry.Failed -gt 0) {
+                    $text += " ($($entry.Failed)❌)"
+                }
+                $text
+            }
+            $summaryLine += "`n*Категории:* $($parts -join ' · ')"
+        }
+        $blocks += [ordered]@{ type = 'section'; text = [ordered]@{ type = 'mrkdwn'; text = $summaryLine } }
+    }
+    elseif ($RunStatus -ne 'success') {
+        $blocks += [ordered]@{
+            type = 'section'
+            text = [ordered]@{ type = 'mrkdwn'; text = "*Статус:* $RunStatus — подробности в логах рана" }
+        }
+    }
+
+    $blocks += [ordered]@{
+        type = 'actions'
+        elements = @(
+            [ordered]@{
+                type = 'button'
+                text = [ordered]@{ type = 'plain_text'; text = 'Открыть ран'; emoji = $true }
+                url = $Url
+            }
+        )
+    }
+
+    return @{ Blocks = $blocks; Color = $style.Color }
+}
+
+function Send-SlackMessage {
+    param(
+        [string]$Text,
+        [object[]]$Blocks,
+        [string]$Color
+    )
+
+    $message = [ordered]@{ channel = $env:SLACK_CHANNEL; text = $Text }
+    if ($null -ne $Blocks -and $Blocks.Count -gt 0) {
+        $message['attachments'] = @(
+            [ordered]@{ color = $Color; blocks = @($Blocks) }
+        )
+    }
+    $payload = $message | ConvertTo-Json -Compress -Depth 8
     $bodyBytes = [Text.UTF8Encoding]::new($false).GetBytes($payload)
     $result = Invoke-RestMethod -Uri 'https://slack.com/api/chat.postMessage' `
         -Method Post `
@@ -178,7 +267,8 @@ try {
 
     $stats = Get-ReportStats -Path $ReportPath
     $message = Format-RunMessage -TitleText $Title -RunStatus $Status -Url $RunUrl -EventName $Event -Stats $stats
-    Send-SlackMessage -Text $message
+    $rich = Format-RunBlocks -TitleText $Title -RunStatus $Status -Url $RunUrl -EventName $Event -Stats $stats
+    Send-SlackMessage -Text $message -Blocks $rich.Blocks -Color $rich.Color
 }
 catch {
     Write-Warning "Slack notification failed: $($_.Exception.Message)"

@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SERVER_NAME = 'slack-local';
-const SERVER_VERSION = '1.0.0';
+const SERVER_VERSION = '1.1.0';
 const SLACK_API = 'https://slack.com/api';
 
 const TOOLS = [
@@ -20,7 +20,17 @@ const TOOLS = [
           type: 'string',
           description: 'Channel ID (C...) or name (#general); defaults to SLACK_CHANNEL',
         },
-        text: { type: 'string', description: 'Message text; mrkdwn is supported' },
+        text: { type: 'string', description: 'Message text; mrkdwn is supported (fallback/notification preview)' },
+        blocks: {
+          type: 'array',
+          items: { type: 'object' },
+          description: 'Optional Block Kit blocks for a rich message (sections, header, actions)',
+        },
+        attachments: {
+          type: 'array',
+          items: { type: 'object' },
+          description: 'Optional Slack attachments (e.g. color indicator with embedded blocks)',
+        },
       },
       required: ['text'],
     },
@@ -107,9 +117,19 @@ async function callTool(name, args) {
     if (!channel) {
       throw new Error('No channel given and no SLACK_CHANNEL default in .env');
     }
+    for (const field of ['blocks', 'attachments']) {
+      if (args[field] !== undefined && !Array.isArray(args[field])) {
+        throw new Error(`Invalid ${field}: expected an array of Slack objects`);
+      }
+    }
     const payload = await slackFetch('/chat.postMessage', {
       method: 'POST',
-      body: JSON.stringify({ channel, text: args.text }),
+      body: JSON.stringify({
+        channel,
+        text: args.text,
+        ...(args.blocks ? { blocks: args.blocks } : {}),
+        ...(args.attachments ? { attachments: args.attachments } : {}),
+      }),
     });
     return toolText(`Message posted to ${payload.channel} at ts ${payload.ts}`);
   }
