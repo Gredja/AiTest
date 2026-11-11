@@ -76,7 +76,7 @@ public class IssuesTests : GitHubE2ETestBase
 
     [Test]
     [Category("Regression")]
-    [Description("E2E-10.3 Close one of two issues → open-list count decrements, sibling unaffected")]
+    [Description("E2E-10.3 Close one of two issues → own open-count decrements, sibling unaffected")]
     public async Task Issues_CloseOneOfTwo_OpenListCountDecrements()
     {
         var first = await CreateIssueTrackedAsync(
@@ -97,8 +97,14 @@ public class IssuesTests : GitHubE2ETestBase
         var openAfter = await Get<List<IssueModelResponse>>(GitHubEndpoints.RepoIssues,
             [.. TestRepoParam(), .. StateParam(GitHubEndpoints.StateOpen)]);
         openAfter.ShouldHaveStatusCode(HttpStatusCode.OK);
-        openAfter.Data!.Count.Should().Be(openBefore.Data!.Count - 1,
-            "closing one of two issues must decrement the open list by exactly one");
+
+        // count only this test's issues — foreign closes between the two GETs must not affect the invariant
+        var ownNumbers = new[] { first.Number, second.Number };
+        var ownBefore = openBefore.Data!.Count(issue => ownNumbers.Contains(issue.Number));
+        var ownAfter = openAfter.Data!.Count(issue => ownNumbers.Contains(issue.Number));
+        ownBefore.Should().Be(2, "both created issues must be visible in the open list before the close");
+        ownAfter.Should().Be(ownBefore - 1,
+            "closing one of two own issues must decrement their open count by exactly one");
         openAfter.Data.Should().Contain(issue => issue.Number == second.Number,
             "the sibling issue must remain in the open list");
 
