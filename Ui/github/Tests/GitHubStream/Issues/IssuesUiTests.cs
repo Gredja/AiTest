@@ -82,6 +82,10 @@ public class IssuesUiTests : GitHubUiTestBase
             "the Issues heading must render on the list view");
         (await Browser.IssuesPage.HasOpenTabAsync()).Should().BeTrue(
             "the Open tab counter must be part of the list view chrome");
+
+        var openTabCount = await Browser.IssuesPage.GetOpenTabCountAsync();
+        openTabCount.Should().NotBeNull(
+            "the Open tab must render its counter as Open (N) per UI-4");
     }
 
     [OneTimeTearDown]

@@ -61,6 +61,9 @@ internal sealed class IssuesPage(IPage page)
     internal async Task<bool> HasOpenTabAsync() =>
         await _openTabLink.CountAsync() > 0;
 
+    internal async Task<int?> GetOpenTabCountAsync() =>
+        TabCountParserHelper.Parse(await _openTabLink.TextContentAsync());
+
     private async Task<bool> HasEmptyStateAsync() =>
         await _emptyStateHeading.CountAsync() > 0;
 
@@ -70,6 +73,6 @@ internal sealed class IssuesPage(IPage page)
     private readonly ILocator _closedTabLink = page.GetByRole(AriaRole.Link, new() { Name = GitHubStateLabels.Closed, Exact = true });
     private readonly ILocator _searchCombobox = page.GetByRole(AriaRole.Combobox, new() { Name = "Search issues" });
     private readonly ILocator _searchButton = page.GetByRole(AriaRole.Button, new() { Name = "Search", Exact = true });
-    private readonly ILocator _issuesHeading = page.GetByRole(AriaRole.Heading, new() { Name = "Issues" });
+    private readonly ILocator _issuesHeading = page.GetByRole(AriaRole.Heading, new() { Name = "Issues", Level = 1 });
     private readonly ILocator _openTabLink = page.GetByRole(AriaRole.Link, new() { Name = GitHubStateLabels.Open, Exact = false });
 }

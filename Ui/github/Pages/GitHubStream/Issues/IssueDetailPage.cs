@@ -37,8 +37,23 @@ internal sealed class IssueDetailPage(IPage page)
         await _openStatusText.WaitForAsync();
     }
 
-    internal async Task BeginEditTitleAsync() =>
-        await _editIssueTitleButton.ClickAsync();
+    // the edit-title click can be swallowed while the page hydrates (observed 2026-10-19 and
+    // 2026-11-12: the editor never opened and the fill landed in the comment box) — the title
+    // textarea is ambiguous (the always-visible comment box matches Textbox.First), so the
+    // Save button is the unambiguous editor-open post-condition; state check first, so a late
+    // render is never toggled shut
+    internal async Task BeginEditTitleAsync()
+    {
+        var result = await RetryHelper.UntilAsync(
+            async () => await _saveButtonText.CountAsync() > 0,
+            () => _editIssueTitleButton.ClickAsync());
+
+        if (!result.IsSuccess)
+        {
+            throw new InvalidOperationException(
+                $"title editor did not open (attempts={result.Attempts}, elapsed={result.Elapsed})");
+        }
+    }
 
     internal async Task SaveTitleAsync(string newTitle)
     {
@@ -50,11 +65,21 @@ internal sealed class IssueDetailPage(IPage page)
         await _issueHeadings.Filter(new() { HasTextString = newTitle }).First.WaitForAsync();
     }
 
+    // the gear click can be swallowed before its React handler is wired (observed 2026-11-12:
+    // the picker never opened) — re-apply until the options render; state check first, so an
+    // already-open picker is never toggled shut
     internal async Task OpenLabelsPickerAsync()
     {
         // exact case-sensitive name: the sidebar also has an "Edit labels" link
-        await _editLabelsButton.ClickAsync();
-        await _labelOptions.First.WaitForAsync();
+        var result = await RetryHelper.UntilAsync(
+            async () => await _labelOptions.CountAsync() > 0,
+            () => _editLabelsButton.ClickAsync());
+
+        if (!result.IsSuccess)
+        {
+            throw new InvalidOperationException(
+                $"labels picker did not open (attempts={result.Attempts}, elapsed={result.Elapsed})");
+        }
     }
 
     // the option renders before its React handler is wired — the first click can be swallowed

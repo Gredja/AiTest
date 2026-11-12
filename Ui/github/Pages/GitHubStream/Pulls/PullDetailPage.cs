@@ -16,8 +16,21 @@ internal sealed class PullDetailPage(IPage page)
     // re-applies before the previous effect lands
     private static readonly TimeSpan _actionRetryInterval = TimeSpan.FromMilliseconds(500);
 
-    internal async Task OpenAsync(int pullNumber) =>
+    internal async Task OpenAsync(int pullNumber)
+    {
         await page.GotoAsync($"{TestConfig.UiBaseUrl}{GitHubUiEndpoints.PullPath(pullNumber)}");
+        await DismissOverviewPromoAsync();
+    }
+
+    // the promotional "new Overview page" dialog overlays the conversation and swallows
+    // clicks in its area (observed 2026-11-12: EditBody could not open its options menu)
+    internal async Task DismissOverviewPromoAsync()
+    {
+        if (await _overviewPromoDismissButton.CountAsync() > 0)
+        {
+            await _overviewPromoDismissButton.ClickAsync();
+        }
+    }
 
     internal int? TryGetPullNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(page.Url);
 
@@ -115,8 +128,9 @@ internal sealed class PullDetailPage(IPage page)
     internal async Task EditBodyAsync(string newBody)
     {
         // the options menu lazy-loads its items over HTTP — click the trigger only while the
-        // menu is closed, click the item once it attached
-        await RetryHelper.UntilAsync(
+        // menu is closed, click the item once it attached; an exhausted retry must fail here
+        // with diagnostics, not burn the fill timeout downstream (observed 2026-11-12)
+        var opened = await RetryHelper.UntilAsync(
             async () => await _commentBodyTextbox.CountAsync() > 0,
             async () =>
             {
@@ -131,6 +145,12 @@ internal sealed class PullDetailPage(IPage page)
             },
             _actionTimeout,
             _actionRetryInterval);
+
+        if (!opened.IsSuccess)
+        {
+            throw new InvalidOperationException(
+                $"comment editor did not open (attempts={opened.Attempts}, elapsed={opened.Elapsed})");
+        }
 
         await _commentBodyTextbox.FillAsync(newBody);
         await _updateCommentButton.ClickAsync();
@@ -194,4 +214,8 @@ internal sealed class PullDetailPage(IPage page)
         .GetByRole(AriaRole.Button, new() { Name = "Convert to draft" });
     private readonly ILocator _commentTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Comment" });
     private readonly ILocator _commentButton = page.GetByRole(AriaRole.Button, new() { Name = "Comment", Exact = true });
+
+    // live dump 2026-11-12 (temporary probe PR): promotional dialog heading
+    // "Try the new pull requests Overview page!" with the dismiss button "Not now"
+    private readonly ILocator _overviewPromoDismissButton = page.GetByRole(AriaRole.Button, new() { Name = "Not now" });
 }
