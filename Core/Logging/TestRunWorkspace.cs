@@ -33,7 +33,7 @@ public static class TestRunWorkspace
             return;
         }
 
-        CleanupPreviousRunLogs(workspace, File.GetLastWriteTime(marker));
+        CleanupPreviousRunLogs(workspace, File.GetLastWriteTimeUtc(marker));
         CleanupArtifactSubdirectories(workspace);
     }
 
@@ -79,7 +79,7 @@ public static class TestRunWorkspace
         try
         {
             _runLock = new FileStream(marker, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read);
-            File.SetLastWriteTime(marker, DateTime.Now);
+            File.SetLastWriteTimeUtc(marker, DateTime.UtcNow);
 
             return true;
         }
@@ -99,7 +99,7 @@ public static class TestRunWorkspace
         {
             foreach (var file in Directory.EnumerateFiles(workspace, pattern))
             {
-                if (File.GetLastWriteTime(file) >= runStart)
+                if (File.GetLastWriteTimeUtc(file) >= runStart)
                 {
                     continue;
                 }

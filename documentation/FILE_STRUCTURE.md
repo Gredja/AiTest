@@ -131,6 +131,7 @@ Core/
 │   ├── ActionLogHandler.cs        # DelegatingHandler: logs every HTTP request/response
 │   ├── ActionLogger.cs            # Serilog bootstrap → %TEMP%\GredjaTestRun\actions-*.log
 │   ├── ActionLogParser.cs         # picks failed-test actions for the report
+│   ├── CleanupWarning.cs          # shared "Warning: " prefix for cleanup warnings
 │   ├── OutcomeMarker.cs           # shared "-" unknown fixture/category sentinel
 │   ├── SharedFile.cs              # read-with-ShareWrite helpers
 │   ├── TestNameEnricher.cs        # adds NUnit test name to every log line
@@ -154,6 +155,7 @@ Core/
 │   │   ├── JsonFields.cs
 │   │   ├── ParamType.cs
 │   │   ├── RequestDictionaryModel.cs
+│   │   ├── ShaModel.cs
 │   │   └── UserOwnedModel.cs
 │   ├── JsonPlaceholder/
 │   │   ├── Requests/

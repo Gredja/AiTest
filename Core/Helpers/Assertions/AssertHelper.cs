@@ -127,12 +127,12 @@ public static class AssertHelper
         {
             responseProperty.Should().NotBeNull(
                 $"response should have property '{requestProperty.Name}' matching request");
-
-            return;
         }
-
-        var responseValue = responseProperty.GetValue(response);
-        CompareValues(responseValue, requestValue, responseProperty.Name);
+        else
+        {
+            var responseValue = responseProperty.GetValue(response);
+            CompareValues(responseValue, requestValue, responseProperty.Name);
+        }
     }
 
     private static void CompareValues(object? responseValue, object? requestValue, string propertyName)

@@ -9,8 +9,8 @@ public static class GitHubParamHelper
     private const string AcceptHeader = "Accept";
     public static List<RequestDictionaryModel> RepoParam(string owner, string repo) =>
         [
-            ParamHelper.UrlSegment("owner", owner),
-            ParamHelper.UrlSegment("repo", repo)
+            ParamHelper.UrlSegment(GitHubEndpoints.OwnerPlaceholder, owner),
+            ParamHelper.UrlSegment(GitHubEndpoints.RepoPlaceholder, repo)
         ];
 
     public static (string Owner, string Repo) ParseRepo(string fullName)
@@ -21,19 +21,19 @@ public static class GitHubParamHelper
     }
 
     public static List<RequestDictionaryModel> IssueNumberParam(int number) =>
-        [ParamHelper.UrlSegment("issue_number", number)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.IssueNumberPlaceholder, number)];
 
     public static List<RequestDictionaryModel> IssueNumberParam(string number) =>
-        [ParamHelper.UrlSegment("issue_number", number)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.IssueNumberPlaceholder, number)];
 
     public static List<RequestDictionaryModel> PullRequestNumberParam(int number) =>
-        [ParamHelper.UrlSegment("pull_number", number)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.PullNumberPlaceholder, number)];
 
     public static List<RequestDictionaryModel> CommentIdParam(long id) =>
-        [ParamHelper.UrlSegment("comment_id", id)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.CommentIdPlaceholder, id)];
 
     public static List<RequestDictionaryModel> BranchNameParam(string branch) =>
-        [ParamHelper.UrlSegment("branch", branch)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.BranchPlaceholder, branch)];
 
     public static List<RequestDictionaryModel> PaginationParams(int page, int perPage) =>
         [
@@ -48,25 +48,25 @@ public static class GitHubParamHelper
         [ParamHelper.Header(AcceptHeader, GitHubEndpoints.MercyPreviewAccept)];
 
     public static List<RequestDictionaryModel> GitRefParam(string refPath) =>
-        [ParamHelper.UrlSegment("ref", refPath)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.RefPlaceholder, refPath)];
 
     public static List<RequestDictionaryModel> GitCommitParam(string commitSha) =>
-        [ParamHelper.UrlSegment("commit_sha", commitSha)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.CommitShaPlaceholder, commitSha)];
 
     public static List<RequestDictionaryModel> UsernameParam(string username) =>
-        [ParamHelper.UrlSegment("username", username)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.UsernamePlaceholder, username)];
 
     public static List<RequestDictionaryModel> InvitationIdParam(long id) =>
-        [ParamHelper.UrlSegment("invitation_id", id)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.InvitationIdPlaceholder, id)];
 
     public static List<RequestDictionaryModel> ReleaseIdParam(long id) =>
-        [ParamHelper.UrlSegment("release_id", id)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.ReleaseIdPlaceholder, id)];
 
     public static List<RequestDictionaryModel> ReleaseIdParam(string id) =>
-        [ParamHelper.UrlSegment("release_id", id)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.ReleaseIdPlaceholder, id)];
 
     public static List<RequestDictionaryModel> ReleaseTagParam(string tag) =>
-        [ParamHelper.UrlSegment("release_tag", tag)];
+        [ParamHelper.UrlSegment(GitHubEndpoints.ReleaseTagPlaceholder, tag)];
 
     public static List<RequestDictionaryModel> SearchQueryParam(string query) =>
         [ParamHelper.Query(JsonFields.Q, query)];

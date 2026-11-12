@@ -1,9 +1,7 @@
-using Core.Attributes;
+using Core.Models.Generic;
 
 namespace Core.Models.GitHub;
 
-public class GitCommitTree
+public class GitCommitTree : ShaModel
 {
-    [RequiredField]
-    public string Sha { get; set; }
 }
