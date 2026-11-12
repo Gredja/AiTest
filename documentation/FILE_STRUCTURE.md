@@ -493,8 +493,8 @@ documentation/
 │   └── maturity-gap-analysis.md
 ├── README.md
 ├── SkillEval/                    # eval sets for generation skills (fixed inputs + must/must-not checklists; run required when a *test-gen skill changes)
-│   ├── README.md                 # methodology: format, run procedure, the commit-gate rule
-│   ├── api-test-gen.md           # 2 cases (read-only endpoint; required fields / 422 negatives)
+│   ├── README.md                 # methodology: format, score, run procedure (incl. blind-run ban, research budget), the commit-gate rule
+│   ├── api-test-gen.md           # 4 cases (control read-only; required fields/422; boundary absent-from-OB; mock-API JsonPlaceholder)
 │   ├── e2e-test-gen.md           # 1 case (write chain create→verify→cleanup)
 │   └── ui-test-gen.md            # 1 case (page with locators: navigation + check)
 └── token-budget.md
