@@ -1,10 +1,11 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Models.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using E2E.GitHub.Tests.Support;
 
 namespace E2E.GitHub.Tests;
 

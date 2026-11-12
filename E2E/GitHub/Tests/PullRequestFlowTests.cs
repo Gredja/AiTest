@@ -1,4 +1,4 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Generators;
 using Core.Generators.GitHub;
 using Core.Config;
@@ -7,6 +7,7 @@ using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 using static Core.Helpers.TestDataConstants;
+using E2E.GitHub.Tests.Support;
 
 namespace E2E.GitHub.Tests;
 

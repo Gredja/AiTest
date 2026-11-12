@@ -1,11 +1,11 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
 using System.Net;
 
-namespace Api.GitHub.Helpers;
+namespace Api.GitHub.Tests.Support;
 
 public abstract class ReleaseTestBase : GitHubTestBase
 {

@@ -273,10 +273,10 @@ Api/
 │           ├── GetUserTodosTests.cs
 │           └── GetUserAlbumsTests.cs
 ├── GitHub/
-│   ├── Helpers/
-│   │   ├── GitBlobTestBase.cs      # narrow family base: random blob content + git blob sha oracle
-│   │   └── ReleaseTestBase.cs      # narrow family base: release fixture create + cleanup registry
 │   └── Tests/
+│       ├── Support/
+│       │   ├── GitBlobTestBase.cs      # narrow family base: random blob content + git blob sha oracle
+│       │   └── ReleaseTestBase.cs      # narrow family base: release fixture create + cleanup registry
 │       ├── Auth/
 │       │   ├── AuthNegativeTests.cs
 │       │   └── GetAuthenticatedUserTests.cs
@@ -377,8 +377,9 @@ E2E/
 ├── AllureGlobalSetup.cs
 ├── AssemblyInfo.cs               # [assembly: Parallelizable(Fixtures)] + LevelOfParallelism(1)
 ├── GitHub/
-│   ├── GitHubE2ETestBase.cs
 │   └── Tests/
+│       ├── Support/
+│       │   └── GitHubE2ETestBase.cs
 │       ├── CollaboratorPermissionTests.cs
 │       ├── CommentChainTests.cs
 │       ├── FailedWriteTests.cs

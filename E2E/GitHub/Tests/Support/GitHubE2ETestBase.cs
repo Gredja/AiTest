@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -7,7 +7,7 @@ using FluentAssertions;
 using System.Net;
 using static Core.Helpers.GitHub.GitHubParamHelper;
 
-namespace E2E.GitHub;
+namespace E2E.GitHub.Tests.Support;
 
 public abstract class GitHubE2ETestBase : GitHubTestBase
 {
