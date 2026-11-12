@@ -15,7 +15,7 @@ public class IssuesTests : GitHubE2ETestBase
 {
     private readonly List<int> _createdIssueNumbers = [];
 
-    private static readonly List<string> _issueLabels = ["bug", "urgent"];
+    private readonly List<string> _issueLabels = ["bug", "urgent"];
 
     private const string SpecialCharsTitle = "E2E special <title> & \"quoted\" — Ünïcödé #42";
 

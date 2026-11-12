@@ -46,8 +46,8 @@ public class RateLimitDrainTests : GitHubE2ETestBase
             remainingFirst = int.Parse(remainingHeader, CultureInfo.InvariantCulture);
             if (remainingFirst <= DrainCallCount + QuotaHeadroom)
             {
-                Assert.Ignore(
-                    $"rate-limit headroom {remainingFirst} ≤ {DrainCallCount + QuotaHeadroom} — wait for the hourly reset");
+                Assert.Inconclusive(
+                    $"rate-limit headroom {remainingFirst} ≤ {DrainCallCount + QuotaHeadroom} — wait for the hourly reset; informational, no drain calls consumed");
             }
 
             var last = first;
