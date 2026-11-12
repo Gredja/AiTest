@@ -60,9 +60,9 @@ When generating or reviewing GitHub UI tests, the AI agent:
 ## Page: Issues list (UI-4, ui-sandbox, empty)
 
 - URL: `.../issues` — verified 2026-10-13
-- `heading "Issues" level=1` · `link "New issue"` — verified 2026-10-13
+- `heading "Issues" level=1` · `link "New issue"` — verified 2026-10-13; the sidebar also renders `heading "Issues" level=2` — pin `Level = 1` on the heading locator (verified 2026-11-12)
 - Empty state: `heading "No results matched your search"` — verified 2026-10-13
-- Tab counter renders `Open (0)` both anonymous and authenticated (the 2026-10-13 claim of `Open 0` authenticated did not reproduce on re-check 2026-10-19) — parse with `Open\D*(\d+)` regex
+- Tab counter renders `Open (0)` both anonymous and authenticated (the 2026-10-13 claim of `Open 0` authenticated did not reproduce on re-check 2026-10-19) — parse with `Open\D*(\d+)` regex; `link "Open (0)"` re-verified on the live list — verified 2026-11-12
 
 ## Page: Issue create form (UI-5, ui-sandbox)
 

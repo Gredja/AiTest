@@ -5,9 +5,25 @@ Format and run procedure: `documentation/SkillEval/README.md`.
 
 | # | Case | Status before | Status after |
 |---|------|---------------|--------------|
-| 1 | Page with locators: navigation + check | not run | **pass (2026-11-06, skill v1.4)** |
+| 1 | Page with locators: navigation + check | pass (2026-11-06, skill v1.4) | **pass (2026-11-12, skill v1.5)** |
 
-**Case 1 — run notes (2026-11-06):** GitHub issues-tab navigation (UI-4), blind subagent,
+**Case 1 — run notes (2026-11-12, skill v1.5, blind subagent, SkillEval ban honored):**
+Same concrete input as the v1.4 run (GitHub issues-tab navigation, UI-4). Research finding:
+coverage already exists → per hard rule 6 the plan EXTENDED `Issues_NavigateViaTab_ShowsListView`
+instead of duplicating (no new files; 3 modifications). Plan gate STOP → runner approval →
+implementation. Live dump 2026-11-12 for `heading "Issues" level=1` + `link "Open (0)"` (the
+snapshot exposed a second sidebar `heading "Issues" level=2` — locator pinned `Level = 1`);
+repo-tab locator reused from OB UI-3 (verified 2026-11-06, reuse-before-extract). Reconciliation
+1/1 matched; run 4/4 green (IssuesUiTests filter, 0 failed); format pass; validator PASS
+(re-run by runner: exit 0); `locators.draft = 0`. Flagged Rules-win deviation: counter parsed
+via shared `TabCountParserHelper` instead of the plan's ad-hoc `Open\D*(\d+)` (code-style →
+same pattern in 2+ files) — accepted, OB bullet keeps the format guidance. Troubleshooting-row
+edit (the motivation for v1.5) did not disturb any must/must-not item. Verdict: skill held the
+contract; score 10/10 must, 5/5 must-not.
+
+---
+
+**Case 1 — run notes (2026-11-06, skill v1.4):** GitHub issues-tab navigation (UI-4), blind subagent,
 anti-hang budget. Plan-gate STOP → approval → implementation; exactly the 4 approved files.
 Mechanical reconciliation: 1/1 matched, pre-existing tests untouched; run 1/1 (3 s, 0
 failed); format clean; validator PASS; `locators.draft = 0`, `verifiedLive = 3` (live dump

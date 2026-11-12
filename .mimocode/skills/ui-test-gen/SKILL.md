@@ -284,9 +284,9 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | Error / symptom | Cause | Fix |
 |---|---|---|
 | `TimeoutException: locator not resolved` | stale selector or wrong role | re-snapshot the page; locator from live DOM only |
-| Test hangs on navigation | missing storageState / expired session | run `dotnet test --filter LoginSignInTests` to refresh `.auth/github-ui-state.json` |
+| Test hangs on navigation | missing / expired storageState | refresh is human-assisted while `LoginSignInTests` is `[Ignore]`d (device-verification wall) — follow `Rules/ui-testing.md` → Auth, never just re-run the ignored test |
 | Flaky list-visibility assert | eventual list refresh | poll with `WaitHelper.WaitUntilAsync` (documented in UI-OB section), never `WaitForTimeout` |
-| `StorageStatePath not found` | login test never ran | tell user to run `dotnet test --filter LoginSignInTests` once (credentials in env/.env) |
+| `StorageStatePath not found` | storageState never created or deleted | same human-assisted refresh (`Rules/ui-testing.md` → Auth); credentials in env/.env |
 | Test fails, no artifact | fixture not capturing | fix `UiTestBase` teardown (screenshot+trace) — not the test |
 | CSS selector temptation (`div.Box-row`) | shortcut | forbidden — role/text locator + snapshot verification |
 
@@ -301,3 +301,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.2 | 2026-11-05 | Step 2 gate → Part 1 plan table + Part 2 full test-method list (names/categories/descriptions/files); Step 3: mandatory Rules/*.md reading + match-approved-plan; Step 6: reconciliation + per-test run report tables (green before Step 7); Step 7: both tables required alongside JSON | MiMo |
 | 1.3 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |
 | 1.4 | 2026-11-05 | Step 6: reconciliation made mechanical — Grep method names vs approved Part 2, table is the diff output (never hand-typed) | MiMo |
+| 1.5 | 2026-11-12 | Troubleshooting: storageState refresh rows corrected — `LoginSignInTests` is `[Ignore]`d (device-verification wall), fix now points at the human-assisted runbook in `Rules/ui-testing.md` → Auth | MiMo |
