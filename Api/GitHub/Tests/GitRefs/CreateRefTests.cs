@@ -40,9 +40,9 @@ public class CreateRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
-        _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdRefs.Add(refName);
         created.Data.Should().NotBeNull();
     }
 
@@ -55,9 +55,9 @@ public class CreateRefTests : GitHubTestBase
         var createRequest = GitRefGenerator.Create(refName, _baseSha);
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs, createRequest, TestRepoParam());
-        _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdRefs.Add(refName);
         created.Data.Should().NotBeNull();
         created.Data!.ShouldMatchRequest(GitRefGenerator.CreateRefOnly(refName));
         created.Data.Object.Sha.Should().Be(_baseSha, "request Sha maps to nested object.sha — documented ShouldMatchRequest exception");
@@ -72,9 +72,9 @@ public class CreateRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
-        _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdRefs.Add(refName);
         created.Data!.Object.Type.Should().Be(GitHubEndpoints.ObjectTypeCommit);
         created.Data!.Object.Sha.ShouldHaveValidSha();
     }
@@ -150,9 +150,9 @@ public class CreateRefTests : GitHubTestBase
         var first = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
-        _createdRefs.Add(refName);
 
         first.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdRefs.Add(refName);
 
         var second = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
@@ -184,9 +184,9 @@ public class CreateRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create(refName, _baseSha), TestRepoParam());
-        _createdRefs.Add(refName);
 
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdRefs.Add(refName);
 
         var refPath = $"{GitHubEndpoints.HeadsPrefix}{refName[GitHubEndpoints.RefsHeadsPrefix.Length..]}";
         var result = await WaitHelper.WaitUntilAsync(

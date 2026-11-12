@@ -16,8 +16,8 @@ public class CreateIssueTests : GitHubTestBase
 {
     private readonly List<int> _createdIssueNumbers = [];
     private const int LongTitleLength = 65536;
-    private static readonly List<string> TestIssueLabels = ["bug", "urgent"];
-    private static readonly string MarkdownBody = "# Heading\n\n**bold** and <b>html</b> [link](https://example.com)";
+    private static readonly List<string> _testIssueLabels = ["bug", "urgent"];
+    private static readonly string _markdownBody = "# Heading\n\n**bold** and <b>html</b> [link](https://example.com)";
 
     [Test]
     [Category("HealthCheck")]
@@ -52,7 +52,7 @@ public class CreateIssueTests : GitHubTestBase
     public async Task CreateIssue_MatchesRequest()
     {
         var request = IssueGenerator.CreateRandom("Match probe", "Match body");
-        request.Labels = TestIssueLabels;
+        request.Labels = _testIssueLabels;
 
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, request, TestRepoParam());
@@ -63,7 +63,7 @@ public class CreateIssueTests : GitHubTestBase
         matchRequest.Body = request.Body;
         created.Data!.ShouldMatchRequest(matchRequest);
         created.Data!.Labels.Should().NotBeNull("response must echo the labels sent in the request");
-        created.Data!.Labels.Select(label => label.Name).Should().BeEquivalentTo(TestIssueLabels,
+        created.Data!.Labels.Select(label => label.Name).Should().BeEquivalentTo(_testIssueLabels,
             "response label names must match the request labels — request carries strings, response carries Label objects");
     }
 
@@ -97,7 +97,7 @@ public class CreateIssueTests : GitHubTestBase
     public async Task CreateIssue_WithLabels_ReturnsCreated()
     {
         var request = IssueGenerator.CreateRandom("Labels probe", "Labels body");
-        request.Labels = TestIssueLabels;
+        request.Labels = _testIssueLabels;
 
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, request, TestRepoParam());
@@ -105,7 +105,7 @@ public class CreateIssueTests : GitHubTestBase
         _createdIssueNumbers.Add(created.Data!.Number);
         created.Data.Should().NotBeNull();
         created.Data!.Labels.Should().NotBeNull("response must echo the labels sent in the request");
-        created.Data!.Labels.Select(label => label.Name).Should().BeEquivalentTo(TestIssueLabels,
+        created.Data!.Labels.Select(label => label.Name).Should().BeEquivalentTo(_testIssueLabels,
             "response label names must match the request labels");
     }
 
@@ -152,8 +152,8 @@ public class CreateIssueTests : GitHubTestBase
     {
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, IssueGenerator.CreateWithTitle(new string('a', LongTitleLength)), TestRepoParam());
-        created.StatusCode.Should().BeOneOf(HttpStatusCode.Created, HttpStatusCode.UnprocessableEntity);
-        if (created.StatusCode == HttpStatusCode.Created)
+        var status = created.ShouldHaveStatusCode(HttpStatusCode.Created, HttpStatusCode.UnprocessableEntity);
+        if (status == HttpStatusCode.Created)
         {
             _createdIssueNumbers.Add(created.Data!.Number);
         }
@@ -165,7 +165,7 @@ public class CreateIssueTests : GitHubTestBase
     public async Task CreateIssue_SpecialCharsBody_ReturnsCreated()
     {
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
-            GitHubEndpoints.RepoIssues, IssueGenerator.CreateRandom("Special chars probe", MarkdownBody), TestRepoParam());
+            GitHubEndpoints.RepoIssues, IssueGenerator.CreateRandom("Special chars probe", _markdownBody), TestRepoParam());
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
         _createdIssueNumbers.Add(created.Data!.Number);
         created.Data.Should().NotBeNull();

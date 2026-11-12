@@ -84,7 +84,7 @@ public class AssertHelperShaBudgetTests
     [Category("Performance")]
     public void ShouldBeWithinResponseBudget_AtBudgetBoundary_IsInconclusive()
     {
-        long elapsed = TestConfig.MaxResponseTimeMs;
+        var elapsed = TestConfig.MaxResponseTimeMs;
 
         var act = () => AssertHelper.ShouldBeWithinResponseBudget(elapsed);
 

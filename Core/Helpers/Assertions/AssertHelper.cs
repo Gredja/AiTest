@@ -37,6 +37,13 @@ public static class AssertHelper
     public static void ShouldHaveStatusCode(this RestResponse response, HttpStatusCode expected) =>
         response.StatusCode.Should().Be(expected);
 
+    public static HttpStatusCode ShouldHaveStatusCode(this RestResponse response, params HttpStatusCode[] expected)
+    {
+        response.StatusCode.Should().BeOneOf(expected);
+
+        return response.StatusCode;
+    }
+
     public static void ShouldHaveStatusCode(this HttpStatusCode statusCode, HttpStatusCode expected) =>
         statusCode.Should().Be(expected);
 

@@ -21,8 +21,10 @@ public class DeleteInvitationTests : GitHubTestBase
         var pending = await Get<List<InvitationModelResponse>>(GitHubEndpoints.RepoInvitations, TestRepoParam());
         pending.ShouldHaveStatusCode(HttpStatusCode.OK);
 
-        var maxId = pending.Data!.Select(invitation => invitation.Id).DefaultIfEmpty().Max();
-        _nonExistentId = maxId + GitHubEndpoints.NonExistentIdOffset;
+        var invitations = pending.Data!;
+        _nonExistentId = invitations.Count > 0
+            ? invitations.Max(invitation => invitation.Id) + GitHubEndpoints.NonExistentIdOffset
+            : GitHubEndpoints.NonExistentStaticId;
     }
 
     [Test]

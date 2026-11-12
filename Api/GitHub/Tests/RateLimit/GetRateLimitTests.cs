@@ -1,4 +1,4 @@
-﻿using Core.Config;
+using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
 using Core.Models.GitHub;
@@ -42,13 +42,15 @@ public class GetRateLimitTests : GitHubTestBase
         var response = await Get<RateLimitModelResponse>(GitHubEndpoints.RateLimit);
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
-        if (response.Data!.Rate.Remaining <= 0)
+        response.Data!.Rate.Limit.Should().BeGreaterThan(0);
+
+        if (response.Data.Rate.Remaining <= 0)
         {
-            Assert.Ignore("rate-limit quota exhausted — wait for the hourly reset before re-running");
+            Assert.Inconclusive(
+                $"rate-limit quota exhausted (remaining {response.Data.Rate.Remaining}, limit {response.Data.Rate.Limit}, reset {response.Data.Rate.Reset}) — informational on live services");
         }
 
         response.Data.Rate.Remaining.Should().BeGreaterThan(0);
-        response.Data.Rate.Limit.Should().BeGreaterThan(0);
     }
 
     [Test]

@@ -169,9 +169,8 @@ public class CreatePullRequestTests : GitHubTestBase
             GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", mainBranch.Data!.Commit.Sha),
             TestRepoParam());
 
-        _createdBranchNames.Add(branchName);
-
         branch.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdBranchNames.Add(branchName);
 
         var response = await Post<CreatePullRequestModelRequest, PullRequestModelResponse>(
             GitHubEndpoints.RepoPullRequests,

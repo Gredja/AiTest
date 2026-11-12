@@ -9,9 +9,9 @@ public static class JsonPlaceholderTestData
     public const string SampleTitle = "Title";
     public const string SampleBody = "Body";
 
-    public static readonly PostModelRequest TestPost =
+    public static PostModelRequest TestPost =>
         PostGenerator.Create(1, "Test Post for contract", "Guarantee data");
 
-    public static readonly TodoModelRequest TestTodo =
+    public static TodoModelRequest TestTodo =>
         TodoGenerator.Create(1, "Test Todo for contract");
 }

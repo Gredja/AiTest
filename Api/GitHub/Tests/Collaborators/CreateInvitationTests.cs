@@ -69,7 +69,7 @@ public class CreateInvitationTests : GitHubTestBase
         {
             RequestFormat = DataFormat.Json
         };
-        request.AddJsonBody(new Dictionary<string, object> { ["permission"] = GitHubEndpoints.PermissionPush });
+        request.AddJsonBody(new Dictionary<string, object> { [JsonFields.Permission] = GitHubEndpoints.PermissionPush });
         AddParams(request, [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
 
         var response = await Client.ExecuteAsync(request);
@@ -87,7 +87,7 @@ public class CreateInvitationTests : GitHubTestBase
             RequestFormat = DataFormat.Json
         };
         request.AddHeader(AuthorizationHeader, InvalidAuthorization);
-        request.AddJsonBody(new Dictionary<string, object> { ["permission"] = GitHubEndpoints.PermissionPush });
+        request.AddJsonBody(new Dictionary<string, object> { [JsonFields.Permission] = GitHubEndpoints.PermissionPush });
         AddParams(request, [.. TestRepoParam(), .. UsernameParam(TestConfig.GitHubCollaboratorUser)]);
 
         var response = await Client.ExecuteAsync(request);

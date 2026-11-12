@@ -1,4 +1,4 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Helpers;
 using Core.Logging;
 using static Core.Helpers.ParamHelper;
@@ -21,13 +21,13 @@ public class JsonPlaceholderCleanupHelper : JsonPlaceholderRequestHelper
             if (!delete.IsSuccessful)
             {
                 TestContext.Progress.WriteLine(
-                    $"{CleanupWarning.Prefix}post {postId} not deleted: HTTP {(int)delete.StatusCode}");
+                    $"{LogText.Warning}post {postId} not deleted: HTTP {(int)delete.StatusCode}");
             }
         }
         catch (HttpRequestException exception)
         {
             TestContext.Progress.WriteLine(
-                $"{CleanupWarning.Prefix}failed to delete post {postId}: {exception.Message}");
+                $"{LogText.Warning}failed to delete post {postId}: {exception.Message}");
         }
     }
 
@@ -45,13 +45,13 @@ public class JsonPlaceholderCleanupHelper : JsonPlaceholderRequestHelper
             if (!delete.IsSuccessful)
             {
                 TestContext.Progress.WriteLine(
-                    $"{CleanupWarning.Prefix}todo {todoId} not deleted: HTTP {(int)delete.StatusCode}");
+                    $"{LogText.Warning}todo {todoId} not deleted: HTTP {(int)delete.StatusCode}");
             }
         }
         catch (HttpRequestException exception)
         {
             TestContext.Progress.WriteLine(
-                $"{CleanupWarning.Prefix}failed to delete todo {todoId}: {exception.Message}");
+                $"{LogText.Warning}failed to delete todo {todoId}: {exception.Message}");
         }
     }
 }
