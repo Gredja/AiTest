@@ -9,6 +9,11 @@ Update project documentation files after structural or code changes. Ensures all
 
 ## Step 1: Detect changes
 
+**Branch guard (hard rule, Rules/git.md → Branches):** run `git branch --show-current` FIRST.
+- On `main` → STOP before any edit. Report the violation and propose `git switch -c features/<topic>`
+  (uncommitted changes move with the switch automatically), then wait for the user.
+- Else proceed with the change detection.
+
 Run `git diff --name-only` and `git status --short` to identify:
 - New files added
 - Files renamed/deleted
@@ -106,6 +111,7 @@ Report what was updated AND the Step 7 verification result:
 
 ## Rules
 
+- **Check the branch FIRST (`git branch --show-current`) — on `main` STOP and move to a `features/` branch before any edit** (Rules/git.md, same guard as `/commit` and `/merge`)
 - Run `git diff --name-only` first to detect actual changes
 - Plan gate first (Step 2) — no edits before approval (Rules/workflow.md)
 - Never remove content that hasn't been deleted from the project
@@ -122,3 +128,4 @@ Report what was updated AND the Step 7 verification result:
 | Version | Date | Change | Author |
 |---|---|---|---|
 | 1.0 | 2026-11-08 | Revision History added (S9); no functional changes — skill reviewed, no defects found | MiMo |
+| 1.1 | 2026-11-12 | Step 1 + Rules: branch guard (`git branch --show-current`, STOP on `main`) — added after the main-branch edit miss on 2026-11-12 | MiMo |

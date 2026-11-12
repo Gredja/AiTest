@@ -1018,7 +1018,12 @@ skill prompt.
    the repo). Editing a generation skill requires re-running its eval before the commit:
    fill the status table (pass/fail + date) and put it in the commit report — a commit that
    touches a generation skill without an eval table is blocked. The eval grows with the
-   skill: start small (4 cases), expand and adjust the skills from the findings.
+   skill: start small, expand and adjust the skills from the findings. Run hygiene:
+   the runner gives the generator the case INPUT only and explicitly forbids reading the
+   eval files themselves (a generator that has seen the checklist invalidates the run);
+   record a score (`passed must / total must` and must-not) per case so before/after is a
+   number, not a vibe; after a skill edit re-run EVERY case of that skill — the edit that
+   motivated the rerun is not the only thing it can break.
 
 ### 14.10 E2E scenario generation (multi-step write chains)
 1. Chain shape: create → verify → mutate → cleanup; the chain lives in the E2E project, not the
