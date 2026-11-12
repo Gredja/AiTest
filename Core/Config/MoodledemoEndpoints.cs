@@ -8,6 +8,7 @@ public static class MoodledemoEndpoints
     public const string LoginPath = "/login/index.php";
     public const string LogoutPath = "/login/logout.php";
     public const string CalendarPath = "/calendar/view.php";
+    public const string CalendarMonthQuery = "view=month";
     public const string MyDashboardPath = "/my/";
     public const string LangQueryKey = "lang";
     public const string UnknownLangCode = "xx_notreal";

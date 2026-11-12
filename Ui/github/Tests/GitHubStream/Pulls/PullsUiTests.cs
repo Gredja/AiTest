@@ -16,11 +16,13 @@ public class PullsUiTests : GitHubUiTestBase
         await CloseAllOpenPullRequestsAsync();
         await Browser.PullsPage.OpenAsync();
 
-        var hasEmptyState = await Browser.PullsPage.HasEmptyStateAsync();
-        hasEmptyState.Should().BeTrue("fresh sandbox has no pull requests");
+        var emptyState = await Browser.PullsPage.WaitForEmptyStateAsync();
+        emptyState.IsSuccess.Should().BeTrue(
+            $"fresh sandbox has no pull requests (attempts={emptyState.Attempts}, elapsed={emptyState.Elapsed})");
 
-        var openCount = await Browser.PullsPage.GetOpenCountAsync();
-        openCount.Should().Be(0, "open tab must show zero PRs");
+        var openCount = await Browser.PullsPage.WaitForOpenCountAsync(0);
+        openCount.IsSuccess.Should().BeTrue(
+            $"open tab must show zero PRs (attempts={openCount.Attempts}, elapsed={openCount.Elapsed}, last={openCount.LastValue})");
     }
 
     [Test]

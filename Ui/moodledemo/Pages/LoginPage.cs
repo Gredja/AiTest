@@ -31,7 +31,7 @@ internal sealed class LoginPage(IPage page)
 
     internal async Task<bool> HasLocaleMarkerAsync(string expectedLang)
     {
-        var lang = await page.GetAttributeAsync("html", "lang");
+        var lang = await PageLocaleReaderHelper.ReadLangAsync(page);
 
         return lang == expectedLang;
     }
@@ -82,14 +82,14 @@ internal sealed class LoginPage(IPage page)
         // the logout link lives inside a hidden user dropdown — a JS click follows the
         // redirect chain naturally (a direct GotoAsync hits net::ERR_ABORTED on the 302);
         // the href is the stable identity (localized names change per language)
-        var clicked = await page.EvaluateAsync<bool>(
+        var isClicked = await page.EvaluateAsync<bool>(
             @"(() => {
                 const link = document.querySelector(""a[href*='/login/logout.php']"");
                 if (!link) return false;
                 link.click();
                 return true;
             })()");
-        if (!clicked)
+        if (!isClicked)
         {
             throw new InvalidOperationException("logout link not found — user is not logged in");
         }
@@ -108,7 +108,7 @@ internal sealed class LoginPage(IPage page)
     }
 
     internal async Task<bool> IsLoggedInAsync() =>
-        await page.Locator($"a[href*='{MoodledemoEndpoints.LogoutPath}']").CountAsync() > 0;
+        await _logoutLink.CountAsync() > 0;
 
     internal async Task FillLoginFormAsync(string username, string password)
     {
@@ -129,7 +129,7 @@ internal sealed class LoginPage(IPage page)
     // code by code first, then by the LoginPage lang column, case-insensitively
     private async Task<ILocator> ResolveLoginButtonAsync()
     {
-        var htmlLang = (await page.GetAttributeAsync("html", "lang") ?? MoodledemoFixtures.English.Code)
+        var htmlLang = (await PageLocaleReaderHelper.ReadLangAsync(page) ?? MoodledemoFixtures.English.Code)
             .Replace('-', '_');
         var code = MoodledemoFixtures.LoginLabels
                 .FirstOrDefault(row => row.Code.Equals(htmlLang, StringComparison.OrdinalIgnoreCase))?.Code

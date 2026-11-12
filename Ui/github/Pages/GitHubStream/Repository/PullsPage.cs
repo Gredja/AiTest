@@ -7,12 +7,28 @@ namespace Ui.Github.Pages.GitHubStream.Repository;
 
 internal sealed class PullsPage(IPage page)
 {
-    internal async Task OpenAsync() => await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pulls");
+    internal async Task OpenAsync() => await page.GotoAsync($"{TestConfig.UiBaseUrl}{GitHubUiEndpoints.PullsPath}");
 
-    internal async Task<bool> HasEmptyStateAsync() =>
+    private async Task<bool> HasEmptyStateAsync() =>
         await _emptyStateHeading.CountAsync() > 0;
 
-    internal async Task<int?> GetOpenCountAsync() => await GetTabCountAsync("Open");
+    private async Task<int?> GetOpenCountAsync() => await GetTabCountAsync(GitHubStateLabels.Open);
+
+    // after an API-driven close-all the list lags the writes — poll with a reload
+    // instead of sampling the empty heading once
+    internal async Task<WaitResult<bool>> WaitForEmptyStateAsync() =>
+        await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                await page.ReloadAsync();
+
+                return await HasEmptyStateAsync();
+            },
+            isEmpty => isEmpty);
+
+    // the tab counter renders with the list chrome — poll until it reads the expected count
+    internal async Task<WaitResult<int?>> WaitForOpenCountAsync(int expectedCount) =>
+        await WaitHelper.WaitUntilAsync(GetOpenCountAsync, count => count == expectedCount);
 
     internal async Task<bool> HasPullWithTitleAsync(string title) =>
         await _tabLinks.Filter(new() { HasTextString = title }).CountAsync() > 0;

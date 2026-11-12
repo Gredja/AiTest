@@ -91,6 +91,7 @@ Core/
 │   ├── GitHubEndpoints.cs
 │   ├── GitHubErrors.cs            # documented error message constants (verified vs live API)
 │   ├── GitHubHeaders.cs            # X-RateLimit-* header names (shared Api/E2E)
+│   ├── GitHubUiEndpoints.cs        # browser routes for Ui.TestRepo (UI page-objects)
 │   ├── JsonPlaceholderEndpoints.cs
 │   ├── MoodledemoEndpoints.cs
 │   └── TestConfig.cs
@@ -399,6 +400,7 @@ Ui/
 ├── TestReportSetup.cs            # [assembly: TestOutcome] + NUnit teardown → TestRunReport-*.md
 ├── Helpers/                      # project-level helpers shared by both site trees (Helper suffix rule)
 │   ├── ArtifactNamingHelper.cs
+│   ├── GitHubStateLabels.cs        # visible "Open"/"Closed" UI labels (constants holder)
 │   ├── HtmlLocaleReaderHelper.cs
 │   ├── MoodledemoHttpHelper.cs
 │   ├── PageLocaleReaderHelper.cs

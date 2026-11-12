@@ -7,6 +7,8 @@ namespace Ui.Github.Pages.GitHubStream.Pulls;
 
 internal sealed class PullDetailPage(IPage page)
 {
+    private const string ConvertToDraftPathSegment = "convert_to_draft";
+
     private static readonly TimeSpan _actionTimeout =
         TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
@@ -15,21 +17,28 @@ internal sealed class PullDetailPage(IPage page)
     private static readonly TimeSpan _actionRetryInterval = TimeSpan.FromMilliseconds(500);
 
     internal async Task OpenAsync(int pullNumber) =>
-        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pull/{pullNumber}");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}{GitHubUiEndpoints.PullPath(pullNumber)}");
 
     internal int? TryGetPullNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(page.Url);
 
     internal async Task<bool> HasTitleAsync(string title) =>
         await _pullHeadings.Filter(new() { HasTextString = title }).CountAsync() > 0;
 
-    internal async Task<bool> HasBranchLinkAsync(string branchName) =>
+    private async Task<bool> HasBranchLinkAsync(string branchName) =>
         await _branchLinks.Filter(new() { HasTextString = branchName }).CountAsync() > 0;
+
+    // pull-detail content hydrates after navigation — wait instead of an instant count
+    internal async Task<WaitResult<bool>> WaitForTitleAsync(string title) =>
+        await WaitHelper.WaitUntilAsync(() => HasTitleAsync(title), found => found);
+
+    internal async Task<WaitResult<bool>> WaitForBranchLinkAsync(string branchName) =>
+        await WaitHelper.WaitUntilAsync(() => HasBranchLinkAsync(branchName), found => found);
 
     internal async Task<bool> HasTextAsync(string text) =>
         await page.GetByText(text).CountAsync() > 0;
 
     internal async Task OpenFilesChangedAsync(int pullNumber) =>
-        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/pull/{pullNumber}/files");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}{GitHubUiEndpoints.PullFilesPath(pullNumber)}");
 
     // the diff view hydrates after navigation — poll presence instead of an instant count
     internal async Task<WaitResult<bool>> WaitForFileAsync(string fileName) =>
@@ -133,7 +142,7 @@ internal sealed class PullDetailPage(IPage page)
     // await the response, then poll the badge via reload; the server is the source of truth
     internal async Task<WaitResult<bool>> ConvertToDraftAsync()
     {
-        var convertResponse = page.WaitForResponseAsync(response => response.Url.Contains("convert_to_draft"));
+        var convertResponse = page.WaitForResponseAsync(response => response.Url.Contains(ConvertToDraftPathSegment));
         await _convertToDraftButton.ClickAsync();
         await _draftConfirmButton.ClickAsync();
         await convertResponse;
@@ -161,8 +170,8 @@ internal sealed class PullDetailPage(IPage page)
     private readonly ILocator _pullHeadings = page.GetByRole(AriaRole.Heading);
     private readonly ILocator _branchLinks = page.GetByRole(AriaRole.Link);
     private readonly ILocator _fileTreeItems = page.GetByRole(AriaRole.Treeitem);
-    private readonly ILocator _openStatusText = page.GetByText("Open", new() { Exact = true }).First;
-    private readonly ILocator _closedStatusText = page.GetByText("Closed", new() { Exact = true }).First;
+    private readonly ILocator _openStatusText = page.GetByText(GitHubStateLabels.Open, new() { Exact = true }).First;
+    private readonly ILocator _closedStatusText = page.GetByText(GitHubStateLabels.Closed, new() { Exact = true }).First;
     private readonly ILocator _draftStatusText = page.GetByText("Draft", new() { Exact = true }).First;
     private readonly ILocator _closePullButton = page.GetByRole(AriaRole.Button, new() { Name = "Close pull request" });
     private readonly ILocator _reopenPullButton = page.GetByRole(AriaRole.Button, new() { Name = "Reopen pull request" });

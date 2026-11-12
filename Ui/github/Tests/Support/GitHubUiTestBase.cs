@@ -20,6 +20,7 @@ public abstract class GitHubUiTestBase
 
     private const string ScratchBranchPrefix = "ui-scratch-";
     private const string ScratchBaseBranchPrefix = "ui-scratch-base-";
+    private const string UiArtifactsFolderName = "ui-artifacts";
     internal const string ScratchFileName = "ui-scratch.txt";
 
     private IPlaywright? _playwright;
@@ -96,7 +97,9 @@ public abstract class GitHubUiTestBase
 
         var isFailed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed;
 
-        if (isFailed)
+        // Credential-entry tests (IsStorageStateEnabled = false) must not persist screenshots
+        // either — the typed e-mail would stay visible in ui-artifacts/*.png
+        if (isFailed && IsStorageStateEnabled)
         {
             var artifacts = ResolveArtifactsDirectory();
             var failedName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
@@ -105,14 +108,10 @@ public abstract class GitHubUiTestBase
                 Path = Path.Combine(artifacts, $"{failedName}.png"),
                 FullPage = true
             });
-
-            if (IsStorageStateEnabled)
+            await _context.Tracing.StopAsync(new TracingStopOptions
             {
-                await _context.Tracing.StopAsync(new TracingStopOptions
-                {
-                    Path = Path.Combine(artifacts, $"{failedName}.zip")
-                });
-            }
+                Path = Path.Combine(artifacts, $"{failedName}.zip")
+            });
         }
         else if (IsStorageStateEnabled)
         {
@@ -123,17 +122,6 @@ public abstract class GitHubUiTestBase
         _context = null;
         _page = null;
         _browserWrapper = null;
-    }
-
-    [OneTimeTearDown]
-    public async Task CloseBrowserAsync()
-    {
-        if (_browser is not null)
-        {
-            await _browser.CloseAsync();
-        }
-
-        _playwright?.Dispose();
     }
 
     protected async Task SaveStorageStateAsync()
@@ -274,9 +262,9 @@ public abstract class GitHubUiTestBase
                 var response = await Cleanup.Get<IssueModelResponse>(
                     GitHubEndpoints.RepoIssueById,
                     [.. UiSandboxRepoParams(), .. GitHubParamHelper.IssueNumberParam(issueNumber)]);
-                var found = response.Data?.Labels?.Any(label => label.Name == labelName) is true;
+                var isLabelPresent = response.Data?.Labels?.Any(label => label.Name == labelName) is true;
 
-                return found == hasLabel;
+                return isLabelPresent == hasLabel;
             },
             matches => matches);
 
@@ -479,6 +467,7 @@ public abstract class GitHubUiTestBase
     private static string ResolveDeviceTrustPath()
     {
         const string relativeTrustPath = ".auth/github-device-trust.json";
+
         return Path.IsPathRooted(relativeTrustPath)
             ? relativeTrustPath
             : Path.Combine(ResolveRepositoryRoot(), relativeTrustPath);
@@ -486,7 +475,7 @@ public abstract class GitHubUiTestBase
 
     private static string ResolveArtifactsDirectory()
     {
-        var directory = Path.Combine(ResolveRepositoryRoot(), TestConfig.ResultsDirName, "ui-artifacts");
+        var directory = Path.Combine(ResolveRepositoryRoot(), TestConfig.ResultsDirName, UiArtifactsFolderName);
         Directory.CreateDirectory(directory);
 
         return directory;
@@ -507,5 +496,16 @@ public abstract class GitHubUiTestBase
         }
 
         return dir.FullName;
+    }
+
+    [OneTimeTearDown]
+    public async Task CloseBrowserAsync()
+    {
+        if (_browser is not null)
+        {
+            await _browser.CloseAsync();
+        }
+
+        _playwright?.Dispose();
     }
 }
