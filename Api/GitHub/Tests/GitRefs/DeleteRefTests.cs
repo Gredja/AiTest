@@ -41,8 +41,9 @@ public class DeleteRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create(fullRef, _baseSha), TestRepoParam());
-        _createdRefs.Add(refPath);
+
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdRefs.Add(refPath);
 
         var deleted = await Delete<object>(
             GitHubEndpoints.RepoGitRefById, [.. TestRepoParam(), .. GitRefParam(refPath)]);
@@ -60,8 +61,9 @@ public class DeleteRefTests : GitHubTestBase
         var created = await Post<CreateGitRefModelRequest, GitRefModelResponse>(
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create(fullRef, _baseSha), TestRepoParam());
-        _createdRefs.Add(refPath);
+
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        _createdRefs.Add(refPath);
 
         var first = await Delete<object>(
             GitHubEndpoints.RepoGitRefById, [.. TestRepoParam(), .. GitRefParam(refPath)]);

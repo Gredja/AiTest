@@ -1,10 +1,11 @@
-using Core.Config;
+﻿using Core.Config;
 using Core.Generators.GitHub;
 using Core.Helpers;
 using Core.Models.GitHub;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.GitHub.GitHubParamHelper;
+using E2E.GitHub.Tests.Support;
 
 namespace E2E.GitHub.Tests;
 
@@ -15,7 +16,7 @@ public class IssuesTests : GitHubE2ETestBase
 {
     private readonly List<int> _createdIssueNumbers = [];
 
-    private static readonly List<string> _issueLabels = ["bug", "urgent"];
+    private readonly List<string> _issueLabels = ["bug", "urgent"];
 
     private const string SpecialCharsTitle = "E2E special <title> & \"quoted\" — Ünïcödé #42";
 

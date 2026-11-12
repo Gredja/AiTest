@@ -3,7 +3,7 @@
 **Project:** Gredja (.NET 11.0)
 **Surface under test:** GitHub web UI (https://github.com) — sandbox repo `gredjapl/ui-sandbox` (`TestConfig.UiTestRepo`)
 **Date:** 2026-10-09
-**Last verified:** 2026-10-19 (locator/measurement probes through UI-23)
+**Last verified:** 2026-11-09 (device-verification gotcha, UI-1; locator/measurement probes through UI-23)
 **Scope:** UI pages and flows (Playwright, Chromium)
 **Test plan history:** retired (lifecycle — plans deleted after implementation); durable status lives in this document and `Rules/ui-testing.md`
 
@@ -24,7 +24,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 4. **Puts actions in page-objects** — tests orchestrate and assert; they never contain raw locators
 5. **Cross-verifies writes via API** — UI creates, Core API reads back as the oracle (Core `RequestHelper`)
 6. **Cleans via API in teardown** — register-then-assert, `[OneTimeTearDown]` last member, warning-only cleanup
-7. **Never logs in/out inside feature tests** — they load storageState; the dedicated Smoke test `LoginSignInTests` signs in anonymously and saves the state file
+7. **Never logs in/out inside feature tests** — they load storageState; the dedicated Smoke test `LoginSignInTests` signs in anonymously and saves the state file — **currently `[Ignore]`d** behind the device-verification wall, so refresh is human-assisted (`Rules/ui-testing.md` → Auth)
 8. **Never invents text** — button/label texts come from snapshots; a missing text = re-snapshot, not guess
 
 ---
@@ -39,7 +39,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 - Prerequisites: credentials `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` in `.env`; the login test overrides `IsStorageStateEnabled => false` (anonymous context) and saves storageState only after the assert
 - Gotcha: an account created without a password (social login / passkey-only) fails with "This account does not support password sign-in" — fix: sign in via Google/Apple/passkey once, then Settings → Password and authentication → create a password (verified 2026-10-09)
 - Gotcha: the user-menu click right after the login redirect can be swallowed (menu never opens), and the menu itself renders ~300ms after the click — `HeaderPage` waits for the `User navigation` dialog and re-clicks until it is up, at a 1s interval (verified 2026-10-14)
-- Gotcha (**device verification wall**): a fresh browser profile logs in and is redirected to `https://github.com/sessions/verified-device` (`heading "Device verification"`, email-code challenge) — the user menu never appears there and the test times out at 15s. Observed 2026-11-09 (reproduced isolated). Fix: the shared browser profile persists at `.auth/github-ui-profile` (gitignored, `GitHubUiTestBase.LaunchBrowserAsync` → `UserDataContextDir`) so the trusted-device cookie survives runs; a NEW profile needs one human verification (headed run) before login/logout tests can pass
+- Gotcha (**device verification wall**): a fresh browser profile logs in and is redirected to `https://github.com/sessions/verified-device` (`heading "Device verification"`, email-code challenge) — the user menu never appears there and the test times out at 15s. Observed 2026-11-09 (reproduced isolated). Fix: device-trust cookies persist in `.auth/github-device-trust.json` (gitignored, exported once after a human completes the email-code challenge in a headed run); `GitHubUiTestBase` injects them into every context (`InjectDeviceTrustCookiesAsync`) — a NEW device needs one human verification before login/logout tests can pass
 
 ## Logout / signed-out header (UI-2)
 

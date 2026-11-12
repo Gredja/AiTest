@@ -1,10 +1,10 @@
-using Core.Generators;
+﻿using Core.Generators;
 using Core.Helpers.GitHub;
 using System.Security.Cryptography;
 using System.Text;
 using static Core.Helpers.TestDataConstants;
 
-namespace Api.GitHub.Helpers;
+namespace Api.GitHub.Tests.Support;
 
 public abstract class GitBlobTestBase : GitHubTestBase
 {

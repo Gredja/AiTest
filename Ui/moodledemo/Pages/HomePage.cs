@@ -124,12 +124,6 @@ internal sealed class HomePage(IPage page)
         }
     }
 
-    internal ILocator LanguageLinks =>
-        page.Locator(LanguageLinksSelector);
-
-    internal ILocator CurrentLanguageItem =>
-        page.Locator(CurrentLanguageSelector);
-
     internal async Task ClickLanguageAsync(string code)
     {
         for (var attempt = 1; attempt <= NavigationAttempts; attempt++)
@@ -186,8 +180,8 @@ internal sealed class HomePage(IPage page)
     internal Task GotoCalendarAsync(string? langCode = null)
     {
         var pathAndQuery = langCode is null
-            ? $"{MoodledemoEndpoints.CalendarPath}?view=month"
-            : $"{MoodledemoEndpoints.CalendarPath}?view=month&{MoodledemoEndpoints.LangQueryKey}={langCode}";
+            ? $"{MoodledemoEndpoints.CalendarPath}?{MoodledemoEndpoints.CalendarMonthQuery}"
+            : $"{MoodledemoEndpoints.CalendarPath}?{MoodledemoEndpoints.CalendarMonthQuery}&{MoodledemoEndpoints.LangQueryKey}={langCode}";
         var expectedLang = langCode is null
             ? MoodledemoFixtures.English.Lang
             : MoodledemoFixtures.Home.Single(row => row.Code == langCode).Lang;
@@ -235,6 +229,12 @@ internal sealed class HomePage(IPage page)
 
         return await nav.EvaluateAsync<string>("el => getComputedStyle(el).direction");
     }
+
+    internal ILocator LanguageLinks =>
+        page.Locator(LanguageLinksSelector);
+
+    internal ILocator CurrentLanguageItem =>
+        page.Locator(CurrentLanguageSelector);
 
     // The guest footer offers a log-in link — named so tests never build footer selectors
     internal ILocator FooterLoginLinks =>

@@ -1,4 +1,4 @@
-using Api.GitHub.Helpers;
+﻿using Api.GitHub.Tests.Support;
 using Core.Config;
 using Core.Helpers;
 using System.Net;

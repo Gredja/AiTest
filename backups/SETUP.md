@@ -222,12 +222,12 @@ dotnet build                       # должна компилироваться
 dotnet test --verbosity minimal    # штатный запуск всех тестов: пишет TestRunReport-*.md в TestResults/
 ./Scripts/install-playwright.ps1   # один раз: Chromium для UI-тестов
 dotnet test --filter Category=GitHubUi      # только UI-сьют (Playwright)
-dotnet test --filter LoginSignInTests       # обновить .auth/github-ui-state.json (UI-тесты его читают)
+dotnet test --filter LoginSignInTests       # обновить .auth/github-ui-state.json (сейчас [Ignore]: сначала ручной проход стены device-verification — см. ниже)
 ```
 
 Отчёт — таблица по каждому тесту + итог (количество и проценты), создаётся автоматически после любого `dotnet test`. Фильтр: `dotnet test --verbosity minimal --filter "Category=HealthCheck"`.
 
-UI-тестам нужны креды из `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) и свежий storageState: если он протух, сначала `LoginSignInTests` — он логинится анонимно, проверяет меню юзера и сохраняет state-файл. Плюс **персистентный профиль браузера** `.auth/github-ui-profile` (gitignored, задаётся через `UserDataContextDir` в `GitHubUiTestBase`): он хранит cookie device-trust GitHub — без него каждый прогон выглядит как «новое устройство» и логин упирается в `sessions/verified-device` (код подтверждения по email — тесты его не проходят; наблюдение 2026-11-09). Профиль не удалять как мусор; при первом появлении стены — один ручной проход в headed-браузере.
+UI-тестам нужны креды из `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) и свежий storageState: `LoginSignInTests` — он логинится анонимно, проверяет меню юзера и сохраняет state-файл, — но с 2026-11-09 он стоит под `[Ignore]` (стена device-verification), поэтому обновление state сейчас ручное: один headed-проход с кодом из email → разблокировать/прогнать `LoginSignInTests` → вернуть `[Ignore]`. Плюс **файл device-trust cookies** `.auth/github-device-trust.json` (gitignored; экспортируется один раз после ручного прохода верификации и вливается в каждый контекст через `GitHubUiTestBase.InjectDeviceTrustCookiesAsync`): без них GitHub считает каждый свежий профиль «новым устройством» и логин упирается в `sessions/verified-device` (код подтверждения по email — тесты его не проходят; наблюдение 2026-11-09). Файл не удалять как мусор; при первом появлении стены — один ручной проход в headed-браузере.
 
 ### 5.3. Запусти MiMoCode
 

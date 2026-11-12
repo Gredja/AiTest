@@ -1,5 +1,6 @@
 using Core.Config;
 using Core.Generators.GitHub;
+using Core.Logging;
 using Core.Models.Generic;
 using Core.Models.GitHub;
 using NUnit.Framework;
@@ -136,16 +137,16 @@ public class GitHubCleanupHelper : GitHubRequestHelper
             var response = await cleanup();
             if (!response.IsSuccessful && response.StatusCode != HttpStatusCode.NotFound)
             {
-                TestContext.Progress.WriteLine($"Warning: {subject}: HTTP {(int)response.StatusCode}");
+                TestContext.Progress.WriteLine($"{LogText.Warning}{subject}: HTTP {(int)response.StatusCode}");
             }
         }
         catch (HttpRequestException exception)
         {
-            TestContext.Progress.WriteLine($"Warning: {subject} failed: {exception.Message}");
+            TestContext.Progress.WriteLine($"{LogText.Warning}{subject} failed: {exception.Message}");
         }
         catch (OperationCanceledException exception)
         {
-            TestContext.Progress.WriteLine($"Warning: {subject} cancelled: {exception.Message}");
+            TestContext.Progress.WriteLine($"{LogText.Warning}{subject} cancelled: {exception.Message}");
         }
     }
 }

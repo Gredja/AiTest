@@ -73,7 +73,6 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             return;
         }
 
-        List<string> snapshot;
         lock (containerInfo.Children)
         {
             if (containerInfo.Children.Contains(uuid))
@@ -82,11 +81,14 @@ public class AllureNUnitAttribute : Attribute, ITestAction
             }
 
             containerInfo.Children.Add(uuid);
-            snapshot = containerInfo.Children.ToList();
-        }
 
-        var container = AllureTestResultBuilderHelper.BuildContainer(containerUuid, containerInfo.Name, snapshot);
-        AllureJsonWriterHelper.WriteContainerFile(_resultsDir, containerUuid, container);
+            // snapshot and file write under the same lock — a parallel writer would
+            // otherwise overwrite the container file from a stale snapshot and drop
+            // the newer child uuid
+            var container = AllureTestResultBuilderHelper.BuildContainer(
+                containerUuid, containerInfo.Name, containerInfo.Children.ToList());
+            AllureJsonWriterHelper.WriteContainerFile(_resultsDir, containerUuid, container);
+        }
     }
 
     private static string EnsureContainer(ITest test)

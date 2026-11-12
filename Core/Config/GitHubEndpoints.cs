@@ -42,6 +42,21 @@ public static class GitHubEndpoints
     // Ui.BaseUrl (per-run browser config, may point at a proxied environment)
     public const string WebBaseUrl = "https://github.com/";
 
+    // URL template placeholder names — the SAME names appear in the {…} endpoint paths
+    // below and are passed as keys by GitHubParamHelper.UrlSegment(...) in every test
+    public const string OwnerPlaceholder = "owner";
+    public const string RepoPlaceholder = "repo";
+    public const string IssueNumberPlaceholder = "issue_number";
+    public const string PullNumberPlaceholder = "pull_number";
+    public const string CommentIdPlaceholder = "comment_id";
+    public const string BranchPlaceholder = "branch";
+    public const string RefPlaceholder = "ref";
+    public const string CommitShaPlaceholder = "commit_sha";
+    public const string UsernamePlaceholder = "username";
+    public const string InvitationIdPlaceholder = "invitation_id";
+    public const string ReleaseIdPlaceholder = "release_id";
+    public const string ReleaseTagPlaceholder = "release_tag";
+
     public const string Repos = "/repos";
     public const string Repositories = "/repositories";
     public const string ReposById = "/repos/{owner}/{repo}";

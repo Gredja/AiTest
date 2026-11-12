@@ -1,9 +1,10 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.TestDataConstants;
+using E2E.GitHub.Tests.Support;
 
 namespace E2E.GitHub.Tests;
 

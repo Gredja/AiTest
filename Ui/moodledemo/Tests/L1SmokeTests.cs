@@ -12,6 +12,9 @@ namespace Ui.Moodledemo.Tests;
 [Category("MoodleDemo")]
 public class L1SmokeTests
 {
+    private const string UsernameFieldMarkup = "name=\"username\"";
+    private const string LoginButtonMarkup = "id=\"loginbtn\"";
+
     private static IEnumerable<TestCaseData> HomeCases()
     {
         foreach (var expectation in MoodledemoFixtures.Home)
@@ -86,8 +89,8 @@ public class L1SmokeTests
         lang.Should().Be(expectation.Lang);
         dir.Should().Be(expectation.Dir);
         HtmlLocaleReaderHelper.ReadTitle(body).Should().Be(expectation.Title);
-        body.Should().Contain("name=\"username\"", "documented locale-contract probe: the login form must be present in the page markup");
-        body.Should().Contain("id=\"loginbtn\"", "documented locale-contract probe: the login submit button must be present in the page markup");
+        body.Should().Contain(UsernameFieldMarkup, "documented locale-contract probe: the login form must be present in the page markup");
+        body.Should().Contain(LoginButtonMarkup, "documented locale-contract probe: the login submit button must be present in the page markup");
     }
 
     [Test]
@@ -108,7 +111,7 @@ public class L1SmokeTests
 
     [Test]
     [Category("Regression")]
-    [Description("3.2 Home title translatable part is written in the expected script(s) for the code")]
+    [Description("4.1 Home title translatable part is written in the expected script(s) for the code")]
     [TestCaseSource(nameof(HomeScriptCases))]
     public void Home_TitlePart_MatchesExpectedScript(LocaleExpectation expectation) =>
         TitleScriptAssertHelper.ShouldMatch(expectation.Title, expectation.Code);

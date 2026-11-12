@@ -30,7 +30,7 @@ internal static class SiteNavigationHelper
             }
 
             var title = await page.TitleAsync();
-            var lang = await page.GetAttributeAsync("html", "lang");
+            var lang = await PageLocaleReaderHelper.ReadLangAsync(page);
             if (title.Contains(MoodledemoEndpoints.SiteTitleMarker, StringComparison.Ordinal)
                 && lang == expectedLang)
             {

@@ -32,7 +32,8 @@ internal static class TestSourceCategoryReader
     private static IEnumerable<string> EnumerateTestSources(string root) =>
         new[] { Path.Combine(root, "Api"), Path.Combine(root, "E2E") }
             .SelectMany(directory => Directory.EnumerateFiles(directory, "*.cs", SearchOption.AllDirectories))
-            .Where(path => !IsBuildOutput(path));
+            .Where(path => !IsBuildOutput(path))
+            .OrderBy(path => path, StringComparer.Ordinal);
 
     private static bool IsBuildOutput(string path) =>
         path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)

@@ -37,6 +37,13 @@ public static class AssertHelper
     public static void ShouldHaveStatusCode(this RestResponse response, HttpStatusCode expected) =>
         response.StatusCode.Should().Be(expected);
 
+    public static HttpStatusCode ShouldHaveStatusCode(this RestResponse response, params HttpStatusCode[] expected)
+    {
+        response.StatusCode.Should().BeOneOf(expected);
+
+        return response.StatusCode;
+    }
+
     public static void ShouldHaveStatusCode(this HttpStatusCode statusCode, HttpStatusCode expected) =>
         statusCode.Should().Be(expected);
 
@@ -127,12 +134,12 @@ public static class AssertHelper
         {
             responseProperty.Should().NotBeNull(
                 $"response should have property '{requestProperty.Name}' matching request");
-
-            return;
         }
-
-        var responseValue = responseProperty.GetValue(response);
-        CompareValues(responseValue, requestValue, responseProperty.Name);
+        else
+        {
+            var responseValue = responseProperty.GetValue(response);
+            CompareValues(responseValue, requestValue, responseProperty.Name);
+        }
     }
 
     private static void CompareValues(object? responseValue, object? requestValue, string propertyName)

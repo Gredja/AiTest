@@ -20,8 +20,9 @@ public class IssuesUiTests : GitHubUiTestBase
         await CloseAllOpenIssuesAsync();
         await Browser.IssuesPage.OpenAsync();
 
-        var hasEmptyState = await Browser.IssuesPage.HasEmptyStateAsync();
-        hasEmptyState.Should().BeTrue("fresh sandbox has no issues");
+        var emptyState = await Browser.IssuesPage.WaitForEmptyStateAsync();
+        emptyState.IsSuccess.Should().BeTrue(
+            $"fresh sandbox has no issues (attempts={emptyState.Attempts}, elapsed={emptyState.Elapsed})");
 
         var hasNewIssue = await Browser.IssuesPage.HasNewIssueButtonAsync();
         hasNewIssue.Should().BeTrue("authenticated user sees the New issue action");

@@ -35,11 +35,7 @@ public class GetReleasesTests : GitHubTestBase
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
-
-        foreach (var release in response.Data)
-        {
-            release.ShouldHaveValidContract();
-        }
+        response.Data!.ForEach(release => release.ShouldHaveValidContract());
     }
 
     [Test]

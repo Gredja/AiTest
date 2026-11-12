@@ -8,7 +8,7 @@ namespace Ui.Github.Pages.GitHubStream.Issues;
 internal sealed class IssueDetailPage(IPage page)
 {
     internal async Task OpenAsync(int issueNumber) =>
-        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/issues/{issueNumber}");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}{GitHubUiEndpoints.IssuePath(issueNumber)}");
 
     internal int? TryGetIssueNumberFromUrl() => PageUrlHelper.TryGetResourceNumber(page.Url);
 
@@ -82,8 +82,8 @@ internal sealed class IssueDetailPage(IPage page)
             () => _labelOptions.Filter(new() { HasTextString = label }).First.ClickAsync());
 
     private readonly ILocator _issueHeadings = page.GetByRole(AriaRole.Heading);
-    private readonly ILocator _closedStatusText = page.GetByText("Closed", new() { Exact = true }).First;
-    private readonly ILocator _openStatusText = page.GetByText("Open", new() { Exact = true }).First;
+    private readonly ILocator _closedStatusText = page.GetByText(GitHubStateLabels.Closed, new() { Exact = true }).First;
+    private readonly ILocator _openStatusText = page.GetByText(GitHubStateLabels.Open, new() { Exact = true }).First;
     private readonly ILocator _closeIssueButton = page.GetByRole(AriaRole.Button, new() { Name = "Close issue" });
     private readonly ILocator _reopenIssueButton = page.GetByRole(AriaRole.Button, new() { Name = "Reopen issue" });
     private readonly ILocator _editIssueTitleButton = page.GetByRole(AriaRole.Button, new() { Name = "Edit issue title" });

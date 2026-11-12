@@ -5,7 +5,7 @@ namespace Ui.Github.Pages.GitHubStream.Repository;
 
 internal sealed class RepositoryPage(IPage page) : RepositoryPageBase(page)
 {
-    internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}");
+    internal async Task OpenAsync() => await _page.GotoAsync($"{TestConfig.UiBaseUrl}{GitHubUiEndpoints.RepoPath}");
 
     internal async Task<string> GetDefaultBranchAsync() =>
         (await _branchButton.TextContentAsync())?.Trim() ?? string.Empty;
@@ -16,7 +16,7 @@ internal sealed class RepositoryPage(IPage page) : RepositoryPageBase(page)
     internal async Task NavigateToIssuesAsync()
     {
         await _issuesTabLink.ClickAsync();
-        await _page.WaitForURLAsync(url => url.Contains("/issues"));
+        await _page.WaitForURLAsync(url => url.Contains(GitHubUiEndpoints.IssuesFragment));
     }
 
     private readonly ILocator _branchButton = page.GetByRole(AriaRole.Button, new() { Name = "main branch" });

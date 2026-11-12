@@ -31,7 +31,9 @@ Ui/
 - One locator per element; locator lives in the page-object, not in tests
 - Locators are separate named entities (constants/fields) collected **at the bottom of the
   page-object file**; methods use only these entities — never inline locators in method bodies
-  (2026-10-09)
+  (2026-10-09). **Exception:** dynamic-name / element-scoped lookups built from parameters
+  (`page.GetByText(body)`, `row.GetByText(...)`) may stay inline — they have no stable name to
+  hoist; static locators remain bottom-of-file fields
 - **Locators exist ONLY on Page/Form classes** (single source of truth). Helpers and any other
   shared code NEVER declare locators — they RECEIVE them as `ILocator` parameters from the
   page/form that owns them; that removes selector duplication (2026-10-16). Chrome shared by
@@ -43,11 +45,11 @@ Ui/
 
 - **All UI tests use the `gredjapl` account** (fresh dedicated UI account; API tests keep `Gredja` via `GitHub.TestUsername`). Assert username via `TestConfig.UiUsername` (`Ui.Username` in testsettings.json)
 - Feature tests read `.auth/github-ui-state.json` (gitignored) — they never log in or log out (a logout breaks every other test in the run)
-- State is refreshed by the automated Smoke test `LoginSignInTests` (`dotnet test --filter LoginSignInTests`): anonymous context (`IsStorageStateEnabled => false`) → sign in with `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` → assert signed-in menu → `SaveStorageStateAsync()`
-- The logout test (`LogoutSignOutTests`, UI-2) is the only test that signs out: it runs with `IsStorageStateEnabled => false` and never saves state. `/logout` opens an account chooser — click only the per-account `Sign out of {username}` button; the sibling `Sign out from all accounts` destroys the shared storageState session and breaks every other UI test
+- State is refreshed by the Smoke test `LoginSignInTests` — **currently `[Ignore]`d** (the device-verification wall: a fresh login redirects to `sessions/verified-device`, an email-code challenge automation cannot pass — UI-OB UI-1, observed 2026-11-09). Refreshing `.auth/github-ui-state.json` is human-assisted: complete the email-code challenge once in a headed run, then un-ignore `LoginSignInTests` for one local run to re-save the state (`GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD`), and re-ignore it after
+- The logout test (`LogoutSignOutTests`, UI-2) is the only test that signs out; it is **also `[Ignore]`d** for the same device-verification wall. It runs with `IsStorageStateEnabled => false` and never saves state. `/logout` opens an account chooser — click only the per-account `Sign out of {username}` button; the sibling `Sign out from all accounts` destroys the shared storageState session and breaks every other UI test
 - Credentials are required env vars (`.env` / environment): never paste passwords into tests, code, or config files
-- Expired state = re-run `LoginSignInTests`
-- **Device trust persists in the browser profile**, not in storageState: `GitHubUiTestBase` launches Chromium with `UserDataContextDir = .auth/github-ui-profile` (gitignored). Without it a fresh profile is a "new device" and GitHub redirects every login to `sessions/verified-device` (email-code wall the tests cannot pass) — the profile must survive across runs; never delete it as leftover junk (UI-OB UI-1 gotcha, observed 2026-11-09)
+- Expired state = the human-assisted refresh above — the automated re-run alone cannot work while the wall is up
+- **Device trust lives in `.auth/github-device-trust.json`** (gitignored), not in a browser profile: the file holds device-trust cookies exported once after a human completes the `sessions/verified-device` email-code challenge in a headed run; `GitHubUiTestBase` injects them into EVERY context (`InjectDeviceTrustCookiesAsync`). Without them GitHub treats each fresh profile as a new device and redirects every login to `sessions/verified-device` (email-code wall the tests cannot pass) — keep the JSON file across runs; never delete it as leftover junk (UI-OB UI-1 gotcha, observed 2026-11-09)
 
 ## Waits
 

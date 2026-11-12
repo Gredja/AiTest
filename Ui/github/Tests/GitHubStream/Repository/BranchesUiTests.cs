@@ -65,9 +65,10 @@ public class BranchesUiTests : GitHubUiTestBase
         var (headBranch, baseBranch) = await CreateDivergentBranchesViaApiAsync(_createdBranches);
 
         await Browser.PullCreatePage.OpenCompareAsync(baseBranch, headBranch);
-        var commitsShown = await Browser.PullCreatePage.HasCommitsSectionAsync();
+        var hasCommits = await Browser.PullCreatePage.WaitForCommitsSectionAsync();
 
-        commitsShown.Should().BeTrue("compare view must list commits between divergent branches");
+        hasCommits.IsSuccess.Should().BeTrue(
+            $"compare view must list commits between divergent branches (attempts={hasCommits.Attempts}, elapsed={hasCommits.Elapsed})");
     }
 
     [OneTimeTearDown]

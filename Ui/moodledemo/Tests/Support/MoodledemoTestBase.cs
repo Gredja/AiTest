@@ -108,6 +108,14 @@ public abstract class MoodledemoTestBase
         _browserWrapper = null;
     }
 
+    private static string ResolveArtifactsDirectory()
+    {
+        var directory = Path.Combine(TestRunWorkspace.Resolve(), MoodledemoArtifactsDirectory);
+        Directory.CreateDirectory(directory);
+
+        return directory;
+    }
+
     [OneTimeTearDown]
     public async Task CloseBrowserAsync()
     {
@@ -117,13 +125,5 @@ public abstract class MoodledemoTestBase
         }
 
         _playwright?.Dispose();
-    }
-
-    private static string ResolveArtifactsDirectory()
-    {
-        var directory = Path.Combine(TestRunWorkspace.Resolve(), MoodledemoArtifactsDirectory);
-        Directory.CreateDirectory(directory);
-
-        return directory;
     }
 }

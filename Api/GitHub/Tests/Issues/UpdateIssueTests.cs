@@ -17,7 +17,7 @@ namespace Api.GitHub.Issues;
 [Category("GitHub")]
 public class UpdateIssueTests : GitHubTestBase
 {
-    private static readonly CreateIssueModelRequest _createRequest =
+    private readonly CreateIssueModelRequest _createRequest =
         IssueGenerator.CreateRandom("Patch target", "Body");
 
     private readonly List<int> _createdIssueNumbers = [];

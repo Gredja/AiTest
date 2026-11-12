@@ -162,9 +162,9 @@ public static class TestRunReportGenerator
 
     private static IEnumerable<string> BuildHeader(DateTime runStart, string workspace, int actionLogCount)
     {
-        yield return $"# Test Run Report - {DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}";
+        yield return $"# Test Run Report - {DateTimeOffset.UtcNow.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)} UTC";
         yield return string.Empty;
-        yield return $"- Run started: {runStart.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)}";
+        yield return $"- Run started: {runStart.ToUniversalTime().ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)} UTC";
         yield return $"- Raw logs: {workspace}";
         yield return $"- Action logs: {actionLogCount}";
         yield return string.Empty;

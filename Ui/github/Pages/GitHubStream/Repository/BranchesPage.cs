@@ -14,7 +14,7 @@ internal sealed class BranchesPage(IPage page)
     private static readonly TimeSpan _deleteRetryInterval = TimeSpan.FromSeconds(3);
 
     internal async Task OpenAsync() =>
-        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{TestConfig.UiTestRepo}/branches");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}{GitHubUiEndpoints.BranchesPath}");
 
     internal async Task<bool> HasBranchAsync(string branchName) =>
         await _branchLinks.Filter(new() { HasTextString = branchName }).CountAsync() > 0;

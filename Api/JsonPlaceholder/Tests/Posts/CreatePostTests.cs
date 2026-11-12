@@ -202,7 +202,7 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
         var response = await Post<PostModelRequest, PostModelResponse>(JsonPlaceholderEndpoints.Posts, PostGenerator.Create(TestUserId));
 
         response.ShouldHaveStatusCode(HttpStatusCode.Created);
-        response.ContentType.Should().Contain("application/json");
+        response.ContentType.Should().Contain(AssertHelper.JsonContentType);
     }
 
     [Test]

@@ -54,9 +54,17 @@ public class PullFlowUiTests : GitHubUiTestBase
 
         await Browser.PullDetailPage.OpenAsync(pullNumber);
 
-        (await Browser.PullDetailPage.HasTitleAsync(title)).Should().BeTrue("pull request page must show the title");
-        (await Browser.PullDetailPage.HasBranchLinkAsync(baseBranch)).Should().BeTrue("base branch must be linked");
-        (await Browser.PullDetailPage.HasBranchLinkAsync(headBranch)).Should().BeTrue("head branch must be linked");
+        var titleShown = await Browser.PullDetailPage.WaitForTitleAsync(title);
+        titleShown.IsSuccess.Should().BeTrue(
+            $"pull request page must show the title (attempts={titleShown.Attempts}, elapsed={titleShown.Elapsed})");
+
+        var baseBranchLinked = await Browser.PullDetailPage.WaitForBranchLinkAsync(baseBranch);
+        baseBranchLinked.IsSuccess.Should().BeTrue(
+            $"base branch must be linked (attempts={baseBranchLinked.Attempts}, elapsed={baseBranchLinked.Elapsed})");
+
+        var headBranchLinked = await Browser.PullDetailPage.WaitForBranchLinkAsync(headBranch);
+        headBranchLinked.IsSuccess.Should().BeTrue(
+            $"head branch must be linked (attempts={headBranchLinked.Attempts}, elapsed={headBranchLinked.Elapsed})");
     }
 
     [Test]

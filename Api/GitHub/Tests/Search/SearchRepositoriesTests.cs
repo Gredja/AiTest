@@ -14,7 +14,7 @@ namespace Api.GitHub.Search;
 [Category("GitHub")]
 public class SearchRepositoriesTests : GitHubTestBase
 {
-    private const string RepositoryQuery = "user:Gredja";
+    private static readonly string RepositoryQuery = $"user:{TestConfig.GitHubTestUsername}";
 
     [Test]
     [Category("HealthCheck")]

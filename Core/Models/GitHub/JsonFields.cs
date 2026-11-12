@@ -27,6 +27,7 @@ public static class JsonFields
     public const string Page = "page";
     public const string Path = "path";
     public const string PerPage = "per_page";
+    public const string Permission = "permission";
     public const string Private = "private";
     public const string Prerelease = "prerelease";
     public const string Protected = "protected";

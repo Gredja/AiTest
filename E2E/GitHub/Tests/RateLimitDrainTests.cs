@@ -1,10 +1,11 @@
-using Core.Models.GitHub;
+﻿using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Globalization;
 using System.Net;
 using FluentAssertions;
 using static Core.Helpers.TestDataConstants;
+using E2E.GitHub.Tests.Support;
 
 namespace E2E.GitHub.Tests;
 
@@ -46,8 +47,8 @@ public class RateLimitDrainTests : GitHubE2ETestBase
             remainingFirst = int.Parse(remainingHeader, CultureInfo.InvariantCulture);
             if (remainingFirst <= DrainCallCount + QuotaHeadroom)
             {
-                Assert.Ignore(
-                    $"rate-limit headroom {remainingFirst} ≤ {DrainCallCount + QuotaHeadroom} — wait for the hourly reset");
+                Assert.Inconclusive(
+                    $"rate-limit headroom {remainingFirst} ≤ {DrainCallCount + QuotaHeadroom} — wait for the hourly reset; informational, no drain calls consumed");
             }
 
             var last = first;

@@ -18,7 +18,7 @@ public class DeleteCommentTests : GitHubTestBase
 {
     private const long NonExistentCommentId = 0;
 
-    private static readonly CreateCommentModelRequest _testComment =
+    private readonly CreateCommentModelRequest _testComment =
         CommentGenerator.CreateRandom("Cleanup probe");
 
     private readonly List<long> _createdCommentIds = [];
