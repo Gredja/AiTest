@@ -27,7 +27,7 @@ Gredja/
 ├── allure-results/              # not tracked
 ├── research/                    # not tracked — deep-research workspaces (gitignored); one-off, archived
 ├── output/                      # not tracked — created on demand for one-off generator/CLI dumps (safe to clean)
-├── TestResults/                 # not tracked — ONLY TestRunReport-*.md (raw logs in %TEMP%\GredjaTestRun)
+├── TestResults/                 # not tracked — TestRunReport-*.md + CommitReport-*.json + ui-artifacts/ + coverage outputs (age-cleaned by ArtifactRetention; raw logs in %TEMP%\GredjaTestRun)
 ├── .mimocode/
 │   ├── .gitignore
 │   ├── mimocode.jsonc
@@ -116,7 +116,7 @@ Core/
 │   ├── GitHub/
 │   │   ├── GitHubCleanupHelper.cs # shared cleanup core (Api/E2E delegation + Ui composition)
 │   │   ├── GitHubParamHelper.cs
-│   │   ├── GitHubTestBase.cs          # API/E2E test base — R3 exception: stays in Helpers
+│   │   ├── GitHubTestBase.cs          # API/E2E test base — shared with E2E → Core/Helpers/<Service>/ (Rules/code.md → File Layout)
 │   │   └── UiSandboxCleanupHelper.cs # UI sandbox (gredjapl/ui-sandbox) via GITHUB_UI_PAT
 │   ├── Http/
 │   │   ├── GitHubRequestHelper.cs
@@ -310,6 +310,7 @@ Api/
 │       │   └── GetIssueCommentsTests.cs
 │       ├── Issues/
 │       │   ├── CreateIssueNegativeTests.cs
+│       │   ├── CreateIssueTests.cs
 │       │   ├── CreateIssueVisibilityTests.cs
 │       │   ├── GetIssueByIdTests.cs
 │       │   ├── GetIssuesTests.cs
@@ -384,6 +385,7 @@ E2E/
 │       ├── GitRefLifecycleTests.cs
 │       ├── IssueLifecycleTests.cs
 │       ├── IssueStateMachineTests.cs
+│       ├── IssuesTests.cs
 │       ├── PullRequestFlowTests.cs
 │       ├── RateLimitDrainTests.cs
 │       └── RepositoryHealthTests.cs
@@ -413,24 +415,24 @@ Ui/
 │   └── UiTimeout.cs               # shared timeout constant (constants holder — not a helper)
 ├── github/                       # all GitHub UI tests (site-scoped; future sites — sibling folders)
 │   ├── Pages/                      # pages + forms — single home of locators
-│   │   ├── Common/                   # cross-area: LoginPage, HeaderPage, ProfilePage, AccountSettingsPage
+│   │   ├── Common/                   # cross-area: LoginPage.cs, HeaderPage.cs, ProfilePage.cs, AccountSettingsPage.cs
 │   │   └── GitHubStream/
-│   │       ├── Issues/               # IssueCreatePage, IssueDetailPage, CommentForm
-│   │       ├── Pulls/                # PullDetailPage, PullCreatePage
-│   │       └── Repository/           # RepositoryPageBase (shared readme element), RepositoryPage, IssuesPage, PullsPage, BranchesPage, CodePage, NotFoundPage
+│   │       ├── Issues/               # IssueCreatePage.cs, IssueDetailPage.cs, CommentForm.cs
+│   │       ├── Pulls/                # PullDetailPage.cs, PullCreatePage.cs
+│   │       └── Repository/           # RepositoryPageBase.cs (shared readme element), RepositoryPage.cs, IssuesPage.cs, PullsPage.cs, BranchesPage.cs, CodePage.cs, NotFoundPage.cs
 │   └── Tests/
-│       ├── Support/                  # test infrastructure: GitHubUiTestBase, BrowserPlaywright
+│       ├── Support/                  # test infrastructure: GitHubUiTestBase.cs, BrowserPlaywright.cs
 │       └── GitHubStream/
-│           ├── Issues/               # IssuesUiTests, IssueUiTests
-│           ├── Login/                # LoginSignInTests, AuthStateUiTests, LogoutSignOutTests, AnonAccessUiTests
-│           ├── Pulls/                # PullsUiTests, PullFlowUiTests
-│           └── Repository/           # RepositoryUiTests, BranchesUiTests
+│           ├── Issues/               # IssuesUiTests.cs, IssueUiTests.cs
+│           ├── Login/                # LoginSignInTests.cs, AuthStateUiTests.cs, LogoutSignOutTests.cs, AnonAccessUiTests.cs
+│           ├── Pulls/                # PullsUiTests.cs, PullFlowUiTests.cs
+│           └── Repository/           # RepositoryUiTests.cs, BranchesUiTests.cs
 └── moodledemo/                   # Moodle demo multilingual site (site-scoped sibling of github/)
-    ├── Pages/                      # HomePage, LoginPage (language-agnostic locators, L-LOC-1)
+    ├── Pages/                      # HomePage.cs, LoginPage.cs (language-agnostic locators, L-LOC-1)
     ├── Fixtures/
     │   └── expected-langs.json      # code → { lang, dir, title } + loginLabels + navLabels + calendarPageCodes + titleScripts — the only source of localized strings
     └── Tests/
-        ├── Support/                # fixture infrastructure + test data: MoodledemoTestBase, MoodledemoBrowser, MoodledemoFixtures, ScenarioCodes, LocaleExpectation, LoginLabelExpectation, NavLabelExpectation
+        ├── Support/                # fixture infrastructure + test data: MoodledemoTestBase.cs, MoodledemoBrowser.cs, MoodledemoFixtures.cs, ScenarioCodes.cs, LocaleExpectation.cs, LoginLabelExpectation.cs, NavLabelExpectation.cs
         ├── L1SmokeTests.cs          # HTTP-first locale contract + title-script check (data-driven, no browser)
         ├── LanguageSwitcherUiTests.cs   # language menu: list, switch, en vs en_us
         ├── LanguagePersistenceUiTests.cs # session language survives navigation / resets after login
@@ -467,7 +469,7 @@ Rules/
 
 ```
 documentation/
-├── AuditReport.md                # Full audit report 2026-10-09 (findings, fixes not applied)
+├── AuditReport.md                # Full audit report 2026-10-09 (historical snapshot — most findings since fixed)
 ├── BugReportTemplate.md
 ├── Bugs/
 │   └── JsonPlaceholder/

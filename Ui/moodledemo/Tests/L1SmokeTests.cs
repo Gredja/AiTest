@@ -111,7 +111,7 @@ public class L1SmokeTests
 
     [Test]
     [Category("Regression")]
-    [Description("3.2 Home title translatable part is written in the expected script(s) for the code")]
+    [Description("4.1 Home title translatable part is written in the expected script(s) for the code")]
     [TestCaseSource(nameof(HomeScriptCases))]
     public void Home_TitlePart_MatchesExpectedScript(LocaleExpectation expectation) =>
         TitleScriptAssertHelper.ShouldMatch(expectation.Title, expectation.Code);

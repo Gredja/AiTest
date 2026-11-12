@@ -19,14 +19,14 @@
 | 8 | **Repo metadata** | GET /contributors, /languages, /topics, /tags — status, contract, fields, negatives | Done (D4–D7) |
 | 9 | **Commits & Releases** | GET /commits, /releases — status, contract, fields, negatives | Done (D8–D9) |
 | 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
-| 11 | **GitHub UI (Playwright)** | Web UI: login/logout/auth state, repo landing, code view, 404s, issues & PRs flows, branches, labels, comments actions, anonymous gates — page-objects, storageState auth, write via UI → cleanup via API | Done (44 tests, `Ui/`) |
+| 11 | **GitHub UI (Playwright)** | Web UI: login/logout/auth state, repo landing, code view, 404s, issues & PRs flows, branches, labels, comments actions, anonymous gates — page-objects, storageState auth, write via UI → cleanup via API | Done (45 tests, `Ui/`) |
 | 12 | **Collaborators & invitations** | GET/PUT /collaborators, /collaborators/{username}/permission, GET/DELETE /invitations (OB §28–28d) | Done (21 tests) |
 | 13 | **Authenticated user** | GET /user (OB §5a) — status, contract, login match, 401s | Done (5 tests) |
 | 14 | **Release detail & by-id** | GET /releases/latest, /releases/tags/{tag} (OB §15c–15d), GET/DELETE /releases/{release_id} (OB §15e–15f) + fixture infra §15e | Done (22 tests) |
 | 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (30 tests) |
 | 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), POST /git/blobs (§26c, dedicated tests since 2026-11-04), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (27 tests) |
 
-**Total:** 481 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~29 endpoint groups), 9 E2E scenario chains and 44 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Thin-fixture deepening (search/invitations/repos-no-route/git-commit: contract + count-consistency + content-type + auth negatives) closed 2026-10-26; negative-floor program (priority batch + follow-up batch: +45 tests, all 48 fixtures at floor or with documented ceiling) closed 2026-11-02 (§7); release-by-id + DELETE release + git-blob dedicated tests (OB §15e–15f, §26c — the two endpoints the coverage report flagged as untested) added 2026-11-04 (+25 tests, live-probed first). The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted).
+**Total:** 495 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~29 endpoint groups), 10 E2E scenario chains and 45 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Thin-fixture deepening (search/invitations/repos-no-route/git-commit: contract + count-consistency + content-type + auth negatives) closed 2026-10-26; negative-floor program (priority batch + follow-up batch: +45 tests, all 48 fixtures at floor or with documented ceiling) closed 2026-11-02 (§7); release-by-id + DELETE release + git-blob dedicated tests (OB §15e–15f, §26c — the two endpoints the coverage report flagged as untested) added 2026-11-04 (+25 tests, live-probed first). The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted; since grown to 45).
 
 ## 2. Out of Scope
 
@@ -62,7 +62,10 @@ The team loses trust in the suite and stops running it — the moment coverage s
 - [ ] GitHub personal access token present in `.env` (`GITHUB_PAT`, classic with `repo` scope — JSON `Token` → env → `.env`)
 - [ ] `dotnet restore` and `dotnet build` succeed without errors
 - [ ] Target repo `Gredja/AiTest` is accessible (not deleted, not renamed)
-- [ ] UI credentials present in `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) and storageState `.auth/github-ui-state.json` is fresh (re-run `LoginSignInTests` when it expires)
+- [ ] UI credentials present in `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) and storageState `.auth/github-ui-state.json` is fresh (refresh is human-assisted while `LoginSignInTests` is `[Ignore]`d — `Rules/ui-testing.md` → Auth)
+- [ ] UI sandbox repo `gredjapl/ui-sandbox` (UI `Ui.TestRepo`) is accessible, has a non-empty description and at least one commit (UI repository-landing asserts read both)
+- [ ] Collaborator invitee `GitHub.CollaboratorUser` (`gredjapl`) exists and can be invited on the sandbox (Api invitation tests + E2E-5)
+- [ ] User `GitHub.TestUsername` exists publicly and is returned by live search (`/search/users`, `/search/repositories` `user:` queries assert non-empty)
 - [ ] Test issue #5 exists in the target repo
 - [ ] Test PR #5 exists (needed for design D1–D2: PR files/commits)
 - [ ] Default branch `main` exists (needed for design D3)
@@ -122,7 +125,7 @@ Rule: `Rules/test-practices.md` Step 4 — ≥5 active negatives per endpoint; m
 | GetUserRepos | 5 | SearchIssues | 5 | SearchRepositories | 5 |
 | SearchUsers | 5 | UpdateIssue | 5 | | |
 
-### Fixtures with a documented ceiling (16)
+### Fixtures with a documented ceiling (17)
 
 | Fixture | Neg | Ceiling | Where documented |
 |---|---:|---:|---|

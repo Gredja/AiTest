@@ -78,6 +78,10 @@
   lb, mh, my, or, rw, tk, tt, zu, …`) — installed packs with low string coverage;
   known gap, expected behavior, not a bug. L1 asserts the exact fixture title and does
   NOT require `title ≠ English`.
+- **Title scripts:** the translatable part of the home `<title>` must be written in the
+  expected script for the code (Cyrillic for `ru`, Latin for `de`, …) — the exact per-code
+  expectation lives in the fixture `titleScripts` section; asserted by
+  `L1SmokeTests.Home_TitlePart_MatchesExpectedScript`
 - **Transient degraded responses under rapid load (~5% per request):** connection
   drop/timeouts AND HTTP 200 pages of a foreign system titled
   `"Log in to the site | Moodle Apps Services"`. Random per request, never code-specific
@@ -106,8 +110,8 @@
 ### Auth Scope Requirements
 
 - L1/L2 current scope: anonymous only. L3 demo accounts
-  (student/teacher/manager/parent/privacyofficer, password `moodle26`) — planned,
-  no 2FA on this site.
+  (student/teacher/manager/parent/privacyofficer, password `moodle26`) are covered by
+  `AccountUiTests` (§L3 login flows, implemented); no 2FA on this site.
 
 ### Rate Limit / Availability
 

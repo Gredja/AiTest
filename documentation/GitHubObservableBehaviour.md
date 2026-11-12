@@ -4,7 +4,7 @@
 **API Under Test:** GitHub REST API v3 (https://api.github.com)
 **Date:** 2026-02-21
 **Last verified:** 2026-10-16 (section probes carried through §29)
-**Scope:** GET (Phase 1) + POST/PATCH/DELETE (Phase 2 E2E)
+**Scope:** GET (Phase 1) + POST/PATCH/DELETE (single-write tests in `Api/` + E2E scenario chains)
 **Test Plan / scope:** [GitHubTestingStructure.md](GitHubTestingStructure.md) (phases, entry/exit criteria; plans in `.mimocode/plans/` are deleted after implementation)
 
 ---
@@ -554,7 +554,7 @@ release and the auto-created tag ref):
 
 ---
 
-# WRITE OPERATIONS (Phase 2 — E2E)
+# WRITE OPERATIONS (Api single-write tests + E2E scenario chains)
 
 All write operations target the sandbox repo `Gredja/AiTest`. Require `Authorization: Bearer <token>` with `repo` scope.
 

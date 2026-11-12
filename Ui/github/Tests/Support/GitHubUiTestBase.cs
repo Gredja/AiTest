@@ -58,7 +58,7 @@ public abstract class GitHubUiTestBase
         if (storageState is not null && !System.IO.File.Exists(storageState))
         {
             throw new InvalidOperationException(
-                $"storageState file not found: {storageState} — run LoginSignInTests once to create it");
+                $"storageState file not found: {storageState} — refresh is human-assisted while LoginSignInTests is [Ignore]d (Rules/ui-testing.md → Auth)");
         }
 
         _context = await _browser!.NewContextAsync(new BrowserNewContextOptions

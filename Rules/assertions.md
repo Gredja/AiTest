@@ -45,4 +45,5 @@ FluentAssertions (not NUnit Assert).
 ## Notes
 
 - **Helpers collect, direct asserts stay hard** — `ShouldHaveValidContract`, `ShouldHaveValidFields` and `ShouldMatchRequest` gather every violation inside an `AssertionScope` and fail once with the full list (one rerun shows all bad fields); plain `x.Should()` in test bodies remains fail-fast; `Assert.Multiple` is not used
-- Avoid `out _` inside `OnlyContain` lambdas (expression tree limitation)
+- Avoid `out _` inside `OnlyContain` lambdas (expression tree limitation) — likewise no `is`
+  patterns there (CS8122): use `!= null` for null checks inside `OnlyContain` predicates

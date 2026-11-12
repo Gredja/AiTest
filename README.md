@@ -41,7 +41,7 @@ Test application for learning AI-Native SDLC. API, E2E and UI test automation pr
 dotnet test Api/Api.csproj
 dotnet test E2E/E2E.csproj
 dotnet test --filter Category=GitHubUi   # UI suite (Playwright)
-dotnet test --filter LoginSignInTests    # refresh UI storageState after it expires
+dotnet test --filter LoginSignInTests    # refresh UI storageState (currently [Ignore]d — human-assisted, see Rules/ui-testing.md)
 dotnet test --filter Category=HealthCheck
 ./Scripts/install-playwright.ps1  # one-time: install Chromium for UI tests
 ./Scripts/test-coverage.ps1  # run tests + coverage report
