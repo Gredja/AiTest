@@ -20,7 +20,24 @@ internal sealed class IssueCreatePage(IPage page)
 
     internal async Task CreateIssueAsync(string title, string description)
     {
-        await _titleTextbox.FillAsync(title);
+        // the title input can be wiped by a React re-render right after the fill (observed
+        // 2026-11-12: Create submitted with an empty title and hit the validation error) —
+        // re-fill until the value actually sticks before touching the rest of the form
+        var fillResult = await WaitHelper.WaitUntilAsync(
+            async () =>
+            {
+                await _titleTextbox.FillAsync(title);
+
+                return await _titleTextbox.InputValueAsync();
+            },
+            value => value == title);
+
+        if (!fillResult.IsSuccess)
+        {
+            throw new InvalidOperationException(
+                $"title did not stick after fill (attempts={fillResult.Attempts}, elapsed={fillResult.Elapsed})");
+        }
+
         await _descriptionTextbox.FillAsync(description);
         // accessible name includes the shortcut hint: "Create ( control enter )"
         await _createIssueButton.ClickAsync();
