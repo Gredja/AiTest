@@ -6,12 +6,14 @@ namespace AllureAdapter.Helpers;
 
 public static class AllureHelper
 {
+    private const string SolutionSearchPattern = "*.sln";
+
     private static string FindProjectRoot()
     {
         var dir = AppContext.BaseDirectory;
         while (dir is not null)
         {
-            if (File.Exists(Path.Combine(dir, TestConfig.SolutionFileName)) || Directory.EnumerateFiles(dir, "*.sln").Any())
+            if (File.Exists(Path.Combine(dir, TestConfig.SolutionFileName)) || Directory.EnumerateFiles(dir, SolutionSearchPattern).Any())
             {
                 return dir;
             }
