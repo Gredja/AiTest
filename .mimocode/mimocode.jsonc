@@ -6,7 +6,13 @@
   "mcp": {
     "slack-local": {
       "type": "local",
-      "command": ["node", "Scripts/mcp-slack/server.mjs"]
+      "command": [
+        "powershell",
+        "-NoProfile",
+        "-NonInteractive",
+        "-Command",
+        "& { ./Scripts/sync-secrets.ps1 | Out-Null; node Scripts/mcp-slack/server.mjs }"
+      ]
     }
   }
 }

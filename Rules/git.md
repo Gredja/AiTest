@@ -66,8 +66,9 @@ PRs from `features/...` into `main` — only after review and approval.
   `TEST_PAT`, `UI_EMAIL`, `UI_PASSWORD`, `UI_PAT`, `SLACK_BOT_TOKEN`, `SLACK_CHANNEL`; each
   workflow maps them to the env vars the code reads (`GITHUB_PAT`, `GITHUB_UI_EMAIL`,
   `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`, `SLACK_BOT_TOKEN`, `SLACK_CHANNEL`) in its `env:`
-  block — values live only in GitHub settings, never in the repo (the same Slack pair is also
-  in the local user environment for the MCP server)
+  block — values live only in GitHub settings, never in the repo (locally the MCP server gets
+  its token from the Infisical load at spawn; the channel comes from the tracked
+  `Scripts/mcp-slack/config.json`)
 - Run notifications: every workflow ends with a `Slack notification` step (`if: always()`,
   `Scripts/slack-notify-run.ps1`) that posts the run verdict to `#general` — nightly includes
   the per-category stats parsed from `TestRunReport-*.md`; without secrets (fork PRs) the step
@@ -77,7 +78,7 @@ PRs from `features/...` into `main` — only after review and approval.
 
 ## Secrets
 
-- Tokens stored in environment variables only (user-scope on dev machines, pulled from Infisical with `Scripts/sync-secrets.ps1`; repo secrets in CI) — the repo holds no `.env`
+- Tokens stored in environment variables only (process memory on dev machines, loaded from Infisical with `Scripts/sync-secrets.ps1` — nothing persisted locally; repo secrets in CI) — the repo holds no `.env`
 - Never commit `.env`, `.credentials`, or any token
 - Never put tokens in commit messages
 

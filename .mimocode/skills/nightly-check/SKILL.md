@@ -15,13 +15,12 @@ Read `GITHUB_PAT` from the process environment via `Scripts/read-github-pat.ps1`
 redaction contract (the token must never appear in output, logs, or messages) is
 documented there, in exactly one place.
 
-If the read throws (variable not set — fresh machine or session started before the last
-sync): run `Scripts/sync-secrets.ps1` (Infisical pull, output = key names only, never
-values), then re-read the user-scope value into the current process — `setx` reaches only
-new shells:
+If the read throws (variable not set — secrets are not persisted locally by design, so a
+fresh shell needs its own load): run `Scripts/sync-secrets.ps1` (Infisical pull into the
+current process memory, output = key names only, never values), then read the token:
 
 ```powershell
-$env:GITHUB_PAT = [Environment]::GetEnvironmentVariable('GITHUB_PAT', 'User')
+./Scripts/sync-secrets.ps1
 $token = & Scripts/read-github-pat.ps1
 ```
 
@@ -71,7 +70,7 @@ and open the `## Failed tests` section of the newest `TestResults/TestRunReport-
 
 ## Troubleshooting
 
-- `401` on the API → token missing/renamed: run `Scripts/sync-secrets.ps1` (refreshes `GITHUB_PAT` from Infisical) and apply the Step 1 user-scope re-read; a full session restart is only needed for OTHER processes, not for this check.
+- `401` on the API → token missing/renamed: run `Scripts/sync-secrets.ps1` (fresh Infisical pull into process memory), then read the token again in the same invocation.
 - `404` on the workflow → workflow file not on `main` yet (`.github/workflows/nightly-tests.yml`).
 - Empty `workflow_runs` → the workflow never ran; suggest `workflow_dispatch` from the Actions tab.
 - Rate limit on api.github.com itself → report `X-RateLimit-Remaining` from the error headers, retry once after a minute.
@@ -82,5 +81,6 @@ and open the `## Failed tests` section of the newest `TestResults/TestRunReport-
 
 | Version | Date | Change | Author |
 |---|---|---|---|
+| 1.2 | 2026-11-16 | Secrets architecture: no local persistence (setx/user-scope cache removed) — `sync-secrets.ps1` loads into process memory only; Step 1 fallback + 401 troubleshooting reworded | MiMo |
 | 1.1 | 2026-11-16 | Step 1 fallback: on a missing `GITHUB_PAT` run `Scripts/sync-secrets.ps1` + user-scope re-read into the current process; 401 troubleshooting aligned (session restart not required for this check) | MiMo |
 | 1.0 | 2026-11-08 | Revision History added (S9); no functional changes — skill reviewed, no defects found | MiMo |
