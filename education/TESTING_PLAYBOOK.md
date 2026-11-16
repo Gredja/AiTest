@@ -942,7 +942,7 @@ skill prompt.
    never-blocking rule as 14.1.9.
 
 ### 14.3 CI/nightly verdict (read-only check-in)
-1. Fetch the latest scheduled run of the project's informational suite (token from env, never printed).
+1. Fetch the latest scheduled run of the project's informational suite (token from env, never printed). If the token variable is absent (fresh machine/session): pull secrets with the project's sync script first (key names only, never values) and re-read the user-scope value into the current process — `setx` reaches only new shells.
 2. Not completed → bounded poll, then report "in progress"; completed → one-line verdict with run number, outcome, URL.
 3. Failure → dig per-job/per-step; distinguish persistent failures from flaky races (rerun-in-script semantics).
 4. Never re-dispatch, cancel, or delete runs from this flow.
