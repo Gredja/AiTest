@@ -121,43 +121,14 @@ public static class TestConfig
     private static InvalidOperationException MissingRequiredKey(string key) =>
         new($"testsettings.json: missing required key '{key}'");
 
-    private static string GetRequiredEnvironmentValue(string key) =>
-        ReadEnvironmentValue(key)
-            ?? throw new InvalidOperationException(
-                $"environment variable '{key}' not found (process environment or .env)");
-
-    private static string? ReadEnvironmentValue(string key)
+    private static string GetRequiredEnvironmentValue(string key)
     {
         var value = Environment.GetEnvironmentVariable(key);
-        if (!string.IsNullOrEmpty(value))
+        if (string.IsNullOrEmpty(value))
         {
-            return value;
+            throw new InvalidOperationException($"environment variable '{key}' is not set");
         }
 
-        return ReadEnvFileValue(key);
-    }
-
-    private static string? ReadEnvFileValue(string key)
-    {
-        var dir = AppContext.BaseDirectory;
-        while (dir is not null)
-        {
-            var envFile = Path.Combine(dir, ".env");
-            if (!File.Exists(envFile))
-            {
-                dir = Directory.GetParent(dir)?.FullName;
-                continue;
-            }
-
-            var line = File.ReadAllLines(envFile).FirstOrDefault(candidate => candidate.StartsWith($"{key}="));
-            if (line is not null)
-            {
-                return line[(key.Length + 1)..];
-            }
-
-            break;
-        }
-
-        return null;
+        return value;
     }
 }

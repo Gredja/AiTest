@@ -12,6 +12,7 @@
 *.slnx text eol=crlf
 *.json text eol=crlf
 *.jsonc text eol=crlf
+*.yaml text eol=crlf
 
 # Documentation
 *.md text eol=lf

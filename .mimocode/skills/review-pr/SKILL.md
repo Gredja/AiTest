@@ -12,7 +12,7 @@ All steps executed directly by the main agent. No subagent.
 Ask user for PR number if not provided.
 
 Verify prerequisites:
-- GitHub PAT with `repo` scope in `.env` as `GITHUB_PAT=github_pat_...`
+- GitHub PAT with `repo` scope in the `GITHUB_PAT` environment variable
 - PowerShell (Invoke-RestMethod)
 
 ## Step 2: Fetch PR data

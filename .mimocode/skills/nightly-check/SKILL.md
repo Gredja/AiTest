@@ -11,7 +11,7 @@ Check the last run of the nightly suite in `Gredja/AiTest` and report the verdic
 
 ### Step 1: Token (never printed)
 
-Read `GITHUB_PAT` from `.env` in the repo root via `Scripts/read-github-pat.ps1` — the
+Read `GITHUB_PAT` from the process environment via `Scripts/read-github-pat.ps1` — the
 redaction contract (the token must never appear in output, logs, or messages) is
 documented there, in exactly one place.
 
@@ -61,7 +61,7 @@ and open the `## Failed tests` section of the newest `TestResults/TestRunReport-
 
 ## Troubleshooting
 
-- `401` on the API → token missing/renamed: verify the `.env` line is exactly `GITHUB_PAT=`.
+- `401` on the API → token missing/renamed: verify the user environment variable `GITHUB_PAT` is set (`Scripts/sync-secrets.ps1` refreshes it from Infisical; restart the session after setting it).
 - `404` on the workflow → workflow file not on `main` yet (`.github/workflows/nightly-tests.yml`).
 - Empty `workflow_runs` → the workflow never ran; suggest `workflow_dispatch` from the Actions tab.
 - Rate limit on api.github.com itself → report `X-RateLimit-Remaining` from the error headers, retry once after a minute.

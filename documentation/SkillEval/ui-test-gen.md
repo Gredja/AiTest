@@ -5,7 +5,23 @@ Format and run procedure: `documentation/SkillEval/README.md`.
 
 | # | Case | Status before | Status after |
 |---|------|---------------|--------------|
+| 1 | Page with locators: navigation + check | pass (2026-11-12, skill v1.5) | **pass (2026-11-16, skill v1.6)** |
 | 1 | Page with locators: navigation + check | pass (2026-11-06, skill v1.4) | **pass (2026-11-12, skill v1.5)** |
+
+**Case 1 — run notes (2026-11-16, skill v1.6, blind subagent, SkillEval ban honored):**
+Same concrete input as the v1.4/v1.5 runs (GitHub issues-tab navigation, UI-4). Status
+before reused from the 2026-11-12 v1.5 run — the pre-edit skill state (HEAD) is identical
+to the evaluated v1.5; the only delta under test is the v1.6 troubleshooting row (credential
+source synced with the `.env` removal). Research 16 tool calls incl. a live locator-dump
+(skill Step 1.2, pre-gate); plan gate STOP → runner approval WITH modification by the
+evaluator (empty-state heading rejected as data-dependent — breaks when an open issue
+exists; data-independent `New issue` chrome assert approved) → implementation: 2 files, no
+new locators (reuse `HasNewIssueButtonAsync` — reuse-before-extract), OB UI-4 re-verified
+2026-11-16. Reconciliation 1/1; run 4/4 green (IssuesUiTests filter, 0 failed); format
+pass; validator PASS; `locators.draft = 0`. Total 33 tool calls. Contamination: none.
+Verdict: skill held the contract, score 10/10 must, 5/5 must-not.
+
+---
 
 **Case 1 — run notes (2026-11-12, skill v1.5, blind subagent, SkillEval ban honored):**
 Same concrete input as the v1.4 run (GitHub issues-tab navigation, UI-4). Research finding:

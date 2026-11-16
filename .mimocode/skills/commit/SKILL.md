@@ -107,7 +107,7 @@ Otherwise: `git push -u origin HEAD`
 
 **Slack notification (after a successful push):** call the `slack-local` MCP tool
 `post_message` with text `✅ commit <sha>: <commit message>` — omit `channel` (the server
-takes `SLACK_CHANNEL` from `.env`). If the tool is unavailable or the post fails, note it
+takes `SLACK_CHANNEL` from the environment). If the tool is unavailable or the post fails, note it
 in Step 8 — a failed notification never blocks the commit.
 
 ## Step 8: Report
@@ -152,7 +152,7 @@ Backup sync | Files / Commit | Push | Slack.
 - Never commit on `main` — Step 1 branch guard stops and proposes `features/<topic>` (merges are the /merge skill's job, not this one's)
 - Never push to `main` without explicit confirmation
 - Commits: English only, format: action + object
-- Never commit `.env` or tokens
+- Never commit tokens or secrets (the repo holds no `.env`)
 - Always sync backups/ before commit if relevant files changed
 - Sync is change-driven AND fact-driven: touching a backups/SETUP.md line obliges you to verify that line's claim against the code
 - Review against `Rules/*.md` files, never against a restated checklist — no rule text is copied into this skill (single source of truth)

@@ -154,41 +154,59 @@ MiMoCode хранит настройки в файле `~/.config/mimocode/mimoc
 В папке проекта уже есть файл `.mimocode/mimocode.jsonc`. Он содержит пути к скиллам и
 локальный MCP-сервер `slack-local` (`node Scripts/mcp-slack/server.mjs`) — инструменты
 `post_message`/`list_channels` для Slack-уведомлений; секретов в конфиге нет (токен сервер
-сам читает из `.env`). Менять его не нужно; при любом изменении — синк
+берёт из переменной окружения `SLACK_BOT_TOKEN`, дефолтный канал — из трекингового
+`Scripts/mcp-slack/config.json`). Менять его не нужно; при любом изменении — синк
 `backups/mimocode-project.jsonc` в том же коммите.
 
 ---
 
-## Часть 4. Переменные окружения
+## Часть 4. Секреты (Infisical)
 
-В корне проекта создай файл `.env` (НЕ коммитить, NEVER):
+В проекте **нет файла `.env`** (удалён 2026-11-15) и нет секретов в репозитории —
+все секреты проекта лежат в **Infisical** (общий vault команды). Локально это
+пользовательские переменные окружения (`HKCU\Environment`), которые тянутся из vault
+скриптом `Scripts/sync-secrets.ps1`.
 
-```
-GITHUB_PAT=твой_личный_токен_здесь
+**Разовый сетап новой машины:**
 
-GITHUB_UI_EMAIL=email_аккаунта_для_UI-входа
-GITHUB_UI_PASSWORD=пароль_аккаунта_для_UI-входа
-GITHUB_UI_PAT=токен_для_UI-sandbox_репозитория
+1. Вход в Infisical (один раз на машину):
+   ```
+   npm install -g @infisical/cli
+   infisical login --domain https://app.infisical.com/api
+   ```
+   Браузер → вход (можно через GitHub). Без приглашения в проект `Gredja` (Members →
+   Invite, роль Member) CLI секреты проекта не увидит.
+2. Клонируй репозиторий — файл `.infisical.yaml` (project id, не секрет) уже в дереве.
+3. Синк секретов:
+   ```
+   Scripts\sync-secrets.ps1
+   ```
+   Вывод — только имена ключей, значения никогда не печатаются: `synced 5 keys ...`.
+4. **Перезапусти открытые терминалы и сессию MiMoCode** — уже запущенные процессы
+   получают новые переменные только при старте (новые шеллы наследуют их автоматически).
 
-SLACK_BOT_TOKEN=xoxb-...            # бот Slack (scopes chat:write, channels:read) — для MCP slack-local и CI-уведомлений
-SLACK_CHANNEL=#general              # канал по умолчанию для уведомлений
-```
+**Ротация:** владелец меняет секрет в Infisical → на каждой машине `Scripts\sync-secrets.ps1`
+→ рестарт терминалов. Ручной `setx` не нужен.
+
+`SLACK_CHANNEL` для MCP не нужен: дефолтный канал зашит в трекинговом (не секретном)
+`Scripts/mcp-slack/config.json`. Переменная `SLACK_CHANNEL` нужна только локальному запуску
+`Scripts/slack-notify-run.ps1` — задай её через `setx SLACK_CHANNEL #general`, если запускаешь
+скрипт руками; иначе шаг просто предупредит и пропустит уведомление.
 
 `SLACK_BOT_TOKEN`/`SLACK_CHANNEL` дублируются в Settings → Secrets and variables → Actions
 репозитория (те же значения): workflow-шаг `Scripts/slack-notify-run.ps1` шлёт в Slack отчёт
 о каждом ране (название, статус, итог и разбивка по категориям из `TestRunReport-*.md`);
 без секретов (fork PR) шаг тихо пропускается.
 
-**Как получить токен:**
+**Как обновить `GITHUB_PAT` (ротация):**
 1. Зайди на GitHub → Settings → Developer settings → Personal access tokens → Tokens (classic)
-2. Нажми "Generate new token"
-3. Дай имя (например `gredja-dev`)
-4. Выбери scopes: `repo` (полный доступ к репозиториям)
-5. Скопируй токен и вставь в `.env`
+2. Generate new token → имя (например `gredja-dev`) → scope `repo`
+3. Новое значение → секрет `GITHUB_PAT` в Infisical (project `Gredja`, env `dev`)
+4. На каждой машине: `Scripts\sync-secrets.ps1` + рестарт терминалов
 
 Токен нужен для тестов GitHub API.
 
-`GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` — креды для UI-теста входа (`TestConfig.UiLogin` / `TestConfig.UiPassword`; читаются только из процессного окружения или `.env`, без JSON-приоритета). Аккаунт должен поддерживать парольный вход: аккаунт, созданный через Google/Apple/passkey без пароля, отклоняет парольный вход («This account does not support password sign-in») — сначала создай пароль в Settings → Password and authentication. `GITHUB_UI_PAT` — токен для API-действий UI-тестов в песочнице `gredjapl/ui-sandbox` (`TestConfig.UiApiToken`); аккаунт UI — `gredjapl` (`Ui.Username`), API-тесты продолжают работать на `Gredja` (`GitHub.TestUsername`, `GITHUB_PAT`).
+`GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` — креды для UI-теста входа (`TestConfig.UiLogin` / `TestConfig.UiPassword`; читаются только из переменных окружения, без JSON-приоритета). Аккаунт должен поддерживать парольный вход: аккаунт, созданный через Google/Apple/passkey без пароля, отклоняет парольный вход («This account does not support password sign-in») — сначала создай пароль в Settings → Password and authentication. `GITHUB_UI_PAT` — токен для API-действий UI-тестов в песочнице `gredjapl/ui-sandbox` (`TestConfig.UiApiToken`); аккаунт UI — `gredjapl` (`Ui.Username`), API-тесты продолжают работать на `Gredja` (`GitHub.TestUsername`, `GITHUB_PAT`).
 
 **Файл конфигурации тестов:** `testsettings.json` в корне (в `.gitignore`, в клоне его нет).
 Без него сборка и тесты работают: `Core.csproj` подставляет трекаемый `testsettings.example.json`.
@@ -201,8 +219,7 @@ copy testsettings.example.json testsettings.json
 **Порядок чтения токена** (`TestConfig.GitHubToken`, проверяй по коду, не по памяти):
 
 1. `GitHub.Token` из `testsettings.json`
-2. переменная окружения `GITHUB_PAT` (вариант для CI)
-3. строка `GITHUB_PAT=...` в `.env` (поиск вверх по дереву от каталога бинарников)
+2. переменная окружения `GITHUB_PAT` (dev и CI)
 
 ---
 
@@ -227,7 +244,7 @@ dotnet test --filter LoginSignInTests       # обновить .auth/github-ui-s
 
 Отчёт — таблица по каждому тесту + итог (количество и проценты), создаётся автоматически после любого `dotnet test`. Фильтр: `dotnet test --verbosity minimal --filter "Category=HealthCheck"`.
 
-UI-тестам нужны креды из `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) и свежий storageState: `LoginSignInTests` — он логинится анонимно, проверяет меню юзера и сохраняет state-файл, — но с 2026-11-09 он стоит под `[Ignore]` (стена device-verification), поэтому обновление state сейчас ручное: один headed-проход с кодом из email → разблокировать/прогнать `LoginSignInTests` → вернуть `[Ignore]`. Плюс **файл device-trust cookies** `.auth/github-device-trust.json` (gitignored; экспортируется один раз после ручного прохода верификации и вливается в каждый контекст через `GitHubUiTestBase.InjectDeviceTrustCookiesAsync`): без них GitHub считает каждый свежий профиль «новым устройством» и логин упирается в `sessions/verified-device` (код подтверждения по email — тесты его не проходят; наблюдение 2026-11-09). Файл не удалять как мусор; при первом появлении стены — один ручной проход в headed-браузере.
+UI-тестам нужны креды из переменных окружения (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) и свежий storageState: `LoginSignInTests` — он логинится анонимно, проверяет меню юзера и сохраняет state-файл, — но с 2026-11-09 он стоит под `[Ignore]` (стена device-verification), поэтому обновление state сейчас ручное: один headed-проход с кодом из email → разблокировать/прогнать `LoginSignInTests` → вернуть `[Ignore]`. Плюс **файл device-trust cookies** `.auth/github-device-trust.json` (gitignored; экспортируется один раз после ручного прохода верификации и вливается в каждый контекст через `GitHubUiTestBase.InjectDeviceTrustCookiesAsync`): без них GitHub считает каждый свежий профиль «новым устройством» и логин упирается в `sessions/verified-device` (код подтверждения по email — тесты его не проходят; наблюдение 2026-11-09). Файл не удалять как мусор; при первом появлении стены — один ручной проход в headed-браузере.
 
 ### 5.3. Запусти MiMoCode
 
@@ -352,7 +369,7 @@ MiMoCode:
 1. **MiMoCode НЕ коммитит сам** — только по твоей просьбе. Напиши "закоммить" или `/commit`.
 2. **MiMoCode показывает план перед работой** — для каждой задачи он предложит план, подождёт одобрения, потом выполнит.
 3. **Работа в ветках** — все изменения делаются в ветках `features/<topic>`, не в `main`. Перед ЛЮБОЙ правкой кодовой базы проверяй текущую ветку (`git branch --show-current`); в `main` — только merge (hard rule, 2026-11-02).
-4. **Файлы с `.env` секретами** — никогда не коммить файл `.env`.
+4. **Секреты в переменных окружения** — в репозитории нет `.env`; токены задаются через `setx` и никогда не коммитятся.
 5. **Observable Behaviour — source of truth** — при генерации тестов MiMoCode читает `{Service}ObservableBehaviour.md` и генерирует тесты по описанным полям и типам.
 6. **Document sync** — при изменении эндпоинтов обновляй Observable Behaviour ↔ Test Plan ↔ Rules. Каждый Top-3 риск плана покрывается ≥1 тест-кейсом (risk-coverage check).
 7. **Старт сессии** — сразу после приветствия, до любой другой работы — скилл `/nightly-check` (однострочный вердикт о ночной прогоне). Не пропускать даже ради «простого вопроса».
@@ -516,11 +533,11 @@ dotnet build
 **Тесты падают с ошибкой подключения**
 
 - JSONPlaceholder — фейковый API, проблемы с интернетом
-- GitHub API — нужен `.env` с `GITHUB_PAT` (см. Часть 4)
+- GitHub API — нужна переменная окружения `GITHUB_PAT` (см. Часть 4)
 
 **Тесты падают с 401/403**
 
-- Проверь что `.env` содержит валидный `GITHUB_PAT`
+- Проверь, что переменная окружения `GITHUB_PAT` задана и валидна (`[Environment]::GetEnvironmentVariable('GITHUB_PAT','User')`)
 - Токен должен иметь scope `public_repo` (read) или `repo` (read + write)
 - Проверь что токен не истёк: GitHub → Settings → Developer settings → Personal access tokens
 
@@ -570,7 +587,7 @@ dotnet build
 - [ ] Установлен Git
 - [ ] Создан `~/.config/mimocode/mimocode.jsonc` (см. Часть 3)
 - [ ] Клонирован репозиторий
-- [ ] Создан `.env` с GITHUB_PAT и кредами UI-входа (см. Часть 4)
+- [ ] Выполнен вход в Infisical и прогон `Scripts\sync-secrets.ps1`, терминалы перезапущены (см. Часть 4)
 - [ ] `dotnet build` проходит без ошибок
 - [ ] `dotnet test` показывает пройденные тесты
 - [ ] `mimo` запускается и отвечает на сообщения

@@ -5,7 +5,7 @@
 $ErrorActionPreference = 'Stop'
 Set-Location (git rev-parse --show-toplevel)
 
-$crlfExtensions = 'cs', 'csx', 'csproj', 'props', 'sln', 'slnx', 'json', 'jsonc', 'ps1', 'runsettings', 'mjs'
+$crlfExtensions = 'cs', 'csx', 'csproj', 'props', 'sln', 'slnx', 'json', 'jsonc', 'yaml', 'ps1', 'runsettings', 'mjs'
 $extraFiles = '.editorconfig', '.gitattributes'
 $converted = 0
 

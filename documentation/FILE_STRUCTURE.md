@@ -16,10 +16,10 @@ Gredja/
 ├── testsettings.example.json       # tracked template — build/tests work from a clean clone
 ├── global.json                     # pinned SDK (11.0.100, rollForward: latestFeature)
 ├── .editorconfig                   # IDE0005/0007/0161 + curated Roslynator (RCS*) set — dotnet format enforces Rules/code.md
-├── .env                          # secrets (not tracked)
 ├── .gitattributes                # line ending normalization
 ├── .gitignore
 ├── .graphifyignore
+├── .infisical.yaml                # Infisical project link (project id — non-secret; consumed by Scripts/sync-secrets.ps1)
 ├── .github/
 │   └── workflows/              # CI: pr-checks.yml (required PR-gate) + nightly-tests.yml (cron, main only)
 ├── .auth/                       # not tracked — Playwright storageState
@@ -63,10 +63,12 @@ Gredja/
 │   ├── locator-dump.mjs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
 │   ├── moodledemo-discover-langs.ps1  # regenerate moodledemo expected-langs.json from the live language switcher
 │   ├── mcp-slack/
-│   │   └── server.mjs             # local Slack MCP server over stdio (post_message, list_channels; token from .env)
+│   │   ├── server.mjs             # local Slack MCP server over stdio (post_message, list_channels; SLACK_BOT_TOKEN from the environment)
+│   │   └── config.json            # tracked non-secret default channel (defaultChannel)
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── read-github-pat.ps1       # the single token-read + never-print contract (used by skills)
 │   ├── slack-notify-run.ps1      # GitHub Actions → Slack run report (summary + per-category stats from TestRunReport)
+│   ├── sync-secrets.ps1          # pull project secrets from Infisical → user env (setx); output = key names only, never values
 │   ├── coverage.runsettings      # coverlet IncludeTestAssembly — only for test-coverage.ps1 (not auto-applied)
 │   ├── test-coverage.ps1
 │   ├── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)

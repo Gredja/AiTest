@@ -31,7 +31,8 @@
   analyzer set) and a fast, deterministic sanity subset of tests (call it `HealthCheck` — see §7).
   Any failure → report and stop; never commit red.
 - **Commits:** English, `action + object` ("Add X tests", "Fix Y parsing"). Secrets, tokens,
-  `.env`, auth states and test artifacts are never committed. Prefer committing through the
+  auth states and test artifacts are never committed (no `.env` — secrets live in environment
+  variables only). Prefer committing through the
   project's commit skill/ritual so gates cannot be skipped.
 - **Blocking waits go to the background.** Long test runs, CI polling, retries — delegate to a
   background subagent/job; keep the main thread responsive. A single quick API call is fine inline.
@@ -190,7 +191,9 @@ Principles:
 - **Before creating ANY file, decide its place** by naming match + future growth. "Closest
   existing folder" is not a reason. Folder names must match their contents; rename when drift
   appears (structure audit on a schedule).
-- Secrets: precedence chain `config file → environment variable → .env (gitignored)`. Example
+- Secrets: precedence chain `config file → environment variable` (no `.env` file; shared
+  projects pull local variables from a team vault with a sync script that never prints
+  values). Example
   values in tracked example configs must stay fake. Never paste a real credential into code,
   docs, or a test.
 
@@ -315,7 +318,8 @@ failed; without that comment the selector is a violation.
   every later test sharing the session).
 - One dedicated bootstrap test owns sign-in + state save (run it on demand when state expires);
   exactly one test may sign out, it runs with state disabled and never saves.
-- Credentials come only from environment/`.env` — never from code or tracked config.
+- Credentials come only from environment variables (user scope on dev machines, repository
+  secrets in CI) — never from code or tracked config.
 - A missing storage-state file must **fail fast** with an explicit precondition error naming
   the bootstrap test — never continue anonymously and fail later on the wrong screen.
 - The credential-entry test itself must **not record traces/network snapshots** — the typed
@@ -446,7 +450,8 @@ The UI rarely exposes the created id. Cleanup composition:
   — edits go only to feature branches, the default branch receives changes solely via merge;
   feature branches + PRs; English `action + object` commits; EOL normalization
   before `git add` (zero line-ending warnings); `.gitignore` covers auth states, results,
-  artifacts, `.env`; tracked `backups/` copies of setup docs are updated in the same commit as
+  artifacts (`.gitignore` also keeps a defensive `.env` entry); tracked `backups/` copies of
+  setup docs are updated in the same commit as
   the change they mirror.
 - CI secrets live only in repository settings; the live suite never becomes a required check.
 

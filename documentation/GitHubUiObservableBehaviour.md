@@ -36,7 +36,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 - `GetByRole(Button, "Sign in")` (exact name) — verified 2026-10-09
 - Success: redirect to `https://github.com/` (dashboard); header shows `GetByRole(Button, "Open user navigation menu")` — verified 2026-10-09
 - User menu: click → `GetByRole(Dialog, "User navigation")`; `GetByRole(Heading)` text contains the signed-in username — verified 2026-10-09
-- Prerequisites: credentials `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` in `.env`; the login test overrides `IsStorageStateEnabled => false` (anonymous context) and saves storageState only after the assert
+- Prerequisites: credentials `GITHUB_UI_EMAIL` / `GITHUB_UI_PASSWORD` in environment variables; the login test overrides `IsStorageStateEnabled => false` (anonymous context) and saves storageState only after the assert
 - Gotcha: an account created without a password (social login / passkey-only) fails with "This account does not support password sign-in" — fix: sign in via Google/Apple/passkey once, then Settings → Password and authentication → create a password (verified 2026-10-09)
 - Gotcha: the user-menu click right after the login redirect can be swallowed (menu never opens), and the menu itself renders ~300ms after the click — `HeaderPage` waits for the `User navigation` dialog and re-clicks until it is up, at a 1s interval (verified 2026-10-14)
 - Gotcha (**device verification wall**): a fresh browser profile logs in and is redirected to `https://github.com/sessions/verified-device` (`heading "Device verification"`, email-code challenge) — the user menu never appears there and the test times out at 15s. Observed 2026-11-09 (reproduced isolated). Fix: device-trust cookies persist in `.auth/github-device-trust.json` (gitignored, exported once after a human completes the email-code challenge in a headed run); `GitHubUiTestBase` injects them into every context (`InjectDeviceTrustCookiesAsync`) — a NEW device needs one human verification before login/logout tests can pass
@@ -60,7 +60,7 @@ When generating or reviewing GitHub UI tests, the AI agent:
 ## Page: Issues list (UI-4, ui-sandbox, empty)
 
 - URL: `.../issues` — verified 2026-10-13
-- `heading "Issues" level=1` · `link "New issue"` — verified 2026-10-13; the sidebar also renders `heading "Issues" level=2` — pin `Level = 1` on the heading locator (verified 2026-11-12)
+- `heading "Issues" level=1` · `link "New issue"` — verified 2026-10-13, re-verified 2026-11-16; the sidebar also renders `heading "Issues" level=2` — pin `Level = 1` on the heading locator (verified 2026-11-12)
 - Empty state: `heading "No results matched your search"` — verified 2026-10-13
 - Tab counter renders `Open (0)` both anonymous and authenticated (the 2026-10-13 claim of `Open 0` authenticated did not reproduce on re-check 2026-10-19) — parse with `Open\D*(\d+)` regex; `link "Open (0)"` re-verified on the live list — verified 2026-11-12
 

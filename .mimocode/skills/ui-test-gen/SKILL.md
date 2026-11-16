@@ -286,7 +286,7 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | `TimeoutException: locator not resolved` | stale selector or wrong role | re-snapshot the page; locator from live DOM only |
 | Test hangs on navigation | missing / expired storageState | refresh is human-assisted while `LoginSignInTests` is `[Ignore]`d (device-verification wall) — follow `Rules/ui-testing.md` → Auth, never just re-run the ignored test |
 | Flaky list-visibility assert | eventual list refresh | poll with `WaitHelper.WaitUntilAsync` (documented in UI-OB section), never `WaitForTimeout` |
-| `StorageStatePath not found` | storageState never created or deleted | same human-assisted refresh (`Rules/ui-testing.md` → Auth); credentials in env/.env |
+| `StorageStatePath not found` | storageState never created or deleted | same human-assisted refresh (`Rules/ui-testing.md` → Auth); credentials from environment variables |
 | Test fails, no artifact | fixture not capturing | fix `UiTestBase` teardown (screenshot+trace) — not the test |
 | CSS selector temptation (`div.Box-row`) | shortcut | forbidden — role/text locator + snapshot verification |
 
@@ -302,3 +302,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.3 | 2026-11-05 | Contract rule 6: automated validation of the JSON report via Scripts/validate-skill-report.ps1 (must print PASS before the reply is sent) | MiMo |
 | 1.4 | 2026-11-05 | Step 6: reconciliation made mechanical — Grep method names vs approved Part 2, table is the diff output (never hand-typed) | MiMo |
 | 1.5 | 2026-11-12 | Troubleshooting: storageState refresh rows corrected — `LoginSignInTests` is `[Ignore]`d (device-verification wall), fix now points at the human-assisted runbook in `Rules/ui-testing.md` → Auth | MiMo |
+| 1.6 | 2026-11-16 | Troubleshooting: credential source row synced with the `.env` removal — credentials come from environment variables (pulled from Infisical via `Scripts/sync-secrets.ps1`) | MiMo |

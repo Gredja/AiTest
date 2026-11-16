@@ -59,10 +59,10 @@ The team loses trust in the suite and stops running it — the moment coverage s
 
 ## 4. Entry Criteria
 
-- [ ] GitHub personal access token present in `.env` (`GITHUB_PAT`, classic with `repo` scope — JSON `Token` → env → `.env`)
+- [ ] GitHub personal access token present in the `GITHUB_PAT` environment variable (classic with `repo` scope — JSON `Token` → env)
 - [ ] `dotnet restore` and `dotnet build` succeed without errors
 - [ ] Target repo `Gredja/AiTest` is accessible (not deleted, not renamed)
-- [ ] UI credentials present in `.env` (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) and storageState `.auth/github-ui-state.json` is fresh (refresh is human-assisted while `LoginSignInTests` is `[Ignore]`d — `Rules/ui-testing.md` → Auth)
+- [ ] UI credentials present in environment variables (`GITHUB_UI_EMAIL`, `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`) and storageState `.auth/github-ui-state.json` is fresh (refresh is human-assisted while `LoginSignInTests` is `[Ignore]`d — `Rules/ui-testing.md` → Auth)
 - [ ] UI sandbox repo `gredjapl/ui-sandbox` (UI `Ui.TestRepo`) is accessible, has a non-empty description and at least one commit (UI repository-landing asserts read both)
 - [ ] Collaborator invitee `GitHub.CollaboratorUser` (`gredjapl`) exists and can be invited on the sandbox (Api invitation tests + E2E-5)
 - [ ] User `GitHub.TestUsername` exists publicly and is returned by live search (`/search/users`, `/search/repositories` `user:` queries assert non-empty)
