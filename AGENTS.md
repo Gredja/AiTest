@@ -16,7 +16,7 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 - `Core/Logging/` — action logging (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) and raw test results (`test-results-*.log`). `TestResults/` contains **reports only**, raw run artifacts live in the temp folder
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (invoked from the NUnit teardown `TestReportSetup`), age-based cleanup of artifacts older than 7 days
 - `AllureAdapter/` — solution project: Allure NUnit attribute + JSON writers/report helpers (`AllureAdapter/Helpers/`, flat layout by design)
-- `Scripts/` — one-off helper scripts: `locator-dump.mjs` (CDP locator dump), `normalize-eol.ps1`, `read-github-pat.ps1` (the single token-read/redaction contract), `slack-notify-run.ps1` (GitHub Actions → Slack run reports in every workflow), `mcp-slack/` (local Slack MCP server: `post_message`/`list_channels`, token from `.env`), `allure-report.ps1`, `install-playwright.ps1` (Chromium + deps for UI/MoodleDemo), `test-parallel-rerun.ps1` (nightly two-pass), `test-coverage.ps1` + `coverage.runsettings`, `moodledemo-discover-langs.ps1`, `validate-skill-report.ps1`
+- `Scripts/` — one-off helper scripts: `locator-dump.mjs` (CDP locator dump), `normalize-eol.ps1`, `read-github-pat.ps1` (the single token-read/redaction contract), `slack-notify-run.ps1` (GitHub Actions → Slack run reports in every workflow), `mcp-slack/` (local Slack MCP server: `post_message`/`list_channels`, `SLACK_BOT_TOKEN` from the environment, default channel from `Scripts/mcp-slack/config.json`), `allure-report.ps1`, `install-playwright.ps1` (Chromium + deps for UI/MoodleDemo), `test-parallel-rerun.ps1` (nightly two-pass), `test-coverage.ps1` + `coverage.runsettings`, `moodledemo-discover-langs.ps1`, `validate-skill-report.ps1`, `sync-secrets.ps1` (pull project secrets from Infisical into the user environment; values are never printed)
 - `Ui/Helpers/` — project-level helpers shared by both site trees (`RetryHelper`, `PageUrlHelper`, `TabCountParserHelper`, `ArtifactNamingHelper`, `SiteNavigationHelper`, `TextPatternsHelper`, `MoodledemoHttpHelper`, `HtmlLocaleReaderHelper`, `PageLocaleReaderHelper`, `TitleScriptAssertHelper`, `UiTimeout` constants holder)
 - `Rules/` — full rules (this file is only a brief digest)
 - `documentation/` — project documentation; `documentation/Katas/` — learning materials, do not touch; full tree (incl. `research/`, `backups/`, `TestResults/`) — `documentation/FILE_STRUCTURE.md`
@@ -68,14 +68,14 @@ All changes: plan → approval → changes → report. After a commit — review
 
 ### Config
 - Base URL and endpoints live in `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`. Never hardcode them in tests.
-- `testsettings.example.json` stays in sync with `testsettings.json`; token: JSON `Token` → env `GITHUB_PAT` → `.env` (`Rules/config.md`); do not mix the two GitHub accounts: API/E2E = `Gredja`, UI = `gredjapl` (`Rules/config.md` → GitHub identities)
+- `testsettings.example.json` stays in sync with `testsettings.json`; token: JSON `Token` → env `GITHUB_PAT` (no `.env` file — secrets live in environment variables pulled from Infisical via `Scripts/sync-secrets.ps1`, `Rules/config.md`); do not mix the two GitHub accounts: API/E2E = `Gredja`, UI = `gredjapl` (`Rules/config.md` → GitHub identities)
 
 ### Git
 - Repo: github.com/Gredja/AiTest.git, branch: `main`
 - **Before ANY codebase change — check the current branch** (`git branch --show-current`): edits go only to `features/<topic>` branches; `main` receives changes **only via merge** (hard rule, user 2026-11-02 — `Rules/git.md` → Branches)
 - **After every merge — delete the branch remote AND local (`git branch -d`, never `-D`) and fast-forward local `main` (`git switch main && git pull --ff-only`)**; no confirmation/reminder (hard rule, user 2026-11-04 — `Rules/git.md` → Branches)
 - Commits: ONLY via the `/commit` skill (never by hand); only on request, English, format: action + object
-- Never commit `.env` or tokens
+- Never commit tokens or secrets (the repo holds no `.env`)
 - **Before committing:** `dotnet format --verify-no-changes` + `dotnet test --filter Category=HealthCheck` — both must pass (full run — `/test`)
 - CI: PR gate (`format` + `HealthCheck`) and nightly informational run; never make the live suite a required check (`Rules/git.md` → CI)
 

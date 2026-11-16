@@ -4,21 +4,24 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SERVER_NAME = 'slack-local';
-const SERVER_VERSION = '1.1.0';
+const SERVER_VERSION = '1.2.0';
 const SLACK_API = 'https://slack.com/api';
+
+const configPath = join(dirname(fileURLToPath(import.meta.url)), 'config.json');
+const { defaultChannel } = JSON.parse(readFileSync(configPath, 'utf8'));
 
 const TOOLS = [
   {
     name: 'post_message',
     description:
       'Post a message to a Slack channel the bot is a member of. ' +
-      'Omit channel to use the SLACK_CHANNEL default from the repository .env.',
+      'Omit channel to use the defaultChannel from config.json.',
     inputSchema: {
       type: 'object',
       properties: {
         channel: {
           type: 'string',
-          description: 'Channel ID (C...) or name (#general); defaults to SLACK_CHANNEL',
+          description: 'Channel ID (C...) or name (#general); defaults to defaultChannel in config.json',
         },
         text: { type: 'string', description: 'Message text; mrkdwn is supported (fallback/notification preview)' },
         blocks: {
@@ -53,22 +56,6 @@ const TOOLS = [
   },
 ];
 
-function readEnvFile() {
-  const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
-  const values = {};
-  try {
-    for (const line of readFileSync(join(root, '.env'), 'utf8').split(/\r?\n/)) {
-      const match = line.match(/^([A-Z0-9_]+)=(.*)$/);
-      if (match) values[match[1]] = match[2].trim();
-    }
-  } catch {
-    // missing .env is reported by the callers that need a value
-  }
-  return values;
-}
-
-const env = readEnvFile();
-
 function send(payload) {
   process.stdout.write(`${JSON.stringify(payload)}\n`);
 }
@@ -88,9 +75,9 @@ function toolText(text, isError = false) {
 }
 
 async function slackFetch(path, options = {}) {
-  const token = env.SLACK_BOT_TOKEN;
+  const token = process.env.SLACK_BOT_TOKEN;
   if (!token) {
-    throw new Error('SLACK_BOT_TOKEN is missing in the repository .env — add it and restart the session');
+    throw new Error('SLACK_BOT_TOKEN environment variable is not set — set the user environment variable and restart the session');
   }
   const response = await fetch(`${SLACK_API}${path}`, {
     ...options,
@@ -113,9 +100,9 @@ async function slackFetch(path, options = {}) {
 
 async function callTool(name, args) {
   if (name === 'post_message') {
-    const channel = args.channel ?? env.SLACK_CHANNEL;
+    const channel = args.channel ?? defaultChannel;
     if (!channel) {
-      throw new Error('No channel given and no SLACK_CHANNEL default in .env');
+      throw new Error('No channel given and no defaultChannel in Scripts/mcp-slack/config.json');
     }
     for (const field of ['blocks', 'attachments']) {
       if (args[field] !== undefined && !Array.isArray(args[field])) {

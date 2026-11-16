@@ -11,7 +11,7 @@ other than `main`, never push to `main` directly, never merge with a red gate.
 ## Instructions
 
 Run everything yourself; polling waits happen in a background subagent — no blocking loops
-in the main thread. The token from `.env` (`GITHUB_PAT`) is never printed.
+in the main thread. The token (`GITHUB_PAT` from the environment) is never printed.
 
 ### Step 1: Preconditions
 
@@ -97,7 +97,7 @@ Never delete `main` itself.
 
 **Slack notification first:** call the `slack-local` MCP tool `post_message` with text
 `✅ merge PR #<n>: <title> → <merge sha>` — omit `channel` (the server takes
-`SLACK_CHANNEL` from `.env`). A failed or unavailable notification is reported below and
+`SLACK_CHANNEL` from the environment). A failed or unavailable notification is reported below and
 never blocks the merge flow.
 
 In execution order: commit (message/hash) or "skipped — tree clean" · PR number/url/title ·

@@ -16,24 +16,6 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-function Get-SlackCredentials {
-    if (-not [string]::IsNullOrEmpty($env:SLACK_BOT_TOKEN) -and -not [string]::IsNullOrEmpty($env:SLACK_CHANNEL)) {
-        return
-    }
-
-    $repoRoot = Split-Path -Parent $PSScriptRoot
-    $envFile = Join-Path $repoRoot '.env'
-    if (-not (Test-Path $envFile)) {
-        return
-    }
-
-    Select-String -Path $envFile -Pattern '^(SLACK_BOT_TOKEN|SLACK_CHANNEL)=(.*)$' | ForEach-Object {
-        $name = $_.Matches[0].Groups[1].Value
-        $value = $_.Matches[0].Groups[2].Value
-        Set-Item -Path "Env:$name" -Value $value
-    }
-}
-
 function Get-ReportStats {
     param([string]$Path)
 
@@ -258,10 +240,8 @@ function Send-SlackMessage {
 }
 
 try {
-    Get-SlackCredentials
-
     if ([string]::IsNullOrEmpty($env:SLACK_BOT_TOKEN) -or [string]::IsNullOrEmpty($env:SLACK_CHANNEL)) {
-        Write-Warning 'SLACK_BOT_TOKEN/SLACK_CHANNEL not available — notification skipped'
+        Write-Warning 'SLACK_BOT_TOKEN/SLACK_CHANNEL environment variables not set — notification skipped'
         exit 0
     }
 
