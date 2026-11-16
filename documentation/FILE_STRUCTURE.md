@@ -68,7 +68,7 @@ Gredja/
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── read-github-pat.ps1       # the single token-read + never-print contract (used by skills)
 │   ├── slack-notify-run.ps1      # GitHub Actions → Slack run report (summary + per-category stats from TestRunReport)
-│   ├── sync-secrets.ps1          # pull project secrets from Infisical → user env (setx); output = key names only, never values
+│   ├── sync-secrets.ps1          # pull project secrets from Infisical → current process env only (no setx/registry/files); output = key names only, never values
 │   ├── coverage.runsettings      # coverlet IncludeTestAssembly — only for test-coverage.ps1 (not auto-applied)
 │   ├── test-coverage.ps1
 │   ├── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)

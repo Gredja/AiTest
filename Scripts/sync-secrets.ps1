@@ -1,13 +1,15 @@
-# Pulls project secrets from Infisical into the user environment of this machine:
-# process env (current session) + HKCU:\Environment via setx (new shells inherit).
+# Pulls project secrets from Infisical into the CURRENT PowerShell process (in memory).
+# Nothing is persisted anywhere: no HKCU\Environment, no setx, no files — plaintext
+# exists only while this process (and its child processes) live.
 #
 # Contract: secret VALUES are never printed, logged, or written to files —
 # the output lists key names and counts only (same rule as read-github-pat.ps1).
 #
-# Usage: Scripts/sync-secrets.ps1 [-Environment dev]
+# Usage — run it in the SAME shell/session as the command that needs the secrets:
+#   Scripts/sync-secrets.ps1; dotnet test --filter Category=HealthCheck
+# Every new shell/session must run it again (there is no local cache by design).
 # Prerequisites: `npm install -g @infisical/cli` and `infisical login` (once per machine),
-# the repo-linked `.infisical.yaml`. After a sync, restart open terminals and the agent
-# session so new processes pick up the variables.
+# the repo-linked `.infisical.yaml`.
 
 [CmdletBinding()]
 param(
@@ -18,20 +20,22 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = Split-Path -Parent $PSScriptRoot
 
-$cliCommand = Get-Command infisical -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($null -ne $cliCommand) {
-    $cliPath = $cliCommand.Source
+# The npm infisical.ps1 shim can exit 0 with empty output under some hosts —
+# prefer the native binary, then the Application-type shim (infisical.cmd).
+$cliPath = $null
+$npmRoot = & npm root -g 2>$null | Select-Object -First 1
+if (-not [string]::IsNullOrWhiteSpace($npmRoot)) {
+    $exePath = Join-Path $npmRoot '@infisical\cli\bin\infisical.exe'
+    if (Test-Path $exePath) {
+        $cliPath = $exePath
+    }
 }
-else {
-    $npmRoot = & npm root -g 2>$null | Select-Object -First 1
-    $cliPath = if (-not [string]::IsNullOrWhiteSpace($npmRoot)) {
-        Join-Path $npmRoot '@infisical\cli\bin\infisical.exe'
+if ($null -eq $cliPath) {
+    $cliCommand = Get-Command infisical -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+    if ($null -ne $cliCommand) {
+        $cliPath = $cliCommand.Source
     }
     else {
-        [string]::Empty
-    }
-
-    if ([string]::IsNullOrEmpty($cliPath) -or -not (Test-Path $cliPath)) {
         throw 'Infisical CLI not found — install it: npm install -g @infisical/cli'
     }
 }
@@ -56,38 +60,34 @@ catch {
     throw 'Infisical export returned unparsable output — environment left untouched'
 }
 
-$synced = [System.Collections.Generic.List[string]]::new()
-$skipped = [System.Collections.Generic.List[string]]::new()
+$requiredKeys = @(
+    'GITHUB_PAT',
+    'GITHUB_UI_EMAIL',
+    'GITHUB_UI_PASSWORD',
+    'GITHUB_UI_PAT',
+    'SLACK_BOT_TOKEN'
+)
 
+$byKey = @{}
 foreach ($secret in $secrets) {
-    $key = $secret.key
-    $value = $secret.value
-
-    if ([string]::IsNullOrWhiteSpace($key)) {
-        continue
-    }
-
-    if ([string]::IsNullOrEmpty($value)) {
-        $skipped.Add($key)
-        continue
-    }
-
-    Set-Item -Path "Env:$key" -Value $value
-    & setx $key $value 2>$null | Out-Null
-    if ($LASTEXITCODE -eq 0) {
-        $synced.Add($key)
-    }
-    else {
-        $skipped.Add($key)
+    if (-not [string]::IsNullOrWhiteSpace($secret.key) -and -not [string]::IsNullOrEmpty($secret.value)) {
+        $byKey[$secret.key] = $secret.value
     }
 }
 
-if ($synced.Count -eq 0) {
-    throw "No secrets synced from Infisical [$Environment] (skipped: $($skipped -join ', '))"
+# Validate before applying anything — a partial environment is worse than none.
+$missing = @($requiredKeys | Where-Object { -not $byKey.ContainsKey($_) })
+if ($missing.Count -gt 0) {
+    throw "Infisical [$Environment] is missing required keys: $($missing -join ', ') — environment left untouched"
 }
 
-Write-Output "synced $($synced.Count) keys from Infisical [$Environment]: $($synced -join ', ')"
-if ($skipped.Count -gt 0) {
-    Write-Warning "skipped (empty value or setx failure): $($skipped -join ', ')"
+foreach ($key in $requiredKeys) {
+    Set-Item -Path "Env:$key" -Value $byKey[$key]
 }
-Write-Output 'Restart open terminals and the agent session so new processes inherit the variables.'
+$extra = @($byKey.Keys | Where-Object { $requiredKeys -notcontains $_ })
+foreach ($key in $extra) {
+    Set-Item -Path "Env:$key" -Value $byKey[$key]
+}
+
+Write-Output "loaded $($requiredKeys.Count) required keys (+$($extra.Count) extra) from Infisical [$Environment] into process memory: $(($requiredKeys + $extra) -join ', ')"
+Write-Output 'Not persisted anywhere — run this script again in every new shell/session that needs the secrets.'

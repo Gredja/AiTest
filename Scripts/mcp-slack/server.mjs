@@ -4,7 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SERVER_NAME = 'slack-local';
-const SERVER_VERSION = '1.2.0';
+const SERVER_VERSION = '1.2.1';
 const SLACK_API = 'https://slack.com/api';
 
 const configPath = join(dirname(fileURLToPath(import.meta.url)), 'config.json');
@@ -77,7 +77,7 @@ function toolText(text, isError = false) {
 async function slackFetch(path, options = {}) {
   const token = process.env.SLACK_BOT_TOKEN;
   if (!token) {
-    throw new Error('SLACK_BOT_TOKEN environment variable is not set — set the user environment variable and restart the session');
+    throw new Error('SLACK_BOT_TOKEN environment variable is not set — run Scripts/sync-secrets.ps1 in the launching shell (Infisical pull, in-memory)');
   }
   const response = await fetch(`${SLACK_API}${path}`, {
     ...options,
