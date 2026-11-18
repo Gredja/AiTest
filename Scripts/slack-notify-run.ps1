@@ -23,58 +23,79 @@ function Get-ReportStats {
         return $null
     }
 
-    $reportFile = $Path
+    $reportFiles = @()
     if (Test-Path $Path -PathType Container) {
-        $reportFile = Get-ChildItem -Path $Path -Filter 'TestRunReport-*.md' |
-            Sort-Object LastWriteTime -Descending |
-            Select-Object -First 1 -ExpandProperty FullName
+        $reportFiles = @(Get-ChildItem -Path $Path -Filter 'TestRunReport-*.md' | Sort-Object Name)
+    }
+    elseif (Test-Path $Path -PathType Leaf) {
+        $reportFiles = @(Get-Item $Path)
     }
 
-    if ([string]::IsNullOrEmpty($reportFile) -or -not (Test-Path $reportFile)) {
+    if ($reportFiles.Count -eq 0) {
         return $null
     }
 
+    # Two-pass semantics: reports are merged chronologically (name = yyyyMMdd-HHmmss),
+    # a later report (rerun pass) overrides the same test from an earlier one.
+    $tests = [ordered]@{}
     $summary = @{}
+
+    foreach ($file in $reportFiles) {
+        foreach ($line in Get-Content -Path $file.FullName) {
+            if ($line -match '^\|\s*(Passed|Failed|Skipped)\s*\|\s*(\d+)\s*\|') {
+                $summary[$Matches[1]] = [int]$Matches[2]
+                continue
+            }
+
+            if ($line -notmatch '^\|\s*\d+\s*\|') {
+                continue
+            }
+
+            $cells = $line -split '\|'
+            if ($cells.Count -lt 7) {
+                continue
+            }
+
+            $name = $cells[2].Trim()
+            if ([string]::IsNullOrEmpty($name)) {
+                continue
+            }
+
+            $key = "$($cells[3].Trim())::$name"
+            $tests[$key] = @{ Category = $cells[4].Trim(); Result = $cells[5].Trim() }
+        }
+    }
+
+    if ($tests.Count -eq 0) {
+        if ($summary.Count -eq 0) {
+            return $null
+        }
+        return @{ Summary = $summary; Categories = @{} }
+    }
+
+    $summaryResult = @{ Passed = 0; Failed = 0; Skipped = 0 }
     $categories = @{}
+    foreach ($entry in $tests.Values) {
+        $result = if ($entry.Result -eq 'Passed' -or $entry.Result -eq 'Failed') { $entry.Result } else { 'Skipped' }
+        $summaryResult[$result]++
 
-    foreach ($line in Get-Content -Path $reportFile) {
-        if ($line -match '^\|\s*(Passed|Failed|Skipped)\s*\|\s*(\d+)\s*\|') {
-            $summary[$Matches[1]] = [int]$Matches[2]
-            continue
-        }
-
-        if ($line -notmatch '^\|\s*\d+\s*\|') {
-            continue
-        }
-
-        $cells = $line -split '\|'
-        if ($cells.Count -lt 7) {
-            continue
-        }
-
-        $category = $cells[4].Trim()
-        $result = $cells[5].Trim()
+        $category = $entry.Category
         if ([string]::IsNullOrEmpty($category)) {
             continue
         }
-
         if (-not $categories.ContainsKey($category)) {
             $categories[$category] = @{ Passed = 0; Failed = 0; Total = 0 }
         }
         $categories[$category].Total++
-        if ($result -eq 'Passed') {
+        if ($entry.Result -eq 'Passed') {
             $categories[$category].Passed++
         }
-        elseif ($result -eq 'Failed') {
+        elseif ($entry.Result -eq 'Failed') {
             $categories[$category].Failed++
         }
     }
 
-    if ($summary.Count -eq 0) {
-        return $null
-    }
-
-    return @{ Summary = $summary; Categories = $categories }
+    return @{ Summary = $summaryResult; Categories = $categories }
 }
 
 function Get-StatusStyle {
