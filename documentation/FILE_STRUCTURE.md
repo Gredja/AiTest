@@ -41,6 +41,7 @@ Gredja/
 │   ├── scripts/
 │   │   └── gh-pr-create.ps1
 │   └── skills/
+│       ├── api-checklist/SKILL.md # coverage checklist for one endpoint (table + gaps; no test code)
 │       ├── api-test-gen/SKILL.md
 │       ├── api-test-gen/references/  # plan-gate, report-contract, test-template, history (anti-dilution split)
 │       ├── coverage/SKILL.md
@@ -72,6 +73,7 @@ Gredja/
 │   ├── coverage.runsettings      # coverlet IncludeTestAssembly — only for test-coverage.ps1 (not auto-applied)
 │   ├── test-coverage.ps1
 │   ├── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
+│   ├── validate-skill.py         # vendored skill-creator linter — skill structure gate in /commit (frontmatter/naming/links)
 │   └── validate-skill-report.ps1 # machine-validates a gen-skill JSON report (keys, counter sum, gate↔commit-message link) — contract rule in api/e2e/ui-test-gen
 ├── education/
 │   └── TESTING_PLAYBOOK.md       # portable project-agnostic testing playbook (EN) — methodology deltas folded at every commit

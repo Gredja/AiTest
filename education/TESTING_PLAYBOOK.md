@@ -1028,7 +1028,10 @@ skill prompt.
    eval files themselves (a generator that has seen the checklist invalidates the run);
    record a score (`passed must / total must` and must-not) per case so before/after is a
    number, not a vibe; after a skill edit re-run EVERY case of that skill — the edit that
-   motivated the rerun is not the only thing it can break.
+   motivated the rerun is not the only thing it can break. A separate STRUCTURAL gate runs on
+   any skill-folder change: a vendored linter (naming, frontmatter, description WHEN-clause,
+   linked files) must PASS before the commit — the eval proves the skill BEHAVES correctly,
+   the linter proves the file LOADS correctly; two independent gates, both blocking.
 
 ### 14.10 E2E scenario generation (multi-step write chains)
 1. Chain shape: create → verify → mutate → cleanup; the chain lives in the E2E project, not the
