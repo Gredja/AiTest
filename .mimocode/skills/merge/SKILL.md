@@ -97,7 +97,7 @@ Never delete `main` itself.
 
 **Slack notification first:** call the `slack-local` MCP tool `post_message` with text
 `✅ merge PR #<n>: <title> → <merge sha>` — omit `channel` (the server takes
-`SLACK_CHANNEL` from the environment). A failed or unavailable notification is reported below and
+`Scripts/mcp-slack/config.json`). A failed or unavailable notification is reported below and
 never blocks the merge flow.
 
 In execution order: commit (message/hash) or "skipped — tree clean" · PR number/url/title ·
