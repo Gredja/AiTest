@@ -297,7 +297,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — локальный Slack MCP-сервер)
+├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, validate-skill.py (структурный линтер скиллов), validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — локальный Slack MCP-сервер)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
@@ -352,7 +352,7 @@ MiMoCode:
 |---------|-----------|
 | `/test` | Запускает все тесты + пишет TestRunReport-*.md в `TestResults/` |
 | `/test-report` | Запускает тесты + генерирует Allure-отчёт |
-| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); финальный отчёт — JSON в `TestResults/CommitReport-*.json` + таблица в чате; **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/` |
+| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); финальный отчёт — JSON в `TestResults/CommitReport-*.json` + таблица в чате; **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/`; **гейт структуры скиллов**: правка `.mimocode/skills/**` блокируется без `PASS` у `python Scripts/validate-skill.py <папка>` по каждому изменённому скиллу |
 | `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
@@ -360,6 +360,7 @@ MiMoCode:
 | `/api-test-gen` | Генерирует тесты для нового API endpoint: план (таблица сидов + полный список имён будущих тестов) на согласование → чтение всех Rules → генерация строго по плану → сверка «план↔код» + таблица результатов прогона (обе обязательны в отчёте рядом с JSON; JSON прогоняется через Scripts/validate-skill-report.ps1 — PASS обязателен); **нет секции в OB → STOP и вопрос руннеру** (проба+документирование или другой эндпоинт — решает руннер, не агент) |
 | `/e2e-test-gen` | Генерирует E2E тесты с Setup/Teardown для write operations: план (сиды + список имён тестов) на согласование → чтение всех Rules → генерация → сверка «план↔код» + таблица результатов → JSON-отчёт с обеими таблицами (JSON прогоняется через Scripts/validate-skill-report.ps1 — PASS обязателен) |
 | `/ui-test-gen` | Генерирует UI-тесты Playwright (page-objects, live-снапшоты локаторов): план (таблица + полный список имён тестов) на согласование → чтение всех Rules (включая ui-testing) → генерация → сверка «план↔код» + таблица результатов → JSON-отчёт с обеими таблицами (JSON прогоняется через Scripts/validate-skill-report.ps1 — PASS обязателен) |
+| `/api-checklist` | Чек-лист покрытия одного endpoint (таблица `# / категория / проверка / источник`) по OB + Rules — без кода тестов (для кода `/api-test-gen`); каждая строка цитирует OB § или помечена `GAP — verify live`; негативы по missing-field/floor, gaps-блок в конце |
 | `/coverage` | Запускает тесты + считает code coverage (coverlet) + file coverage (endpoint→test) |
 | `/update-docs` | Обновляет .md файлы проекта после структурных изменений |
 | `/nightly-check` | Проверяет последний ночной прогон (API GitHub) и выдаёт однострочный вердикт; при падении — шаги jobs |
