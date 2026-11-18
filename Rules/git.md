@@ -63,14 +63,17 @@ PRs from `features/...` into `main` — only after review and approval.
   `workflow_dispatch` returns 422 "does not have 'workflow_dispatch' trigger". Any command
   containing `: ` (curl headers, sed patterns) must use the block scalar `run: |`
 - Repo secrets — Actions rejects the `GITHUB_` prefix in secret names, so the names are
-  `TEST_PAT`, `UI_EMAIL`, `UI_PASSWORD`, `UI_PAT`, `SLACK_BOT_TOKEN`, `SLACK_CHANNEL`; each
+  `TEST_PAT`, `UI_EMAIL`, `UI_PASSWORD`, `UI_PAT`, `SLACK_BOT_TOKEN`; each
   workflow maps them to the env vars the code reads (`GITHUB_PAT`, `GITHUB_UI_EMAIL`,
-  `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`, `SLACK_BOT_TOKEN`, `SLACK_CHANNEL`) in its `env:`
+  `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`, `SLACK_BOT_TOKEN`) in its `env:`
   block — values live only in GitHub settings, never in the repo (locally the MCP server gets
-  its token from the Infisical load at spawn; the channel comes from the tracked
+  its token from the Infisical load at spawn; the MCP default channel is the tracked
   `Scripts/mcp-slack/config.json`)
 - Run notifications: every workflow ends with a `Slack notification` step (`if: always()`,
-  `Scripts/slack-notify-run.ps1`) that posts the run verdict to `#general` — nightly includes
+  `Scripts/slack-notify-run.ps1`) that posts the run verdict — **nightly → `#githubnightly-full-run`,
+  PR checks → `#commit-pr`** (channel literals in each workflow's `env:`, not secrets; the bot's
+  MCP messages — commits/merges — go to `#commit-pr` via `config.json` defaultChannel; nothing
+  posts to `#general`) — nightly includes
   the per-category stats parsed from `TestRunReport-*.md`; without secrets (fork PRs) the step
   warns and exits 0, and a failed post never fails the run
 - Artifacts: test report + allure 7 days (GitHub UI traces are not uploaded — that suite is

@@ -192,13 +192,18 @@ MiMoCode хранит настройки в файле `~/.config/mimocode/mimoc
 следующем `Scripts\sync-secrets.ps1` в новом шелле. Локального кэша нет, рестарты не нужны.
 
 `SLACK_CHANNEL` для MCP не нужен: дефолтный канал зашит в трекинговом (не секретном)
-`Scripts/mcp-slack/config.json`. Переменная `SLACK_CHANNEL` нужна только локальному запуску
-`Scripts/slack-notify-run.ps1` — задай её в текущем шелле (`$env:SLACK_CHANNEL = '#general'`),
-если запускаешь скрипт руками; иначе шаг просто предупредит и пропустит уведомление
+`Scripts/mcp-slack/config.json` (сейчас `#commit-pr` — туда же идут commit/merge-уведомления
+бота). Переменная `SLACK_CHANNEL` нужна только локальному запуску
+`Scripts/slack-notify-run.ps1` — задай её в текущем шелле (например,
+`$env:SLACK_CHANNEL = '#commit-pr'`), если запускаешь скрипт руками;
+иначе шаг просто предупредит и пропустит уведомление
 (в реестр через `setx` больше ничего не пишется).
 
-`SLACK_BOT_TOKEN`/`SLACK_CHANNEL` дублируются в Settings → Secrets and variables → Actions
-репозитория (те же значения): workflow-шаг `Scripts/slack-notify-run.ps1` шлёт в Slack отчёт
+В CI канал задаётся литералом в workflow (не секретом): `pr-checks.yml` → `#commit-pr`,
+`nightly-tests.yml` → `#githubnightly-full-run`. Секрет репозитория `SLACK_BOT_TOKEN`
+остаётся в Settings → Secrets and variables → Actions; бывший секрет `SLACK_CHANNEL`
+workflow'ам больше не нужен (можно удалить в настройках). Шаг
+`Scripts/slack-notify-run.ps1` шлёт в Slack отчёт
 о каждом ране (название, статус, итог и разбивка по категориям из `TestRunReport-*.md`);
 без секретов (fork PR) шаг тихо пропускается.
 

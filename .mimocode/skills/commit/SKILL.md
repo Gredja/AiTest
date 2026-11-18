@@ -108,7 +108,7 @@ Otherwise: `git push -u origin HEAD`
 
 **Slack notification (after a successful push):** call the `slack-local` MCP tool
 `post_message` with text `✅ commit <sha>: <commit message>` — omit `channel` (the server
-takes `SLACK_CHANNEL` from the environment). If the tool is unavailable or the post fails, note it
+takes the default channel from `Scripts/mcp-slack/config.json`). If the tool is unavailable or the post fails, note it
 in Step 8 — a failed notification never blocks the commit.
 
 ## Step 8: Report
