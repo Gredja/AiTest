@@ -40,7 +40,7 @@ internal sealed class CodePage(IPage page) : RepositoryPageBase(page)
 
     private readonly ILocator _fileLinks = page.GetByRole(AriaRole.Link);
     // README H1 is the repo's short name ("# ui-sandbox"), not the full slug —
-    // Ui.TestRepo is "gredjapl/ui-sandbox" (observed mismatch 2026-11-09)
+    // Ui.TestRepo is "gredjapl/ui-sandbox"
     private readonly ILocator _renderedReadmeHeading = page.GetByRole(AriaRole.Heading, new() { Name = GitHubParamHelper.ParseRepo(TestConfig.UiTestRepo).Repo });
     private readonly ILocator _commitHeadings = page.GetByRole(AriaRole.Heading);
 }

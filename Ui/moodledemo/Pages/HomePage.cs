@@ -240,13 +240,13 @@ internal sealed class HomePage(IPage page)
     internal ILocator FooterLoginLinks =>
         page.Locator(FooterLoginSelector);
 
-    // The toggle's accessible name is localized (en "Language" / de "Sprache" / ru "Язык",
-    // dumps 2026-10-23) and it exposes no stable ARIA attribute at rest — its text always
+    // The toggle's accessible name is localized (en "Language" / de "Sprache" / ru "Язык")
+    // and it exposes no stable ARIA attribute at rest — its text always
     // carries the current-language marker "(code)", which is the locale-independent identity
     private ILocator LanguageMenuToggle =>
         page.GetByRole(AriaRole.Button).Filter(new LocatorFilterOptions { HasTextString = "(" });
 
-    // The structural selectors below have no accessible-name path (live dump 2026-10-22):
+    // The structural selectors below have no accessible-name path:
     // language items are addressed by their href contract (?lang=code — the fixture-driven
     // identity), nav labels by the only scoping that returns the full list (no navigation
     // landmark in the accessibility tree; mixed menuitem/link roles), calendar controls

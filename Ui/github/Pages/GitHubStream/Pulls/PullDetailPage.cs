@@ -215,7 +215,6 @@ internal sealed class PullDetailPage(IPage page)
     private readonly ILocator _commentTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Comment" });
     private readonly ILocator _commentButton = page.GetByRole(AriaRole.Button, new() { Name = "Comment", Exact = true });
 
-    // live dump 2026-11-12 (temporary probe PR): promotional dialog heading
-    // "Try the new pull requests Overview page!" with the dismiss button "Not now"
+    // Promo dialog overlays the page — dismiss it before interacting with PR controls
     private readonly ILocator _overviewPromoDismissButton = page.GetByRole(AriaRole.Button, new() { Name = "Not now" });
 }

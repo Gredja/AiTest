@@ -149,14 +149,14 @@ internal sealed class LoginPage(IPage page)
         });
     }
 
-    // Labels are not exposed as accessibility-tree elements (live dump 2026-10-22 shows only
-    // their static text) — the label[for] association is the one stable handle left
+    // Labels are not exposed as accessibility-tree elements — the label[for] association
+    // is the one stable handle left
     private readonly ILocator _usernameLabel = page.Locator("label[for='username']");
     private readonly ILocator _passwordLabel = page.Locator("label[for='password']");
 
-    // live dump 2026-10-22: exactly two accessible textboxes on the login page — username
-    // first, password second (the hidden guest input is not in the accessibility tree);
-    // Playwright has no PasswordBox role, so order is the locale-independent identity
+    // Playwright has no PasswordBox role and the hidden guest input is not in the
+    // accessibility tree — textbox order (username first, password second) is the
+    // locale-independent identity
     private ILocator UsernameField => page.GetByRole(AriaRole.Textbox).First;
 
     private ILocator PasswordField => page.GetByRole(AriaRole.Textbox).Nth(1);
