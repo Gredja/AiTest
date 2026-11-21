@@ -4,6 +4,11 @@ namespace Core.Logging;
 
 internal static class TestSourceCategoryReader
 {
+    private const string CSharpFileSearchPattern = "*.cs";
+    private const string TestMethodMarker = "[Test]";
+    private const string ObjFolderName = "obj";
+    private const string BinFolderName = "bin";
+
     private static readonly string[] _serviceCategories = ["JsonPlaceholder", "GitHub", "GitHubE2E"];
 
     // Matches `public [modifiers] class Name` declarations — captures the class name
@@ -31,18 +36,18 @@ internal static class TestSourceCategoryReader
 
     private static IEnumerable<string> EnumerateTestSources(string root) =>
         new[] { Path.Combine(root, "Api"), Path.Combine(root, "E2E") }
-            .SelectMany(directory => Directory.EnumerateFiles(directory, "*.cs", SearchOption.AllDirectories))
+            .SelectMany(directory => Directory.EnumerateFiles(directory, CSharpFileSearchPattern, SearchOption.AllDirectories))
             .Where(path => !IsBuildOutput(path))
             .OrderBy(path => path, StringComparer.Ordinal);
 
     private static bool IsBuildOutput(string path) =>
         path.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
-            .Any(segment => segment is "obj" or "bin");
+            .Any(segment => segment is ObjFolderName or BinFolderName);
 
     private static void CollectFromFile(string sourcePath, Dictionary<string, Queue<(string Fixture, string Category)>> categories)
     {
         var content = File.ReadAllText(sourcePath);
-        if (!content.Contains("[Test]"))
+        if (!content.Contains(TestMethodMarker))
         {
             return;
         }
@@ -54,7 +59,7 @@ internal static class TestSourceCategoryReader
         }
 
         var className = classMatch.Groups[1].Value;
-        var chunks = content.Split("[Test]");
+        var chunks = content.Split(TestMethodMarker);
 
         foreach (var chunk in chunks.Skip(1))
         {

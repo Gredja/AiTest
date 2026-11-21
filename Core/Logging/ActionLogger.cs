@@ -13,14 +13,14 @@ internal static class ActionLogger
     {
         var path = Path.Combine(
             TestRunWorkspace.Resolve(),
-            $"actions-{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log");
+            $"{TestRunWorkspace.ActionLogPrefix}{DateTime.UtcNow:yyyyMMdd-HHmmss}-{Environment.ProcessId}.log");
 
         var logger = new LoggerConfiguration()
             .MinimumLevel.Information()
             .Enrich.With<TestNameEnricher>()
             .WriteTo.File(
                 path,
-                outputTemplate: "{Timestamp:HH:mm:ss.fff}|{Level:u3}|{TestName}|{Message:lj}{NewLine}",
+                outputTemplate: $"{{Timestamp:HH:mm:ss.fff}}|{{Level:u3}}|{{{TestNameEnricher.TestNameProperty}}}|{{Message:lj}}{{NewLine}}",
                 shared: true)
             .CreateLogger();
 

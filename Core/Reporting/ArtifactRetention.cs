@@ -6,6 +6,7 @@ namespace Core.Reporting;
 internal static class ArtifactRetention
 {
     internal const int RetentionDays = 7;
+    internal const string AllFilesSearchPattern = "*";
 
     internal static void CleanupAccumulated(string? root)
     {
@@ -26,7 +27,7 @@ internal static class ArtifactRetention
         }
 
         var cutoff = DateTime.UtcNow.AddDays(-RetentionDays);
-        foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+        foreach (var file in Directory.EnumerateFiles(directory, AllFilesSearchPattern, SearchOption.AllDirectories))
         {
             if (File.GetLastWriteTimeUtc(file) < cutoff)
             {

@@ -9,6 +9,7 @@ namespace Core.Helpers;
 public class RequestHelper
 {
     protected const string AuthorizationHeader = "Authorization";
+    private const string AuthorizationScheme = "Bearer";
 
     private const string ContentTypeHeader = "Content-Type";
     private const string JsonMediaType = "application/json;charset=utf-8";
@@ -124,7 +125,7 @@ public class RequestHelper
             return;
         }
 
-        request.AddHeader(AuthorizationHeader, $"Bearer {token}");
+        request.AddHeader(AuthorizationHeader, $"{AuthorizationScheme} {token}");
     }
 
     protected virtual string? GitHubAuthToken => _githubToken.Value;
