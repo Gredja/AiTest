@@ -63,10 +63,10 @@ PRs from `features/...` into `main` — only after review and approval.
   `workflow_dispatch` returns 422 "does not have 'workflow_dispatch' trigger". Any command
   containing `: ` (curl headers, sed patterns) must use the block scalar `run: |`
 - Repo secrets — Actions rejects the `GITHUB_` prefix in secret names, so the names are
-  `TEST_PAT`, `UI_EMAIL`, `UI_PASSWORD`, `UI_PAT`, `SLACK_BOT_TOKEN`; each
-  workflow maps them to the env vars the code reads (`GITHUB_PAT`, `GITHUB_UI_EMAIL`,
-  `GITHUB_UI_PASSWORD`, `GITHUB_UI_PAT`, `SLACK_BOT_TOKEN`) in its `env:`
-  block — values live only in GitHub settings, never in the repo (locally the MCP server gets
+  `TEST_PAT`, `UI_EMAIL`, `UI_PASSWORD`, `UI_PAT`, `SLACK_BOT_TOKEN`; the workflows map
+  only `TEST_PAT` → `GITHUB_PAT` and `SLACK_BOT_TOKEN` → `SLACK_BOT_TOKEN` in their `env:`
+  blocks (`UI_*` secrets exist for manual/UI use — no workflow consumes them) — values live
+  only in GitHub settings, never in the repo (locally the MCP server gets
   its token from the Infisical load at spawn; the MCP default channel is the tracked
   `Scripts/mcp-slack/config.json`)
 - Run notifications: every workflow ends with a `Slack notification` step (`if: always()`,

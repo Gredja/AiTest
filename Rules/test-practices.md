@@ -61,8 +61,8 @@ Run artifacts accumulate without bound — every mechanism MUST be wired to the 
 - **Temp logs** (`%TEMP%\GredjaTestRun`) — cleaned by `TestRunWorkspace.PrepareRun()`
   (run-marker based, once per run, two testhosts cannot double-run it).
 - **Repo artifacts** (`allure-results/`, `TestResults/*.md`) — cleaned by
-  `TestRunReportGenerator.PrepareRun()`: files older than `ArtifactRetentionDays` (7) are deleted.
-- **A new artifact output directory MUST be registered in `CleanupAccumulatedArtifacts()`**
+  `TestRunReportGenerator.PrepareRun()`: files older than `ArtifactRetention.RetentionDays` (7) are deleted.
+- **A new artifact output directory MUST be registered in `ArtifactRetention.CleanupAccumulated()`**
   in the same commit that introduces it — unbounded growth is not allowed.
 - **Cleanup MUST NOT fail the run**: catch specific exceptions (`IOException`,
   `UnauthorizedAccessException`), log a warning, continue.
@@ -88,7 +88,7 @@ When adding or changing endpoints, keep these documents in sync:
   `.mimocode/skills/*` — never create parallel prompt libraries (they silently drift;
   `Prompts/` was deleted for this reason)
 - **Risk coverage** — every Top-3 risk from `{Service}TestPlan.md` / `{Service}TestingStructure.md` must map to ≥1 test case; an uncovered risk is a coverage gap (found this way: PSD2 SCA risk had no test case — see `documentation/Katas/01-test-cases.md`)
-- **`[Description]` numbering = OB section numbers.** The number prefix in `[Description("N.M …")]` MUST match the Observable Behaviour section the test covers (`Description("17.2 …")` → OB §17.2). E2E scenario tests use the reserved prefix `E2E-N` (documented in the service's TestingStructure or OB). When adding a new test: look up the OB section number, never invent a free-running sequence. Known legacy drift in older GitHub/JP groups is tolerated until a dedicated renumber pass — do not expand the drift.
+- **`[Description]` numbering = OB section numbers.** The number prefix in `[Description("N.M …")]` MUST match the Observable Behaviour section the test covers (`Description("17.2 …")` → OB §17.2). E2E scenario tests use the reserved prefix `E2E-N` (documented in the service's TestingStructure or OB). When adding a new test: look up the OB section number, never invent a free-running sequence. Known legacy drift in older GitHub/JP groups is tolerated until a dedicated renumber pass — do not expand the drift. Tolerated groups (as of 2026-11-21, so audits stop re-flagging them): GitHub `GetRateLimitTests` (6.1→§16), `GetIssuesTests` (3.1→§6), `GetPullRequestsTests` (5.1→§9), `GetPublicReposTests` (8.1→§2), `CreatePostTests` JP (4.1→§19) and the JP per-resource numbering vs the TestPlan inventory.
 
 ## Seed methodology for test generation
 

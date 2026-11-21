@@ -10,7 +10,7 @@ How to test the Moodle demo multilingual site (`https://school.moodledemo.net`):
 
 | Layer | What it catches | Tool |
 |---|---|---|
-| L1 | Site/locale is *down* for a language: wrong `lang`/`dir`, wrong page title, HTTP errors | HTTP only (`moodledemo` category) |
+| L1 | Site/locale is *down* for a language: wrong `lang`/`dir`, wrong page title, HTTP errors | HTTP only (`MoodleDemo` category) |
 | L2 | *Components* are not translated: menu, navigation, search, language switcher | Playwright, anonymous contexts |
 
 L1 is a **smoke** — it runs first, catches a broken site per language in seconds, and L2 only needs to run on languages that passed L1. L1 checks nothing visual — a wrong-looking but correctly-titled page passes L1 and is caught by L2.
@@ -74,13 +74,13 @@ L1 is a **smoke** — it runs first, catches a broken site per language in secon
 ## L-HTTP-2: L2 form tests are Playwright-only
 
 - The L2 layer (the `Tests/*UiTests.cs` fixtures) uses Playwright browser contexts — anonymous, no auth, no storageState
-- Each test navigates to the language-specific URL, waits for the page, then fills and submits the search form
+- Each test navigates to the language-specific URL, waits for the page, then exercises that layer's component (language switcher, login form, RTL layout, calendar, form retention)
 - **Why**: L2 tests the *visual* and *interactive* behavior — form fill, submit, navigation — which requires a real browser
 
 ## L-HTTP-3: no writes to the demo site
 
 - Tests do not create, modify, or delete anything on the demo site — the language menu is read-only for tests
-- No sign-in, no storageState, no authenticated contexts
+- L1/L2 run with no sign-in, no storageState, no authenticated contexts (L3 is the documented exception below)
 - **Why**: the site is a public demo; write operations would pollute it for other users and could be blocked by the site owner
 
 ---
@@ -88,7 +88,7 @@ L1 is a **smoke** — it runs first, catches a broken site per language in secon
 ## L-SAF-1: demo site is read-only — no writes, no state changes
 
 - Tests never create, modify, or delete anything on the demo site — the language menu is read-only for tests
-- No sign-in, no storageState, no authenticated contexts, no cookies that persist across tests
+- No sign-in, no storageState, no authenticated contexts, no cookies that persist across tests (L1/L2; L3 exception per L-SAF-3)
 - **Why**: the site is a public demo; write operations would pollute it for other users and could be blocked by the site owner
 
 ## L-SAF-2: no rate-limiting, no parallel hammering

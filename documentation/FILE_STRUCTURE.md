@@ -24,6 +24,7 @@ Gredja/
 │   └── workflows/              # CI: pr-checks.yml (required PR-gate) + nightly-tests.yml (cron, main only)
 ├── .auth/                       # not tracked — Playwright storageState
 ├── .playwright-cli/             # not tracked — local CLI cache
+├── allure-report/                # not tracked — local HTML report output (allure-report.ps1)
 ├── allure-results/              # not tracked
 ├── research/                    # not tracked — deep-research workspaces (gitignored); one-off, archived
 ├── output/                      # not tracked — created on demand for one-off generator/CLI dumps (safe to clean)
