@@ -35,7 +35,7 @@ internal sealed class PullCreatePage(IPage page)
     private readonly ILocator _createPullButton = page.GetByRole(AriaRole.Button, new() { Name = "Create pull request" });
     private readonly ILocator _openPullHeading = page.GetByRole(AriaRole.Heading, new() { Name = "Open a pull request" });
     private readonly ILocator _titleTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Add a title *" });
-    private readonly ILocator _descriptionTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Comment" });
+    private readonly ILocator _descriptionTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = GitHubUiLabels.Comment });
     private readonly ILocator _pullHeadings = page.GetByRole(AriaRole.Heading);
     private readonly ILocator _commitsHeadings = page.GetByRole(AriaRole.Heading).Filter(new() { HasTextString = "Commits on" });
 }

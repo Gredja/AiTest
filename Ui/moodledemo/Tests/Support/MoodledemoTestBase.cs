@@ -77,35 +77,47 @@ public abstract class MoodledemoTestBase
 
         if (isFailed)
         {
-            var artifacts = ResolveArtifactsDirectory();
-            var failedName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
-            await _page!.ScreenshotAsync(new PageScreenshotOptions
-            {
-                Path = Path.Combine(artifacts, $"{failedName}.png"),
-                FullPage = true
-            });
+            await CaptureFailureScreenshotAsync();
         }
 
-        if (!IsCredentialEntryTest)
-        {
-            if (isFailed)
-            {
-                var traceName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
-                await _context.Tracing.StopAsync(new TracingStopOptions
-                {
-                    Path = Path.Combine(ResolveArtifactsDirectory(), $"{traceName}.zip")
-                });
-            }
-            else
-            {
-                await _context.Tracing.StopAsync();
-            }
-        }
+        await StopTracingAsync(isFailed);
 
         await _context.CloseAsync();
         _context = null;
         _page = null;
         _browserWrapper = null;
+    }
+
+    private async Task CaptureFailureScreenshotAsync()
+    {
+        var artifacts = ResolveArtifactsDirectory();
+        var failedName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
+        await _page!.ScreenshotAsync(new PageScreenshotOptions
+        {
+            Path = Path.Combine(artifacts, $"{failedName}.png"),
+            FullPage = true
+        });
+    }
+
+    private async Task StopTracingAsync(bool isFailed)
+    {
+        if (IsCredentialEntryTest)
+        {
+            return;
+        }
+
+        if (isFailed)
+        {
+            var traceName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
+            await _context!.Tracing.StopAsync(new TracingStopOptions
+            {
+                Path = Path.Combine(ResolveArtifactsDirectory(), $"{traceName}.zip")
+            });
+        }
+        else
+        {
+            await _context!.Tracing.StopAsync();
+        }
     }
 
     private static string ResolveArtifactsDirectory()

@@ -11,7 +11,7 @@ internal sealed class NotFoundPage(IPage page)
         TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
     internal async Task OpenAsync() =>
-        await page.GotoAsync($"{TestConfig.UiBaseUrl}/{GitHubEndpoints.NonExistentUiRepoPath}");
+        await page.GotoAsync($"{TestConfig.UiBaseUrl}{GitHubUiEndpoints.NonExistentRepoPath}");
 
     internal async Task<WaitResult<bool>> WaitFor404MessageAsync() =>
         await WaitHelper.WaitUntilAsync(

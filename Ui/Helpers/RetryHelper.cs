@@ -24,13 +24,15 @@ internal static class RetryHelper
 
                     await attempt();
                 }
-                catch (PlaywrightException)
+                catch (PlaywrightException exception)
                 {
-                    // transient — the next poll re-reads the state
+                    // transient — the next poll re-reads the state; surface the last one in the log
+                    TestContext.WriteLine($"RetryHelper transient PlaywrightException: {exception.Message}");
                 }
-                catch (TimeoutException)
+                catch (TimeoutException exception)
                 {
-                    // transient — the next poll re-reads the state
+                    // transient — the next poll re-reads the state; surface the last one in the log
+                    TestContext.WriteLine($"RetryHelper transient TimeoutException: {exception.Message}");
                 }
 
                 return false;

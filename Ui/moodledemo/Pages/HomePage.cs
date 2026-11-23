@@ -49,19 +49,7 @@ internal sealed class HomePage(IPage page)
                 return;
             }
 
-            try
-            {
-                // Moodle binds the dropdown after its JS loads — click only once idle
-                await page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
-                {
-                    Timeout = MenuIdleTimeoutMs
-                });
-            }
-            catch (TimeoutException)
-            {
-                // a hung request (observed on the demo) keeps the page off-idle — proceed;
-                // the visibility check below decides whether the click is worth anything
-            }
+            await WaitForNetworkIdleAsync();
 
             try
             {
@@ -93,6 +81,24 @@ internal sealed class HomePage(IPage page)
         {
             State = WaitForSelectorState.Visible
         });
+    }
+
+    // Moodle binds the dropdown after its JS loads — click only once idle
+    private async Task WaitForNetworkIdleAsync()
+    {
+        try
+        {
+            await page.WaitForLoadStateAsync(LoadState.NetworkIdle, new PageWaitForLoadStateOptions
+            {
+                Timeout = MenuIdleTimeoutMs
+            });
+        }
+        catch (TimeoutException)
+        {
+            // a hung request (observed on the demo) keeps the page off-idle — proceed;
+            // the visibility check below decides whether the click is worth anything
+            TestContext.WriteLine("OpenLanguageMenu network-idle timeout (proceeding)");
+        }
     }
 
     private async Task ReloadForRetryAsync()
@@ -138,22 +144,34 @@ internal sealed class HomePage(IPage page)
             await page.Locator(LanguageItemSelector(code))
                 .ClickAsync();
 
-            try
+            if (await WaitForLanguageNavigationAsync(code, attempt))
             {
-                await page.WaitForURLAsync(
-                    url => url.Contains($"{MoodledemoEndpoints.LangQueryKey}={code}", StringComparison.Ordinal),
-                    new PageWaitForURLOptions
-                    {
-                        Timeout = NavigationTimeoutMs,
-                        WaitUntil = WaitUntilState.DOMContentLoaded
-                    });
-
                 return;
             }
-            catch (TimeoutException) when (attempt < NavigationAttempts)
-            {
-                // the navigation did not reach DCL in time — the retry above starts over
-            }
+        }
+    }
+
+    private async Task<bool> WaitForLanguageNavigationAsync(string code, int attempt)
+    {
+        try
+        {
+            await page.WaitForURLAsync(
+                url => url.Contains($"{MoodledemoEndpoints.LangQueryKey}={code}", StringComparison.Ordinal),
+                new PageWaitForURLOptions
+                {
+                    Timeout = NavigationTimeoutMs,
+                    WaitUntil = WaitUntilState.DOMContentLoaded
+                });
+
+            return true;
+        }
+        catch (TimeoutException) when (attempt < NavigationAttempts)
+        {
+            // the navigation did not reach DCL in time — the retry starts over;
+            // the filter lets the last attempt fail honestly
+            TestContext.WriteLine($"ClickLanguage navigation timeout (attempt {attempt}, retrying)");
+
+            return false;
         }
     }
 

@@ -1,6 +1,7 @@
 using Core.Config;
 using Core.Helpers;
 using Microsoft.Playwright;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.Common;
 
@@ -85,7 +86,7 @@ internal sealed class HeaderPage(IPage page)
         UserNavigationDialog.GetByRole(AriaRole.Link, new() { Name = "Settings", Exact = true });
     private readonly ILocator _signOutLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign out", Exact = true });
     private readonly ILocator _accountSignOutButton = page.GetByRole(AriaRole.Button, new() { Name = $"Sign out of {TestConfig.UiUsername}", Exact = true });
-    private readonly ILocator _signInLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true });
-    private readonly ILocator _firstSignInLink = page.GetByRole(AriaRole.Link, new() { Name = "Sign in", Exact = true }).First;
+    private readonly ILocator _signInLink = page.GetByRole(AriaRole.Link, new() { Name = GitHubUiLabels.SignIn, Exact = true });
+    private readonly ILocator _firstSignInLink = page.GetByRole(AriaRole.Link, new() { Name = GitHubUiLabels.SignIn, Exact = true }).First;
     private readonly ILocator _userMenuButton = page.GetByRole(AriaRole.Button, new() { Name = "Open user navigation menu" });
 }

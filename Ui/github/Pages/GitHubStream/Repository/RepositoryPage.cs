@@ -1,5 +1,6 @@
 using Core.Config;
 using Microsoft.Playwright;
+using Ui.Helpers;
 
 namespace Ui.Github.Pages.GitHubStream.Repository;
 
@@ -20,5 +21,5 @@ internal sealed class RepositoryPage(IPage page) : RepositoryPageBase(page)
     }
 
     private readonly ILocator _branchButton = page.GetByRole(AriaRole.Button, new() { Name = "main branch" });
-    private readonly ILocator _issuesTabLink = page.GetByRole(AriaRole.Link, new() { Name = "Issues", Exact = true });
+    private readonly ILocator _issuesTabLink = page.GetByRole(AriaRole.Link, new() { Name = GitHubUiLabels.Issues, Exact = true });
 }
