@@ -264,12 +264,13 @@ browser, dumps, and exits:
 
 Design of such a tool (build it the same way in any project):
 
-1. Launch the project's installed Chromium with `--remote-debugging-port=0` and a temp
-   user-data-dir; read the assigned port from the `DevToolsActivePort` file.
-2. Connect over **CDP** with a zero-dependency runtime (Node ≥ 22 built-in `WebSocket`/`fetch`,
-   no npm installs, no browser-version mismatch).
-3. Optional auth: inject cookies from the Playwright `storageState` file via
-   `Network.setCookies`.
+1. Launch the project's installed Chromium through the browser-automation library already
+   in the stack (Playwright-managed executable), or raw with `--remote-debugging-port=0`
+   and a temp user-data-dir reading `DevToolsActivePort`.
+2. Speak **CDP** through the library's session API (Playwright `NewCDPSessionAsync`) or a
+   zero-dependency WebSocket client — no extra npm/pip installs, no browser-version mismatch.
+3. Optional auth: inject cookies from the Playwright `storageState` file (context option or
+   `Network.setCookies`).
 4. Navigate; wait for the load event; optionally poll for expected text
    (`--waitfor "heading you expect"`) to cover hydration. For state that exists only after
    an action, replay the clicks in the same one-shot run (`--click "accessible name"`,
@@ -408,6 +409,11 @@ The UI rarely exposes the created id. Cleanup composition:
   unknowable (`null`, tuples); no unused usings (let the formatter fail on them); methods short,
   single-responsibility (~30 lines; tests may run longer only when splitting hides the
   scenario); max ~5 parameters.
+- **Dependencies: minimal.** Reach for an external dependency (new package, extra runtime)
+  only when the platform cannot do the job — prefer the language SDK/BCL, then packages
+  already in the solution; every addition carries a stated reason. Tooling scripts follow the
+  same bar: do not add a second/third runtime to the toolchain when the primary one covers
+  the task.
 - **Comments: zero by default.** A comment is a last resort — refactor for clarity first; keep
   only a non-obvious WHY (measured latency, protocol quirk, workaround) that the code cannot
   express. Narrating *what* code does is a review defect. Applies to scripts and configs too.

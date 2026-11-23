@@ -5,8 +5,30 @@ Format and run procedure: `documentation/SkillEval/README.md`.
 
 | # | Case | Status before | Status after |
 |---|------|---------------|--------------|
+| 1 | Page with locators: navigation + check | pass (2026-11-16, skill v1.6) | **pass (2026-11-23, skill v1.7)** |
 | 1 | Page with locators: navigation + check | pass (2026-11-12, skill v1.5) | **pass (2026-11-16, skill v1.6)** |
 | 1 | Page with locators: navigation + check | pass (2026-11-06, skill v1.4) | **pass (2026-11-12, skill v1.5)** |
+
+**Case 1 — run notes (2026-11-23, skill v1.7, blind subagent, SkillEval ban honored):**
+Same concrete input as prior runs (GitHub issues-tab navigation, UI-4). Status before reused
+from the 2026-11-16 v1.6 run — pre-edit skill state (HEAD) identical to evaluated v1.6; the
+only delta under test is the v1.7 live-snapshot command port (`node Scripts/locator-dump.mjs`
+→ `dotnet run --project Scripts/Tools -- locator-dump`). Research 11 tool calls; phase 1 hit a
+**runner-corrected misread** — the agent quoted and ran the retired node path (MODULE_NOT_FOUND)
+while the skill on disk already stated the dotnet command; runner re-pointed it at the skill's
+verbatim step (no checklist/SkillEval information leaked; ban honored throughout). Plan gate
+STOP → runner approval WITH modifications (snapshot-first with the skill's actual command;
+extend-only; new locators only from a successful dump) → phase 2: **live snapshot via the new
+C# tool succeeded** (roles confirmed: `heading "Issues" level=1`, `link "New issue"`,
+`link "Open (0)"`, `link "Closed"`, `combobox "Search issues"`, `button "Search"`; empty-state
+heading dumped at level=2 → locator must not pin level, recorded in OB). Implementation:
+`files.created = []`; +2 Regression methods (`Issues_NavigateViaTab_ClosedFilter_ShowsListChrome`,
+`Issues_NavigateViaTab_OpenFilter_RoundTrip`), `IssuesPage.ClickOpenTabAsync` (same bounded
+re-apply as Closed), OB UI-4/UI-17 re-dated 2026-11-23. Reconciliation 3/3 matched (existing
+Smoke kept, no duplicates); run `Category=GitHubUi&FullyQualifiedName~IssuesUiTests` → **6/6
+green (30 s)**; `dotnet format` clean; report validator PASS; `locators.draft = 0`,
+`verifiedLive = 5`. Contamination: none. Verdict: skill held the contract despite the
+command-port delta; score 10/10 must, 5/5 must-not.
 
 **Case 1 — run notes (2026-11-16, skill v1.6, blind subagent, SkillEval ban honored):**
 Same concrete input as the v1.4/v1.5 runs (GitHub issues-tab navigation, UI-4). Status
@@ -60,7 +82,7 @@ contract, including storageState and locator-discipline hard rules.
 > /ui-test-gen for the page `{page}`: `{flow}`. Service = {service}.
 
 **Must:**
-- [ ] Live snapshot first: `node Scripts/locator-dump.mjs <url>` — every locator from the snapshot, dated in the UI-OB
+- [ ] Live snapshot first: `dotnet run --project Scripts/Tools -- locator-dump <url>` — every locator from the snapshot, dated in the UI-OB
 - [ ] Plan: Part 1 (case, category, resources→cleanup, locator source) + Part 2 (names `{{area}}_{{Flow}}_{{Outcome}}`, categories, `[Description]` with UI-OB §, files incl. page-object) → STOP; no files before "yes"
 - [ ] All Rules read before code (including `ui-testing.md`)
 - [ ] Locators role/text/label only (`GetByRole`/`GetByText`/`GetByLabel`); CSS/XPath on the page under test forbidden

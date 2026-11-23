@@ -55,6 +55,12 @@ internal sealed class IssuesPage(IPage page)
             () => page.Url.Contains(GitHubEndpoints.StateClosed),
             () => _closedTabLink.ClickAsync());
 
+    // same hydration-swallow gotcha as Closed: re-apply until the URL leaves the closed filter
+    internal Task<WaitResult<bool>> ClickOpenTabAsync() =>
+        RetryHelper.UntilAsync(
+            () => !page.Url.Contains(GitHubEndpoints.StateClosed),
+            () => _openTabLink.ClickAsync());
+
     internal async Task<bool> HasIssuesHeadingAsync() =>
         await _issuesHeading.CountAsync() > 0;
 

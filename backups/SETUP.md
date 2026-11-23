@@ -152,7 +152,7 @@ MiMoCode хранит настройки в файле `~/.config/mimocode/mimoc
 ### 3.2. Проектный конфиг
 
 В папке проекта уже есть файл `.mimocode/mimocode.jsonc`. Он содержит пути к скиллам и
-локальный MCP-сервер `slack-local` (`node Scripts/mcp-slack/server.mjs`) — инструменты
+локальный MCP-сервер `slack-local` (`dotnet run --project Scripts/Tools -- serve-slack`, спавн в `mimocode.jsonc` со сборкой в stderr) — инструменты
 `post_message`/`list_channels` для Slack-уведомлений; секретов в конфиге нет (токен сервер
 берёт из переменной окружения `SLACK_BOT_TOKEN`, дефолтный канал — из трекингового
 `Scripts/mcp-slack/config.json`). Менять его не нужно; при любом изменении — синк
@@ -302,7 +302,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, validate-skill.py (структурный линтер скиллов), validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — локальный Slack MCP-сервер)
+├── Scripts/                      # Скрипты (Tools/ — C#-консольный проект `dotnet run --project Scripts/Tools`: validate-skill (структурный линтер скиллов), locator-dump (one-shot CDP-дамп локаторов); без node/python. Остальное: allure-report, test-coverage, install-playwright, moodledemo-discover-langs, normalize-eol, validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — конфиг локального Slack MCP-сервера)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
@@ -357,7 +357,7 @@ MiMoCode:
 |---------|-----------|
 | `/test` | Запускает все тесты + пишет TestRunReport-*.md в `TestResults/` |
 | `/test-report` | Запускает тесты + генерирует Allure-отчёт |
-| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); финальный отчёт — JSON в `TestResults/CommitReport-*.json` + таблица в чате; **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/`; **гейт структуры скиллов**: правка `.mimocode/skills/**` блокируется без `PASS` у `python Scripts/validate-skill.py <папка>` по каждому изменённому скиллу |
+| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); финальный отчёт — JSON в `TestResults/CommitReport-*.json` + таблица в чате; **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/`; **гейт структуры скиллов**: правка `.mimocode/skills/**` блокируется без `PASS` у `dotnet run --project Scripts/Tools -- validate-skill <папка>` по каждому изменённому скиллу |
 | `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
@@ -432,9 +432,10 @@ git checkout -b features/add-user-tests
 - Конкретные исключения вместо `Exception`, без `null!`
 - LINQ: `Any()` вместо `Count() > 0` (правило про метод `Count()`; `Count`-свойство List/Queue O(1) и допустимо для проверки пустоты), без лишних `.ToList()`; синхронные side-effect циклы на `List<T>` → `.ForEach(item => ...)`, `foreach` — только для async/ленивых источников (Rules/code-style.md → Loops)
 - Regex: только когда предикат читается хуже; паттерн — именованный `static readonly` + словесный комментарий над ним; дубли в 2+ файлах → base/хелпер (Rules/code-style.md → Regex)
-- UI: role/label-based локаторы — извлечение/верификация ТОЛЬКО через `node Scripts/locator-dump.mjs <url> [--waitfor "текст"] [--waitfor-ax "текст"] [--click "имя"] [--static-text]` (HARD RULE; playwright-скилл/playwright-cli для локаторов запрещён; `--click` раскрывает пост-кликовые состояния, `--waitfor-ax` — контент вне innerText/с поздним рендером, `--static-text` — текст для GetByText), write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert; presence-check на странице вне load-verified-листа — через `WaitFor*Async` → `WaitResult` в page-object, не мгновенный `CountAsync` (Rules/ui-testing.md → Waits)
+- UI: role/label-based локаторы — извлечение/верификация ТОЛЬКО через `dotnet run --project Scripts/Tools -- locator-dump <url> [--waitfor "текст"] [--waitfor-ax "текст"] [--click "имя"] [--static-text]` (HARD RULE; playwright-скилл/playwright-cli для локаторов запрещён; `--click` раскрывает пост-кликовые состояния, `--waitfor-ax` — контент вне innerText/с поздним рендером, `--static-text` — текст для GetByText), write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert; presence-check на странице вне load-verified-листа — через `WaitFor*Async` → `WaitResult` в page-object, не мгновенный `CountAsync` (Rules/ui-testing.md → Waits)
 - Строки: интерполяция `$""`, `string.Empty` вместо `""` (кроме compile-time-констант), `StringBuilder` в циклах
 - SOLID: один класс — одна задача, зависимости через интерфейсы; **accepted-debt (аудит F09, 2026-10-19): тест-проект сознательно без своих интерфейсов/DI** — находку «ноль интерфейсов» не фиксить, DI не заводить без конкретного тестируемого шва (`Rules/code-principles.md` → DIP)
+- Зависимости: **минимум (HARD RULE, user 2026-11-23)** — сначала .NET SDK/BCL, затем уже подключённый пакет; новая NuGet-зависимость или внешний рантайм (node, python) — только с обоснованием в коммите/PR (`Rules/code-principles.md` → Dependencies)
 
 **Модели:**
 - Response модели: суффикс `ModelResponse` (включает `Id`)

@@ -16,7 +16,7 @@ E2E tests (NUnit + RestSharp): GitHub scenario chains (multi-step write flows).
 - `Core/Logging/` — action logging (Serilog → `%TEMP%\GredjaTestRun\actions-*.log`) and raw test results (`test-results-*.log`). `TestResults/` contains **reports only**, raw run artifacts live in the temp folder
 - `Core/Reporting/` — `TestRunReportGenerator` → `TestResults/TestRunReport-*.md` (invoked from the NUnit teardown `TestReportSetup`), age-based cleanup of artifacts older than 7 days
 - `AllureAdapter/` — solution project: Allure NUnit attribute + JSON writers/report helpers (`AllureAdapter/Helpers/`, flat layout by design)
-- `Scripts/` — one-off helper scripts: `locator-dump.mjs` (CDP locator dump), `normalize-eol.ps1`, `read-github-pat.ps1` (the single token-read/redaction contract), `slack-notify-run.ps1` (GitHub Actions → Slack run reports in every workflow), `mcp-slack/` (local Slack MCP server: `post_message`/`list_channels`, `SLACK_BOT_TOKEN` from the environment, default channel from `Scripts/mcp-slack/config.json`), `allure-report.ps1`, `install-playwright.ps1` (Chromium + deps for UI/MoodleDemo), `test-parallel-rerun.ps1` (nightly two-pass), `test-coverage.ps1` + `coverage.runsettings`, `moodledemo-discover-langs.ps1`, `validate-skill-report.ps1`, `sync-secrets.ps1` (pull project secrets from Infisical into the current process memory only — no registry/setx/file persistence; values are never printed)
+- `Scripts/` — helper scripts: `Tools/` (C# console project — `dotnet run --project Scripts/Tools -- validate-skill <folder>` structure gate for /commit, `locator-dump <url>` one-shot CDP dump of role+accessible-name for UI locators, `serve-slack` local Slack MCP server over stdio; no node/python runtimes), `normalize-eol.ps1`, `read-github-pat.ps1` (the single token-read/redaction contract), `slack-notify-run.ps1` (GitHub Actions → Slack run reports in every workflow), `mcp-slack/` (Slack MCP config: `post_message`/`list_channels` schema lives in Tools/ServeSlack.cs, `SLACK_BOT_TOKEN` from the environment, default channel from `Scripts/mcp-slack/config.json`), `allure-report.ps1`, `install-playwright.ps1` (Chromium + deps for UI/MoodleDemo), `test-parallel-rerun.ps1` (nightly two-pass), `test-coverage.ps1` + `coverage.runsettings`, `moodledemo-discover-langs.ps1`, `validate-skill-report.ps1`, `sync-secrets.ps1` (pull project secrets from Infisical into the current process memory only — no registry/setx/file persistence; values are never printed)
 - `Ui/Helpers/` — project-level helpers shared by both site trees (`RetryHelper`, `PageUrlHelper`, `TabCountParserHelper`, `ArtifactNamingHelper`, `SiteNavigationHelper`, `TextPatternsHelper`, `MoodledemoHttpHelper`, `HtmlLocaleReaderHelper`, `PageLocaleReaderHelper`, `TitleScriptAssertHelper`, `UiTimeout` constants holder)
 - `Rules/` — full rules (this file is only a brief digest)
 - `documentation/` — project documentation; `documentation/Katas/` — learning materials, do not touch; full tree (incl. `research/`, `backups/`, `TestResults/`) — `documentation/FILE_STRUCTURE.md`
@@ -47,6 +47,7 @@ All changes: plan → approval → changes → report. After a commit — review
 - Strings: interpolation `$""`, `string.Empty` over `""` (except where a compile-time constant is required), `StringBuilder` in loops, `IsNullOrEmpty()` instead of `.Length == 0`
 - Null safety: `?.` for safe navigation, `??` for fallback, `is not null` instead of `!= null`
 - SOLID: one class — one responsibility, dependencies via interfaces, extensibility via inheritance; **accepted debt: the test project deliberately has zero hand-rolled interfaces/DI** (`Rules/code-principles.md` → DIP note, audit F09) — no "no interfaces" findings, no checklist DI refactors
+- **Dependencies: minimal (hard rule, user 2026-11-23)** — prefer the .NET SDK/BCL, then a package already in the solution; a new NuGet/runtime (node, python) only with a stated reason in the commit/PR (`Rules/code-principles.md` → Dependencies)
 - Test classes (`*Tests.cs`): `[Test]` + lifecycle + test data only; shared parameter builders live in base/helpers, not in the test class; cleanup only in `[OneTimeTearDown]` (**the last member of the class**) via the fixture registry (register-then-assert), not in `finally`; **created → deleted, no keeping test records** (no delete API → nearest cleanup: close issue/PR) (`Rules/test-practices.md`)
 
 ### Models
@@ -93,7 +94,7 @@ All changes: plan → approval → changes → report. After a commit — review
 
 - `Rules/code.md` — naming, types, file structure, methods, async, access modifiers, cleanup
 - `Rules/code-style.md` — error handling, LINQ, strings, null safety
-- `Rules/code-principles.md` — SOLID, general principles
+- `Rules/code-principles.md` — SOLID, dependencies, general principles
 - `Rules/models.md` — model building rules (ModelResponse/ModelRequest, properties, naming)
 - `Rules/assertions.md` — FluentAssertions, key patterns, HTTP response assertions, request/response comparison
 - `Rules/test-practices.md` — test isolation, API patterns, non-existent IDs, E2E cleanup, artifact cleanup, seed methodology, document sync (incl. single-source guidance), read-after-write visibility, request models built only in `Core/Generators/`
@@ -111,7 +112,7 @@ To start working with AI in this project without any explanations:
 
 1. Read `AGENTS.md` in full and `Rules/test-practices.md` — they contain the basic rules and the seed methodology
 2. `/api-test-gen <service> <endpoint>` — generate tests for a new endpoint (the skill will read Observable Behaviour and the rules itself)
-3. `node Scripts/locator-dump.mjs <url> [--waitfor "text"]` — one-off dump of role + accessible name from a page for UI locators (CDP, no dependencies; uses `.auth/github-ui-state.json` by default, `--anonymous` — without sign-in)
+3. `dotnet run --project Scripts/Tools -- locator-dump <url> [--waitfor "text"]` — one-off dump of role + accessible name from a page for UI locators (CDP via Playwright, no extra runtimes; uses `.auth/github-ui-state.json` by default, `--anonymous` — without sign-in)
 4. `/test` — run the whole test suite (writes `TestResults/TestRunReport-*.md`), `/test-report` — run + Allure report
 5. `/review-commit` — check uncommitted changes against the project rules
 6. `/commit` — formatting + HealthCheck + commit + push
