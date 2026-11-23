@@ -1,5 +1,4 @@
 using Core.Models.GitHub;
-using JsonFields = Core.Models.GitHub.JsonFields;
 using Core.Config;
 using Core.Helpers;
 using Core.Helpers.GitHub;
@@ -112,7 +111,7 @@ public class GetPublicReposTests : GitHubTestBase
 
         if (response.Data is not { Count: > 0 })
         {
-            Assert.Inconclusive(
+            AssertHelper.MarkInconclusive(
                 "GitHub returned no public repos beyond the since threshold — world-state probe, informational (probe 2026-11-02 found some)");
         }
 

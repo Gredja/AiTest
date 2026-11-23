@@ -52,7 +52,7 @@ public class CreateIssueTests : GitHubTestBase
     public async Task CreateIssue_MatchesRequest()
     {
         var request = IssueGenerator.CreateRandom("Match probe", "Match body");
-        request.Labels = _testIssueLabels;
+        request.Labels = [.. _testIssueLabels];
 
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, request, TestRepoParam());
@@ -97,7 +97,7 @@ public class CreateIssueTests : GitHubTestBase
     public async Task CreateIssue_WithLabels_ReturnsCreated()
     {
         var request = IssueGenerator.CreateRandom("Labels probe", "Labels body");
-        request.Labels = _testIssueLabels;
+        request.Labels = [.. _testIssueLabels];
 
         var created = await Post<CreateIssueModelRequest, IssueModelResponse>(
             GitHubEndpoints.RepoIssues, request, TestRepoParam());

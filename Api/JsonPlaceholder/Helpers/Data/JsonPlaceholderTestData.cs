@@ -5,7 +5,7 @@ namespace Api.JsonPlaceholder.Helpers;
 
 public static class JsonPlaceholderTestData
 {
-    public const string MalformedJson = "{\"title\":";
+    public const string MalformedJson = $"{{\"{JsonFields.Title}\":";
     public const string SampleTitle = "Title";
     public const string SampleBody = "Body";
 

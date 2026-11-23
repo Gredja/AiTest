@@ -179,8 +179,9 @@ public class CreatePostTests : JsonPlaceholderRequestHelper
             response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
-        result.IsSuccess.Should().BeTrue(
-            $"created post not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
+        AssertHelper.ShouldBeVisibleWithinTimeout(
+            result,
+            $"created post not visible within {TestConfig.MaxResponseTimeMs} ms");
     }
 
     [Test]

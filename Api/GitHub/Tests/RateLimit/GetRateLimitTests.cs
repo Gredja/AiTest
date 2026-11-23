@@ -46,7 +46,7 @@ public class GetRateLimitTests : GitHubTestBase
 
         if (response.Data.Rate.Remaining <= 0)
         {
-            Assert.Inconclusive(
+            AssertHelper.MarkInconclusive(
                 $"rate-limit quota exhausted (remaining {response.Data.Rate.Remaining}, limit {response.Data.Rate.Limit}, reset {response.Data.Rate.Reset}) — informational on live services");
         }
 

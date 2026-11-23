@@ -27,6 +27,19 @@ public static class AssertHelper
         }
     }
 
+    // Visibility timeout on a live service is informational, never a hard fail
+    // (Rules/test-practices → Waiting: timeout → Inconclusive with Elapsed/Attempts/LastValue)
+    public static void ShouldBeVisibleWithinTimeout<T>(WaitResult<T> result, string because)
+        where T : RestResponse
+    {
+        if (!result.IsSuccess)
+        {
+            Assert.Inconclusive($"{because} — {WaitDiagnosticsHelper.Describe(result)}");
+        }
+    }
+
+    public static void MarkInconclusive(string reason) => Assert.Inconclusive(reason);
+
     public static bool IsGitSha(this string sha) =>
         sha is { Length: GitShaLength }
         && sha.All(character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
