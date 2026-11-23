@@ -4,7 +4,7 @@ namespace AllureAdapter.Helpers;
 
 internal static class AllureTestResultBuilderHelper
 {
-    public static Dictionary<string, object> BuildTestResult(TestResultParams resultParams)
+    internal static Dictionary<string, object> BuildTestResult(TestResultParams resultParams)
     {
         var result = CreateBaseResult(resultParams);
 
@@ -21,7 +21,7 @@ internal static class AllureTestResultBuilderHelper
         return result;
     }
 
-    public static Dictionary<string, object> BuildContainer(string uuid, string name, List<string> children) =>
+    internal static Dictionary<string, object> BuildContainer(string uuid, string name, List<string> children) =>
         new Dictionary<string, object>
         {
             [UuidKey] = uuid,

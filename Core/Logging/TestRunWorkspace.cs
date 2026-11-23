@@ -7,6 +7,7 @@ public static class TestRunWorkspace
     internal const string MarkerFileName = ".run-start";
     internal const string ActionLogPrefix = "actions-";
     internal const string TestResultLogPrefix = "test-results-";
+    internal const string WorkspaceFolderName = "GredjaTestRun";
 
     // The marker is held open by the testhost that starts the run. A sibling testhost
     // (the second assembly of the same run) cannot open it for write and therefore
@@ -17,7 +18,7 @@ public static class TestRunWorkspace
 
     public static string Resolve()
     {
-        var workspace = Path.Combine(Path.GetTempPath(), "GredjaTestRun");
+        var workspace = Path.Combine(Path.GetTempPath(), WorkspaceFolderName);
         Directory.CreateDirectory(workspace);
 
         return workspace;
@@ -46,7 +47,7 @@ public static class TestRunWorkspace
 
         foreach (var directory in Directory.EnumerateDirectories(workspace))
         {
-            foreach (var file in Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(directory, ArtifactRetention.AllFilesSearchPattern, SearchOption.AllDirectories))
             {
                 if (File.GetLastWriteTimeUtc(file) >= cutoff)
                 {

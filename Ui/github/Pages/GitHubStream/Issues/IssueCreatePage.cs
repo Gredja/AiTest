@@ -72,5 +72,5 @@ internal sealed class IssueCreatePage(IPage page)
     private readonly ILocator _issueHeadings = page.GetByRole(AriaRole.Heading);
     private readonly ILocator _validationErrorText = page.GetByText("Title can not be empty");
     private readonly ILocator _cancelButton = page.GetByRole(AriaRole.Button, new() { Name = "Cancel", Exact = true });
-    private readonly ILocator _issuesListHeadings = page.GetByRole(AriaRole.Heading, new() { Name = "Issues", Exact = true });
+    private readonly ILocator _issuesListHeadings = page.GetByRole(AriaRole.Heading, new() { Name = GitHubUiLabels.Issues, Exact = true });
 }

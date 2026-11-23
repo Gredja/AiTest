@@ -29,7 +29,7 @@ FluentAssertions (not NUnit Assert).
 ## JSON response parsing
 
 - Always parse JSON responses into typed models — never use `JsonElement` + `TryGetProperty` in tests
-- Create a model class for every JSON response structure (e.g. `RateLimitModel`, `RateLimitSection`)
+- Create a model class for every JSON response structure (e.g. `RateLimitModelResponse`, `RateLimitSection`)
 - Models live in `Core/Models/{Service}/` with proper nesting for nested JSON objects
 - Use `response.Data!.Property` to assert — not raw JSON navigation
 

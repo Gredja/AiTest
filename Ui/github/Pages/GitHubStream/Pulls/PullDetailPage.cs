@@ -7,8 +7,6 @@ namespace Ui.Github.Pages.GitHubStream.Pulls;
 
 internal sealed class PullDetailPage(IPage page)
 {
-    private const string ConvertToDraftPathSegment = "convert_to_draft";
-
     private static readonly TimeSpan _actionTimeout =
         TimeSpan.FromMilliseconds(UiTimeout.UiTimeoutMs);
 
@@ -127,9 +125,18 @@ internal sealed class PullDetailPage(IPage page)
 
     internal async Task EditBodyAsync(string newBody)
     {
-        // the options menu lazy-loads its items over HTTP — click the trigger only while the
-        // menu is closed, click the item once it attached; an exhausted retry must fail here
-        // with diagnostics, not burn the fill timeout downstream (observed 2026-11-12)
+        await OpenCommentEditorAsync();
+
+        await _commentBodyTextbox.FillAsync(newBody);
+        await _updateCommentButton.ClickAsync();
+        await page.GetByText(newBody).First.WaitForAsync();
+    }
+
+    // the options menu lazy-loads its items over HTTP — click the trigger only while the
+    // menu is closed, click the item once it attached; an exhausted retry must fail here
+    // with diagnostics, not burn the fill timeout downstream (observed 2026-11-12)
+    private async Task OpenCommentEditorAsync()
+    {
         var opened = await RetryHelper.UntilAsync(
             async () => await _commentBodyTextbox.CountAsync() > 0,
             async () =>
@@ -151,10 +158,6 @@ internal sealed class PullDetailPage(IPage page)
             throw new InvalidOperationException(
                 $"comment editor did not open (attempts={opened.Attempts}, elapsed={opened.Elapsed})");
         }
-
-        await _commentBodyTextbox.FillAsync(newBody);
-        await _updateCommentButton.ClickAsync();
-        await page.GetByText(newBody).First.WaitForAsync();
     }
 
     // The confirm POST can return 200 while the client leaves the dialog open and the
@@ -162,7 +165,7 @@ internal sealed class PullDetailPage(IPage page)
     // await the response, then poll the badge via reload; the server is the source of truth
     internal async Task<WaitResult<bool>> ConvertToDraftAsync()
     {
-        var convertResponse = page.WaitForResponseAsync(response => response.Url.Contains(ConvertToDraftPathSegment));
+        var convertResponse = page.WaitForResponseAsync(response => response.Url.Contains(GitHubUiEndpoints.ConvertToDraftPathSegment));
         await _convertToDraftButton.ClickAsync();
         await _draftConfirmButton.ClickAsync();
         await convertResponse;
@@ -197,25 +200,24 @@ internal sealed class PullDetailPage(IPage page)
     private readonly ILocator _reopenPullButton = page.GetByRole(AriaRole.Button, new() { Name = "Reopen pull request" });
     private readonly ILocator _editTitleButton = page.GetByRole(AriaRole.Button, new() { Name = "Edit title" });
     private readonly ILocator _editTitleTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Edit Pull Request Title" });
-    private readonly ILocator _saveButtonText = page.GetByText("Save", new() { Exact = true });
+    private readonly ILocator _saveButtonText = page.GetByText(GitHubUiLabels.Save, new() { Exact = true });
     private readonly ILocator _descriptionOptionsButton = page.GetByRole(AriaRole.Button, new() { Name = "Show options" }).First;
     private readonly ILocator _editCommentMenuItem = page.GetByRole(AriaRole.Menuitem, new() { Name = "Edit comment" });
     private readonly ILocator _commentBodyTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Comment body" });
-    private readonly ILocator _updateCommentButton = page.GetByRole(AriaRole.Button, new() { Name = "Update comment" });
+    private readonly ILocator _updateCommentButton = page.GetByRole(AriaRole.Button, new() { Name = GitHubUiLabels.UpdateComment });
     // two triggers on the page carry this name (sidebar button + summary) — strict risk,
     // .First picks one deterministically; either opens a confirm dialog
-    private readonly ILocator _convertToDraftButton = page.GetByRole(AriaRole.Button, new() { Name = "Convert to draft" }).First;
+    private readonly ILocator _convertToDraftButton = page.GetByRole(AriaRole.Button, new() { Name = GitHubUiLabels.ConvertToDraft }).First;
 
     // GitHub renders the confirm either as role=alertdialog (primer portal) or
     // role=dialog (details-overlay) — cover both
     private readonly ILocator _draftConfirmButton = page
         .GetByRole(AriaRole.Dialog)
         .Or(page.GetByRole(AriaRole.Alertdialog))
-        .GetByRole(AriaRole.Button, new() { Name = "Convert to draft" });
-    private readonly ILocator _commentTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Comment" });
-    private readonly ILocator _commentButton = page.GetByRole(AriaRole.Button, new() { Name = "Comment", Exact = true });
+        .GetByRole(AriaRole.Button, new() { Name = GitHubUiLabels.ConvertToDraft });
+    private readonly ILocator _commentTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = GitHubUiLabels.Comment });
+    private readonly ILocator _commentButton = page.GetByRole(AriaRole.Button, new() { Name = GitHubUiLabels.Comment, Exact = true });
 
-    // live dump 2026-11-12 (temporary probe PR): promotional dialog heading
-    // "Try the new pull requests Overview page!" with the dismiss button "Not now"
+    // Promo dialog overlays the page — dismiss it before interacting with PR controls
     private readonly ILocator _overviewPromoDismissButton = page.GetByRole(AriaRole.Button, new() { Name = "Not now" });
 }

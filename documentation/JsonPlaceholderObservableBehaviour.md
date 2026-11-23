@@ -344,6 +344,19 @@ Full definitions and rules: `Rules/categories.md`. One service category on class
 
 ---
 
+## 23. GET /todos/{id}
+
+- Response status is 200 OK (live probe 2026-11-21)
+- Response body is a single object: `userId` (integer), `id` (integer), `title` (string), `completed` (boolean) (live probe 2026-11-21)
+- Not covered by a dedicated test yet (coverage table counts the list endpoints only)
+
+## 24. POST /todos
+
+- Live probe (2026-11-21, three attempts): **500 Internal Server Error** — the mock does not implement todo creation consistently; `POST /posts` remains the API's documented write surface (P1)
+- The guarantee-data POST in `GetAllTodosTests` fires only when the todo list is empty — never reached on the static 200-item dataset
+
+---
+
 ## Response Time SLA
 
 | Category | Endpoints | SLA | Rationale |

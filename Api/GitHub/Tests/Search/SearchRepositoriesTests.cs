@@ -14,7 +14,7 @@ namespace Api.GitHub.Search;
 [Category("GitHub")]
 public class SearchRepositoriesTests : GitHubTestBase
 {
-    private static readonly string RepositoryQuery = $"user:{TestConfig.GitHubTestUsername}";
+    private static readonly string _repositoryQuery = $"user:{TestConfig.GitHubTestUsername}";
 
     [Test]
     [Category("HealthCheck")]
@@ -22,7 +22,7 @@ public class SearchRepositoriesTests : GitHubTestBase
     public async Task SearchRepositories_ReturnsOk()
     {
         var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
-            GitHubEndpoints.SearchRepositories, SearchQueryParam(RepositoryQuery));
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(_repositoryQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -33,7 +33,7 @@ public class SearchRepositoriesTests : GitHubTestBase
     public async Task SearchRepositories_ResponseMatchesContract()
     {
         var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
-            GitHubEndpoints.SearchRepositories, SearchQueryParam(RepositoryQuery));
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(_repositoryQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -57,7 +57,7 @@ public class SearchRepositoriesTests : GitHubTestBase
     public async Task SearchRepositories_TotalCountIsConsistent()
     {
         var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
-            GitHubEndpoints.SearchRepositories, SearchQueryParam(RepositoryQuery));
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(_repositoryQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.TotalCount.Should().BeGreaterThanOrEqualTo(response.Data.Items.Count);
@@ -70,7 +70,7 @@ public class SearchRepositoriesTests : GitHubTestBase
     public async Task SearchRepositories_ItemsHaveRepositoryFields()
     {
         var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
-            GitHubEndpoints.SearchRepositories, SearchQueryParam(RepositoryQuery));
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(_repositoryQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Items.Should().OnlyContain(repository =>
@@ -85,7 +85,7 @@ public class SearchRepositoriesTests : GitHubTestBase
     public async Task SearchRepositories_ContentTypeIsJson()
     {
         var response = await Get<SearchModelResponse<RepositoryModelResponse>>(
-            GitHubEndpoints.SearchRepositories, SearchQueryParam(RepositoryQuery));
+            GitHubEndpoints.SearchRepositories, SearchQueryParam(_repositoryQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
@@ -131,7 +131,7 @@ public class SearchRepositoriesTests : GitHubTestBase
     public async Task SearchRepositories_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.SearchRepositories, InvalidAuthorization, SearchQueryParam(RepositoryQuery));
+            GitHubEndpoints.SearchRepositories, InvalidAuthorization, SearchQueryParam(_repositoryQuery));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }

@@ -8,17 +8,12 @@ namespace AllureAdapter.Helpers;
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public class AllureNUnitAttribute : Attribute, ITestAction
 {
-    private static readonly string _resultsDir;
+    private static readonly string _resultsDir = AllureHelper.GetResultsDirectory();
     private static readonly ConcurrentDictionary<string, ContainerInfo> _containers = new();
 
     // One attribute instance serves every test — parallel tests must not share state
     private static readonly AsyncLocal<long> _startTicks = new();
     private static readonly AsyncLocal<string> _testUuid = new();
-
-    static AllureNUnitAttribute()
-    {
-        _resultsDir = AllureHelper.GetResultsDir();
-    }
 
     public void BeforeTest(ITest test)
     {

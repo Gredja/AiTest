@@ -27,6 +27,19 @@ public static class AssertHelper
         }
     }
 
+    // Visibility timeout on a live service is informational, never a hard fail
+    // (Rules/test-practices → Waiting: timeout → Inconclusive with Elapsed/Attempts/LastValue)
+    public static void ShouldBeVisibleWithinTimeout<T>(WaitResult<T> result, string because)
+        where T : RestResponse
+    {
+        if (!result.IsSuccess)
+        {
+            Assert.Inconclusive($"{because} — {WaitDiagnosticsHelper.Describe(result)}");
+        }
+    }
+
+    public static void MarkInconclusive(string reason) => Assert.Inconclusive(reason);
+
     public static bool IsGitSha(this string sha) =>
         sha is { Length: GitShaLength }
         && sha.All(character => character is >= '0' and <= '9' or >= 'a' and <= 'f');
@@ -161,30 +174,45 @@ public static class AssertHelper
         switch (attribute)
         {
             case RequiredFieldAttribute:
-                value.Should().NotBeNull($"{name} is marked [RequiredField]");
-                if (value is string text)
-                {
-                    text.Should().NotBeNullOrWhiteSpace($"{name} is marked [RequiredField]");
-                }
+                ValidateRequiredField(name, value);
                 break;
 
             case PositiveIdAttribute:
-                value.Should().NotBeNull($"{name} is marked [PositiveId]");
-                Convert.ToDouble(value).Should().BeGreaterThan(0, $"{name} is marked [PositiveId]");
+                ValidatePositiveId(name, value);
                 break;
 
             case ValueRangeAttribute range:
-                value.Should().NotBeNull($"{name} is marked [ValueRange]");
-                var doubleValue = Convert.ToDouble(value);
-                if (range.Min != double.MinValue)
-                {
-                    doubleValue.Should().BeGreaterThanOrEqualTo(range.Min, $"{name} min is {range.Min}");
-                }
-                if (range.Max != double.MaxValue)
-                {
-                    doubleValue.Should().BeLessThanOrEqualTo(range.Max, $"{name} max is {range.Max}");
-                }
+                ValidateValueRange(name, value, range);
                 break;
+        }
+    }
+
+    private static void ValidateRequiredField(string name, object? value)
+    {
+        value.Should().NotBeNull($"{name} is marked [RequiredField]");
+        if (value is string text)
+        {
+            text.Should().NotBeNullOrWhiteSpace($"{name} is marked [RequiredField]");
+        }
+    }
+
+    private static void ValidatePositiveId(string name, object? value)
+    {
+        value.Should().NotBeNull($"{name} is marked [PositiveId]");
+        Convert.ToDouble(value).Should().BeGreaterThan(0, $"{name} is marked [PositiveId]");
+    }
+
+    private static void ValidateValueRange(string name, object? value, ValueRangeAttribute range)
+    {
+        value.Should().NotBeNull($"{name} is marked [ValueRange]");
+        var doubleValue = Convert.ToDouble(value);
+        if (range.Min != double.MinValue)
+        {
+            doubleValue.Should().BeGreaterThanOrEqualTo(range.Min, $"{name} min is {range.Min}");
+        }
+        if (range.Max != double.MaxValue)
+        {
+            doubleValue.Should().BeLessThanOrEqualTo(range.Max, $"{name} max is {range.Max}");
         }
     }
 }

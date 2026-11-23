@@ -4,7 +4,6 @@ namespace Ui.Moodledemo.Tests.Support;
 
 internal static class MoodledemoFixtures
 {
-    private const string EnglishCode = "en";
     private static readonly IReadOnlyList<string> _defaultTitleScripts = ["Latin"];
 
     private static readonly string _fixturePath = Path.Combine(
@@ -14,6 +13,10 @@ internal static class MoodledemoFixtures
         System.IO.File.ReadAllText(_fixturePath),
         new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
         ?? throw new InvalidOperationException($"fixture file not found or invalid: {_fixturePath}");
+
+    private static string EnglishCode =>
+        _root.DefaultCode
+        ?? throw new InvalidOperationException("fixture field 'defaultCode' is missing");
 
     internal static IReadOnlyList<LocaleExpectation> Home => _root.Home;
 
@@ -44,6 +47,7 @@ internal static class MoodledemoFixtures
             : _defaultTitleScripts;
 
     private sealed record FixtureRoot(
+        string? DefaultCode,
         List<LocaleExpectation> Home,
         List<LocaleExpectation> LoginPage,
         List<LoginLabelExpectation>? LoginLabels,

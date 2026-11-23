@@ -2,7 +2,7 @@
 
 ## Endpoints
 
-- Base URL and all endpoint paths stored in `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs` and `Core/Config/MoodledemoEndpoints.cs`
+- Base URL and all endpoint paths stored in `Core/Config/JsonPlaceholderEndpoints.cs`, `Core/Config/GitHubEndpoints.cs`, `Core/Config/GitHubUiEndpoints.cs` and `Core/Config/MoodledemoEndpoints.cs`
 - Never hardcode URLs or paths in tests — use constants from service-specific Endpoints classes
 
 ## Settings files

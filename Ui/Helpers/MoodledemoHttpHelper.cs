@@ -44,14 +44,16 @@ internal static class MoodledemoHttpHelper
                     return (status, body);
                 }
             }
-            catch (HttpRequestException) when (attempt < MaxAttempts)
+            catch (HttpRequestException exception) when (attempt < MaxAttempts)
             {
                 // transient connection failure — swallowed to reach the retry delay below;
                 // without the filter the last attempt would rethrow instead
+                TestContext.WriteLine($"MoodledemoHttp attempt {attempt} HttpRequestException (retrying): {exception.Message}");
             }
-            catch (TaskCanceledException) when (attempt < MaxAttempts)
+            catch (TaskCanceledException exception) when (attempt < MaxAttempts)
             {
                 // transient timeout — same retry path as above
+                TestContext.WriteLine($"MoodledemoHttp attempt {attempt} timeout (retrying): {exception.Message}");
             }
 
             if (attempt < MaxAttempts)

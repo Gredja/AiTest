@@ -35,8 +35,9 @@ public class CreateIssueVisibilityTests : GitHubTestBase
             response => response.StatusCode == HttpStatusCode.OK && response.Data is not null,
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
-        result.IsSuccess.Should().BeTrue(
-            $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
+        AssertHelper.ShouldBeVisibleWithinTimeout(
+            result,
+            $"created issue not visible within {TestConfig.MaxResponseTimeMs} ms");
     }
 
     [OneTimeTearDown]

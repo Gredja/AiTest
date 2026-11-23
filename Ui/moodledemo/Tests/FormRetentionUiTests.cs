@@ -15,6 +15,8 @@ public class FormRetentionUiTests : MoodledemoTestBase
     public async Task LanguageSwitch_ResetsLoginForm()
     {
         var switchTarget = MoodledemoFixtures.Scenarios.SwitchTarget;
+        const string notRetainedReason =
+            "?lang= is a full page navigation — Moodle reloads and the form is not retained (expected for a multi-page app, not a bug)";
 
         await Browser.LoginPage.GotoAsync();
         await Browser.LoginPage.FillLoginFormAsync("typed_username", "typed_password");
@@ -22,10 +24,8 @@ public class FormRetentionUiTests : MoodledemoTestBase
         await Browser.LoginPage.GotoAsync(switchTarget);
 
         var (username, password) = await Browser.LoginPage.ReadLoginFormValuesAsync();
-        username.Should().BeEmpty(
-            "?lang= is a full page navigation — Moodle reloads and the form is not retained (expected for a multi-page app, not a bug)");
-        password.Should().BeEmpty(
-            "?lang= is a full page navigation — Moodle reloads and the form is not retained (expected for a multi-page app, not a bug)");
+        username.Should().BeEmpty(notRetainedReason);
+        password.Should().BeEmpty(notRetainedReason);
 
         var lang = await PageLocaleReaderHelper.ReadLangAsync(Browser.Page);
         lang.Should().Be(switchTarget, "the login page must still honor the language switch");

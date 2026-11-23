@@ -15,6 +15,11 @@ public static class TestRunReportGenerator
     private const double MillisecondsPerSecond = 1000.0;
     private const string ReportPrefix = "TestRunReport-";
     private const string CodeFence = "```";
+    private const string LogFileExtension = ".log";
+    private const string DurationFormat = "0.###";
+    private const string RedactedEmailMarker = "[redacted-email]";
+
+    private static readonly string[] LineSeparators = ["\r\n", "\n"];
 
     private static readonly Encoding _reportEncoding = new UTF8Encoding(false);
 
@@ -103,7 +108,7 @@ public static class TestRunReportGenerator
     private static List<string> CollectLogs(string workspace, DateTime runStart, string filePrefix) =>
         Directory.EnumerateFiles(workspace)
             .Where(path => Path.GetFileName(path).StartsWith(filePrefix, StringComparison.Ordinal))
-            .Where(path => path.EndsWith(".log", StringComparison.Ordinal))
+            .Where(path => path.EndsWith(LogFileExtension, StringComparison.Ordinal))
             .Where(path => File.GetLastWriteTime(path) >= runStart.AddSeconds(-LogTimeSkewSeconds))
             .Order()
             .ToList();
@@ -200,7 +205,7 @@ public static class TestRunReportGenerator
         {
             index++;
             var test = row.Test.Replace("|", "\\|");
-            var duration = row.Duration.ToString("0.###", CultureInfo.InvariantCulture);
+            var duration = row.Duration.ToString(DurationFormat, CultureInfo.InvariantCulture);
             yield return $"| {index} | {test} | {row.Fixture} | {row.Category} | {row.Result} | {duration} |";
         }
 
@@ -297,10 +302,10 @@ public static class TestRunReportGenerator
     }
 
     private static string RedactPii(string line) =>
-        _emailPattern.Replace(line, "[redacted-email]");
+        _emailPattern.Replace(line, RedactedEmailMarker);
 
     private static IEnumerable<string> SplitLines(string text) =>
-        text.Split(["\r\n", "\n"], StringSplitOptions.None);
+        text.Split(LineSeparators, StringSplitOptions.None);
 
     private static string Percent(int count, int total) =>
         total == 0 ? "0.0%" : FormattableString.Invariant($"{count * 100.0 / total:F1}%");

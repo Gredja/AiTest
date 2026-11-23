@@ -23,6 +23,17 @@ public abstract class GitHubUiTestBase
     private const string UiArtifactsFolderName = "ui-artifacts";
     internal const string ScratchFileName = "ui-scratch.txt";
 
+    // Playwright storageState / device-trust JSON schema keys (shared wire contract)
+    private const string CookiesProperty = "cookies";
+    private const string ExpiresProperty = "expires";
+    private const string SameSiteProperty = "sameSite";
+    private const string NameProperty = "name";
+    private const string ValueProperty = "value";
+    private const string DomainProperty = "domain";
+    private const string PathProperty = "path";
+    private const string HttpOnlyProperty = "httpOnly";
+    private const string SecureProperty = "secure";
+
     private IPlaywright? _playwright;
     private IBrowser? _browser;
     private IBrowserContext? _context;
@@ -68,23 +79,27 @@ public abstract class GitHubUiTestBase
         });
 
         await InjectDeviceTrustCookiesAsync();
-
-        // Credential-entry tests (IsStorageStateEnabled = false) must not record traces:
-        // DOM snapshots and network captures would persist the typed password in ui-artifacts/*.zip
-        if (IsStorageStateEnabled)
-        {
-            await _context.Tracing.StartAsync(new TracingStartOptions
-            {
-                Screenshots = true,
-                Snapshots = true
-            });
-        }
+        await StartTracingIfEnabledAsync();
 
         _page = await _context.NewPageAsync();
         await _page.BringToFrontAsync();
         _page.SetDefaultTimeout(UiTimeout.UiTimeoutMs);
         _page.SetDefaultNavigationTimeout(UiTimeout.UiTimeoutMs);
         _browserWrapper = new BrowserPlaywright(_page);
+    }
+
+    // Credential-entry tests (IsStorageStateEnabled = false) must not record traces:
+    // DOM snapshots and network captures would persist the typed password in ui-artifacts/*.zip
+    private async Task StartTracingIfEnabledAsync()
+    {
+        if (IsStorageStateEnabled)
+        {
+            await _context!.Tracing.StartAsync(new TracingStartOptions
+            {
+                Screenshots = true,
+                Snapshots = true
+            });
+        }
     }
 
     [TearDown]
@@ -97,21 +112,9 @@ public abstract class GitHubUiTestBase
 
         var isFailed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed;
 
-        // Credential-entry tests (IsStorageStateEnabled = false) must not persist screenshots
-        // either — the typed e-mail would stay visible in ui-artifacts/*.png
         if (isFailed && IsStorageStateEnabled)
         {
-            var artifacts = ResolveArtifactsDirectory();
-            var failedName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
-            await _page!.ScreenshotAsync(new PageScreenshotOptions
-            {
-                Path = Path.Combine(artifacts, $"{failedName}.png"),
-                FullPage = true
-            });
-            await _context.Tracing.StopAsync(new TracingStopOptions
-            {
-                Path = Path.Combine(artifacts, $"{failedName}.zip")
-            });
+            await CaptureFailureArtifactsAsync();
         }
         else if (IsStorageStateEnabled)
         {
@@ -122,6 +125,23 @@ public abstract class GitHubUiTestBase
         _context = null;
         _page = null;
         _browserWrapper = null;
+    }
+
+    // Credential-entry tests (IsStorageStateEnabled = false) must not persist screenshots
+    // either — the typed e-mail would stay visible in ui-artifacts/*.png
+    private async Task CaptureFailureArtifactsAsync()
+    {
+        var artifacts = ResolveArtifactsDirectory();
+        var failedName = ArtifactNamingHelper.SanitizeFileName(TestContext.CurrentContext.Test.Name);
+        await _page!.ScreenshotAsync(new PageScreenshotOptions
+        {
+            Path = Path.Combine(artifacts, $"{failedName}.png"),
+            FullPage = true
+        });
+        await _context!.Tracing.StopAsync(new TracingStopOptions
+        {
+            Path = Path.Combine(artifacts, $"{failedName}.zip")
+        });
     }
 
     protected async Task SaveStorageStateAsync()
@@ -275,8 +295,8 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", mainSha),
             UiSandboxRepoParams());
-        createdBranches.Add(branchName);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        createdBranches.Add(branchName);
 
         return created.Data!.Ref;
     }
@@ -409,8 +429,8 @@ public abstract class GitHubUiTestBase
             GitHubEndpoints.RepoGitRefs,
             GitRefGenerator.Create($"{GitHubEndpoints.RefsHeadsPrefix}{branchName}", sha),
             UiSandboxRepoParams());
-        createdBranches.Add(branchName);
         created.ShouldHaveStatusCode(HttpStatusCode.Created);
+        createdBranches.Add(branchName);
     }
 
     // storageState and artifacts are resolved against the repository root so relative
@@ -438,30 +458,35 @@ public abstract class GitHubUiTestBase
 
         using var document = System.Text.Json.JsonDocument.Parse(await System.IO.File.ReadAllTextAsync(trustPath));
         var cookies = new List<Microsoft.Playwright.Cookie>();
-        foreach (var element in document.RootElement.GetProperty("cookies").EnumerateArray())
+        foreach (var element in document.RootElement.GetProperty(CookiesProperty).EnumerateArray())
         {
-            float? expires = element.TryGetProperty("expires", out var expiresElement) && expiresElement.GetSingle() > 0
-                ? expiresElement.GetSingle()
-                : null;
-            SameSiteAttribute? sameSite = element.TryGetProperty("sameSite", out var sameSiteElement)
-                && Enum.TryParse<SameSiteAttribute>(sameSiteElement.GetString(), out var parsedSameSite)
-                ? parsedSameSite
-                : null;
-
-            cookies.Add(new Microsoft.Playwright.Cookie
-            {
-                Name = element.GetProperty("name").GetString() ?? string.Empty,
-                Value = element.GetProperty("value").GetString() ?? string.Empty,
-                Domain = element.GetProperty("domain").GetString() ?? string.Empty,
-                Path = element.GetProperty("path").GetString() ?? "/",
-                Expires = expires,
-                HttpOnly = element.TryGetProperty("httpOnly", out var httpOnly) && httpOnly.GetBoolean(),
-                Secure = element.TryGetProperty("secure", out var secure) && secure.GetBoolean(),
-                SameSite = sameSite
-            });
+            cookies.Add(ReadPlaywrightCookie(element));
         }
 
         await Context.AddCookiesAsync([.. cookies]);
+    }
+
+    private static Microsoft.Playwright.Cookie ReadPlaywrightCookie(System.Text.Json.JsonElement element)
+    {
+        float? expires = element.TryGetProperty(ExpiresProperty, out var expiresElement) && expiresElement.GetSingle() > 0
+            ? expiresElement.GetSingle()
+            : null;
+        SameSiteAttribute? sameSite = element.TryGetProperty(SameSiteProperty, out var sameSiteElement)
+            && Enum.TryParse<SameSiteAttribute>(sameSiteElement.GetString(), out var parsedSameSite)
+            ? parsedSameSite
+            : null;
+
+        return new Microsoft.Playwright.Cookie
+        {
+            Name = element.GetProperty(NameProperty).GetString() ?? string.Empty,
+            Value = element.GetProperty(ValueProperty).GetString() ?? string.Empty,
+            Domain = element.GetProperty(DomainProperty).GetString() ?? string.Empty,
+            Path = element.GetProperty(PathProperty).GetString() ?? "/",
+            Expires = expires,
+            HttpOnly = element.TryGetProperty(HttpOnlyProperty, out var httpOnly) && httpOnly.GetBoolean(),
+            Secure = element.TryGetProperty(SecureProperty, out var secure) && secure.GetBoolean(),
+            SameSite = sameSite
+        };
     }
 
     private static string ResolveDeviceTrustPath()

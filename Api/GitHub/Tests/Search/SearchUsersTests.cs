@@ -14,7 +14,7 @@ namespace Api.GitHub.Search;
 [Category("GitHub")]
 public class SearchUsersTests : GitHubTestBase
 {
-    private static readonly string UserQuery = TestConfig.GitHubTestUsername;
+    private static readonly string _userQuery = TestConfig.GitHubTestUsername;
 
     [Test]
     [Category("HealthCheck")]
@@ -22,7 +22,7 @@ public class SearchUsersTests : GitHubTestBase
     public async Task SearchUsers_ReturnsOk()
     {
         var response = await Get<SearchModelResponse<UserModelResponse>>(
-            GitHubEndpoints.SearchUsers, SearchQueryParam(UserQuery));
+            GitHubEndpoints.SearchUsers, SearchQueryParam(_userQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
     }
@@ -33,7 +33,7 @@ public class SearchUsersTests : GitHubTestBase
     public async Task SearchUsers_ResponseMatchesContract()
     {
         var response = await Get<SearchModelResponse<UserModelResponse>>(
-            GitHubEndpoints.SearchUsers, SearchQueryParam(UserQuery));
+            GitHubEndpoints.SearchUsers, SearchQueryParam(_userQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data.Should().NotBeNull();
@@ -46,7 +46,7 @@ public class SearchUsersTests : GitHubTestBase
     public async Task SearchUsers_TotalCountIsConsistent()
     {
         var response = await Get<SearchModelResponse<UserModelResponse>>(
-            GitHubEndpoints.SearchUsers, SearchQueryParam(UserQuery));
+            GitHubEndpoints.SearchUsers, SearchQueryParam(_userQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.TotalCount.Should().BeGreaterThanOrEqualTo(response.Data.Items.Count);
@@ -59,7 +59,7 @@ public class SearchUsersTests : GitHubTestBase
     public async Task SearchUsers_ItemsHaveUserFields()
     {
         var response = await Get<SearchModelResponse<UserModelResponse>>(
-            GitHubEndpoints.SearchUsers, SearchQueryParam(UserQuery));
+            GitHubEndpoints.SearchUsers, SearchQueryParam(_userQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.Data!.Items.Should().OnlyContain(user =>
@@ -83,7 +83,7 @@ public class SearchUsersTests : GitHubTestBase
     public async Task SearchUsers_ContentTypeIsJson()
     {
         var response = await Get<SearchModelResponse<UserModelResponse>>(
-            GitHubEndpoints.SearchUsers, SearchQueryParam(UserQuery));
+            GitHubEndpoints.SearchUsers, SearchQueryParam(_userQuery));
 
         response.ShouldHaveStatusCode(HttpStatusCode.OK);
         response.ContentType.Should().Contain(AssertHelper.JsonContentType);
@@ -129,7 +129,7 @@ public class SearchUsersTests : GitHubTestBase
     public async Task SearchUsers_InvalidToken_ReturnsUnauthorized()
     {
         var response = await ExecuteWithAuthorization(
-            GitHubEndpoints.SearchUsers, InvalidAuthorization, SearchQueryParam(UserQuery));
+            GitHubEndpoints.SearchUsers, InvalidAuthorization, SearchQueryParam(_userQuery));
 
         response.ShouldHaveError(HttpStatusCode.Unauthorized, GitHubErrors.BadCredentials);
     }

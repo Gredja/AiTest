@@ -24,6 +24,7 @@ Gredja/
 │   └── workflows/              # CI: pr-checks.yml (required PR-gate) + nightly-tests.yml (cron, main only)
 ├── .auth/                       # not tracked — Playwright storageState
 ├── .playwright-cli/             # not tracked — local CLI cache
+├── allure-report/                # not tracked — local HTML report output (allure-report.ps1)
 ├── allure-results/              # not tracked
 ├── research/                    # not tracked — deep-research workspaces (gitignored); one-off, archived
 ├── output/                      # not tracked — created on demand for one-off generator/CLI dumps (safe to clean)
@@ -422,9 +423,9 @@ Ui/
 │   ├── Pages/                      # pages + forms — single home of locators
 │   │   ├── Common/                   # cross-area: LoginPage.cs, HeaderPage.cs, ProfilePage.cs, AccountSettingsPage.cs
 │   │   └── GitHubStream/
-│   │       ├── Issues/               # IssueCreatePage.cs, IssueDetailPage.cs, CommentForm.cs
-│   │       ├── Pulls/                # PullDetailPage.cs, PullCreatePage.cs
-│   │       └── Repository/           # RepositoryPageBase.cs (shared readme element), RepositoryPage.cs, IssuesPage.cs, PullsPage.cs, BranchesPage.cs, CodePage.cs, NotFoundPage.cs
+│   │       ├── Issues/               # IssueCreatePage.cs, IssueDetailPage.cs, CommentForm.cs, IssuesPage.cs
+│   │       ├── Pulls/                # PullDetailPage.cs, PullCreatePage.cs, PullsPage.cs
+│   │       └── Repository/           # RepositoryPageBase.cs (shared readme element), RepositoryPage.cs, BranchesPage.cs, CodePage.cs, NotFoundPage.cs
 │   └── Tests/
 │       ├── Support/                  # test infrastructure: GitHubUiTestBase.cs, BrowserPlaywright.cs
 │       └── GitHubStream/

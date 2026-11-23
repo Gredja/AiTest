@@ -55,12 +55,12 @@ internal sealed class CommentForm(IPage page)
             () => _commentActionsButton.First.ClickAsync());
 
     private readonly ILocator _commentTextarea = page.GetByPlaceholder("Use Markdown to format your comment");
-    private readonly ILocator _commentButton = page.GetByRole(AriaRole.Button, new() { Name = "Comment", Exact = true });
+    private readonly ILocator _commentButton = page.GetByRole(AriaRole.Button, new() { Name = GitHubUiLabels.Comment, Exact = true });
     private readonly ILocator _commentActionsButton = page.GetByRole(AriaRole.Button, new() { Name = "Actions for" });
     private readonly ILocator _editMenuItem = page.GetByRole(AriaRole.Menuitem, new() { Name = "Edit", Exact = true });
-    private readonly ILocator _deleteMenuItem = page.GetByRole(AriaRole.Menuitem, new() { Name = "Delete", Exact = true });
+    private readonly ILocator _deleteMenuItem = page.GetByRole(AriaRole.Menuitem, new() { Name = GitHubUiLabels.Delete, Exact = true });
     private readonly ILocator _editTextbox = page.GetByRole(AriaRole.Textbox, new() { Name = "Markdown value" });
-    private readonly ILocator _updateCommentButton = page.GetByRole(AriaRole.Button, new() { Name = "Update comment" });
+    private readonly ILocator _updateCommentButton = page.GetByRole(AriaRole.Button, new() { Name = GitHubUiLabels.UpdateComment });
     private readonly ILocator _deleteDialogHeading = page.GetByRole(AriaRole.Heading, new() { Name = "Delete comment" });
-    private readonly ILocator _confirmDeleteButton = page.GetByRole(AriaRole.Button, new() { Name = "Delete", Exact = true });
+    private readonly ILocator _confirmDeleteButton = page.GetByRole(AriaRole.Button, new() { Name = GitHubUiLabels.Delete, Exact = true });
 }

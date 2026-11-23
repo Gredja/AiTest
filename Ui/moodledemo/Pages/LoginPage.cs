@@ -48,17 +48,7 @@ internal sealed class LoginPage(IPage page)
                     await GotoAsync();
                 }
 
-                await UsernameField.FillAsync(username);
-                await PasswordField.FillAsync(password);
-                var loginButton = await ResolveLoginButtonAsync();
-                await loginButton.ClickAsync();
-                await page.WaitForURLAsync(
-                    url => !url.Contains(MoodledemoEndpoints.LoginPath, StringComparison.Ordinal),
-                    new PageWaitForURLOptions
-                    {
-                        Timeout = LoginNavigationTimeoutMs,
-                        WaitUntil = WaitUntilState.DOMContentLoaded
-                    });
+                await SubmitLoginFormAsync(username, password);
 
                 return;
             }
@@ -66,8 +56,24 @@ internal sealed class LoginPage(IPage page)
             {
                 // any step can hit a degraded variant (redirecterrordetected modal over the
                 // form, dead redirect) — the filter lets the last attempt fail honestly
+                TestContext.WriteLine($"LoginAs attempt {attempt} timed out (retrying)");
             }
         }
+    }
+
+    private async Task SubmitLoginFormAsync(string username, string password)
+    {
+        await UsernameField.FillAsync(username);
+        await PasswordField.FillAsync(password);
+        var loginButton = await ResolveLoginButtonAsync();
+        await loginButton.ClickAsync();
+        await page.WaitForURLAsync(
+            url => !url.Contains(MoodledemoEndpoints.LoginPath, StringComparison.Ordinal),
+            new PageWaitForURLOptions
+            {
+                Timeout = LoginNavigationTimeoutMs,
+                WaitUntil = WaitUntilState.DOMContentLoaded
+            });
     }
 
     internal Task<string> ReadUsernameLabelAsync() => ReadTextAsync(_usernameLabel);
@@ -81,14 +87,16 @@ internal sealed class LoginPage(IPage page)
     {
         // the logout link lives inside a hidden user dropdown — a JS click follows the
         // redirect chain naturally (a direct GotoAsync hits net::ERR_ABORTED on the 302);
-        // the href is the stable identity (localized names change per language)
+        // the href is the stable identity (localized names change per language).
+        // Live-dump 2026-11-21: no role/text path exists — the anchor is only reachable
+        // via href[*=LogoutPath] while the dropdown stays display:none
         var isClicked = await page.EvaluateAsync<bool>(
-            @"(() => {
-                const link = document.querySelector(""a[href*='/login/logout.php']"");
+            $@"(() => {{
+                const link = document.querySelector(""a[href*='{MoodledemoEndpoints.LogoutPath}']"");
                 if (!link) return false;
                 link.click();
                 return true;
-            })()");
+            }})()");
         if (!isClicked)
         {
             throw new InvalidOperationException("logout link not found — user is not logged in");
@@ -149,14 +157,14 @@ internal sealed class LoginPage(IPage page)
         });
     }
 
-    // Labels are not exposed as accessibility-tree elements (live dump 2026-10-22 shows only
-    // their static text) — the label[for] association is the one stable handle left
+    // Labels are not exposed as accessibility-tree elements — the label[for] association
+    // is the one stable handle left
     private readonly ILocator _usernameLabel = page.Locator("label[for='username']");
     private readonly ILocator _passwordLabel = page.Locator("label[for='password']");
 
-    // live dump 2026-10-22: exactly two accessible textboxes on the login page — username
-    // first, password second (the hidden guest input is not in the accessibility tree);
-    // Playwright has no PasswordBox role, so order is the locale-independent identity
+    // Playwright has no PasswordBox role and the hidden guest input is not in the
+    // accessibility tree — textbox order (username first, password second) is the
+    // locale-independent identity
     private ILocator UsernameField => page.GetByRole(AriaRole.Textbox).First;
 
     private ILocator PasswordField => page.GetByRole(AriaRole.Textbox).Nth(1);

@@ -91,9 +91,15 @@ internal sealed class ActionLogHandler : DelegatingHandler
         return $"{Encoding.UTF8.GetString(bytes, 0, MaxLoggedBodyBytes)}...[truncated, total {bytes.Length} bytes]";
     }
 
+    private const string RawCrlf = "\r\n";
+    private const string RawCarriageReturn = "\r";
+    private const string RawLineFeed = "\n";
+    private const string EscapedNewline = "\\n";
+    private const string RedactionReplacement = "$1***";
+
     private static string Escape(string value) =>
-        value.Replace("\r\n", "\\n").Replace("\r", "\\n").Replace("\n", "\\n");
+        value.Replace(RawCrlf, EscapedNewline).Replace(RawCarriageReturn, EscapedNewline).Replace(RawLineFeed, EscapedNewline);
 
     private static string RedactCredentials(string url) =>
-        _sensitiveQueryPattern.Replace(url, "$1***");
+        _sensitiveQueryPattern.Replace(url, RedactionReplacement);
 }

@@ -1,4 +1,4 @@
-﻿using Core.Models.GitHub;
+using Core.Models.GitHub;
 using Core.Config;
 using Core.Helpers;
 using System.Globalization;
@@ -17,6 +17,7 @@ public class RateLimitDrainTests : GitHubE2ETestBase
     private const int DrainCallCount = 5;
     private const int QuotaHeadroom = 10;
     private const int AuthenticatedRateLimit = 5000;
+    private const int MaxProbeAttempts = 2;
 
     [Test]
     [Category("Regression")]
@@ -27,7 +28,7 @@ public class RateLimitDrainTests : GitHubE2ETestBase
         var remainingLast = 0;
         var resetTime = DateTimeOffset.MinValue;
 
-        for (var attempt = 0; attempt < 2; attempt++)
+        for (var attempt = 0; attempt < MaxProbeAttempts; attempt++)
         {
             var first = await Get<RepositoryModelResponse>(GitHubEndpoints.ReposById, TestRepoParam());
             first.ShouldHaveStatusCode(HttpStatusCode.OK);
@@ -47,7 +48,7 @@ public class RateLimitDrainTests : GitHubE2ETestBase
             remainingFirst = int.Parse(remainingHeader, CultureInfo.InvariantCulture);
             if (remainingFirst <= DrainCallCount + QuotaHeadroom)
             {
-                Assert.Inconclusive(
+                AssertHelper.MarkInconclusive(
                     $"rate-limit headroom {remainingFirst} ≤ {DrainCallCount + QuotaHeadroom} — wait for the hourly reset; informational, no drain calls consumed");
             }
 

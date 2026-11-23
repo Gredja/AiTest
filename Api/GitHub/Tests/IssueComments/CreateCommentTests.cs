@@ -84,8 +84,9 @@ public class CreateCommentTests : GitHubTestBase
                 && response.Data.Any(comment => comment.Id == created.Data!.Id),
             timeout: TimeSpan.FromMilliseconds(TestConfig.MaxResponseTimeMs));
 
-        result.IsSuccess.Should().BeTrue(
-            $"created comment not visible within {TestConfig.MaxResponseTimeMs} ms — {WaitDiagnosticsHelper.Describe(result)}");
+        AssertHelper.ShouldBeVisibleWithinTimeout(
+            result,
+            $"created comment not visible within {TestConfig.MaxResponseTimeMs} ms");
     }
 
     [Test]

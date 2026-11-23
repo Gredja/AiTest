@@ -14,6 +14,8 @@ public static class GitHubUiEndpoints
     public const string LoginPath = "/login";
     public const string IssuesFragment = "/issues";
     public const string PullFragment = "/pull/";
+    public const string ConvertToDraftPathSegment = "convert_to_draft";
+    public const string NonExistentRepoPath = "/gredjapl/ui-sandbox-nonexistent-xyz404";
 
     public static string IssuePath(int issueNumber) => $"{IssuesPath}/{issueNumber}";
 

@@ -113,7 +113,7 @@ internal sealed class IssueDetailPage(IPage page)
     private readonly ILocator _reopenIssueButton = page.GetByRole(AriaRole.Button, new() { Name = "Reopen issue" });
     private readonly ILocator _editIssueTitleButton = page.GetByRole(AriaRole.Button, new() { Name = "Edit issue title" });
     private readonly ILocator _firstTextbox = page.GetByRole(AriaRole.Textbox).First;
-    private readonly ILocator _saveButtonText = page.GetByText("Save", new() { Exact = true });
+    private readonly ILocator _saveButtonText = page.GetByText(GitHubUiLabels.Save, new() { Exact = true });
     private readonly ILocator _editLabelsButton = page.GetByRole(AriaRole.Button, new() { Name = "Edit Labels", Exact = true });
     private readonly ILocator _labelOptions = page.GetByRole(AriaRole.Option);
     private readonly ILocator _labelLinks = page.GetByRole(AriaRole.Link);

@@ -20,11 +20,11 @@
 | 9 | **Commits & Releases** | GET /commits, /releases — status, contract, fields, negatives | Done (D8–D9) |
 | 10 | **PR detail, Users list & Comment by id** | GET /pulls/{pull_number} (OB §9c), GET /users (OB §3a), GET /issues/comments/{comment_id} (OB §8a) | Done (Phase 1 close-out) |
 | 11 | **GitHub UI (Playwright)** | Web UI: login/logout/auth state, repo landing, code view, 404s, issues & PRs flows, branches, labels, comments actions, anonymous gates — page-objects, storageState auth, write via UI → cleanup via API | Done (45 tests, `Ui/`) |
-| 12 | **Collaborators & invitations** | GET/PUT /collaborators, /collaborators/{username}/permission, GET/DELETE /invitations (OB §28–28d) | Done (21 tests) |
+| 12 | **Collaborators & invitations** | GET/PUT /collaborators, /collaborators/{username}/permission, GET/DELETE /invitations (OB §28–28d) | Done (33 tests) |
 | 13 | **Authenticated user** | GET /user (OB §5a) — status, contract, login match, 401s | Done (5 tests) |
 | 14 | **Release detail & by-id** | GET /releases/latest, /releases/tags/{tag} (OB §15c–15d), GET/DELETE /releases/{release_id} (OB §15e–15f) + fixture infra §15e | Done (22 tests) |
 | 15 | **Search API** | GET /search/repositories, /search/issues, /search/users (OB §29–29b) | Done (30 tests) |
-| 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), POST /git/blobs (§26c, dedicated tests since 2026-11-04), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (27 tests) |
+| 16 | **Deepening & gotchas** | GET /git/ref/{ref} (§26a), POST /git/trees (§26b), POST /git/blobs (§26c, dedicated tests since 2026-11-04), git/commits (§27), issues-include-PRs, comments order, rate-limit headers, merged_at null | Done (33 tests — §26a–§27 groups) |
 
 **Total:** 495 GitHub API tests live (`dotnet test --filter "Category=GitHub"` — read-only + single-write + negatives + gotchas across ~29 endpoint groups), 10 E2E scenario chains and 45 UI tests. CI: required PR-gate (`format` + `HealthCheck`) + nightly informational two-pass (`Rules/git.md` → CI). Thin-fixture deepening (search/invitations/repos-no-route/git-commit: contract + count-consistency + content-type + auth negatives) closed 2026-10-26; negative-floor program (priority batch + follow-up batch: +45 tests, all 48 fixtures at floor or with documented ceiling) closed 2026-11-02 (§7); release-by-id + DELETE release + git-blob dedicated tests (OB §15e–15f, §26c — the two endpoints the coverage report flagged as untested) added 2026-11-04 (+25 tests, live-probed first). The UI expansion to 44 tests was closed on 2026-10-19 (`.mimocode/plans/github-test-expansion.md` completed and deleted; since grown to 45).
 

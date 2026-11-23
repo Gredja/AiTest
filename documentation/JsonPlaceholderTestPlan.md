@@ -13,7 +13,7 @@
 ## Coverage Summary
 
 - **Endpoints:** 22/22 covered (100%)
-- **Tests:** 214 total — 197 executable + 17 `[Ignore]`d (16 Negative + 1 Regression)
+- **Tests:** 228 total — 210 executable + 18 `[Ignore]`d (17 Negative + 1 Regression)
 - **Fixtures:** 21 (Posts split into GetAll / GetById / Create / Update / Delete)
 - **Negative floor:** see "Negative Floor Status" below (mock-API exception + ceiling rule apply)
 
@@ -77,16 +77,16 @@
 
 ## Test Categories
 
-Counts by check-type category (225 tests total):
+Counts by check-type category (228 tests total):
 
 | Category | Count |
 |---|---|
 | HealthCheck | 22 |
-| ContractCheck | 18 |
-| Smoke | 40 |
-| Regression | 66 (1 `[Ignore]`d — JP-004) |
-| Negative | 69 (53 active + 16 `[Ignore]`d) |
-| Performance | 10 |
+| ContractCheck | 19 |
+| Smoke | 45 |
+| Regression | 61 (1 `[Ignore]`d — JP-004) |
+| Negative | 69 (52 active + 17 `[Ignore]`d) |
+| Performance | 12 |
 
 ---
 
