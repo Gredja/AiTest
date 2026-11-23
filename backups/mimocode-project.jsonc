@@ -11,7 +11,7 @@
         "-NoProfile",
         "-NonInteractive",
         "-Command",
-        "& { ./Scripts/sync-secrets.ps1 | Out-Null; node Scripts/mcp-slack/server.mjs }"
+        "& { ./Scripts/sync-secrets.ps1 | Out-Null; cmd /c \"dotnet build Scripts/Tools -nologo -v:q -clp:ErrorsOnly 1>&2\"; if ($?) { dotnet run --project Scripts/Tools --no-build -- serve-slack } }"
       ]
     }
   }
