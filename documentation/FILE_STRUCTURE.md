@@ -423,9 +423,9 @@ Ui/
 │   ├── Pages/                      # pages + forms — single home of locators
 │   │   ├── Common/                   # cross-area: LoginPage.cs, HeaderPage.cs, ProfilePage.cs, AccountSettingsPage.cs
 │   │   └── GitHubStream/
-│   │       ├── Issues/               # IssueCreatePage.cs, IssueDetailPage.cs, CommentForm.cs
-│   │       ├── Pulls/                # PullDetailPage.cs, PullCreatePage.cs
-│   │       └── Repository/           # RepositoryPageBase.cs (shared readme element), RepositoryPage.cs, IssuesPage.cs, PullsPage.cs, BranchesPage.cs, CodePage.cs, NotFoundPage.cs
+│   │       ├── Issues/               # IssueCreatePage.cs, IssueDetailPage.cs, CommentForm.cs, IssuesPage.cs
+│   │       ├── Pulls/                # PullDetailPage.cs, PullCreatePage.cs, PullsPage.cs
+│   │       └── Repository/           # RepositoryPageBase.cs (shared readme element), RepositoryPage.cs, BranchesPage.cs, CodePage.cs, NotFoundPage.cs
 │   └── Tests/
 │       ├── Support/                  # test infrastructure: GitHubUiTestBase.cs, BrowserPlaywright.cs
 │       └── GitHubStream/

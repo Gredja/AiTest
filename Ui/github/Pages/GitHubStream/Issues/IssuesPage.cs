@@ -3,7 +3,7 @@ using Core.Helpers;
 using Microsoft.Playwright;
 using Ui.Helpers;
 
-namespace Ui.Github.Pages.GitHubStream.Repository;
+namespace Ui.Github.Pages.GitHubStream.Issues;
 
 internal sealed class IssuesPage(IPage page)
 {

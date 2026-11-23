@@ -21,6 +21,22 @@
 - One class per file, file name matches class name
 - Use `var` wherever possible — only use explicit type when `var` is not applicable (e.g. `null`, tuples, primitives without assignment)
 
+### Namespace conventions (documented flattens)
+
+Three intentional patterns — do not "fix" them into uniform subfolder namespaces without a
+project-wide decision (audit rows 85–87):
+
+- **Api tests drop `.Tests`** — `Api.GitHub.Issues`, `Api.JsonPlaceholder.Posts` (folder path
+  still includes `Tests/`). E2E and Ui keep the full path: `E2E.GitHub.Tests`,
+  `Ui.Github.Tests.Support`. Support/base classes in every layer keep `.Tests.Support`.
+- **Core helpers flatten subfolders** — everything under `Core/Helpers/*` (Http, Assertions,
+  Data, Params, Waiting, …) lives in `Core.Helpers`, except the service folder which keeps its
+  segment: `Core.Helpers.GitHub`. Same flatten applies to `Api/<Service>/Helpers/*` →
+  `Api.<Service>.Helpers` (e.g. `JsonPlaceholderTestData` has no `.Data` segment).
+- **Ui page folders map to namespaces** — `Ui.Github.Pages.GitHubStream.<Feature>` mirrors the
+  folder tree one-to-one (list pages sit with their create/detail siblings under `Issues/`,
+  `Pulls/`, not under `Repository/`).
+
 ## File Layout
 
 - **Before creating ANY file — decide its place first**: where it belongs by common sense AND

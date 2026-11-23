@@ -3,7 +3,7 @@ using Core.Helpers;
 using Microsoft.Playwright;
 using Ui.Helpers;
 
-namespace Ui.Github.Pages.GitHubStream.Repository;
+namespace Ui.Github.Pages.GitHubStream.Pulls;
 
 internal sealed class PullsPage(IPage page)
 {
