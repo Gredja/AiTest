@@ -8,28 +8,31 @@ public static class AllureHelper
 {
     private const string SolutionSearchPattern = "*.sln";
 
+    // NUnit 4 keeps [Description] in the PropertyBag, not a CLR property
+    private const string DescriptionPropertyKey = "Description";
+
     private static string FindProjectRoot()
     {
-        var dir = AppContext.BaseDirectory;
-        while (dir is not null)
+        var directory = AppContext.BaseDirectory;
+        while (directory is not null)
         {
-            if (File.Exists(Path.Combine(dir, TestConfig.SolutionFileName)) || Directory.EnumerateFiles(dir, SolutionSearchPattern).Any())
+            if (File.Exists(Path.Combine(directory, TestConfig.SolutionFileName)) || Directory.EnumerateFiles(directory, SolutionSearchPattern).Any())
             {
-                return dir;
+                return directory;
             }
-            dir = Directory.GetParent(dir)?.FullName;
+            directory = Directory.GetParent(directory)?.FullName;
         }
 
         return AppContext.BaseDirectory;
     }
 
-    public static string GetResultsDir()
+    public static string GetResultsDirectory()
     {
-        var projectDir = FindProjectRoot();
-        var resultsDir = Path.Combine(projectDir, TestConfig.AllureResultsDirName);
-        Directory.CreateDirectory(resultsDir);
+        var projectDirectory = FindProjectRoot();
+        var resultsDirectory = Path.Combine(projectDirectory, TestConfig.AllureResultsDirName);
+        Directory.CreateDirectory(resultsDirectory);
 
-        return resultsDir;
+        return resultsDirectory;
     }
 
     internal static string? GetDescription(MethodInfo method)
@@ -40,6 +43,8 @@ public static class AllureHelper
             return null;
         }
 
-        return attributes[0].GetType().GetProperty("Description")?.GetValue(attributes[0]) as string;
+        return attributes[0] is DescriptionAttribute descriptionAttribute
+            ? descriptionAttribute.Properties.Get(DescriptionPropertyKey) as string
+            : null;
     }
 }
