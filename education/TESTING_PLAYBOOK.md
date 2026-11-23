@@ -264,12 +264,13 @@ browser, dumps, and exits:
 
 Design of such a tool (build it the same way in any project):
 
-1. Launch the project's installed Chromium with `--remote-debugging-port=0` and a temp
-   user-data-dir; read the assigned port from the `DevToolsActivePort` file.
-2. Connect over **CDP** with a zero-dependency runtime (Node ≥ 22 built-in `WebSocket`/`fetch`,
-   no npm installs, no browser-version mismatch).
-3. Optional auth: inject cookies from the Playwright `storageState` file via
-   `Network.setCookies`.
+1. Launch the project's installed Chromium through the browser-automation library already
+   in the stack (Playwright-managed executable), or raw with `--remote-debugging-port=0`
+   and a temp user-data-dir reading `DevToolsActivePort`.
+2. Speak **CDP** through the library's session API (Playwright `NewCDPSessionAsync`) or a
+   zero-dependency WebSocket client — no extra npm/pip installs, no browser-version mismatch.
+3. Optional auth: inject cookies from the Playwright `storageState` file (context option or
+   `Network.setCookies`).
 4. Navigate; wait for the load event; optionally poll for expected text
    (`--waitfor "heading you expect"`) to cover hydration. For state that exists only after
    an action, replay the clicks in the same one-shot run (`--click "accessible name"`,

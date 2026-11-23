@@ -3,7 +3,7 @@
 **Project:** Gredja (.NET 11.0)
 **Surface under test:** GitHub web UI (https://github.com) — sandbox repo `gredjapl/ui-sandbox` (`TestConfig.UiTestRepo`)
 **Date:** 2026-10-09
-**Last verified:** 2026-11-16 (device-verification gotcha, UI-1; locator/measurement probes through UI-23)
+**Last verified:** 2026-11-23 (issues list tabs chrome re-dump UI-4/UI-17; device-verification gotcha UI-1; locator/measurement probes through UI-23)
 **Scope:** UI pages and flows (Playwright, Chromium)
 **Test plan history:** retired (lifecycle — plans deleted after implementation); durable status lives in this document and `Rules/ui-testing.md`
 
@@ -59,10 +59,10 @@ When generating or reviewing GitHub UI tests, the AI agent:
 
 ## Page: Issues list (UI-4, ui-sandbox, empty)
 
-- URL: `.../issues` — verified 2026-10-13
-- `heading "Issues" level=1` · `link "New issue"` — verified 2026-10-13, re-verified 2026-11-16; the sidebar also renders `heading "Issues" level=2` — pin `Level = 1` on the heading locator (verified 2026-11-12)
-- Empty state: `heading "No results matched your search"` — verified 2026-10-13
-- Tab counter renders `Open (0)` both anonymous and authenticated (the 2026-10-13 claim of `Open 0` authenticated did not reproduce on re-check 2026-10-19) — parse with `Open\D*(\d+)` regex; `link "Open (0)"` re-verified on the live list — verified 2026-11-12
+- URL: `.../issues` — verified 2026-10-13, re-verified 2026-11-23
+- `heading "Issues" level=1` · `link "New issue"` — verified 2026-10-13, re-verified 2026-11-16 and 2026-11-23; the sidebar also renders `heading "Issues" level=2` — pin `Level = 1` on the heading locator (verified 2026-11-12)
+- Empty state: `heading "No results matched your search"` (dump showed level=2 on the empty sandbox; locator must not pin level) — verified 2026-10-13, re-verified 2026-11-23
+- Tab counter renders `Open (0)` both anonymous and authenticated (the 2026-10-13 claim of `Open 0` authenticated did not reproduce on re-check 2026-10-19) — parse with `Open\D*(\d+)` regex; `link "Open (0)"` re-verified on the live list — verified 2026-11-12, re-verified 2026-11-23
 
 ## Page: Issue create form (UI-5, ui-sandbox)
 
@@ -149,11 +149,12 @@ When generating or reviewing GitHub UI tests, the AI agent:
 
 ## Page: Issues list search & tabs (UI-17, ui-sandbox)
 
-- Tab bar on the default view: `link "Open (N)"` · `link "Closed"` (exact name) — verified 2026-10-19
-- Query bar: `combobox "Search issues"` · `button "Search"` (exact; distinct from the header `button "Open quick search dialog…"`) — verified 2026-10-19
+- Tab bar on the default view: `link "Open (N)"` · `link "Closed"` (exact name) — verified 2026-10-19, re-verified 2026-11-23 (`link "Open (0)"` · `link "Closed"`)
+- Query bar: `combobox "Search issues"` · `button "Search"` (exact; distinct from the header `button "Open quick search dialog…"`) — verified 2026-10-19, re-verified 2026-11-23
 - Results: each issue title renders as `heading level=3` and as `link` — verified 2026-10-19
 - The results-count heading loses its space in the accessible name (`"260results"`) — do not assert on it — verified 2026-10-19
-- Gotcha: the Closed-tab click before the list app hydrates falls back to the link's `href="#"` (fragment navigation, no load event at all) — bounded re-apply until the URL contains the filter (verified 2026-10-19)
+- Gotcha: the Closed-tab click before the list app hydrates falls back to the link's `href="#"` (fragment navigation, no load event at all) — bounded re-apply until the URL contains the filter; same swallow applies to the Open tab on the way back from Closed — bounded re-apply until the URL leaves the closed filter (verified 2026-10-19; Open-tab re-apply 2026-11-23)
+- After tab navigation the list chrome stays: `heading "Issues" level=1` · `link "Open (N)"` · `link "New issue"` — verified 2026-11-23
 
 ## Page: Issue labels picker (UI-18, ui-sandbox)
 

@@ -112,7 +112,7 @@ Before generating — verify the target directories exist; create missing page-o
 
 0. **Read existing code FIRST** — Glob `Ui/**` for the area's page-object and tests; extend what exists, never duplicate files.
 1. **Read UI Observable Behaviour** — `documentation/{{service_name}}UiObservableBehaviour.md`. It is the source of truth: per section — verified locators (with `verified {date}` markers), element states, URL patterns, gotchas. If missing — create it while working: one section per page, locators only after live verification.
-2. **Take a live snapshot of the page** — HARD RULE: only via `node Scripts/locator-dump.mjs <url> [--waitfor "text"]` (one-shot CDP dump of role+accessible name; the `playwright` skill / playwright-cli is forbidden for locator extraction). Aim it at the real page (`Ui.BaseUrl` from `testsettings.json`). Extract roles/texts/labels for every locator you are about to write. Do NOT invent selectors from memory of the HTML.
+2. **Take a live snapshot of the page** — HARD RULE: only via `dotnet run --project Scripts/Tools -- locator-dump <url> [--waitfor "text"]` (one-shot CDP dump of role+accessible name; the `playwright` skill / playwright-cli is forbidden for locator extraction). Aim it at the real page (`Ui.BaseUrl` from `testsettings.json`). Extract roles/texts/labels for every locator you are about to write. Do NOT invent selectors from memory of the HTML.
 3. Note URL patterns, navigation path, and what eventual-consistency the page exhibits (list refresh after write?).
 
 ### Step 2: Design the test (mandatory plan gate)
@@ -303,3 +303,4 @@ Return the JSON contract from "Output Format Instruction" (`files` / `tests` / `
 | 1.4 | 2026-11-05 | Step 6: reconciliation made mechanical — Grep method names vs approved Part 2, table is the diff output (never hand-typed) | MiMo |
 | 1.5 | 2026-11-12 | Troubleshooting: storageState refresh rows corrected — `LoginSignInTests` is `[Ignore]`d (device-verification wall), fix now points at the human-assisted runbook in `Rules/ui-testing.md` → Auth | MiMo |
 | 1.6 | 2026-11-16 | Troubleshooting: credential source row synced with the `.env` removal — credentials come from environment variables (pulled from Infisical via `Scripts/sync-secrets.ps1`) | MiMo |
+| 1.7 | 2026-11-23 | Live-snapshot command ported to the C# tool — `node Scripts/locator-dump.mjs` → `dotnet run --project Scripts/Tools -- locator-dump` (node prerequisite dropped; CLI contract and output unchanged, parity-verified) | MiMo |

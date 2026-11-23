@@ -90,6 +90,50 @@ public class IssuesUiTests : GitHubUiTestBase
             "the Open tab must render its counter as Open (N) per UI-4");
     }
 
+    [Test]
+    [Category("Regression")]
+    [Description("UI-17 Issues list: Closed tab navigation keeps list chrome after filter")]
+    public async Task Issues_NavigateViaTab_ClosedFilter_ShowsListChrome()
+    {
+        await Browser.RepositoryPage.OpenAsync();
+        await Browser.RepositoryPage.NavigateToIssuesAsync();
+
+        var closedTab = await Browser.IssuesPage.ClickClosedTabAsync();
+        closedTab.IsSuccess.Should().BeTrue(
+            $"closed tab must filter the list (attempts={closedTab.Attempts}, elapsed={closedTab.Elapsed})");
+
+        (await Browser.IssuesPage.HasIssuesHeadingAsync()).Should().BeTrue(
+            "the Issues heading must remain on the filtered list view");
+        (await Browser.IssuesPage.HasOpenTabAsync()).Should().BeTrue(
+            "the Open tab must remain part of the list view chrome after filtering");
+        (await Browser.IssuesPage.HasNewIssueButtonAsync()).Should().BeTrue(
+            "the New issue action must remain on the filtered list view");
+    }
+
+    [Test]
+    [Category("Regression")]
+    [Description("UI-17 Issues list: Open tab restores open filter from Closed")]
+    public async Task Issues_NavigateViaTab_OpenFilter_RoundTrip()
+    {
+        await Browser.RepositoryPage.OpenAsync();
+        await Browser.RepositoryPage.NavigateToIssuesAsync();
+
+        var closedTab = await Browser.IssuesPage.ClickClosedTabAsync();
+        closedTab.IsSuccess.Should().BeTrue(
+            $"closed tab must filter the list before the round-trip (attempts={closedTab.Attempts}, elapsed={closedTab.Elapsed})");
+
+        var openTab = await Browser.IssuesPage.ClickOpenTabAsync();
+        openTab.IsSuccess.Should().BeTrue(
+            $"open tab must leave the closed filter (attempts={openTab.Attempts}, elapsed={openTab.Elapsed})");
+
+        (await Browser.IssuesPage.HasIssuesHeadingAsync()).Should().BeTrue(
+            "the Issues heading must render after returning to the open filter");
+        (await Browser.IssuesPage.HasOpenTabAsync()).Should().BeTrue(
+            "the Open tab must be part of the list view chrome after the round-trip");
+        (await Browser.IssuesPage.HasNewIssueButtonAsync()).Should().BeTrue(
+            "the New issue action must be available after returning to the open filter");
+    }
+
     [OneTimeTearDown]
     public async Task OneTimeTearDown()
     {
