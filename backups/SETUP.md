@@ -435,6 +435,7 @@ git checkout -b features/add-user-tests
 - UI: role/label-based локаторы — извлечение/верификация ТОЛЬКО через `node Scripts/locator-dump.mjs <url> [--waitfor "текст"] [--waitfor-ax "текст"] [--click "имя"] [--static-text]` (HARD RULE; playwright-скилл/playwright-cli для локаторов запрещён; `--click` раскрывает пост-кликовые состояния, `--waitfor-ax` — контент вне innerText/с поздним рендером, `--static-text` — текст для GetByText), write через UI → cleanup через API; действие с сетевым исходом (submit/append/смена статуса) обязано ждать пост-условие до assert; presence-check на странице вне load-verified-листа — через `WaitFor*Async` → `WaitResult` в page-object, не мгновенный `CountAsync` (Rules/ui-testing.md → Waits)
 - Строки: интерполяция `$""`, `string.Empty` вместо `""` (кроме compile-time-констант), `StringBuilder` в циклах
 - SOLID: один класс — одна задача, зависимости через интерфейсы; **accepted-debt (аудит F09, 2026-10-19): тест-проект сознательно без своих интерфейсов/DI** — находку «ноль интерфейсов» не фиксить, DI не заводить без конкретного тестируемого шва (`Rules/code-principles.md` → DIP)
+- Зависимости: **минимум (HARD RULE, user 2026-11-23)** — сначала .NET SDK/BCL, затем уже подключённый пакет; новая NuGet-зависимость или внешний рантайм (node, python) — только с обоснованием в коммите/PR (`Rules/code-principles.md` → Dependencies)
 
 **Модели:**
 - Response модели: суффикс `ModelResponse` (включает `Id`)

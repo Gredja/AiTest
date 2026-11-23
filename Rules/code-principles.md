@@ -1,5 +1,14 @@
 # Rules: Code Principles
 
+## Dependencies (hard rule, user 2026-11-23)
+
+- **Minimal dependencies:** pull in an external dependency only when the platform genuinely
+  cannot do the job. Order of preference: (1) the .NET SDK / BCL, (2) a package already
+  referenced by the solution, (3) a new NuGet package — (3) needs a stated reason in the
+  commit/PR.
+- Tooling follows the same rule: no new runtime prerequisites (node, python) when the existing
+  .NET toolchain covers the task (porting rationale: `scripts-to-csharp-2026-11-23`).
+
 ## General
 
 - No access modifier = `private` (e.g. `static RestClient` → `private static RestClient`)

@@ -408,6 +408,11 @@ The UI rarely exposes the created id. Cleanup composition:
   unknowable (`null`, tuples); no unused usings (let the formatter fail on them); methods short,
   single-responsibility (~30 lines; tests may run longer only when splitting hides the
   scenario); max ~5 parameters.
+- **Dependencies: minimal.** Reach for an external dependency (new package, extra runtime)
+  only when the platform cannot do the job — prefer the language SDK/BCL, then packages
+  already in the solution; every addition carries a stated reason. Tooling scripts follow the
+  same bar: do not add a second/third runtime to the toolchain when the primary one covers
+  the task.
 - **Comments: zero by default.** A comment is a last resort — refactor for clarity first; keep
   only a non-obvious WHY (measured latency, protocol quirk, workaround) that the code cannot
   express. Narrating *what* code does is a review defect. Applies to scripts and configs too.

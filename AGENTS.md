@@ -47,6 +47,7 @@ All changes: plan → approval → changes → report. After a commit — review
 - Strings: interpolation `$""`, `string.Empty` over `""` (except where a compile-time constant is required), `StringBuilder` in loops, `IsNullOrEmpty()` instead of `.Length == 0`
 - Null safety: `?.` for safe navigation, `??` for fallback, `is not null` instead of `!= null`
 - SOLID: one class — one responsibility, dependencies via interfaces, extensibility via inheritance; **accepted debt: the test project deliberately has zero hand-rolled interfaces/DI** (`Rules/code-principles.md` → DIP note, audit F09) — no "no interfaces" findings, no checklist DI refactors
+- **Dependencies: minimal (hard rule, user 2026-11-23)** — prefer the .NET SDK/BCL, then a package already in the solution; a new NuGet/runtime (node, python) only with a stated reason in the commit/PR (`Rules/code-principles.md` → Dependencies)
 - Test classes (`*Tests.cs`): `[Test]` + lifecycle + test data only; shared parameter builders live in base/helpers, not in the test class; cleanup only in `[OneTimeTearDown]` (**the last member of the class**) via the fixture registry (register-then-assert), not in `finally`; **created → deleted, no keeping test records** (no delete API → nearest cleanup: close issue/PR) (`Rules/test-practices.md`)
 
 ### Models
@@ -93,7 +94,7 @@ All changes: plan → approval → changes → report. After a commit — review
 
 - `Rules/code.md` — naming, types, file structure, methods, async, access modifiers, cleanup
 - `Rules/code-style.md` — error handling, LINQ, strings, null safety
-- `Rules/code-principles.md` — SOLID, general principles
+- `Rules/code-principles.md` — SOLID, dependencies, general principles
 - `Rules/models.md` — model building rules (ModelResponse/ModelRequest, properties, naming)
 - `Rules/assertions.md` — FluentAssertions, key patterns, HTTP response assertions, request/response comparison
 - `Rules/test-practices.md` — test isolation, API patterns, non-existent IDs, E2E cleanup, artifact cleanup, seed methodology, document sync (incl. single-source guidance), read-after-write visibility, request models built only in `Core/Generators/`
