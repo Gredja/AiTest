@@ -302,7 +302,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (allure-report, test-coverage, install-playwright, locator-dump, moodledemo-discover-langs, normalize-eol, validate-skill.py (структурный линтер скиллов), validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — локальный Slack MCP-сервер)
+├── Scripts/                      # Скрипты (Tools/ — C#-консольный проект `dotnet run --project Scripts/Tools` (validate-skill — структурный линтер скиллов; далее locator-dump, serve-slack), allure-report, test-coverage, install-playwright, moodledemo-discover-langs, normalize-eol, validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — конфиг локального Slack MCP-сервера)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
@@ -357,7 +357,7 @@ MiMoCode:
 |---------|-----------|
 | `/test` | Запускает все тесты + пишет TestRunReport-*.md в `TestResults/` |
 | `/test-report` | Запускает тесты + генерирует Allure-отчёт |
-| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); финальный отчёт — JSON в `TestResults/CommitReport-*.json` + таблица в чате; **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/`; **гейт структуры скиллов**: правка `.mimocode/skills/**` блокируется без `PASS` у `python Scripts/validate-skill.py <папка>` по каждому изменённому скиллу |
+| `/commit` | Форматирование + анализаторы + HealthCheck + коммит + пуш + Slack-уведомление (`✅ commit …` через MCP `slack-local`); финальный отчёт — JSON в `TestResults/CommitReport-*.json` + таблица в чате; **eval-гейт**: правка `*test-gen*` скиллов блокируется без таблицы eval-прогона из `documentation/SkillEval/`; **гейт структуры скиллов**: правка `.mimocode/skills/**` блокируется без `PASS` у `dotnet run --project Scripts/Tools -- validate-skill <папка>` по каждому изменённому скиллу |
 | `/review` | Полное ревью проекта по Rules |
 | `/review-commit` | Ревью не закоммиченных изменений |
 | `/review-pr` | Ревью pull request |
