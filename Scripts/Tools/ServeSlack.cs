@@ -6,13 +6,14 @@ using System.Text.Json.Serialization;
 
 namespace Gredja.Tools;
 
-// Line-delimited JSON-RPC MCP server over stdio (post_message, list_channels).
-// Mirrors the retired mcp-slack/server.mjs one-to-one: same handshake, error codes,
-// tool schemas, stderr-only diagnostics — stdout carries the protocol exclusively.
+// Line-delimited JSON-RPC MCP server over stdio (post_message, list_channels,
+// get_channel_history). Mirrors the retired mcp-slack/server.mjs one-to-one for the
+// original two tools: same handshake, error codes, tool schemas, stderr-only
+// diagnostics — stdout carries the protocol exclusively.
 internal static class ServeSlack
 {
     private const string ServerName = "slack-local";
-    private const string ServerVersion = "1.2.1";
+    private const string ServerVersion = "1.3.0";
     private const string SlackApi = "https://slack.com/api";
     private const string DefaultProtocolVersion = "2024-11-05";
 
@@ -222,6 +223,40 @@ internal static class ServeSlack
             return ToolResult(lines.Count > 0 ? string.Join('\n', lines) : "No channels visible to the bot");
         }
 
+        if (toolName == "get_channel_history")
+        {
+            var channel = ReadString(arguments, "channel");
+            if (string.IsNullOrEmpty(channel))
+            {
+                throw new InvalidOperationException(
+                    "channel is required (channel ID C... — use list_channels to find it)");
+            }
+
+            var limit = 10;
+            if (TryGetProperty(arguments, "limit", out var limitElement)
+                && limitElement.ValueKind is JsonValueKind.Number)
+            {
+                limit = limitElement.GetInt32();
+            }
+
+            var response = await SlackGetAsync(
+                $"/conversations.history?channel={Uri.EscapeDataString(channel)}&limit={limit}");
+            var lines = new List<string>();
+            if (response.TryGetProperty("messages", out var messages)
+                && messages.ValueKind is JsonValueKind.Array)
+            {
+                foreach (var message in messages.EnumerateArray())
+                {
+                    var ts = message.TryGetProperty("ts", out var tsElement) ? tsElement.GetString() : string.Empty;
+                    var user = message.TryGetProperty("user", out var userElement) ? userElement.GetString() : "unknown";
+                    var text = message.TryGetProperty("text", out var textElement) ? textElement.GetString() : string.Empty;
+                    lines.Add($"{ts}\t{user}\t{text}");
+                }
+            }
+
+            return ToolResult(lines.Count > 0 ? string.Join('\n', lines) : "No messages in channel");
+        }
+
         throw new InvalidOperationException($"Unknown tool: {toolName}");
     }
 
@@ -379,7 +414,33 @@ internal static class ServeSlack
             }
         };
 
-        return [postMessage, listChannels];
+        var getChannelHistory = new JsonObject
+        {
+            ["name"] = "get_channel_history",
+            ["description"] = "Read recent messages from a Slack channel (requires channels:history). Returns ts, user and text per line, newest first.",
+            ["inputSchema"] = new JsonObject
+            {
+                ["type"] = "object",
+                ["properties"] = new JsonObject
+                {
+                    ["channel"] = new JsonObject
+                    {
+                        ["type"] = "string",
+                        ["description"] = "Channel ID (C...) — use list_channels to look it up"
+                    },
+                    ["limit"] = new JsonObject
+                    {
+                        ["type"] = "integer",
+                        ["description"] = "Maximum number of messages to return (1-100)",
+                        ["minimum"] = 1,
+                        ["maximum"] = 100
+                    }
+                },
+                ["required"] = new JsonArray("channel")
+            }
+        };
+
+        return [postMessage, listChannels, getChannelHistory];
     }
 
     private static async Task ReplyAsync(JsonElement id, JsonObject result)
