@@ -1,1 +1,7 @@
-{ "defaultChannel": "#commit-pr" }
+{
+  "defaultChannel": "#commit-pr",
+  "watchChannel": "C0CJL9NUN21",
+  "servePort": 4097,
+  "pollSeconds": 2,
+  "botUser": "U0CEEMAQZC1"
+}
