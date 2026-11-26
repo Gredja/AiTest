@@ -64,7 +64,7 @@ Gredja/
 │   ├── install-playwright.ps1    # playwright install chromium (+ deps)
 │   ├── moodledemo-discover-langs.ps1  # regenerate moodledemo expected-langs.json from the live language switcher
 │   ├── mcp-slack/
-│   │   └── config.json            # tracked non-secret default channel (defaultChannel); server code = Tools/ServeSlack.cs
+│   │   └── config.json            # tracked non-secret Slack config: defaultChannel (MCP) + watchChannel/servePort/pollSeconds/botUser (slack-inbox); server code = Tools/ServeSlack.cs, Tools/SlackInbox.cs
 │   ├── normalize-eol.ps1         # worktree LF→CRLF per .gitattributes — run before `git add -A`
 │   ├── read-github-pat.ps1       # the single token-read + never-print contract (used by skills)
 │   ├── slack-notify-run.ps1      # GitHub Actions → Slack run report (summary + per-category stats from TestRunReport)
@@ -74,11 +74,12 @@ Gredja/
 │   ├── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
 │   ├── Tools/                      # C# tool console project (dotnet run --project Scripts/Tools — no extra runtimes)
 │   │   ├── Tools.csproj             # + Microsoft.Playwright (already a solution dependency)
-│   │   ├── Program.cs              # verb dispatch (validate-skill, locator-dump, serve-slack)
+│   │   ├── Program.cs              # verb dispatch (validate-skill, locator-dump, serve-slack, slack-inbox)
 │   │   ├── SkillValidator.cs       # skill folder linter — skill structure gate in /commit (frontmatter/naming/links)
 │   │   ├── LocatorDump.cs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
 │   │   ├── LocatorDumpException.cs # failure type for locator-dump CLI errors
-│   │   └── ServeSlack.cs           # local Slack MCP server over stdio (post_message, list_channels, get_channel_history; SLACK_BOT_TOKEN from the environment)
+│   │   ├── ServeSlack.cs           # local Slack MCP server over stdio (post_message, list_channels, get_channel_history; SLACK_BOT_TOKEN from the environment)
+│   │   └── SlackInbox.cs           # long-running poller: watched channel → new human messages injected into a live session (mimo serve POST /session/{id}/message)
 │   └── validate-skill-report.ps1 # machine-validates a gen-skill JSON report (keys, counter sum, gate↔commit-message link) — contract rule in api/e2e/ui-test-gen
 ├── education/
 │   └── TESTING_PLAYBOOK.md       # portable project-agnostic testing playbook (EN) — methodology deltas folded at every commit

@@ -302,7 +302,7 @@ Gredja/
 ├── E2E/                          # E2E тесты (цепочки связей)
 ├── Ui/                           # UI-тесты (Playwright + Chromium, storageState); Ui/moodledemo/ — Moodle demo (мультиязычность, anonymous, категория MoodleDemo)
 ├── AllureAdapter/                  # Allure-адаптер
-├── Scripts/                      # Скрипты (Tools/ — C#-консольный проект `dotnet run --project Scripts/Tools`: validate-skill (структурный линтер скиллов), locator-dump (one-shot CDP-дамп локаторов); без node/python. Остальное: allure-report, test-coverage, install-playwright, moodledemo-discover-langs, normalize-eol, validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — конфиг локального Slack MCP-сервера)
+├── Scripts/                      # Скрипты (Tools/ — C#-консольный проект `dotnet run --project Scripts/Tools`: validate-skill (структурный линтер скиллов), locator-dump (one-shot CDP-дамп локаторов), slack-inbox (поллер Slack-канала → инъекция human-сообщений в живую сессию через `mimo serve`); без node/python. Остальное: allure-report, test-coverage, install-playwright, moodledemo-discover-langs, normalize-eol, validate-skill-report (валидатор JSON-контракта gen-скиллов), slack-notify-run (GitHub Actions → Slack), mcp-slack/ — конфиг локального Slack MCP-сервера)
 ├── Rules/                        # Правила кодирования
 ├── Gredja.slnx                   # Решение — все dotnet-команды идут через него
 ├── documentation/                # Документация
