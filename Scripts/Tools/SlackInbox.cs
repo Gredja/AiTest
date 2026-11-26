@@ -19,7 +19,7 @@ internal static class SlackInbox
 
     private sealed record ChannelMessage(string Timestamp, decimal SortKey, string User, string Text);
 
-    private sealed record InboxConfig(string Channel, string BotUser, int Port, int PollSeconds);
+    private sealed record InboxConfig(string Channel, string BotUser, int Port, int PollSeconds, bool HasAutoAck);
 
     internal static async Task<int> RunAsync(string? sessionId)
     {
@@ -80,10 +80,38 @@ internal static class SlackInbox
         {
             await InjectPromptAsync(targetSessionId, config.Port, $"{message.User}: {message.Text}");
             lastTimestamp = message.SortKey;
-            Console.Error.WriteLine($"slack-inbox: injected {message.Timestamp} from {message.User} → {targetSessionId}");
+            Console.Error.WriteLine(
+                $"slack-inbox: [{DateTimeOffset.Now:HH:mm:ss}] injected {message.Timestamp} from {message.User} → {targetSessionId}");
+        }
+
+        if (config.HasAutoAck)
+        {
+            await TryAckDeliveryAsync(config, token, messages.Count);
         }
 
         return lastTimestamp;
+    }
+
+    private static async Task TryAckDeliveryAsync(InboxConfig config, string token, int count)
+    {
+        try
+        {
+            var text = $"✅ доставлено в сессию: {count} — агент ответит, как обработает очередь";
+            await PostChannelMessageAsync(token, config.Channel, text);
+        }
+        catch (Exception exception)
+        {
+            Console.Error.WriteLine($"slack-inbox: [{DateTimeOffset.Now:HH:mm:ss}] ack failed: {exception.Message}");
+        }
+    }
+
+    private static async Task PostChannelMessageAsync(string token, string channel, string text)
+    {
+        using var client = CreateSlackClient(token);
+        var payload = JsonSerializer.Serialize(new { channel, text });
+        using var content = new StringContent(payload, Encoding.UTF8, "application/json");
+        using var response = await client.PostAsync($"{SlackApi}/chat.postMessage", content);
+        response.EnsureSuccessStatusCode();
     }
 
     private static async Task<string> ResolveSessionIdAsync(int port)
@@ -232,7 +260,8 @@ internal static class SlackInbox
             GetRequiredString(config, "watchChannel"),
             GetRequiredString(config, "botUser"),
             GetRequiredInt(config, "servePort"),
-            GetOptionalInt(config, "pollSeconds") ?? DefaultPollSeconds);
+            GetOptionalInt(config, "pollSeconds") ?? DefaultPollSeconds,
+            GetOptionalBool(config, "autoAck") ?? true);
     }
 
     private static JsonElement ReadConfig()
@@ -280,6 +309,24 @@ internal static class SlackInbox
         if (config.TryGetProperty(key, out var element) && element.ValueKind is JsonValueKind.Number)
         {
             return element.GetInt32();
+        }
+
+        return null;
+    }
+
+    private static bool? GetOptionalBool(JsonElement config, string key)
+    {
+        if (config.TryGetProperty(key, out var element))
+        {
+            if (element.ValueKind is JsonValueKind.True)
+            {
+                return true;
+            }
+
+            if (element.ValueKind is JsonValueKind.False)
+            {
+                return false;
+            }
         }
 
         return null;
