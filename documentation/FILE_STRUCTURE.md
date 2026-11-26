@@ -69,6 +69,7 @@ Gredja/
 │   ├── read-github-pat.ps1       # the single token-read + never-print contract (used by skills)
 │   ├── slack-notify-run.ps1      # GitHub Actions → Slack run report (summary + per-category stats from TestRunReport)
 │   ├── sync-secrets.ps1          # pull project secrets from Infisical → current process env only (no setx/registry/files); output = key names only, never values
+│   ├── start-slack-inbox.ps1     # idempotent: sync-secrets → mimo serve (servePort) → auto-mode slack-inbox; wired to the logon task "Gredja Slack Inbox"
 │   ├── coverage.runsettings      # coverlet IncludeTestAssembly — only for test-coverage.ps1 (not auto-applied)
 │   ├── test-coverage.ps1
 │   ├── test-parallel-rerun.ps1   # two-pass: 8 workers → failed tests rerun in 1 (used by /test and nightly)
@@ -79,7 +80,7 @@ Gredja/
 │   │   ├── LocatorDump.cs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
 │   │   ├── LocatorDumpException.cs # failure type for locator-dump CLI errors
 │   │   ├── ServeSlack.cs           # local Slack MCP server over stdio (post_message, list_channels; SLACK_BOT_TOKEN from the environment)
-│   │   └── SlackInbox.cs           # long-running poller: watched channel → new human messages injected into a live session (mimo serve POST /session/{id}/message)
+│   │   └── SlackInbox.cs           # long-running poller: watched channel → human messages injected into a live session (mimo serve POST /session/{id}/message; sessionID arg optional — auto-resolves the newest main session via GET /session)
 │   └── validate-skill-report.ps1 # machine-validates a gen-skill JSON report (keys, counter sum, gate↔commit-message link) — contract rule in api/e2e/ui-test-gen
 ├── education/
 │   └── TESTING_PLAYBOOK.md       # portable project-agnostic testing playbook (EN) — methodology deltas folded at every commit

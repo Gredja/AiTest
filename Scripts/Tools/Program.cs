@@ -24,9 +24,9 @@ internal static class Program
             return await ServeSlack.RunAsync();
         }
 
-        if (args.Length == 2 && args[0] == SlackInboxVerb)
+        if (args.Length >= 1 && args.Length <= 2 && args[0] == SlackInboxVerb)
         {
-            return await SlackInbox.RunAsync(args[1]);
+            return await SlackInbox.RunAsync(args.Length == 2 ? args[1] : null);
         }
 
         Console.WriteLine(
@@ -36,7 +36,7 @@ internal static class Program
             "  dotnet run --project Scripts/Tools -- validate-skill /path/to/skill-folder\n" +
             "  dotnet run --project Scripts/Tools -- locator-dump <url> [options]   (see --help)\n" +
             "  dotnet run --project Scripts/Tools -- serve-slack                    (stdio MCP server)\n" +
-            "  dotnet run --project Scripts/Tools -- slack-inbox <sessionID>        (Slack → live session)\n" +
+            "  dotnet run --project Scripts/Tools -- slack-inbox [sessionID]        (Slack → live session; no arg = newest main session)\n" +
             "\n" +
             "Exit code 0 = success, 1 = failure, 2 = usage error (validate-skill).");
         return 2;

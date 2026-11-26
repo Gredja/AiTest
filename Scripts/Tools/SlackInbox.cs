@@ -21,11 +21,11 @@ internal static class SlackInbox
 
     private sealed record InboxConfig(string Channel, string BotUser, int Port, int PollSeconds);
 
-    internal static async Task<int> RunAsync(string sessionId)
+    internal static async Task<int> RunAsync(string? sessionId)
     {
-        if (string.IsNullOrEmpty(sessionId))
+        if (sessionId is not null && string.IsNullOrEmpty(sessionId))
         {
-            Console.Error.WriteLine("usage: slack-inbox <sessionID>");
+            Console.Error.WriteLine("usage: slack-inbox [sessionID]  (omit sessionID to target the newest main session)");
             return 2;
         }
 
@@ -37,11 +37,19 @@ internal static class SlackInbox
         }
 
         var config = ReadInboxConfig();
-        var interval = TimeSpan.FromSeconds(config.PollSeconds);
-        var lastTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000m;
+        var target = sessionId ?? $"auto newest main session via {LoopbackHost}:{config.Port}";
 
         Console.Error.WriteLine(
-            $"slack-inbox: {config.Channel} → session {sessionId} via {LoopbackHost}:{config.Port}, every {config.PollSeconds}s");
+            $"slack-inbox: {config.Channel} → {target}, every {config.PollSeconds}s");
+
+        await RunPollLoopAsync(config, sessionId, token);
+        return 0;
+    }
+
+    private static async Task RunPollLoopAsync(InboxConfig config, string? sessionId, string token)
+    {
+        var interval = TimeSpan.FromSeconds(config.PollSeconds);
+        var lastTimestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000m;
 
         while (true)
         {
@@ -59,17 +67,57 @@ internal static class SlackInbox
     }
 
     private static async Task<decimal> DeliverNewMessagesAsync(
-        InboxConfig config, string sessionId, string token, decimal lastTimestamp)
+        InboxConfig config, string? sessionId, string token, decimal lastTimestamp)
     {
         var messages = await FetchNewMessagesAsync(config.Channel, config.BotUser, lastTimestamp, token);
+        if (messages.Count == 0)
+        {
+            return lastTimestamp;
+        }
+
+        var targetSessionId = sessionId ?? await ResolveSessionIdAsync(config.Port);
         foreach (var message in messages)
         {
-            await InjectPromptAsync(sessionId, config.Port, $"{message.User}: {message.Text}");
+            await InjectPromptAsync(targetSessionId, config.Port, $"{message.User}: {message.Text}");
             lastTimestamp = message.SortKey;
-            Console.Error.WriteLine($"slack-inbox: injected {message.Timestamp} from {message.User}");
+            Console.Error.WriteLine($"slack-inbox: injected {message.Timestamp} from {message.User} → {targetSessionId}");
         }
 
         return lastTimestamp;
+    }
+
+    private static async Task<string> ResolveSessionIdAsync(int port)
+    {
+        using var client = new HttpClient();
+        using var response = await client.GetAsync($"http://{LoopbackHost}:{port}/session");
+        response.EnsureSuccessStatusCode();
+        using var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
+
+        string? newestSessionId = null;
+        var newestUpdate = -1L;
+        foreach (var session in payload.RootElement.EnumerateArray())
+        {
+            // subagent/checkpoint child sessions carry parentID — only main sessions receive prompts
+            if (session.TryGetProperty("parentID", out _))
+            {
+                continue;
+            }
+
+            var id = session.TryGetProperty("id", out var idElement) ? idElement.GetString() : null;
+            var updated = session.TryGetProperty("time", out var timeElement)
+                          && timeElement.TryGetProperty("updated", out var updatedElement)
+                ? updatedElement.GetInt64()
+                : -1L;
+            if (!string.IsNullOrEmpty(id) && updated > newestUpdate)
+            {
+                newestUpdate = updated;
+                newestSessionId = id;
+            }
+        }
+
+        return newestSessionId
+            ?? throw new InvalidOperationException(
+                $"no main session in GET /session on {LoopbackHost}:{port} — open a MiMoCode session first");
     }
 
     private static async Task<List<ChannelMessage>> FetchNewMessagesAsync(
