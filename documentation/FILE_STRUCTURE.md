@@ -79,7 +79,7 @@ Gredja/
 │   │   ├── SkillValidator.cs       # skill folder linter — skill structure gate in /commit (frontmatter/naming/links)
 │   │   ├── LocatorDump.cs          # one-shot CDP dump of role+accessible name (THE locator-extraction tool, hard rule)
 │   │   ├── LocatorDumpException.cs # failure type for locator-dump CLI errors
-│   │   ├── ServeSlack.cs           # local Slack MCP server over stdio (post_message, list_channels; SLACK_BOT_TOKEN from the environment)
+│   │   ├── ServeSlack.cs           # local Slack MCP server over stdio (post_message, list_channels, get_channel_history; SLACK_BOT_TOKEN from the environment)
 │   │   └── SlackInbox.cs           # long-running poller: watched channel → human messages injected into a live session (mimo serve POST /session/{id}/message; sessionID arg optional — auto-resolves the newest main session via GET /session)
 │   └── validate-skill-report.ps1 # machine-validates a gen-skill JSON report (keys, counter sum, gate↔commit-message link) — contract rule in api/e2e/ui-test-gen
 ├── education/

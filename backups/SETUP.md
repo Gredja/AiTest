@@ -153,7 +153,7 @@ MiMoCode хранит настройки в файле `~/.config/mimocode/mimoc
 
 В папке проекта уже есть файл `.mimocode/mimocode.jsonc`. Он содержит пути к скиллам и
 локальный MCP-сервер `slack-local` (`dotnet run --project Scripts/Tools -- serve-slack`, спавн в `mimocode.jsonc` со сборкой в stderr) — инструменты
-`post_message`/`list_channels` для Slack-уведомлений; секретов в конфиге нет (токен сервер
+`post_message`/`list_channels`/`get_channel_history` для Slack-уведомлений и чтения канала; секретов в конфиге нет (токен сервер
 берёт из переменной окружения `SLACK_BOT_TOKEN`, дефолтный канал — из трекингового
 `Scripts/mcp-slack/config.json`). Менять его не нужно; при любом изменении — синк
 `backups/mimocode-project.jsonc` в том же коммите.
@@ -382,7 +382,7 @@ MiMoCode:
 4. **Секреты без локального хранения** — в репозитории нет `.env`, реестр/setx не используются; токены подтягиваются из Infisical в память процесса (`Scripts\sync-secrets.ps1`) и никогда не коммитятся.
 5. **Observable Behaviour — source of truth** — при генерации тестов MiMoCode читает `{Service}ObservableBehaviour.md` и генерирует тесты по описанным полям и типам.
 6. **Document sync** — при изменении эндпоинтов обновляй Observable Behaviour ↔ Test Plan ↔ Rules. Каждый Top-3 риск плана покрывается ≥1 тест-кейсом (risk-coverage check).
-7. **Старт сессии** — сразу после приветствия, до любой другой работы: (а) если `GITHUB_PAT` нет в окружении — прогнать `Scripts\sync-secrets.ps1` (загрузка секретов из Infisical в память текущего процесса; локального кэша нет, поэтому объединяй его с первой нужной командой: `Scripts\sync-secrets.ps1; <команда>`), (б) скилл `/nightly-check` (однострочный вердикт о ночной прогоне); (в) `Scripts\start-slack-inbox.ps1` (идемпотентный пайплайн Slack → живая сессия: secrets → `mimo serve` → поллер `slack-inbox` в auto-режиме; задача планировщика «Gredja Slack Inbox» на логине — страховка, если этот шаг пропущен). Не пропускать даже ради «простого вопроса».
+7. **Старт сессии** — сразу после приветствия, до любой другой работы: (а) если `GITHUB_PAT` нет в окружении — прогнать `Scripts\sync-secrets.ps1` (загрузка секретов из Infisical в память текущего процесса; локального кэша нет, поэтому объединяй его с первой нужной командой: `Scripts\sync-secrets.ps1; <команда>`), (б) скилл `/nightly-check` (однострочный вердикт о ночной прогоне), (в) `Scripts\start-slack-inbox.ps1` (идемпотентный пайплайн Slack → живая сессия: secrets → `mimo serve` → поллер `slack-inbox` в auto-режиме; задача планировщика «Gredja Slack Inbox» на логине — страховка, если этот шаг пропущен), (г) two-way Slack: прочитать human-сообщения канала `#conversation` через MCP-инструмент `slack-local` → `get_channel_history` (лимит ~10, свои сообщения бота `U0CEEMAQZC1` и join-события пропускать; best-effort — сервер не подключён или вызов упал → шаг пропускается, в отличие от обязательного вердикта). Не пропускать даже ради «простого вопроса».
 
 ---
 
