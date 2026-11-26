@@ -94,7 +94,7 @@ internal static class SlackInbox
         using var payload = JsonDocument.Parse(await response.Content.ReadAsStringAsync());
 
         string? newestSessionId = null;
-        var newestUpdate = -1L;
+        var newestCreation = -1L;
         foreach (var session in payload.RootElement.EnumerateArray())
         {
             // subagent/checkpoint child sessions carry parentID — only main sessions receive prompts
@@ -104,13 +104,15 @@ internal static class SlackInbox
             }
 
             var id = session.TryGetProperty("id", out var idElement) ? idElement.GetString() : null;
-            var updated = session.TryGetProperty("time", out var timeElement)
-                          && timeElement.TryGetProperty("updated", out var updatedElement)
-                ? updatedElement.GetInt64()
+            var created = session.TryGetProperty("time", out var timeElement)
+                          && timeElement.TryGetProperty("created", out var createdElement)
+                ? createdElement.GetInt64()
                 : -1L;
-            if (!string.IsNullOrEmpty(id) && updated > newestUpdate)
+            // created, not updated: an old session can keep getting touched (checkpoint
+            // children, second window) and would win an updated-based race forever
+            if (!string.IsNullOrEmpty(id) && created > newestCreation)
             {
-                newestUpdate = updated;
+                newestCreation = created;
                 newestSessionId = id;
             }
         }
