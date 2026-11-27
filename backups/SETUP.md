@@ -152,7 +152,7 @@ MiMoCode хранит настройки в файле `~/.config/mimocode/mimoc
 ### 3.2. Проектный конфиг
 
 В папке проекта уже есть файл `.mimocode/mimocode.jsonc`. Он содержит пути к скиллам и
-локальный MCP-сервер `slack-local` (`dotnet run --project Scripts/Tools -- serve-slack`, спавн в `mimocode.jsonc` со сборкой в stderr) — инструменты
+локальный MCP-сервер `slack-local` (спавн: `mimocode.jsonc` → `Scripts/spawn-serve-slack.ps1` — сборка в свежий `%TEMP%\gredja-serve-slack\build-*`, потому что запущенный экземпляр лочит свои файлы сборки, затем `dotnet Tools.dll serve-slack`; вывод сборки в stderr) — инструменты
 `post_message`/`list_channels`/`get_channel_history` для Slack-уведомлений и чтения канала; секретов в конфиге нет (токен сервер
 берёт из переменной окружения `SLACK_BOT_TOKEN`, дефолтный канал — из трекингового
 `Scripts/mcp-slack/config.json`). Менять его не нужно; при любом изменении — синк
